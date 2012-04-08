@@ -1,0 +1,18 @@
+{
+    "predef": [
+        "jsnx",
+        "goog",
+        "BaseTestClass",
+        "expect"
+    ],
+
+    "curly": true,
+    "latedef": true,
+    "newcap": true,
+    "nonew": true,
+    "undef": true,
+    "strict": true,
+    "globalstrict": true,
+    "iterator": true,
+    "sub": true
+}
