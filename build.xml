@@ -12,6 +12,7 @@
     <property name="dist" location="dist" />
     <property name="docs" location="docs" />
 
+    <property name="testing" value="false" />
     <target name="init">
         <mkdir dir="${build}" />
         <mkdir dir="tools" />
@@ -34,8 +35,11 @@
             <arg value="--root=${nx}" />
             <arg value="--namespace=jsnx" />
             <arg value="--output_mode=compiled" />
+            <arg value="--compiler_flags=--output_wrapper=(function(){%output%}());" />
             <arg value="--compiler_flags=--compilation_level=ADVANCED_OPTIMIZATIONS" />
             <arg value="--compiler_flags=--generate_exports" />
+            <arg value="--compiler_flags=--define=goog.DEBUG=false" />
+            <arg value="--compiler_flags=--define=jsnx.TESTING=${testing}" />
             <arg value="--compiler_jar=tools/compiler.jar" />
         </exec>
     </target>
@@ -67,7 +71,7 @@
 
     <target name="closure.check">
         <condition property="closure.exists">
-              <available file="${goog}" type="dir"/>
+            <available file="${goog}" type="dir"/>
         </condition>
     </target>
 

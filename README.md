@@ -1,14 +1,14 @@
 # JSNetworkX - NetworkX for JavaScript
 
-JSNetworkX is a port of NetworkX, a graph library for Python, to JavaScript. 
+JSNetworkX is a port of [NetworkX](http://networkx.lanl.gov/), a graph library for Python, to JavaScript. 
 
 The following libraries are used by JSNetworkX:
 
-- Jasmine for testing
-- Google Closure Library as base framework
-- D3 for visualization
+- [Jasmine](http://pivotal.github.com/jasmine/) for testing
+- [Closure Library](https://developers.google.com/closure/library/) as base framework
+- [D3](http://mbostock.github.com/d3/) for visualization
 
-The Google Closure Compiler is used to minimize and optimize the code.
+The [Closure Compiler](https://developers.google.com/closure/compiler/) is used to minimize and optimize the code.
 
 
 ## Development
@@ -17,11 +17,16 @@ The development for JSNetworkX has just started, the rough roadmap is as follows
 - Port units to Jasmine
 - Port base classes
 - Implement renderer with D3
+- Port algorithms module
 
-To ease the developement, we built JSNetworkX on top of Google Closure Library. This allows us also to use some more adanvaced features of the Google Closure Compiler and provides
+To ease the developement, we built JSNetworkX on top of Closure Library. This allows us also to use some more adanvaced features of the Google Closure Compiler and provides
 a solid structure for the code.
 
 Stay tuned!
+
+### Notes
+
+The code is scattered with using bracket notation to access properties (`foo['bar']`) instead of dot notation (`foo.bad`). This is ugly, I know. But it is necessary to make the code work well with the Closure Compiler in advanced mode. This mode drastically reduces the file size.
 
 
 ## Important differences from the Python version
@@ -50,9 +55,23 @@ The official JavaScript standard (ECMAScript) does not support iterators yet. Mo
 
 Each object which implements an `.__iterator__()` function which returns an object having a `.next()` method (can be the same object) can be used as iterator.
 
-Such an object is returned by each graph method which is supposed to return a generator.
+Such an object is returned by each graph method which is supposed to return a generator. **Note:** When using the Google CLosure Compiler with `ADVANCED OPTIMIZATIONS`, `__iterator__` is renamed and not available to outside code. However you can still use JSNetworksX methods to iterate over the container.
 
-Add example how to use it here...
+#### Examples
+
+Using JSNetworkX' `forEach`:
+
+    jsnx.forEach(G.nodes_iter(), function(node) {
+        console.log(node);
+    });
+
+Using a `for` loop:
+
+    // jsnx.sentinelIterator wraps an iterator to return a sentinel value instead of throw a StopIteraton expecption
+    var gen = jsnx.SentinelIterator(G.nodes_iter(), null);
+    for(var node = gen.next(); node !== null; node = gen.next()) {
+        console.log(node);
+    }
 
 
 ### Keyword arguments

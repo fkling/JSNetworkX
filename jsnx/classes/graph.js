@@ -1,125 +1,140 @@
-/*global goog:true, jsnx:true */
-/*jshint iterator:true*/
-"use strict";
+'use strict';
 
-goog.provide('jsnx.Graph');
+goog.provide('jsnx.classes.Graph');
 
-goog.require('jsnx.convert');
-goog.require('jsnx.helper');
-goog.require('jsnx.exception');
-
-goog.require('goog.object');
 goog.require('goog.iter');
+goog.require('goog.math');
+goog.require('goog.object');
+goog.require('jsnx.convert');
+goog.require('jsnx.exception');
+goog.require('jsnx.helper');
+
 
 
 /*jshint expr:true*/
+
 /** @typedef {(string|number)} */
 jsnx.Node;
+
+/** @typedef {(Object|goog.iter.Iterable)} */
+jsnx.NodeContainer;
+
 /*jshint expr:false*/
 
 /**
-    Base class for undirected graphs.
-
-    A Graph stores nodes and edges with optional data, or attributes.
-
-    Graphs hold undirected edges.  Self loops are allowed but multiple
-    (parallel) edges are not.
-
-    Nodes can be arbitrary (hashable) Python objects with optional
-    key/value attributes.
-
-    Edges are represented as links between nodes with optional
-    key/value attributes.
-
-    Parameters
-    ----------
-    data : input graph
-        Data to initialize graph.  If data=None (default) an empty
-        graph is created.  The data can be an edge list, or any
-        NetworkX graph object. 
-    attr : keyword arguments, optional (default= no attributes)
-        Attributes to add to graph as key=value pairs.
-
-    See Also
-    --------
-    DiGraph
-    MultiGraph
-    MultiDiGraph
-
-    @export
-    @constructor
+ * Base class for undirected graphs.
+ *
+ * A Graph stores nodes and edges with optional data, or attributes.
+ *
+ * Graphs hold undirected edges.  Self loops are allowed but multiple
+ * (parallel) edges are not.
+ *
+ * Nodes can be arbitrary (hashable) Python objects with optional
+ * key/value attributes.
+ *
+ * Edges are represented as links between nodes with optional
+ * key/value attributes.
+ *
+ * See Also
+ * --------
+ * DiGraph
+ * MultiGraph
+ * MultiDiGraph
+ *
+ * @param {*=} opt_data Data to initialize graph.  If data=None (default) an
+ *       empty graph is created. The data can be an edge list, or any
+ *       NetworkX graph object.
+ *  @param {Object=} opt_attr (default= no attributes)
+ *       Attributes to add to graph as key=value pairs.
+ *
+ * @export
+ * @constructor
  */
-jsnx.Graph = function(data, attr) {
+jsnx.classes.Graph = function(opt_data, opt_attr) {
+    // makes it possible to call jsnx.Graph without new
+    if(!(this instanceof jsnx.classes.Graph)) {
+        return new jsnx.classes.Graph(opt_data, opt_attr);
+    }
 
-    this.graph = {}; // dictionary for graph attributes
-    this.node = {};  // empty node dict (created before convert)
-    this.adj = {};   // empty adjacency dict
+    this['graph'] = {}; // dictionary for graph attributes
+    this['node'] = {};  // empty node dict (created before convert)
+    this['adj'] = {};   // empty adjacency dict
 
     // attempt to load grpah with data
-    if(goog.isDefAndNotNull(data)) {
-        jsnx.convert.to_networkx_graph(data, this);
+    if (goog.isDefAndNotNull(opt_data)) {
+        jsnx.convert.to_networkx_graph(opt_data, this);
     }
 
     // load graph attributes (must be after convert)
-    goog.object.extend(this.graph, attr || {});
-    this.edge = this.adj;
+    goog.object.extend(this['graph'], opt_attr || {});
+    this['edge'] = this['adj'];
 };
+goog.exportSymbol('jsnx.Graph', jsnx.classes.Graph);
+
+/**
+ * Holds the graph type (class) name for information.
+ * This is compatible to Pythons __name__ property.
+ *
+ * @type {string}
+ */
+jsnx.classes.Graph['__name__'] = 'Graph';
 
 
 /**
  * Dictionary for graph attributes
  *
- * @type {Object}
+ * @type {!Object}
  * @export
  */
-jsnx.Graph.prototype.graph = null;
+jsnx.classes.Graph.prototype.graph = null;
+
 
 /**
  * Nde dict
  *
- * @type {Object}
+ * @type {!Object}
  * @export
  */
-jsnx.Graph.prototype.node = null;
+jsnx.classes.Graph.prototype.node = null;
 
 
 /**
  * Adjacency dict
  *
- * @type {Object}
+ * @type {!Object}
  * @export
  */
-jsnx.Graph.prototype.adj = null;
+jsnx.classes.Graph.prototype.adj = null;
 
 
 /**
  * Edge dict
  *
- * @type {Object}
+ * @type {!Object}
  * @export
  */
-jsnx.Graph.prototype.edge = null;
-
-
+jsnx.classes.Graph.prototype.edge = null;
 
 /**
- * Gets or sets the name of the graph. 
+ * Gets or sets the name of the graph.
  *
  * Since we are not using ES5 features
- * instead of name being a normal property, we use traditional
- * getters and setters.
+ * instead of name being a normal property, we use
+ * an overloaded function.
  *
- * @param {string} name Graph name
- * 
- * @return {string} Graph name
+ *
+ * @param {string=} opt_name Graph name.
+ *
+ * @return {(string|undefined)} Graph name if no
+ *      parameter was passed.
  * @export
  */
-jsnx.Graph.prototype.name = function(name) {
-    if(goog.isDef(name)) {
-        this.graph.name = name.toString();
+jsnx.classes.Graph.prototype.name = function(opt_name) {
+    if (goog.isDef(opt_name)) {
+        this['graph']['name'] = opt_name.toString();
     }
     else {
-        return this.graph.name || '';
+        return this['graph']['name'] || '';
     }
 };
 
@@ -128,10 +143,10 @@ jsnx.Graph.prototype.name = function(name) {
 /**
  * Return the graph namme
  *
- * @return {string} Graph name
+ * @return {string} Graph name.
  * @export
  */
-jsnx.Graph.prototype.toString = function() {
+jsnx.classes.Graph.prototype.toString = function() {
     return this.name();
 };
 
@@ -142,12 +157,12 @@ jsnx.Graph.prototype.toString = function() {
  *
  * This is the closest we can get to the native Python iteration
  * capabilities (for now).
- * 
- * @return {goog.iter.Iterator}
+ *
+ * @return {!goog.iter.Iterator}
  * @export
  */
-jsnx.Graph.prototype.__iterator__ = function() {
-    return jsnx.helper.iter(this.adj);
+jsnx.classes.Graph.prototype.__iterator__ = function() {
+    return jsnx.helper.iter(this['adj']);
 };
 
 
@@ -164,14 +179,17 @@ jsnx.Graph.prototype.__iterator__ = function() {
  *
  * @param {jsnx.Node} n  A node in the graph.
  *
- * @return {Object.<Object>} The adjacency dictionary for nodes connected to n.
+ * @return {!Object} The adjacency dictionary for nodes connected to n.
  * @export
  */
-jsnx.Graph.prototype.get_node = function(n) {
-    if(!goog.object.containsKey(this.adj, n)) {
-        throw {name: 'KeyError', message: 'Graph does not contain node ' + n + '.'};
+jsnx.classes.Graph.prototype.get_node = function(n) {
+    if (!goog.object.containsKey(this['adj'], n)) {
+        throw {
+            name: 'KeyError',
+            message: 'Graph does not contain node ' + n + '.'
+        };
     }
-    return this.adj[n];
+    return this['adj'][n];
 };
 
 
@@ -182,26 +200,27 @@ jsnx.Graph.prototype.get_node = function(n) {
  * all attribtues must be passed in an object as second
  * argument.
  *
- * @param {jsnx.Node} n A node
- * @param {Object} attr_dict Dictionary of node attributes.  Key/value pairs will
- *      update existing data associated with the node.
+ * @param {!jsnx.Node} n A node.
+ * @param {Object=} opt_attr_dict Dictionary of node attributes.
+ *      Key/value pairs will update existing data associated with the node.
  * @export
  */
-jsnx.Graph.prototype.add_node = function(n, attr_dict) {
-    if(!goog.isDefAndNotNull(attr_dict)) {
-        attr_dict = {};
+jsnx.classes.Graph.prototype.add_node = function(n, opt_attr_dict) {
+    if (!goog.isDefAndNotNull(opt_attr_dict)) {
+        opt_attr_dict = {};
     }
 
-    if(goog.typeOf(attr_dict) !== 'object') {
-        throw new jsnx.exception.JSNetworkXError('The attr_dict argument must be an object.');
+    if (goog.typeOf(opt_attr_dict) !== 'object') {
+        throw new jsnx.exception.JSNetworkXError(
+            'The attr_dict argument must be an object.');
     }
 
-    if(!goog.object.containsKey(this.adj, n)) {
-        this.adj[n] = {};
-        this.node[n] = attr_dict || {};
+    if (!goog.object.containsKey(this['adj'], n)) {
+        this['adj'][n] = {};
+        this['node'][n] = opt_attr_dict || {};
     }
     else { // update attr even if node already exists
-        goog.object.extend(this.node[n], attr_dict || {});
+        goog.object.extend(this['node'][n], opt_attr_dict || {});
     }
 };
 
@@ -213,47 +232,47 @@ jsnx.Graph.prototype.add_node = function(n, attr_dict) {
  * all attribtues must be passed in an object as second
  * argument.
  *
- * @param {Array|Object} nodes A container of nodes (Array, Object, Array-like).
+ * @param {!jsnx.NodeContainer} nodes
+ *       A container of nodes (Array, Object, Array-like).
  *       OR
  *       A container of (node, attribute dict) tuples.
  *
- * @param {Object} attr  Update attributes for all nodes in nodes.
+ * @param {Object=} opt_attr  Update attributes for all nodes in nodes.
  *       Node attributes specified in nodes as a tuple
  *       take precedence over attributes specified generally.
  * @export
  */
-jsnx.Graph.prototype.add_nodes_from = function(nodes, attr) {
+jsnx.classes.Graph.prototype.add_nodes_from = function(nodes, opt_attr) {
     var newnode, nn, ndict, newdict, olddict;
 
-    attr = attr || {};
+    opt_attr = opt_attr || {};
 
-    // if an object, only iterate over the keys
-    jsnx.helper.forEach(jsnx.helper.iter(nodes), function(n) {
-        newnode = !goog.object.containsKey(this.adj, n);
-        
+    jsnx.helper.forEach(nodes, function(n) {
+        newnode = !goog.object.containsKey(this['adj'], n);
+
         // test whether n is a (node, attr) tuple
-        if(goog.isArray(n)) {
+        if (goog.isArray(n)) {
             nn = n[0];
             ndict = n[1];
 
-            if(!goog.object.containsKey(this.adj, nn)) {
-                this.adj[nn] = {};
-                newdict = goog.object.clone(attr);
+            if (!goog.object.containsKey(this['adj'], nn)) {
+                this['adj'][nn] = {};
+                newdict = goog.object.clone(opt_attr);
                 goog.object.extend(newdict, ndict);
-                this.node[nn] = newdict;
+                this['node'][nn] = newdict;
             }
             else {
-                olddict = this.node[nn];
-                goog.object.extend(olddict, attr, ndict);
+                olddict = this['node'][nn];
+                goog.object.extend(olddict, opt_attr, ndict);
             }
             return; // continue next iteration
         }
-        if(newnode) {
-            this.adj[n] = {};
-            this.node[n] = goog.object.clone(attr);
+        if (newnode) {
+            this['adj'][n] = {};
+            this['node'][n] = goog.object.clone(opt_attr);
         }
         else {
-            goog.object.extend(this.node[n], attr);
+            goog.object.extend(this['node'][n], opt_attr);
         }
     }, this);
 };
@@ -265,19 +284,23 @@ jsnx.Graph.prototype.add_nodes_from = function(nodes, attr) {
  * Removes the node n and all adjacent edges.
  * Attempting to remove a non-existent node will raise an exception.
  *
- * @param {jsnx.Node} n A node in the graph
+ * @param {jsnx.Node} n A node in the graph.
  * @export
  */
-jsnx.Graph.prototype.remove_node = function(n) {
-    var adj = this.adj,
+jsnx.classes.Graph.prototype.remove_node = function(n) {
+    var adj = this['adj'],
         nbrs;
 
-    if(!goog.object.containsKey(this.node, n)) {
-        throw new jsnx.exception.JSNetworkXError('The node ' + n + ' is not in the graph');
+    if (!goog.object.containsKey(this['node'], n)) {
+        throw new jsnx.exception.JSNetworkXError(
+            'The node ' + n + ' is not in the graph'
+        );
     }
 
-    nbrs = goog.object.getKeys(adj[n]); //  keys handles self-loops (allow mutation later)
-    goog.object.remove(this.node, n);
+    //  keys handles self-loops (allow mutation later)
+    nbrs = goog.object.getKeys(adj[n]);
+
+    goog.object.remove(this['node'], n);
 
     goog.array.forEach(nbrs, function(u) {
         goog.object.remove(adj[u], n); // remove all edges n-u in graph
@@ -289,23 +312,23 @@ jsnx.Graph.prototype.remove_node = function(n) {
 /**
  * Remove multiple nodes.
  *
- * @param {*} nodes A container of nodes (array, array-like, object, etc.).  If a node
- *      in the container is not in the graph it is silently ignored.
+ * @param {jsnx.NodeContainer} nodes A container of nodes 
+ *      If a node in the container is not in the graph it is silently ignored.
  *
  * @export
  */
-jsnx.Graph.prototype.remove_nodes_from = function(nodes) {
-    var adj = this.adj;
+jsnx.classes.Graph.prototype.remove_nodes_from = function(nodes) {
+    var adj = this['adj'];
 
     jsnx.helper.forEach(nodes, function(n) {
         try {
-            goog.object.remove(this.node, n);
-            goog.array.forEach(goog.object.getKeys(adj[n]), function(u) {
+            goog.object.remove(this['node'], n);
+            goog.object.forEach(adj[n], function(_, u) {
                 goog.object.remove(adj[u], n);
             });
             goog.object.remove(adj, n);
         }
-        catch(e) {}
+        catch (e) {}
     }, this);
 };
 
@@ -313,32 +336,32 @@ jsnx.Graph.prototype.remove_nodes_from = function(nodes) {
 /**
  * Return an iterator over the nodes.
  *
- * @param {boolean} data (default false) If false the iterator returns nodes.  
- *      If true return a two-tuple of node and node data dictionary
+ * @param {boolean} data (default false) If false the iterator returns nodes.
+ *      If true return a two-tuple of node and node data dictionary.
  *
  * @return {goog.iter.Iterator} of nodes If data=true the iterator gives
- *           two-tuples containing (node, node data, dictionary)
+ *           two-tuples containing (node, node data, dictionary).
  * @export
  */
-jsnx.Graph.prototype.nodes_iter = function(data) {
-    if(data) {
-        return jsnx.helper.iteritems(this.node);
+jsnx.classes.Graph.prototype.nodes_iter = function(data) {
+    if (data) {
+        return jsnx.helper.iteritems(this['node']);
     }
-    return jsnx.helper.iter(goog.object.getKeys(this.adj));
+    return jsnx.helper.iter(goog.object.getKeys(this['adj']));
 };
 
 
 /**
  * Return a list of the nodes in the graph.
  *
- * @param {boolean} data (default false) If false the iterator returns nodes.  
- *      If true return a two-tuple of node and node data dictionary
+ * @param {boolean} data (default false) If false the iterator returns nodes.5
+ *      If true return a two-tuple of node and node data dictionary.
  *
  * @return {Array} of nodes If data=true a list of two-tuples containing
- *           (node, node data dictionary)
+ *           (node, node data dictionary).
  * @export
  */
-jsnx.Graph.prototype.nodes = function(data) {
+jsnx.classes.Graph.prototype.nodes = function(data) {
     return goog.iter.toArray(this.nodes_iter(data));
 };
 
@@ -349,8 +372,8 @@ jsnx.Graph.prototype.nodes = function(data) {
  * @return {number} The number of nodes in the graph.
  * @export
  */
-jsnx.Graph.prototype.number_of_nodes = function() {
-    return goog.object.getCount(this.adj);
+jsnx.classes.Graph.prototype.number_of_nodes = function() {
+    return goog.object.getCount(this['adj']);
 };
 
 
@@ -360,21 +383,21 @@ jsnx.Graph.prototype.number_of_nodes = function() {
  * @return {number} The number of nodes in the graph.
  * @export
  */
-jsnx.Graph.prototype.order = function() {
-    return goog.object.getCount(this.adj);
+jsnx.classes.Graph.prototype.order = function() {
+    return goog.object.getCount(this['adj']);
 };
 
 
 /**
  * Return true if the graph contains the node n.
  *
- * @param {jsnx.Node} n node
+ * @param {jsnx.Node} n node.
  *
  * @return {boolean}
  * @export
  */
-jsnx.Graph.prototype.has_node = function(n) {
-    return !goog.isArray(n) && goog.object.containsKey(this.adj, n);
+jsnx.classes.Graph.prototype.has_node = function(n) {
+    return !goog.isArray(n) && goog.object.containsKey(this['adj'], n);
 };
 
 
@@ -390,36 +413,38 @@ jsnx.Graph.prototype.has_node = function(n) {
  * Unlike in Python, attributes can only be defined
  * via the dictionary.
  *
- * @param {jsnx.Node} u
- * @param {jsnx.Node} v
- * @param {Object}  Dictionary of edge attributes.  Key/value pairs will
- *    update existing data associated with the edge.
+ * @param {!jsnx.Node} u Node.
+ * @param {!jsnx.Node} v Node.
+ * @param {Object=} opt_attr_dict Dictionary of edge attributes.
+ *      Key/value pairs will update existing data associated with the edge.
  *
  * @export
  */
-jsnx.Graph.prototype.add_edge = function(u, v, attr_dict) {
-    attr_dict = attr_dict || {};
+jsnx.classes.Graph.prototype.add_edge = function(u, v, opt_attr_dict) {
+    opt_attr_dict = opt_attr_dict || {};
 
-    if(goog.typeOf(attr_dict) !== 'object') {
-        throw new jsnx.exception.JSNetworkXError('The attr_dict argument must be an object.');
+    if (goog.typeOf(opt_attr_dict) !== 'object') {
+        throw new jsnx.exception.JSNetworkXError(
+            'The attr_dict argument must be an object.'
+        );
     }
 
     // add nodes
-    if(!goog.object.containsKey(this.adj, u)) {
-        this.adj[u] = {};
-        this.node[u] = {};
+    if (!goog.object.containsKey(this['adj'], u)) {
+        this['adj'][u] = {};
+        this['node'][u] = {};
     }
 
-    if(!goog.object.containsKey(this.adj, v)) {
-        this.adj[v] = {};
-        this.node[v] = {};
+    if (!goog.object.containsKey(this['adj'], v)) {
+        this['adj'][v] = {};
+        this['node'][v] = {};
     }
 
     // add the edge
-    var datadict = goog.object.get(this.adj[u], v, {});
-    goog.object.extend(datadict, attr_dict);
-    this.adj[u][v] = datadict;
-    this.adj[v][u] = datadict;
+    var datadict = goog.object.get(this['adj'][u], v, {});
+    goog.object.extend(datadict, opt_attr_dict);
+    this['adj'][u][v] = datadict;
+    this['adj'][v][u] = datadict;
 };
 
 
@@ -429,54 +454,58 @@ jsnx.Graph.prototype.add_edge = function(u, v, attr_dict) {
  * Adding the same edge twice has no effect but any edge data
  * will be updated when each duplicate edge is added.
  *
- * @param {*} ebunch container of edges
+ * @param {?} ebunch container of edges
  *      Each edge given in the container will be added to the
  *      graph. The edges must be given as as 2-tuples (u,v) or
  *      3-tuples (u,v,d) where d is a dictionary containing edge
  *      data.
  *
- * @param {Object} attr_dict
+ * @param {Object=} opt_attr_dict
  *     Dictionary of edge attributes.  Key/value pairs will
  *     update existing data associated with each edge.
  * @export
  */
-jsnx.Graph.prototype.add_edges_from = function(ebunch, attr_dict) {
-    attr_dict = attr_dict || {};
+jsnx.classes.Graph.prototype.add_edges_from = function(ebunch, opt_attr_dict) {
+    opt_attr_dict = opt_attr_dict || {};
 
-    if(goog.typeOf(attr_dict) !== 'object') {
-        throw new jsnx.exception.JSNetworkXError('The attr_dict argument must be an object.');
+    if (goog.typeOf(opt_attr_dict) !== 'object') {
+        throw new jsnx.exception.JSNetworkXError(
+            'The attr_dict argument must be an object.'
+        );
     }
 
     // process ebunch
     jsnx.helper.forEach(ebunch, function(e) {
         var ne = jsnx.helper.len(e), u, v, dd;
-        if(ne === 3) {
+        if (ne === 3) {
             u = e[0];
             v = e[1];
             dd = e[2];
         }
-        else if(ne === 2) {
+        else if (ne === 2) {
             u = e[0];
             v = e[1];
             dd = {};
         }
         else {
-            throw new jsnx.exception.JSNetworkXError('Edge tuple ' + e.toString() + ' must be a 2-tuple or 3-tuple.');
+            throw new jsnx.exception.JSNetworkXError(
+                'Edge tuple ' + e.toString() + ' must be a 2-tuple or 3-tuple.'
+            );
         }
 
-        if(!goog.object.containsKey(this.adj, u)) {
-            this.adj[u] = {};
-            this.node[u] = {};
+        if (!goog.object.containsKey(this['adj'], u)) {
+            this['adj'][u] = {};
+            this['node'][u] = {};
         }
-        if(!goog.object.containsKey(this.adj, v)) {
-            this.adj[v] = {};
-            this.node[v] = {};
+        if (!goog.object.containsKey(this['adj'], v)) {
+            this['adj'][v] = {};
+            this['node'][v] = {};
         }
 
-        var datadict = goog.object.get(this.adj[u], v, {});
-        goog.object.extend(datadict, attr_dict, dd);
-        this.adj[u][v] = datadict;
-        this.adj[v][u] = datadict;
+        var datadict = goog.object.get(this['adj'][u], v, {});
+        goog.object.extend(datadict, opt_attr_dict, dd);
+        this['adj'][u][v] = datadict;
+        this['adj'][v][u] = datadict;
     }, this);
 };
 
@@ -485,59 +514,61 @@ jsnx.Graph.prototype.add_edges_from = function(ebunch, attr_dict) {
  * Add all the edges in ebunch as weighted edges with specified weights.
  *
  *
- * Adding the same edge twice for Graph/DiGraph simply updates 
- * the edge data.  For MultiGraph/MultiDiGraph, duplicate edges 
+ * Adding the same edge twice for Graph/DiGraph simply updates
+ * the edge data.  For MultiGraph/MultiDiGraph, duplicate edges
  * are stored.
  *
  * Since JavaScript does not support keyword arguments, all attributes
  * must be passed in the attr object.
  *
- * @param {*} ebunch  container of edges
+ * @param {?} ebunch  container of edges
  *      Each edge given in the list or container will be added
  *      to the graph. The edges must be given as 3-tuples (u,v,w)
  *      where w is a number.
  *
- * @param {string} weight (default 'weight')
+ * @param {string=} opt_weight (default 'weight')
  *      The attribute name for the edge weights to be added.
  *
- * @param {Object} attr Edge attributes to add/update for all edges.
+ * @param {Object=} opt_attr Edge attributes to add/update for all edges.
  *
  * @export
  */
-jsnx.Graph.prototype.add_weighted_edges_from = function(ebunch, weight, attr) {
-    attr = attr || {};
-    if(!goog.isString(weight)) {
-        attr = weight;
-        weight = 'weight';
+jsnx.classes.Graph.prototype.add_weighted_edges_from = function(ebunch, opt_weight, opt_attr) {
+    opt_attr = opt_attr || {};
+    if (!goog.isString(opt_weight)) {
+        opt_attr = opt_weight;
+        opt_weight = 'weight';
     }
 
     this.add_edges_from(jsnx.helper.map(ebunch, function(e) {
         var attr = {};
-        attr[weight] = e[2];
+        attr[opt_weight] = e[2];
         return [e[0], e[1], attr];
-    }), attr);
+    }), opt_attr);
 };
 
 
 /**
  * Remove the edge between u and v.
  *
- * @param {jsnx.Node} u 
- * @param {jsnx.Node} v
+ * @param {!jsnx.Node} u Node.
+ * @param {!jsnx.Node} v Node.
  *
  * @export
  */
-jsnx.Graph.prototype.remove_edge = function(u, v) {
+jsnx.classes.Graph.prototype.remove_edge = function(u, v) {
 
     try {
-        goog.object.remove(this.adj[u], v);
-        if(u != v) {
-            goog.object.remove(this.adj[v], u);
+        goog.object.remove(this['adj'][u], v);
+        if (u != v) {
+            goog.object.remove(this['adj'][v], u);
         }
     }
-    catch(e) {
-        if(e instanceof TypeError) {
-            throw new jsnx.exception.JSNetworkXError('The edge ' + u + '-' + v + ' is not in the graph');
+    catch (e) {
+        if (e instanceof TypeError) {
+            throw new jsnx.exception.JSNetworkXError(
+                'The edge ' + u + '-' + v + ' is not in the graph'
+            );
         }
         throw e;
     }
@@ -547,24 +578,26 @@ jsnx.Graph.prototype.remove_edge = function(u, v) {
 /**
  * Remove all edges specified in ebunch.
  *
- * Will fail silently if an edge in ebunch is not in the graph.
+ * Notes: Will fail silently if an edge in ebunch is not in the graph.
  *
- * @param {*} list or container of edge tuples
+ * @param {?} ebunch 1list or container of edge tuples
  *      Each edge given in the list or container will be removed
  *      from the graph. The edges can be:
  *          - 2-tuples (u,v) edge between u and v.
  *          - 3-tuples (u,v,k) where k is ignored.
  * @export
  */
-jsnx.Graph.prototype.remove_edges_from = function(ebunch) {
+jsnx.classes.Graph.prototype.remove_edges_from = function(ebunch) {
     jsnx.helper.forEach(ebunch, function(e) {
-        var u = e[0],
+        var u = e[0], // ignore edge data if present
             v = e[1];
 
-        if(goog.object.containsKey(this.adj, u) && goog.object.containsKey(this.adj[u], v)) {
-            goog.object.remove(this.adj[u], v);
-            if(u != v) {
-                goog.object.remove(this.adj[v], u);
+        if (goog.object.containsKey(this['adj'], u) &&
+            goog.object.containsKey(this['adj'][u], v)) {
+
+            goog.object.remove(this['adj'][u], v);
+            if (u != v) { // self loop needs only one entry removed
+                goog.object.remove(this['adj'][v], u);
             }
         }
     }, this);
@@ -574,46 +607,51 @@ jsnx.Graph.prototype.remove_edges_from = function(ebunch) {
 /**
  * Return True if the edge (u,v) is in the graph.
  *
- * @param {jsnx.Node} u
- * @param {jsnx.Node} v
+ * @param {!jsnx.Node} u Node.
+ * @param {!jsnx.Node} v Node.
  *
  * @return {boolean} True if edge is in the graph, False otherwise.
  * @export
  */
-jsnx.Graph.prototype.has_edge = function(u, v) {
-    return goog.object.containsKey(this.adj, u) && goog.object.containsKey(this.adj[u], v);
+jsnx.classes.Graph.prototype.has_edge = function(u, v) {
+    return goog.object.containsKey(this['adj'], u) &&
+        goog.object.containsKey(this['adj'][u], v);
 };
 
 
 /**
  * Return a list of the nodes connected to the node n.
  *
- * @param {jsnx.Node} n A node in the graph
+ * @param {!jsnx.Node} n A node in the graph.
  *
- * @return {Array} A list of nodes that are adjacent to n.
+ * @return {!Array} A list of nodes that are adjacent to n.
  * @export
  */
-jsnx.Graph.prototype.neighbors = function(n) {
-    if(!goog.object.containsKey(this.adj, n)) {
-        throw new jsnx.exception.JSNetworkXError('The node ' + n + ' is not in the graph.');
+jsnx.classes.Graph.prototype.neighbors = function(n) {
+    if (!goog.object.containsKey(this['adj'], n)) {
+        throw new jsnx.exception.JSNetworkXError(
+            'The node ' + n + ' is not in the graph.'
+        );
     }
-    return jsnx.helper.toArray(this.adj[n]);
+    return jsnx.helper.toArray(this['adj'][n]);
 };
 
 
 /**
  * Return an iterator over all neighbors of node n.
  *
- * @param {jsnx.Node} n A node in the graph
+ * @param {!jsnx.Node} n A node in the graph.
  *
- * @return {Array} A list of nodes that are adjacent to n.
+ * @return {!goog.iter.Iterator} A list of nodes that are adjacent to n.
  * @export
  */
-jsnx.Graph.prototype.neighbors_iter = function(n) {
-    if(!goog.object.containsKey(this.adj, n)) {
-        throw new jsnx.exception.JSNetworkXError('The node ' + n + ' is not in the graph.');
+jsnx.classes.Graph.prototype.neighbors_iter = function(n) {
+    if (!goog.object.containsKey(this['adj'], n)) {
+        throw new jsnx.exception.JSNetworkXError(
+            'The node ' + n + ' is not in the graph.'
+        );
     }
-    return jsnx.helper.iter(this.adj[n]);
+    return jsnx.helper.iter(this['adj'][n]);
 };
 
 
@@ -625,17 +663,18 @@ jsnx.Graph.prototype.neighbors_iter = function(n) {
  *
  * Note: Nodes in nbunch that are not in the graph will be (quietly) ignored.
  *
- * @param {*} nbunch A container of nodes.  The container will be iterated
- *      through once.
- * @param {boolean} data Return two tuples (u,v) (False) or three-tuples (u,v,data) (True).
+ * @param {jsnx.NodeContainer=} opt_nbunch A container of nodes.
+ *      The container will be iterated through once.
+ * @param {boolean=} opt_data Return two tuples (u,v) (False)
+ *      or three-tuples (u,v,data) (True).
  *
- * @return {Array} list of edge tuples
+ * @return {!Array} list of edge tuples
  *      Edges that are adjacent to any node in nbunch, or a list
  *      of all edges if nbunch is not specified.
  * @export
  */
-jsnx.Graph.prototype.edges = function(nbunch, data) {
-    return goog.iter.toArray(this.edges_iter(nbunch, data));
+jsnx.classes.Graph.prototype.edges = function(opt_nbunch, opt_data) {
+    return jsnx.helper.toArray(this.edges_iter(opt_nbunch, opt_data));
 };
 
 
@@ -647,36 +686,38 @@ jsnx.Graph.prototype.edges = function(nbunch, data) {
  *
  * Note: Nodes in nbunch that are not in the graph will be (quietly) ignored.
  *
- * @param {*} nbunch A container of nodes.  The container will be iterated
- *      through once.
- * @param {boolean} data Return two tuples (u,v) (False) or three-tuples (u,v,data) (True).
+ * @param {jsnx.NodeContainer=} opt_nbunch A container of nodes.
+ *      The container will be iterated through once.
+ * @param {boolean=} opt_data Return two tuples (u,v) (False)
+ *      or three-tuples (u,v,data) (True).
  *
- * @return {Array} list of edge tuples
+ * @return {!goog.iter.Iterator} list of edge tuples
  *      Edges that are adjacent to any node in nbunch, or a list
  *      of all edges if nbunch is not specified.
  * @export
  */
-jsnx.Graph.prototype.edges_iter = function(nbunch, data) {
+jsnx.classes.Graph.prototype.edges_iter = function(opt_nbunch, opt_data) {
 
-    if(goog.isBoolean(nbunch)) { // handle calls with data being the only argument
-        data = nbunch;
-        nbunch = null;
+    // handle calls with data being the only argument
+    if (goog.isBoolean(opt_nbunch)) {
+        opt_data = opt_nbunch;
+        opt_nbunch = null;
     }
 
     var seen = {}, // helper dict to keep track of multiply stored edges
         iterator,
         nodes_nbrs, n;
 
-    if(!goog.isDefAndNotNull(nbunch)) {
-        nodes_nbrs = jsnx.helper.iteritems(this.adj);
+    if (!goog.isDefAndNotNull(opt_nbunch)) {
+        nodes_nbrs = jsnx.helper.iteritems(this['adj']);
     }
     else {
-        nodes_nbrs = jsnx.helper.map(this.nbunch_iter(nbunch), function(n) {
-            return [n, this.adj[n]];
+        nodes_nbrs = jsnx.helper.map(this.nbunch_iter(opt_nbunch), function(n) {
+            return [n, this['adj'][n]];
         }, this);
     }
 
-    if(data) {
+    if (opt_data) {
         iterator = jsnx.helper.nested_chain(nodes_nbrs, function(nd) {
             n = nd[0];
 
@@ -687,9 +728,10 @@ jsnx.Graph.prototype.edges_iter = function(nbunch, data) {
                 try {
                     return iterable.next();
                 }
-                catch(e) {
-                    if(e === goog.iter.StopIteration) {
-                        seen[n] = 1; // mark n as seen after iterating over all neighbors
+                catch (e) {
+                    if (e === goog.iter.StopIteration) {
+                        // mark n as seen after iterating over all neighbors
+                        seen[n] = 1;
                     }
                     throw e;
                 }
@@ -697,7 +739,7 @@ jsnx.Graph.prototype.edges_iter = function(nbunch, data) {
 
             return iterator;
         }, function(nbrd) {
-            if(!goog.object.containsKey(seen, nbrd[0])) {
+            if (!goog.object.containsKey(seen, nbrd[0])) {
                 return [n, nbrd[0], nbrd[1]];
             }
         });
@@ -712,9 +754,10 @@ jsnx.Graph.prototype.edges_iter = function(nbunch, data) {
                 try {
                     return iterable.next();
                 }
-                catch(e) {
-                    if(e === goog.iter.StopIteration) {
-                        seen[n] = 1; // mark n as seen after iterating over all neighbors
+                catch (e) {
+                    if (e === goog.iter.StopIteration) {
+                        // mark n as seen after iterating over all neighbors
+                        seen[n] = 1;
                     }
                     throw e;
                 }
@@ -722,7 +765,7 @@ jsnx.Graph.prototype.edges_iter = function(nbunch, data) {
 
             return iterator;
         }, function(nbr) {
-            if(!goog.object.containsKey(seen, nbr)) {
+            if (!goog.object.containsKey(seen, nbr)) {
                 return [n, nbr];
             }
         });
@@ -735,22 +778,24 @@ jsnx.Graph.prototype.edges_iter = function(nbunch, data) {
 /**
  * Return the attribute dictionary associated with edge (u,v).
  *
- * @param {jsnx.Node} u node
- * @param {jsnx.Node} v node
- * @param {*} deflt (default=null) Value to return if the edge (u,v) is not found.
+ * @param {!jsnx.Node} u Node.
+ * @param {!jsnx.Node} v Node.
+ * @param {*=} opt_default (default=null)
+ *      Value to return if the edge (u,v) is not found.
  *
- * @return {Object} The edge attribute dictionary.
+ * @return {!Object} The edge attribute dictionary.
  * @export
  */
-jsnx.Graph.prototype.get_edge_data = function(u, v, deflt) {
-    if(!goog.isDef(deflt)) {
-        deflt = null;
+jsnx.classes.Graph.prototype.get_edge_data = function(u, v, opt_default) {
+    if (!goog.isDef(opt_default)) {
+        opt_default = null;
     }
 
-    if(goog.object.containsKey(this.adj, u)) {
-        return goog.object.get(this.adj[u], v, deflt);
+    if (goog.object.containsKey(this['adj'], u)) {
+        return goog.object.get(this['adj'][u], v, opt_default);
     }
-    return deflt;
+
+    return opt_default;
 };
 
 
@@ -760,9 +805,11 @@ jsnx.Graph.prototype.get_edge_data = function(u, v, deflt) {
  * The output adjacency list is in the order of G.nodes().
  * For directed graphs, only outgoing adjacencies are included.
  *
- * @return {Array.<Array>} The adjacency structure of the graph as a list of lists.
+ * @return {!Array.<Array>} The adjacency structure of the graph as a
+ *      list of lists.
+ * @export
  */
-jsnx.Graph.prototype.adjacency_list = function() {
+jsnx.classes.Graph.prototype.adjacency_list = function() {
     return jsnx.helper.toArray(jsnx.helper.map(this.adjacency_iter(), function(nd) {
         return goog.object.getKeys(nd[1]);
     }));
@@ -772,15 +819,13 @@ jsnx.Graph.prototype.adjacency_list = function() {
 /**
  * Return an iterator of (node, adjacency dict) tuples for all nodes.
  *
- * Since JavaScript does not provide iterators, this method returns
- * an array of (node, adjacency dict) tuples.
  *
- * @return {Array} An array of (node, adjacency dictionary) for all nodes in
- *      the graph.
+ * @return {!goog.iter.Iterator} An array of (node, adjacency dictionary)
+ *      for all nodes in the graph.
  * @export
  */
-jsnx.Graph.prototype.adjacency_iter = function() {
-    return jsnx.helper.iteritems(this.adj);
+jsnx.classes.Graph.prototype.adjacency_iter = function() {
+    return jsnx.helper.iteritems(this['adj']);
 };
 
 
@@ -793,25 +838,27 @@ jsnx.Graph.prototype.adjacency_iter = function() {
  * name could be equal to a node name, nbunch as to be set to null explicitly
  * to use the second argument as weight attribute name.
  *
- * @param {*} nbunch (default=all nodes)
+ * @param {jsnx.NodeContainer=} opt_nbunch (default=all nodes)
  *      A container of nodes.  The container will be iterated
  *      through once.
  *
- * @param {string} weight (default=None)
- *      The edge attribute that holds the numerical value used 
+ * @param {string=} opt_weight (default=None)
+ *      The edge attribute that holds the numerical value used
  *      as a weight.  If null or not defined, then each edge has weight 1.
  *      The degree is the sum of the edge weights adjacent to the node.
  *
- * @return {(number|Object)} A dictionary with nodes as keys and degree as values or
- *      a number if a single node is specified.
+ * @return {(number|!Object)} A dictionary with nodes as keys and degree as
+ * values or a number if a single node is specified.
  * @export
  */
-jsnx.Graph.prototype.degree = function(nbunch, weight) {
-    if(this.has_node(nbunch)) { // return a single node
-        return this.degree_iter(nbunch, weight).next()[1];
+jsnx.classes.Graph.prototype.degree = function(opt_nbunch, opt_weight) {
+    if (this.has_node(opt_nbunch)) { // return a single node
+        return this.degree_iter(opt_nbunch, opt_weight).next()[1];
     }
     else {
-        return jsnx.helper.objectFromKeyValues(goog.iter.toArray(this.degree_iter(nbunch, weight)));
+        return jsnx.helper.objectFromKV(
+            goog.iter.toArray(this.degree_iter(opt_nbunch, opt_weight))
+        );
     }
 };
 
@@ -819,47 +866,56 @@ jsnx.Graph.prototype.degree = function(nbunch, weight) {
 /**
  * Return an array for (node, degree).
  *
+ *
+ * @param {jsnx.NodeContainer=} opt_nbunch (default=all nodes)
+ *       A container of nodes.  The container will be iterated
+ *       through once.
+ * @param {string=} opt_weight (default=None)
+ *      The edge attribute that holds the numerical value used
+ *      as a weight.  If null or not defined, then each edge has weight 1.
+ *      The degree is the sum of the edge weights adjacent to the node.
+ *
  * WARNING: Since both parameters are optional, and the weight attribute
  * name could be equal to a node name, nbunch as to be set to null explicitly
  * to use the second argument as weight attribute name.
  *
- * @param {*} nbunch (default=all nodes)
- *       A container of nodes.  The container will be iterated
- *       through once.
- * @param {string} weight (default=None)
- *      The edge attribute that holds the numerical value used 
- *      as a weight.  If null or not defined, then each edge has weight 1.
- *      The degree is the sum of the edge weights adjacent to the node.
+ * @return {goog.iter.Iterator} of two-tuples of (node, degree).
  *
- * @return {Array} of two-tuples of (node, degree)
  * @export
  */
-jsnx.Graph.prototype.degree_iter = function(nbunch, weight) {
+jsnx.classes.Graph.prototype.degree_iter = function(opt_nbunch, opt_weight) {
     var nodes_nbrs,
         iterator;
 
-    if(!goog.isDefAndNotNull(nbunch)) {
-        nodes_nbrs = jsnx.helper.iteritems(this.adj);
+    if (!goog.isDefAndNotNull(opt_nbunch)) {
+        nodes_nbrs = jsnx.helper.iteritems(this['adj']);
     }
     else {
-        nodes_nbrs = jsnx.helper.map(this.nbunch_iter(nbunch), function(n) {
-            return [n, this.adj[n]];
+        nodes_nbrs = jsnx.helper.map(this.nbunch_iter(opt_nbunch), function(n) {
+            return [n, this['adj'][n]];
         }, this);
     }
 
-    if(!weight) {
+    if (!opt_weight) {
         iterator = jsnx.helper.map(nodes_nbrs, function(nd) {
-            return [nd[0], goog.object.getCount(nd[1]) + (+goog.object.containsKey(nd[1], nd[0]))];
+            return [nd[0], goog.object.getCount(nd[1]) +
+                (+goog.object.containsKey(nd[1], nd[0]))];
         });
     }
     else {
         iterator = jsnx.helper.map(nodes_nbrs, function(nd) {
             var n = nd[0],
-                nbrs = nd[1];
+                nbrs = nd[1],
+                sum = 0, nbr;
 
-            return [n, goog.iter.reduce(jsnx.helper.iter(nbrs), function(cv, nbr) {
-                return cv + goog.object.get(nbrs[nbr], weight, 1);
-            }, 0) + (+(goog.object.containsKey(nbrs, n) && goog.object.get(nbrs[n], weight, 1)))];
+            for(nbr in nbrs) {
+                sum += +goog.object.get(nbrs[nbr], opt_weight, 1);
+            }
+
+            sum += +(goog.object.containsKey(nbrs, n) &&
+                     goog.object.get(nbrs[n], opt_weight, 1));
+
+            return [n, sum];
         });
     }
 
@@ -871,13 +927,14 @@ jsnx.Graph.prototype.degree_iter = function(nbunch, weight) {
  * Remove all nodes and edges from the graph.
  *
  * This also removes the name, and all graph, node, and edge attributes.
+ *
  * @export
  */
-jsnx.Graph.prototype.clear = function() {
+jsnx.classes.Graph.prototype.clear = function() {
     this.name('');
-    goog.object.clear(this.adj);
-    goog.object.clear(this.node);
-    goog.object.clear(this.graph);
+    goog.object.clear(this['adj']);
+    goog.object.clear(this['node']);
+    goog.object.clear(this['graph']);
 };
 
 
@@ -887,29 +944,21 @@ jsnx.Graph.prototype.clear = function() {
  * This makes a complete copy of the graph including all of the
  * node or edge attributes.
  *
- * @return {jsnx.Graph}
+ * @return {!jsnx.Graph}
  * @export
  */
-jsnx.Graph.prototype.copy = function() {
-    var G = new jsnx.Graph();
-
-    G.name(this.name());
-    G.graph = jsnx.helper.deepcopy(this.graph);
-    G.node = jsnx.helper.deepcopy(this.node);
-    G.adj = jsnx.helper.deepcopy(this.adj);
-    G.edge = G.adj;
-
-    return G;
+jsnx.classes.Graph.prototype.copy = function() {
+    return jsnx.helper.deepcopy_instance(this); 
 };
 
 
 /**
  * Return True if graph is a multigraph, False otherwise.
  *
- * @return {boolean}
+ * @return {boolean} True if graph is a multigraph, False otherwise.
  * @export
  */
-jsnx.Graph.prototype.is_multigraph = function() {
+jsnx.classes.Graph.prototype.is_multigraph = function() {
     return false;
 };
 
@@ -917,10 +966,10 @@ jsnx.Graph.prototype.is_multigraph = function() {
 /**
  * Return True if graph is directed, False otherwise.
  *
- * @return {boolean}
+ * @return {boolean}  True if graph is directed, False otherwise.
  * @export
  */
-jsnx.Graph.prototype.is_directed = function() {
+jsnx.classes.Graph.prototype.is_directed = function() {
     return false;
 };
 
@@ -935,12 +984,12 @@ jsnx.Graph.prototype.is_directed = function() {
  * This is in contrast to the similar D=DiGraph(G) which returns a
  * shallow copy of the data.
  *
- * @return {jsnx.DiGraph}
+ * @return {!jsnx.DiGraph}
  * @export
  */
-jsnx.Graph.prototype.to_directed = function() {
-    var G = new jsnx.DiGraph();
-    G.name(this.name());
+jsnx.classes.Graph.prototype.to_directed = function() {
+    var G = new jsnx.classes.DiGraph();
+    G['name'](this.name());
     G.add_nodes_from(this);
     G.add_edges_from((function() {
         var u;
@@ -951,8 +1000,8 @@ jsnx.Graph.prototype.to_directed = function() {
             return [u, nbr[0], jsnx.helper.deepcopy(nbr[1])];
         });
     }.call(this)));
-    G.graph = jsnx.helper.deepcopy(this.graph);
-    G.node = jsnx.helper.deepcopy(this.node);
+    G['graph'] = jsnx.helper.deepcopy(this['graph']);
+    G['node'] = jsnx.helper.deepcopy(this['node']);
 
     return G;
 };
@@ -960,7 +1009,7 @@ jsnx.Graph.prototype.to_directed = function() {
 
 /**
  * Return an undirected copy of the graph.
- * 
+ *
  * This returns a "deepcopy" of the edge, node, and
  * graph attributes which attempts to completely copy
  * all of the data and references.
@@ -968,12 +1017,12 @@ jsnx.Graph.prototype.to_directed = function() {
  * This is in contrast to the similar G=DiGraph(D) which returns a
  * shallow copy of the data.
  *
- * @return {jsnx.Graph}
+ * @return {!jsnx.Graph}
  * @export
  */
-jsnx.Graph.prototype.to_undirected = function() {
-    var G = new jsnx.Graph();
-    G.name(this.name());
+jsnx.classes.Graph.prototype.to_undirected = function() {
+    var G = new jsnx.classes.Graph();
+    G['name'](this.name());
     G.add_nodes_from(this);
     G.add_edges_from((function() {
         var u;
@@ -984,8 +1033,8 @@ jsnx.Graph.prototype.to_undirected = function() {
             return [u, nbr[0], jsnx.helper.deepcopy(nbr[1])];
         });
     }.call(this)));
-    G.graph = jsnx.helper.deepcopy(this.graph);
-    G.node = jsnx.helper.deepcopy(this.node);
+    G['graph'] = jsnx.helper.deepcopy(this['graph']);
+    G['node'] = jsnx.helper.deepcopy(this['node']);
 
     return G;
 };
@@ -1008,32 +1057,32 @@ jsnx.Graph.prototype.to_undirected = function() {
  * G.subgraph(nbunch).copy()
  *
  * For an inplace reduction of a graph to a subgraph you can remove nodes:
- * G.remove_nodes_from(jsnx.array.filter(G.nodes(), function(n) { return jsnx.array.contains(nbunch, n); }))
+ * G.remove_nodes_from(jsnx.array.filter(G.nodes(), function(n) {
+ *      return jsnx.array.contains(nbunch, n);
+ * }))
  *
- * @param {*} nbunch A container of nodes which will be iterated through once.
+ * @param {jsnx.NodeContainer} nbunch
+ *      A container of nodes which will be iterated through once.
  *
  * @return {jsnx.Graph}
  * @export
  */
-jsnx.Graph.prototype.subgraph = function(nbunch) {
+jsnx.classes.Graph.prototype.subgraph = function(nbunch) {
     var bunch = this.nbunch_iter(nbunch);
 
     // create new graph and copy subgraph into it
     var H = new this.constructor();
     // namespace shortcuts for speed
-    var H_adj = H.adj;
-    var this_adj = this.adj;
+    var H_adj = H['adj'];
+    var this_adj = this['adj'];
 
     // add nodes and edges (undirected method)
     jsnx.helper.forEach(bunch, function(n) {
         var Hnbrs = {};
         H_adj[n] = Hnbrs;
 
-        jsnx.helper.forEach(jsnx.helper.items(this_adj[n]), function(nbrd) {
-            var nbr = nbrd[0],
-                d = nbrd[1];
-
-            if(goog.object.containsKey(H_adj, nbr)) {
+        goog.object.forEach(this_adj[n], function(d, nbr) {
+            if (goog.object.containsKey(H_adj, nbr)) {
                 // add both representations of edge: n-br and nbr-n
                 Hnbrs[nbr] = d;
                 H_adj[nbr][n] = d;
@@ -1043,9 +1092,9 @@ jsnx.Graph.prototype.subgraph = function(nbunch) {
 
     // copy node and attribute dictionaries
     jsnx.helper.forEach(H, function(n) {
-        H.node[n] = this.node[n];
+        H['node'][n] = this['node'][n];
     }, this);
-    H.graph = this.graph;
+    H['graph'] = this['graph'];
 
     return H;
 };
@@ -1056,15 +1105,16 @@ jsnx.Graph.prototype.subgraph = function(nbunch) {
  * A node with a self loop has an edge with both ends adjacent
  * to that node.
  *
- * @return {Array} A lost of nodes with self loops.
+ * @return {Array.<string>} A list of nodes with self loops.
  * @export
  */
-jsnx.Graph.prototype.nodes_with_selfloops = function() {
-    return goog.array.map(goog.array.filter(jsnx.helper.items(this.adj), function(nd) {
-        return goog.object.containsKey(nd[1], nd[0]);
-    }), function(nd) {
-        return nd[0];
-    });
+jsnx.classes.Graph.prototype.nodes_with_selfloops = function() {
+    return goog.array.map(
+        goog.array.filter(jsnx.helper.items(this['adj']), function(nd) {
+            return goog.object.containsKey(nd[1], nd[0]);
+        }), function(nd) {
+            return nd[0];
+        });
 };
 
 
@@ -1073,28 +1123,30 @@ jsnx.Graph.prototype.nodes_with_selfloops = function() {
  *
  * A selfloop edge has the same node at both ends.
  *
- * @param {boolean} data (default=False)
+ * @param {boolean=} opt_data (default=False)
  *      Return selfloop edges as two tuples (u,v) (data=False)
- *      or three-tuples (u,v,data) (data=True)
+ *      or three-tuples (u,v,data) (data=True).
  *
- * @return {Array}  A list of all selfloop edges.
+ * @return {Array.<Array.<string>>}  A list of all selfloop edges.
  * @export
  */
-jsnx.Graph.prototype.selfloop_edges = function(data) {
-    if(data) {
-        return goog.array.map(goog.array.filter(jsnx.helper.items(this.adj), function(nd) {
-            return goog.object.containsKey(nd[1], nd[0]);
-        }), function(nd) {
-            var n = nd[0], nbrs = nd[1];
-            return [n, n, nbrs[n]];
-        });
+jsnx.classes.Graph.prototype.selfloop_edges = function(opt_data) {
+    if (opt_data) {
+        return goog.array.map(
+            goog.array.filter(jsnx.helper.items(this['adj']), function(nd) {
+                return goog.object.containsKey(nd[1], nd[0]);
+            }), function(nd) {
+                var n = nd[0], nbrs = nd[1];
+                return [n, n, nbrs[n]];
+            });
     }
     else {
-        return goog.array.map(goog.array.filter(jsnx.helper.items(this.adj), function(nd) {
-            return goog.object.containsKey(nd[1], nd[0]);
-        }), function(nd) {
-            return [nd[0], nd[0]];
-        });
+        return goog.array.map(goog.array.filter(
+            jsnx.helper.items(this['adj']), function(nd) {
+                return goog.object.containsKey(nd[1], nd[0]);
+            }), function(nd) {
+                return [nd[0], nd[0]];
+            });
     }
 };
 
@@ -1107,7 +1159,7 @@ jsnx.Graph.prototype.selfloop_edges = function(data) {
  * @return {number} The number of selfloops.
  * @export
  */
-jsnx.Graph.prototype.number_of_selfloops = function() {
+jsnx.classes.Graph.prototype.number_of_selfloops = function() {
     return this.selfloop_edges.length;
 };
 
@@ -1115,18 +1167,16 @@ jsnx.Graph.prototype.number_of_selfloops = function() {
 /**
  * Return the number of edges.
  *
- * @param {string} weight The edge attribute that holds the numerical value used 
- * as a weight.  If not defined, then each edge has weight 1.
+ * @param {string=} opt_weight The edge attribute that holds the numerical
+ *      value used as a weight.  If not defined, then each edge has weight 1.
  *
  * @return {number} The number of edges of sum of edge weights in the graph.
  * @export
  */
-jsnx.Graph.prototype.size = function(weight) {
-    var s = goog.array.reduce(goog.object.getValues(this.degree(weight)), function(a, b) {
-        return a + b;
-    }, 0) / 2;
+jsnx.classes.Graph.prototype.size = function(opt_weight) {
+    var s = goog.math.sum.apply(null, goog.object.getValues(this.degree(opt_weight))) / 2;
 
-    if(!goog.isDefAndNotNull(weight)) {
+    if (!goog.isDefAndNotNull(opt_weight)) {
         return Math.floor(s); // int(s)
     }
     else {
@@ -1138,20 +1188,21 @@ jsnx.Graph.prototype.size = function(weight) {
 /**
  * Return the number of edges between two nodes.
  *
- * @param {jsnx.Node} u node
- * @param {jsnx.Node} v node 
+ * @param {jsnx.Node} u node.
+ * @param {jsnx.Node} v node
  *       If u and v are specified, return the number of edges between
  *       u and v. Otherwise return the total number of all edges.
  *
- * @return {number} The number of edges in the graph.  If nodes u and v are specified
- *      return the number of edges between those nodes.
+ * @return {number} The number of edges in the graph.
+ *      If nodes u and v are specified return the number of edges between
+ *      those nodes.
  * @export
  */
-jsnx.Graph.prototype.number_of_edges = function(u, v) {
-    if(!goog.isDefAndNotNull(u)) {
+jsnx.classes.Graph.prototype.number_of_edges = function(u, v) {
+    if (!goog.isDefAndNotNull(u)) {
         return Math.floor(this.size());
     }
-    if(goog.object.containsKey(this.adj[u], v)) {
+    if (goog.object.containsKey(this['adj'][u], v)) {
         return 1;
     }
     else {
@@ -1166,49 +1217,55 @@ jsnx.Graph.prototype.number_of_edges = function(u, v) {
  * The first node in nodes is the middle of the star.  It is connected
  * to all other nodes.
  *
- * @param {*} nodes A container of nodes.
- * @param {Object} attr  Attributes to add to every edge in star.
+ * @param {jsnx.NodeContainer} nodes A container of nodes.
+ * @param {Object=} opt_attr  Attributes to add to every edge in star.
  * @export
  */
-jsnx.Graph.prototype.add_star = function(nodes, attr) {
+jsnx.classes.Graph.prototype.add_star = function(nodes, opt_attr) {
     var nlist = jsnx.helper.toArray(nodes),
         v = nlist[0],
         edges = jsnx.helper.map(goog.array.slice(nlist, 1), function(n) {
            return [v, n];
         });
-    this.add_edges_from(edges, attr);
-}; 
+    this.add_edges_from(edges, opt_attr);
+};
 
 
 /**
  * Add a path.
  *
- * @param {*} nodes A container of nodes.  A path will be constructed from
- *      the nodes (in order) and added to the graph.
- * @param {Object} attr Attributes to add to every edge in path.
+ * @param {jsnx.NodeContainer} nodes A container of nodes.
+ *      A path will be constructed from the nodes (in order)
+ *      and added to the graph.
+ * @param {Object=} opt_attr Attributes to add to every edge in path.
  * @export
  */
-jsnx.Graph.prototype.add_path = function(nodes, attr) {
+jsnx.classes.Graph.prototype.add_path = function(nodes, opt_attr) {
     var nlist = jsnx.helper.toArray(nodes),
-        edges = goog.array.zip(goog.array.slice(nlist, 0, nlist.length - 1), 
+        edges = goog.array.zip(goog.array.slice(nlist, 0, nlist.length - 1),
                                goog.array.slice(nlist, 1));
-    this.add_edges_from(edges, attr);
+    this.add_edges_from(edges, opt_attr);
 };
 
 
 /**
  * Add a cycle.
  *
- * @param {*}  A container of nodes.  A cycle will be constructed from
- *      the nodes (in order) and added to the graph.
- * @param {Object} attr  Attributes to add to every edge in cycle.
+ * @param {jsnx.NodeContainer} nodes A container of nodes.
+ *      A cycle will be constructed from the nodes (in order)
+ *      and added to the graph.
+ * @param {Object=} opt_attr  Attributes to add to every edge in cycle.
  * @export
  */
-jsnx.Graph.prototype.add_cycle = function(nodes, attr) {
+jsnx.classes.Graph.prototype.add_cycle = function(nodes, opt_attr) {
     var nlist = jsnx.helper.toArray(nodes),
-        edges = goog.array.zip(nlist, 
-                               goog.array.concat(goog.array.slice(nlist, 1), [nlist[0]]));
-    this.add_edges_from(edges, attr);
+        edges = goog.array.zip(nlist,
+                               goog.array.concat(
+                                   goog.array.slice(nlist, 1),
+                                   [nlist[0]]
+                               )
+                );
+    this.add_edges_from(edges, opt_attr);
 };
 
 
@@ -1230,28 +1287,29 @@ jsnx.Graph.prototype.add_cycle = function(nodes, attr) {
  * If nbunch is not a node or a (possibly empty) sequence/iterator
  * or not defined, an Error is raised.
  *
- * @param {*} nbunch (default=all nodes)
+ * @param {jsnx.NodeContainer=} opt_nbunch (default=all nodes)
  *      A container of nodes.  The container will be iterated
  *      through once.
  *
- * @return  {goog.iter.Iterator} An iterator over nodes in nbunch that are also in the graph.
+ * @return {goog.iter.Iterator} An iterator over nodes in nbunch
+ *      that are also in the graph.
  *      If nbunch is null or not defined, iterate over all nodes in the graph.
  * @export
  */
-jsnx.Graph.prototype.nbunch_iter = function(nbunch) {
+jsnx.classes.Graph.prototype.nbunch_iter = function(opt_nbunch) {
     var bunch;
 
-    if(!goog.isDefAndNotNull(nbunch)) { // include all nodes via iterator
-        bunch = jsnx.helper.iter(this.adj);
+    if (!goog.isDefAndNotNull(opt_nbunch)) { // include all nodes via iterator
+        bunch = jsnx.helper.iter(this['adj']);
     }
-    else if(this.has_node(nbunch)) { // if nbunch is a single node
-        bunch = jsnx.helper.iter([nbunch.toString()]);
+    else if (this.has_node(opt_nbunch)) { // if nbunch is a single node
+        bunch = jsnx.helper.iter([opt_nbunch.toString()]);
     }
     else { // if nbunch is a sequence of nodes
         var bunch_iter = function(nlist, adj) {
             var iterator = new goog.iter.Iterator(),
                 iterable = jsnx.helper.nested_chain(nlist, function(n) {
-                    if(goog.object.containsKey(adj, n)) {
+                    if (goog.object.containsKey(adj, n)) {
                         return n.toString(); // fix mismatch of numbers and strings
                     }
                 });
@@ -1260,10 +1318,12 @@ jsnx.Graph.prototype.nbunch_iter = function(nbunch) {
                 try {
                     return iterable.next();
                 }
-                catch(e) {
+                catch (e) {
                     // capture error for non-sequence/iterator nbunch.
-                    if(e instanceof TypeError) {
-                        throw new jsnx.exception.JSNetworkXError('nbunch is not a node or a sequence of nodes');
+                    if (e instanceof TypeError) {
+                        throw new jsnx.exception.JSNetworkXError(
+                            'nbunch is not a node or a sequence of nodes'
+                        );
                     }
                     throw e;
                 }
@@ -1271,7 +1331,7 @@ jsnx.Graph.prototype.nbunch_iter = function(nbunch) {
             return iterator;
         };
 
-        bunch = bunch_iter(nbunch, this.adj);
+        bunch = bunch_iter(opt_nbunch, this['adj']);
     }
     return bunch;
 };

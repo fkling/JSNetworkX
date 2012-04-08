@@ -1,17 +1,12 @@
 /*global describe:true, it:true, expect:true, goog: true, jsnx:true*/
-/*jshint iterator:true*/
 "use strict";
 
 describe('Helper', function() {
 
-    var helper = jsnx.helper,
-        isIterator = function(iter) {
-            return iter instanceof goog.iter.Iterator || goog.isFunction(iter.__iterator__);
-        };
-
+    var helper = jsnx.helper;
 
     it('Creates object from key value pairs', function() {
-        var obj = helper.objectFromKeyValues([['foo', 5], [10, [1,2]]]);
+        var obj = helper.objectFromKV([['foo', 5], [10, [1,2]]]);
 
         expect(obj).toEqual({foo: 5, 10: [1,2]});
     });
@@ -30,9 +25,9 @@ describe('Helper', function() {
         var obj = {foo: 5, bar: [1,2], 5: 42},
             iter = helper.iteritems(obj);
 
-        expect(isIterator(iter)).toBeTruthy();
+        expect(helper.isIterator(iter)).toBeTruthy();
 
-        var kv = goog.iter.toArray(iter);
+        var kv = helper.toArray(iter);
 
         expect(kv.length === 3).toBeTruthy();
         expect(kv).toContain(['foo', 5]);
@@ -47,18 +42,18 @@ describe('Helper', function() {
                     [4,5,6]
                 ],
                 [
-                    goog.iter.toIterator(['a', 'b'])
+                    helper.iter(['a', 'b'])
                 ]
             ],
             iter = helper.nested_chain(iters, function(val) {
-                return goog.iter.toIterator(val);
+                return helper.iter(val);
             }, function(val) {
-                 return goog.iter.toIterator(val);
+                 return helper.iter(val);
             }, function(val) {
                 return val;
             });
 
-        var kv = goog.iter.toArray(iter);
+        var kv = helper.toArray(iter);
 
         expect(kv).toEqual([1,2,3,4,5,6, 'a', 'b']);
     });
@@ -70,27 +65,27 @@ describe('Helper', function() {
                     [4,5,6]
                 ],
                 [
-                    goog.iter.toIterator(['a', 'b'])
+                    helper.iter(['a', 'b'])
                 ]
             ],
             iter = helper.nested_chain(iters, function(val) {
-                return goog.iter.toIterator(val);
+                return helper.iter(val);
             },function(val) {
-                return goog.iter.toIterator(val);
+                return helper.iter(val);
             }, function(val) {
                 if(goog.isNumber(val) && val % 2 === 0) {
                     return val;
                 }
             });
 
-        var kv = goog.iter.toArray(iter);
+        var kv = helper.toArray(iter);
 
         expect(kv).toEqual([2,4,6]);
     });
 
 
     it('Prevents iterator from throwing an execption when reaching the end', function() {
-        var iter = helper.sentinelIterator(new goog.iter.Iterator(), null);
+        var iter = helper.sentinelIterator(new helper.iter([]), null);
 
         expect(iter.next()).toEqual(null);
     });
@@ -119,29 +114,56 @@ describe('Helper', function() {
         expect(copy[2]).toBe(copy);
     });
 
+    it('Deepcopy an instance of a constructor function', function() {
+        var Constr = function() {
+            this.foo = [1,2];
+            this.bar = ['bar', this.foo];
+        };
+
+        Constr.prototype.baz = [1,2];
+
+        var inst = new Constr();
+
+        var copy = helper.deepcopy_instance(inst);
+
+        expect(copy).toEqual(inst);
+        expect(copy).not.toBe(inst);
+        expect(copy.foo).not.toBe(inst.foo);
+        expect(copy.foo).toBe(copy.bar[1]);
+        expect(copy.baz).toBe(inst.baz);
+        expect(copy.constructor).toBe(inst.constructor);
+    });
+
+
     //TODO: write tests for isIterable and len
     
     describe('forEach', function() {
 
         it('Iterates over arrays', function() {
-            var arr = [1,2,3];
+            var arr = [1,2,3],
+                result = [];
 
-            helper.forEach(arr, function(val, i) {
-                expect(val).toEqual(arr[i]);
+            helper.forEach(arr, function(val) {
+                result.push(val);
             });
+
+            expect(result).toEqual(arr);
         });
 
         it('Iterates over array like objects', function() {
-            var arr = {0: 1, 1: 10, length: 2};
+            var arr = {0: 1, 1: 10, length: 2},
+                result = [];
 
             helper.forEach(arr, function(val, i) {
-                expect(val).toEqual(arr[i]);
+                result.push(val);
             });
+
+            expect(result).toEqual(arr);
         });
 
         it('Iterates over iterators', function() {
             var arr = [10, 15, 20],
-                iter = goog.iter.toIterator(arr),
+                iter = helper.iter(arr),
                 result = [];
 
             helper.forEach(iter, function(val) {
@@ -150,6 +172,42 @@ describe('Helper', function() {
 
             expect(result).toEqual(arr);
         });
+
+        it('Iterates over object keys', function() {
+            var obj = {foo: 5, bar: 10},
+                result = [];
+
+            helper.forEach(obj, function(val) {
+                result.push(val);    
+            });
+
+            expect(result).toEqual(goog.object.getKeys(obj));
+        });
+
+        
+        it('Iterats over arrays 2', function() {
+            var arr = [[1,2], [3,4]],
+                result = [];
+
+            helper.forEach(arr, function(val) {
+                result.push(val);
+            });
+
+            expect(result).toEqual(arr);
+        });
+
+
+        it('Expands elements that are arrays', function() {
+            var arr = [[1,2], [3,4]],
+                result = [];
+
+            helper.forEach(arr, function(a, b) {
+                result.push(a, b);
+            }, true);
+
+            expect(result).toEqual([1,2,3,4]);
+        });
+
     });
 
     describe('map', function() {
@@ -187,17 +245,68 @@ describe('Helper', function() {
         
         it('Maps iterators', function() {
             var arr = [1, 2, 3],
-                iter = goog.iter.toIterator(arr);
+                iter = helper.iter(arr);
 
 
             var result = helper.map(iter, function(val) {
                 return val * 2;    
             });
 
-            expect(isIterator(result)).toBeTruthy();
-            expect(goog.iter.toArray(result)).toEqual([2, 4, 6]);
+            expect(helper.isIterator(result)).toBeTruthy();
+            expect(helper.toArray(result)).toEqual([2, 4, 6]);
         });
     });
+
+
+    describe('zip', function() {
+
+        it('Zip arrays', function() {
+            var arr1 = [1,2,3],
+                arr2 = [4,5,6];
+
+            var result = helper.zip (arr1, arr2);
+            expect(result).toEqual([[1,4], [2,5], [3,6]]);
+        });
+
+        it('Zips array like objects', function() {
+            var arr1 = {0: 1, 1: 10, length: 2},
+                arr2 = {0: 2, 1: 20, length: 2};
+
+            var result = helper.zip (arr1, arr2);
+            expect(result).toEqual([[1,2], [10,20]]);
+        });
+
+        it('Zips objects', function() {
+            var obj1 = {foo: 5, bar: 10},
+                obj2 = {baz: 10, faz: 20};
+
+            var result = helper.zip(obj1, obj2);
+            expect(result).toEqual([['foo', 'baz'], ['bar', 'faz']]);
+        });
+
+        
+        it('Zips iterators', function() {
+            var arr = [1, 2, 3],
+                iter1 = helper.iter(arr),
+                iter2 = helper.iter(arr);
+
+
+            var result = helper.zip(iter1, iter2);
+
+            expect(helper.isIterator(result)).toBeTruthy();
+            expect(helper.toArray(result)).toEqual([[1,1], [2,2], [3,3]]);
+        });
+
+        it('Zip shorter sequence', function() {
+            var arr1 = [1,2,3],
+                arr2 = [4,5];
+
+            var result = helper.zip(arr1, arr2);
+            expect(result).toEqual([[1,4], [2,5]]);
+        });
+
+    });
+
 
     describe('toArray', function() {
 
@@ -223,7 +332,7 @@ describe('Helper', function() {
         
         it('Maps iterators', function() {
             var arr = [1, 2, 3],
-                iter = goog.iter.toIterator(arr);
+                iter = helper.iter(arr);
 
 
             expect(helper.toArray(iter)).toEqual([1, 2, 3]);
@@ -239,11 +348,11 @@ describe('Helper', function() {
             var arr_iter = helper.iter(arr),
                 arr_like_iter = helper.iter(arr_like);
 
-            expect(isIterator(arr_iter)).toBeTruthy();    
-            expect(isIterator(arr_like_iter)).toBeTruthy();    
+            expect(helper.isIterator(arr_iter)).toBeTruthy();    
+            expect(helper.isIterator(arr_like_iter)).toBeTruthy();    
 
-            expect(goog.iter.toArray(arr_iter)).toEqual([1, 2, 3]);
-            expect(goog.iter.toArray(arr_like_iter)).toEqual([1, 2]);
+            expect(helper.toArray(arr_iter)).toEqual([1, 2, 3]);
+            expect(helper.toArray(arr_like_iter)).toEqual([1, 2]);
         });
 
         it('Generates an iterator over keys when given an object', function() {
@@ -251,9 +360,9 @@ describe('Helper', function() {
 
             var iter = helper.iter(obj);
 
-            expect(isIterator(iter)).toBeTruthy();
+            expect(helper.isIterator(iter)).toBeTruthy();
 
-            var kv = goog.iter.toArray(iter); 
+            var kv = helper.toArray(iter); 
 
             expect(kv).toContain('foo');
             expect(kv).toContain('0');

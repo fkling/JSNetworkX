@@ -1,4 +1,6 @@
 /*global goog:true, jsnx:true */
+// "use strict" prevents using goog.base
+/*jshint strict:false */
 
 goog.provide('jsnx.exception');
 
@@ -6,22 +8,27 @@ goog.provide('jsnx.exception');
  * Base class for exceptions in JSNetworkX.
  * @constructor
  */
-jsnx.exception.JSNetworkXException = function() {
-    goog.base(this, arguments);
+jsnx.exception.JSNetworkXException = function(message) {
     this.name = 'JSNetworkXException';
+    this.message = message;
 };
-goog.inherits(jsnx.exception.JSNetworkXException, Error);
+// goog.inherits does not work properly with built in Error function
+// (message is ignored)
+jsnx.exception.JSNetworkXException.prototype = new Error();
+jsnx.exception.JSNetworkXException.prototype.constructor = jsnx.exception.JSNetworkXException;
+goog.exportSymbol('jsnx.JSNetworkXException', jsnx.exception.JSNetworkXException);
 
 
 /**
  * Exception for a serious error in JSNetworkX.
  * @constructor
  */
-jsnx.exception.JSNetworkXError = function() {
-    goog.base(this, arguments);
+jsnx.exception.JSNetworkXError = function(message) {
+    goog.base(this, message);
     this.name = 'JSNetworkXError';
 };
 goog.inherits(jsnx.exception.JSNetworkXError, jsnx.exception.JSNetworkXException);
+goog.exportSymbol('jsnx.JSNetworkXError', jsnx.exception.JSNetworkXError);
 
 /**
  * Harary, F. and Read, R. "Is the Null Graph a Pointless Concept?" 
@@ -29,22 +36,24 @@ goog.inherits(jsnx.exception.JSNetworkXError, jsnx.exception.JSNetworkXException
  * New York: Springer-Verlag, 1973.
  * @constructor
  */
-jsnx.exception.JSNetworkXPointlessConcept = function() {
-    goog.base(this, arguments);
+jsnx.exception.JSNetworkXPointlessConcept = function(message) {
+    goog.base(this, message);
     this.name = 'JSNetworkXPointlessConcept';
 };
 goog.inherits(jsnx.exception.JSNetworkXPointlessConcept, jsnx.exception.JSNetworkXException);
+goog.exportSymbol('jsnx.JSNetworkXPointlessConcept', jsnx.exception.JSNetworkXPointlessConcept);
 
 
 /**
  * Exception for unexpected termination of algorithms.
  * @constructor
  */
-jsnx.exception.JSNetworkXAlgorithmError = function() {
-    goog.base(this, arguments);
+jsnx.exception.JSNetworkXAlgorithmError = function(message) {
+    goog.base(this, message);
     this.name = 'JSNetworkXAlgorithmError';
 };
 goog.inherits(jsnx.exception.JSNetworkXAlgorithmError, jsnx.exception.JSNetworkXException);
+goog.exportSymbol('jsnx.JSNetworkXAlgorithmError', jsnx.exception.JSNetworkXAlgorithmError);
 
 
 /**
@@ -52,11 +61,12 @@ goog.inherits(jsnx.exception.JSNetworkXAlgorithmError, jsnx.exception.JSNetworkX
  * instance that has no feasible solution.
  * @constructor
  */
-jsnx.exception.JSNetworkXUnfeasible = function() {
-    goog.base(this, arguments);
+jsnx.exception.JSNetworkXUnfeasible = function(message) {
+    goog.base(this, message);
     this.name = 'JSNetworkXUnfeasible';
 };
 goog.inherits(jsnx.exception.JSNetworkXUnfeasible, jsnx.exception.JSNetworkXAlgorithmError);
+goog.exportSymbol('jsnx.JSNetworkXUnfeasible', jsnx.exception.JSNetworkXUnfeasible);
 
 
 /**
@@ -64,11 +74,12 @@ goog.inherits(jsnx.exception.JSNetworkXUnfeasible, jsnx.exception.JSNetworkXAlgo
  * on graphs where such a path does not exist.
  * @constructor
  */
-jsnx.exception.JSNetworkXNoPath = function() {
-    goog.base(this, arguments);
+jsnx.exception.JSNetworkXNoPath = function(message) {
+    goog.base(this, message);
     this.name = 'JSNetworkXNoPath';
 };
 goog.inherits(jsnx.exception.JSNetworkXNoPath, jsnx.exception.JSNetworkXUnfeasible);
+goog.exportSymbol('jsnx.JSNetworkXNoPath', jsnx.exception.JSNetworkXNoPath);
 
 
 /**
@@ -76,8 +87,9 @@ goog.inherits(jsnx.exception.JSNetworkXNoPath, jsnx.exception.JSNetworkXUnfeasib
  * or a minimization problem instance that is unbounded.
  * @constructor
  */
-jsnx.exception.JSNetworkXUnbounded = function() {
-    goog.base(this, arguments);
+jsnx.exception.JSNetworkXUnbounded = function(message) {
+    goog.base(this, message);
     this.name = 'JSNetworkXUnbounded';
 };
 goog.inherits(jsnx.exception.JSNetworkXUnbounded, jsnx.exception.JSNetworkXAlgorithmError);
+goog.exportSymbol('jsnx.JSNetworkXUnbounded', jsnx.exception.JSNetworkXUnbounded);

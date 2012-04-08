@@ -1,13 +1,12 @@
-/*global goog:true, jsnx:true*/
 "use strict";
 /**
-  This module provides functions to convert 
-  NetworkX graphs to and from other formats.
-
-  The preferred way of converting data to a NetworkX graph 
-  is through the graph constuctor.  The constructor calls
-  the to_networkx_graph() function which attempts to guess the
-  input type and convert it automatically.
+ * This module provides functions to convert 
+ * NetworkX graphs to and from other formats.
+ *
+ * The preferred way of converting data to a NetworkX graph 
+ * is through the graph constuctor.  The constructor calls
+ * the to_networkx_graph() function which attempts to guess the
+ * input type and convert it automatically.
  */
 
 
@@ -76,12 +75,12 @@ jsnx.convert.to_networkx_graph = function(data, create_using, multigraph_input) 
     // jsnx graph
     if(data.hasOwnProperty('adj')) {
        try {
-            result = jsnx.convert.from_dict_of_dicts(data.adj, create_using, data.is_multigraph());
-            if(goog.object.containsKey(data, 'graph') && goog.typeOf(data.graph) === 'object') {
-                result.graph = goog.object.clone(data.graph);
+            result = jsnx.convert.from_dict_of_dicts(data['adj'], create_using, data.is_multigraph());
+            if(goog.object.containsKey(data, 'graph') && goog.typeOf(data['graph']) === 'object') {
+                result['graph'] = goog.object.clone(data['graph']);
             }
-            if(goog.object.containsKey(data, 'node') && goog.typeOf(data.node) === 'object') {
-                result.node = goog.object.map(data.node, function(element) {
+            if(goog.object.containsKey(data, 'node') && goog.typeOf(data['node']) === 'object') {
+                result['node'] = goog.object.map(data['node'], function(element) {
                     return goog.object.clone(element);
                 });
             }
@@ -117,6 +116,7 @@ jsnx.convert.to_networkx_graph = function(data, create_using, multigraph_input) 
         }
     }
 };
+goog.exportSymbol('jsnx.to_networkx_graph', jsnx.convert.to_networkx_graph);
 
 
 /**
@@ -129,6 +129,7 @@ jsnx.convert.to_networkx_graph = function(data, create_using, multigraph_input) 
 jsnx.convert.convert_to_undirected = function(G) {
     return G.to_undirected();
 };
+goog.exportSymbol('jsnx.convert_to_undirected', jsnx.convert_to_undirected);
 
 
 /**
@@ -140,6 +141,7 @@ jsnx.convert.convert_to_undirected = function(G) {
 jsnx.convert.convert_to_directed = function(G) {
     return G.to_directed();
 };
+goog.exportSymbol('jsnx.convert_to_undirected', jsnx.convert_to_directed);
 
 
 /**
@@ -148,7 +150,7 @@ jsnx.convert.convert_to_directed = function(G) {
  * Completely ignores edge data for MultiGraph and MultiDiGraph.
  *
  * @param {jsnx.Graph} G A jsnx graph
- * @param {Array} nodelist Use only nodes specified in nodelist
+ * @param {goog.iter.Iterable} nodelist Use only nodes specified in nodelist
  *
  * @return {Object.<(string|number), Array>} 
  */
@@ -168,12 +170,14 @@ jsnx.convert.to_dict_of_lists = function(G, nodelist) {
         };
     }
 
-    goog.iter.forEach(nodelist, function(n) {
+    jsnx.helper.forEach(nodelist, function(n) {
         d[n] = goog.array.filter(G.neighbors(n), contains);
     });
 
     return d;
 };
+goog.exportSymbol('jsnx.to_dict_of_lists', jsnx.to_dict_of_lists);
+
 
 /**
  * Return a graph from a dictionary of lists.
@@ -216,6 +220,7 @@ jsnx.convert.from_dict_of_lists = function(d, create_using) {
 
     return G;
 };
+
 
 /**
  * Return adjacency representation of graph as a dictionary of dictionaries.
@@ -278,8 +283,10 @@ jsnx.convert.from_dict_of_lists = function(d, create_using) {
  * Return a graph from a dictionary of dictionaries.
  *
  * @param {Object.<Object>} d A dictionary of dictionaries adjacency representation.
- * @param {jsnx.Graph} create_using Use specified graph for result.  Otherwise a new graph is created.
- * @param {boolean} multigraph_input (default false)  When True, the values of the inner dict are assumed 
+ * @param {jsnx.Graph} create_using Use specified graph for result.  
+ *      Otherwise a new graph is created.
+ * @param {boolean} multigraph_input (default=False)  
+ *      When True, the values of the inner dict are assumed 
  *      to be containers of edge data for multiple edges.
  *      Otherwise this routine assumes the edge data are singletons.
  *
@@ -426,11 +433,13 @@ jsnx.convert.to_edgelist = function(G, nodelist) {
     }
 };
 
+
 /**
  * Return a graph from a list of edges.
  *
  * @param {Array} edgelist Edge tuples 
- * @param {jsnx.Graph} create_using Use specified graph for result.  Otherwise a new graph is created.
+ * @param {jsnx.Graph} create_using Use specified graph for result.  
+ *      Otherwise a new graph is created.
  *
  * @return {jsnx.Graph}
  */

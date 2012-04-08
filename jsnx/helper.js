@@ -1,5 +1,3 @@
-/*global goog:true, jsnx:true*/
-/*jshint iterator:true*/
 "use strict";
 
 goog.provide('jsnx.helper');
@@ -12,41 +10,75 @@ goog.require('goog.iter');
 /**
  * Returns an object, given an array of (key, value) tuples.
  *
- * @param {Array.<Array>} kvs Array of key,value tuples
+ * @param {?.<Array>} kvs Container of key,value tuples
  * 
- * @return {Object}
+ * @return {!Object}
  */
-jsnx.helper.objectFromKeyValues = function(kvs) {
+jsnx.helper.objectFromKV = function(kvs) {
     return goog.iter.reduce(jsnx.helper.iter(kvs), function(obj, kv) {
         obj[kv[0]] = kv[1];
         return obj;
     }, {});
 };
+if(jsnx.TESTING) {
+    goog.exportSymbol('jsnx.helper.objectFromKV', jsnx.helper.objectFromKV);
+}
+
+/**
+ * Returns an object, given an array of keys and an default value.
+ * Like dict.fromkeys in Python.
+ *
+ * @param {?} keys Container of keys
+ * @param {*} opt_value the value, default is null
+ *
+ * @return {!Object}
+ */
+jsnx.helper.fromkeys = function(keys, opt_value) {
+    if(!goog.isDef(opt_value)) {
+        opt_value = null;
+    }
+    var result = {};
+    jsnx.helper.forEach(keys, function(key) {
+        result[key] = opt_value;
+    });
+    return result;
+};
+if(jsnx.TESTING) {
+    goog.exportSymbol('jsnx.helper.fromkeys', jsnx.helper.fromkeys);
+}
+
 
 
 /**
  * Returns true if object is an iterator 
  * 
- * @param {*} iterable
+ * @param {?} obj
  *  
  * @return {boolean}
  */
-jsnx.helper.isIterator = function(iterable) {
-    return iterable instanceof goog.iter.Iterator || goog.isFunction(iterable.__iterator__);
+jsnx.helper.isIterator = function(obj) {
+    return obj instanceof goog.iter.Iterator || goog.isFunction(obj.__iterator__);
 };
+if(jsnx.TESTING) {
+    goog.exportSymbol('jsnx.helper.isIterator', jsnx.helper.isIterator);
+}
 
 
 /**
  * Returns true if object is an container which can be iterated over,
  * i.e. if it is an object, array, array-like object or an iterator.
  * 
- * @param {*} container
+ * @param {?} obj
  *  
  * @return {boolean}
  */
-jsnx.helper.isIterable = function(container) {
-    return goog.typeOf(container) === 'object' || goog.isArrayLike(container) || jsnx.isIterator(container);
+jsnx.helper.isIterable = function(obj) {
+    return goog.typeOf(obj) === 'object' || goog.isArrayLike(obj) || jsnx.isIterator(obj);
 };
+if(jsnx.TESTING) {
+    goog.exportSymbol('jsnx.helper.isIterable', jsnx.helper.isIterable);
+}
+
 
 /**
  * Returns the number of elements in the container. That is 
@@ -70,76 +102,148 @@ jsnx.helper.len = function(obj) {
         throw new TypeError();
     }
 };
+if(jsnx.TESTING) {
+    goog.exportSymbol('jsnx.helper.len', jsnx.helper.len);
+}
 
 
 /**
  * Helper to iterate over sequence types (arrays, array-like objects, objects, etc)
  *
- * @param {*} sequence
+ * @param {!(goog.iter.Iterable|Object)} seq
  * @param {function} callback
- * @param {*} this_obj
+ * @param {*} opt_this_obj
+ * @param {boolean} opt_expand If true, elements of the sequence are expected
+ *      to be array-like and each item in these elements is passed as 
+ *      argument to the callback
  */
-jsnx.helper.forEach = function(sequence, callback, this_obj) {
-    var each = goog.object.forEach;
+jsnx.helper.forEach = function(seq, callback, opt_this_obj, opt_expand) {
 
-    if(goog.isArrayLike(sequence)) {
-        each = goog.array.forEach;
+    // opt_this_obj can be omitted
+    if(goog.isBoolean(opt_this_obj)) { 
+        opt_expand = opt_this_obj;
+        opt_this_obj = null;
     }
 
-    if(jsnx.helper.isIterator(sequence)) {
-        each = goog.iter.forEach;
+    if(opt_expand) {
+        var orig_callback = callback;
+        /** @this opt_this_obj */
+        callback = function(val) {
+            orig_callback.apply(this, val);
+        };
     }
 
-    each(sequence, callback, this_obj);
+    if(jsnx.helper.isIterator(seq)) {
+        goog.iter.forEach(seq, callback, opt_this_obj);
+    }
+    else if(goog.isArrayLike(seq) || goog.isString(seq)) {
+        goog.array.forEach(seq, callback, opt_this_obj);
+    }
+    else if(goog.isObject(seq)) {
+        jsnx.helper.forEach(goog.object.getKeys(seq), callback, opt_this_obj);
+    }
 };
+goog.exportSymbol('jsnx.forEach', jsnx.helper.forEach);
+if(jsnx.TESTING) {
+    goog.exportSymbol('jsnx.helper.forEach', jsnx.helper.forEach);
+}
 
 
 /**
  * Helper to map sequence types (arrays, array-like objects, objects, etc)
  *
- * @param {*} sequence
+ * @param {(goog.iter.Iterable|Object)} sequence
  * @param {function} callback
  * @param {*} this_obj
  *
- * @return {*}
+ * @return {(Array|Object|goog.iter.Iterator)}
  */
 jsnx.helper.map = function(sequence, callback, this_obj) {
-    var map = goog.object.map;
-
     if(goog.isArrayLike(sequence)) {
-        map = goog.array.map;
+         return goog.array.map(sequence, callback, this_obj);
     }
-
-    if(jsnx.helper.isIterator(sequence)) {
-        map = goog.iter.map;
+    else if(jsnx.helper.isIterator(sequence)) {
+        return goog.iter.map(sequence, callback, this_obj);
     }
-
-    return map(sequence, callback, this_obj);
+    else if(goog.isObject(sequence)) {
+        return goog.object.map(sequence, callback, this_obj);
+    }
+    else {
+        throw new TypeError();
+    }
 };
+if(jsnx.TESTING) {
+    goog.exportSymbol('jsnx.helper.map', jsnx.helper.map);
+}
+
+
+/**
+ * Helper to zip sequence types (arrays, array-like objects, objects, etc)
+ *
+ * @param {(goog.iter.Iterable|Object),...} var_args
+ *
+ * @return {(Array|Object|goog.iter.Iterator)}
+ */
+jsnx.helper.zip = function() {
+    var args = arguments,
+        first = args[0];
+    if(goog.isArrayLike(first)) {
+         return goog.array.zip.apply(null, args);
+    }
+    else if(jsnx.helper.isIterator(first)) {
+        var iterator = new goog.iter.Iterator(),
+            l = args.length;
+
+        iterator.next = function() {
+            var next = [];
+            for(var i = 0; i < l; i++) {
+                next.push(args[i].next());
+            }
+            return next;
+        };
+        return iterator;
+    }
+    else if(goog.isObject(first)) {
+        return goog.array.zip.apply(null, 
+                         goog.array.map(args, goog.object.getKeys));
+    }
+    else {
+        throw new TypeError();
+    }
+};
+if(jsnx.TESTING) {
+    goog.exportSymbol('jsnx.helper.zip', jsnx.helper.zip);
+}
 
 
 /**
  * Helper to create an array from sequence types 
  * (arrays, array-like objects, objects, etc)
  *
- * @param {*} sequence
+ * @param {(goog.iter.Iterable|Object)} sequence
  * @param {function} callback
  * @param {*} this_obj
+ *
+ * @return {Array}
  */
 jsnx.helper.toArray = function(sequence) {
-    var toArray = goog.object.getKeys;
-
     if(goog.isArrayLike(sequence)) {
-        toArray = goog.array.toArray;
+         return goog.array.toArray(sequence);
     }
-
-    if(jsnx.helper.isIterator(sequence)) {
-        toArray = goog.iter.toArray;
+    else if(jsnx.helper.isIterator(sequence)) {
+        return goog.iter.toArray(sequence);
     }
-
-    return toArray(sequence);    
+    else if(goog.isObject(sequence)) {
+        return goog.object.getKeys(sequence);
+    }
+    else {
+        throw new TypeError();
+    }
 };
-
+goog.exportSymbol('jsnx.toArray', jsnx.helper.toArray);
+if(jsnx.TESTING) {
+    goog.exportSymbol('jsnx.helper.toArray', jsnx.helper.toArray);
+}
 
 
 /**
@@ -158,14 +262,17 @@ jsnx.helper.items = function(obj) {
 
     return result;
 };
+if(jsnx.TESTING) {
+    goog.exportSymbol('jsnx.helper.items', jsnx.helper.items);
+}
 
 
 /**
- * Provides an equivalent method to dict.items().
+ * Provides an equivalent method to dict.iteritems().
  *
  * @param {Object} obj to extract the key-values from
  *
- * @return {Array.<Array>}
+ * @return {goog.iter.Iterator}
  */
 jsnx.helper.iteritems = function(obj) {
     var iterator = new goog.iter.Iterator(),
@@ -178,29 +285,34 @@ jsnx.helper.iteritems = function(obj) {
 
     return iterator;
 };
+if(jsnx.TESTING) {
+    goog.exportSymbol('jsnx.helper.iteritems', jsnx.helper.iteritems);
+}
 
 
 /**
  * Returns an iterator object for the given array, array-like object
- * or object.
+ * or object. Should behave like Python's iter:
+ * http://docs.python.org/library/functions.html#iter
  *
- * The iterator object implements the goog.iter.Iteror interface.
  *
- * @param {(Array|Object|{length:number)} seq
+ * The iterator object implements the goog.iter.Iterator interface.
  *
- * @return {goog.iter.Iterator)
+ * @param {(Object|goog.iter.Iterable)} seq
+ *
+ * @return {goog.iter.Iterator}
  */
 jsnx.helper.iter = function(seq, f, this_obj) {
-    var iterator = new goog.iter.Iterator(), 
-        counter = 0;
-
-
     if(goog.typeOf(seq) === 'object' && !goog.isArrayLike(seq) && !jsnx.helper.isIterator(seq)) {
-        seq = goog.object.getKeys(seq);
+        seq = goog.object.getKeys(/** @type {Object} */ seq);
     }
  
     return goog.iter.toIterator(seq);
 };
+if(jsnx.TESTING) {
+    goog.exportSymbol('jsnx.helper.iter', jsnx.helper.iter);
+}
+
 
 /**
  * Chains nested iterators.
@@ -259,6 +371,10 @@ jsnx.helper.nested_chain = function(iterable) {
 
     return iterator;
 };
+if(jsnx.TESTING) {
+    goog.exportSymbol('jsnx.helper.nested_chain', jsnx.helper.nested_chain);
+}
+
 
 
 /**
@@ -280,6 +396,11 @@ jsnx.helper.sentinelIterator = function(iterable, sentinel) {
 
     return iterator;
 };
+goog.exportSymbol('jsnx.sentinelIterator', jsnx.helper.sentinelIterator);
+if(jsnx.TESTING) {
+    goog.exportSymbol('jsnx.helper.sentinelIterator', jsnx.helper.sentinelIterator);
+}
+
 
 
 /**
@@ -289,7 +410,7 @@ jsnx.helper.sentinelIterator = function(iterable, sentinel) {
  * This is the same implementation jQuery uses:
  * https://github.com/jquery/jquery/blob/master/src/core.js#L493
  *
- * @param {Object} obj The object to test
+ * @param {*} obj The object to test
  *
  * @return {boolean} True if plain object, else false
  */
@@ -322,12 +443,17 @@ jsnx.helper.isPlainObject = function(obj) {
 
     return key === undefined || hasOwn.call( obj, key );
 };
+if(jsnx.TESTING) {
+    goog.exportSymbol('jsnx.helper.isPlainObject', jsnx.helper.isPlainObject);
+}
 
 
 /**
  * Makes a deepcopy of the provided value, similar to 
  * Pythons deepcopy. That is, an object or array is 
  * only copied once.
+ *
+ * See: http://docs.python.org/library/copy.html#copy.deepcopy
  *
  * Complex object are not copied, unless they defined a
  * clone() method.
@@ -337,17 +463,17 @@ jsnx.helper.isPlainObject = function(obj) {
  * but also works with circular references. Though it 
  * might be slow for large, nested objects. 
  *
- * @param {*} ibj The value to copy.
+ * @param {*} obj The value to copy.
  *
  * @return {*} A copy of the value
  */
-jsnx.helper.deepcopy = function(obj, cloned_) {
-    cloned_ = cloned_ || [];
+jsnx.helper.deepcopy = function(obj, memo_) {
+    memo_ = memo_ || [];
 
     var type = goog.typeOf(obj);
     if (type == 'object' && jsnx.helper.isPlainObject(obj) || type == 'array') {
         // search whether we alrady cloned the object/array
-        var c_ = goog.array.find(cloned_, function(clone) {
+        var c_ = goog.array.find(memo_, function(clone) {
             return obj === clone[0];
         });
         
@@ -357,17 +483,62 @@ jsnx.helper.deepcopy = function(obj, cloned_) {
 
         if (obj.clone) {
             c_ = [obj, obj.clone()];
-            cloned_.push(c_);
+            memo_.push(c_);
             return c_[1];
         }
         var clone = type == 'array' ? [] : {};
         c_ = [obj, clone];
-        cloned_.push(c_);
+        memo_.push(c_);
         for (var key in obj) {
-            clone[key] = jsnx.helper.deepcopy(obj[key], cloned_);
+            clone[key] = jsnx.helper.deepcopy(obj[key], memo_);
         }
         return clone;
     }
 
     return obj;
 };
+if(jsnx.TESTING) {
+    goog.exportSymbol('jsnx.helper.deepcopy', jsnx.helper.deepcopy);
+}
+
+
+/**
+ * Makes a deepcopy of the instance. This means that instance properties
+ * are deepcopied
+ *
+ * @see #deepcopy
+ *
+ * @param {*} obj The value to copy.
+ *
+ * @return {*} A copy of the value
+ */
+jsnx.helper.deepcopy_instance = function(obj) {
+    // temprory constructor, we don't know if the original expects
+    // parameter
+    var T_ = function() {},
+        props = {},
+        prop, inst;
+
+    T_.prototype = obj.constructor.prototype;
+
+    // collect instance properties
+    for(prop in obj) {
+        if(obj.hasOwnProperty(prop)) {
+            props[prop] = obj[prop];
+        }
+    }
+
+    // deepcopy them
+    props = jsnx.helper.deepcopy(props);
+
+    // create a new instance and assigne properties
+    inst = new T_();
+    for(prop in props) {
+       inst[prop] = props[prop];
+    }
+
+    return inst; 
+};
+if(jsnx.TESTING) {
+    goog.exportSymbol('jsnx.helper.deepcopy_instance', jsnx.helper.deepcopy_instance);
+}
