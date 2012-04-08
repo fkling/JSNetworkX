@@ -130,5 +130,9 @@ The code is scattered with using bracket notation to access properties (`foo['ba
 
 ## Build instructions
 
-To build the library on your own you need [`ant`](http://ant.apache.org/). `ant compile` will download all necessary dependencies
-(Closure library and compiler) and compile the files.
+To build the library on your own you need [`ant`](http://ant.apache.org/). `ant compile` will download all necessary dependencies (Closure library and compiler) and compile the files.
+
+To run the tests you have to set the `testing` flag:
+
+    ant compile -Dtesting=true
+
