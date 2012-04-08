@@ -30,6 +30,7 @@
 
     <target name="compile" depends="init,get.closure,get.compiler">
         <exec executable="python" output="${build}/jsnx.js" logError="yes">
+        <exec executable="python" output="${build}/jsnetworkx.js" logError="yes">
             <arg value="${goog}/closure/bin/build/closurebuilder.py" />
             <arg value="--root=${goog}" />
             <arg value="--root=${nx}" />
