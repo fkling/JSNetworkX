@@ -33,26 +33,26 @@ the functions from `networkx.classes.function` are available:
 - `jsnx.Graph`
 - `jsnx.DiGraph`
 - `jsnx.convert_to_undirected`
-- `nodes`
-- `nodes_iter`
-- `edges`
-- `edges_iter`
-- `degree`
-- `neighbors`
-- `number_of_nodes`
-- `number_of_edges`
-- `density`
-- `degree_histogram`
-- `is_directed`
-- `freeze`
-- `is_frozen`
-- `subgraph`
-- `create_empty_copy`
-- `info`
-- `set_node_attributes`
-- `get_node_attributes`
-- `set_edge_attributes`
-- `get_edge_attributes`
+- `jsnx.nodes`
+- `jsnx.nodes_iter`
+- `jsnx.edges`
+- `jsnx.edges_iter`
+- `jsnx.degree`
+- `jsnx.neighbors`
+- `jsnx.number_of_nodes`
+- `jsnx.number_of_edges`
+- `jsnx.density`
+- `jsnx.degree_histogram`
+- `jsnx.is_directed`
+- `jsnx.freeze`
+- `jsnx.is_frozen`
+- `jsnx.subgraph`
+- `jsnx.create_empty_copy`
+- `jsnx.info`
+- `jsnx.set_node_attributes`
+- `jsnx.get_node_attributes`
+- `jsnx.set_edge_attributes`
+- `jsnx.get_edge_attributes`
 
 JSNetworkX also provides some helper method to help with using iterators. These are:
 
