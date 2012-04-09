@@ -10,8 +10,6 @@ The following libraries are or will be used by JSNetworkX:
 
 The [Closure Compiler](https://developers.google.com/closure/compiler/) is used to minimize and optimize the code.
 
-**Note:** JSNetwerkX is under heavy development and so far only `Graph`, `DiGraph` and
-the functions from `networkx.classes.function` are available.
 
 ## Usage
 
@@ -28,6 +26,40 @@ functions and classes are available under the `jsnx` namespace. [Download `jsnet
     G.add_edge(1,3);
 
 For more information about the methods have a look at the [NetworkX](http://networkx.lanl.gov/) site for now.
+
+**Note:** JSNetwerkX is under heavy development and so far only `Graph`, `DiGraph` and
+the functions from `networkx.classes.function` are available:
+
+- `jsnx.Graph`
+- `jsnx.DiGraph`
+- `jsnx.convert_to_undirected`
+- `nodes`
+- `nodes_iter`
+- `edges`
+- `edges_iter`
+- `degree`
+- `neighbors`
+- `number_of_nodes`
+- `number_of_edges`
+- `density`
+- `degree_histogram`
+- `is_directed`
+- `freeze`
+- `is_frozen`
+- `subgraph`
+- `create_empty_copy`
+- `info`
+- `set_node_attributes`
+- `get_node_attributes`
+- `set_edge_attributes`
+- `get_edge_attributes`
+
+JSNetworkX also provides some helper method to help with using iterators. These are:
+
+- `jsnx.forEach`: Takes an iterable (array, object, iterator)  and callback function
+- `jsnx.toArray`: Converts an iterable to an array
+- `jsnx.sentinelIterator`: Accepts an iterator and sentinel value and returns
+ a new iterator which returns the sentinel value instead of throwing a `StopIteration` exception
 
 
 ### Important differences from the Python version
