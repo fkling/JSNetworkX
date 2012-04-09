@@ -1,0 +1,69 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>JSNetworkX by fkling</title>
+    
+    <link rel="stylesheet" href="stylesheets/styles.css">
+    <link rel="stylesheet" href="stylesheets/pygment_trac.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <div class="wrapper">
+      <header>
+        <h1>JSNetworkX</h1>
+        <p>A port of the NetworkX graph library to JavaScript</p>
+        <p class="view"><a href="https://github.com/fkling/JSNetworkX">View the Project on GitHub <small>fkling/JSNetworkX</small></a></p>
+        <ul>
+          <li><a href="https://github.com/fkling/JSNetworkX/zipball/master">Download <strong>ZIP File</strong></a></li>
+          <li><a href="https://github.com/fkling/JSNetworkX/tarball/master">Download <strong>TAR Ball</strong></a></li>
+          <li><a href="https://github.com/fkling/JSNetworkX">Fork On <strong>GitHub</strong></a></li>
+        </ul>
+      </header>
+      <section>
+        <h3>What is JSNetworkX?</h3>
+
+<p>JSNetworkX is a port of the popular Python graph library <a href="http://networkx.lanl.gov/">NetworkX</a>. Lets describe it with their words:</p>
+
+<blockquote>
+<p>NetworkX is a Python language software package for the creation, manipulation, and study of the structure, dynamics, and function of complex networks.</p>
+
+<p>With NetworkX you can load and store networks in standard and nonstandard data formats, generate many types of random and classic networks, analyze network structure, build network models, design new network algorithms, draw networks, and much more.</p>
+</blockquote>
+
+<p><strong>Note:</strong> Development is still in an early stage and only some core classes have been ported yet.</p>
+
+<h3>Getting started</h3>
+
+<p>Here is a quick example of how to use JSNetworkX:</p>
+
+<pre><code>&gt; var G = new jsnx.Graph(null, {name: 'Test'}); // or just jsnx.Graph();
+&gt; G.add_node(1);
+&gt; G.add_nodes_from([2,3]);
+&gt; G.add_edge(1,3);
+&gt; jsnx.info(G)
+ "Name: Test
+ Type: Graph
+ Number of nodes: 3
+ Number of edges: 1
+ Average degree: 1"
+</code></pre>
+
+<p>For more examples and information about the methods, please have a look at the original <a href="http://networkx.lanl.gov/">NetworkX documentation</a>.</p>
+
+<p>Also note that there a couple of differences, which are mentioned in the <a href="https://github.com/fkling/JSNetworkX/blob/master/README.md">README</a>.</p>
+
+<p><a href="https://github.com/downloads/fkling/JSNetworkX/jsnetworkx.js">Download the minified library (28KB)</a> and give it a try!</p>
+      </section>
+      <footer>
+        <p>This project is maintained by <a href="https://github.com/fkling">fkling</a></p>
+        <p><small>Hosted on GitHub Pages &mdash; Theme by <a href="https://github.com/orderedlist">orderedlist</a></small></p>
+      </footer>
+    </div>
+    <script src="javascripts/scale.fix.js"></script>
+  </body>
+</html>
