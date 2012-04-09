@@ -16,7 +16,7 @@ the functions from `networkx.classes.function` are available.
 ## Usage
 
 JSNetworkX provides the same interface as the original NetworkX library. All
-functions and classes are available under the `jsnx` namespace. Download [`build/jsnetwork.js`](https://github.com/downloads/fkling/JSNetworkX/jsnetworkx.js) and include it in your page:
+functions and classes are available under the `jsnx` namespace. [Download `jsnetwork.js`](https://github.com/downloads/fkling/JSNetworkX/jsnetworkx.js) and include it in your page:
 
     <script src="jsnetworkx.js"></script>
 

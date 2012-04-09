@@ -1,3 +1,2 @@
 tools/
-build/*
-!build/jsnetworkx.js
+build/
