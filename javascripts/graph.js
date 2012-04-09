@@ -41,7 +41,9 @@
 
         jsnx.forEach(G.edges_iter(attr.nodes, true), function(edg) {
             edges_map[edg] = 1;
-            edges.push({source: nodes_map[edg[0]], target: nodes_map[edg[1]], data: edg[2]});
+            if(edg[1] in nodes_map) {
+                edges.push({source: nodes_map[edg[0]], target: nodes_map[edg[1]], data: edg[2]});
+            }  
         });
 
         var na = attr.node_attr || {},
