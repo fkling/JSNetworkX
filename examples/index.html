@@ -52,9 +52,13 @@
               <pre class="prettyprint">
                 <code class="language-js">
 var G1 = jsnx.Graph();
+
 G1.add_weighted_edges_from([[2,3,10]]);
-G1.add_star([3,4,5], {weight: 5}); 
-G1.add_star([2,1,0], {weight: 3}); 
+
+G1.add_star([3,4,5,6], {weight: 5}); 
+
+G1.add_star([2,1,0,-1], {weight: 3});
+
 jsnx.draw(G1, {
     element: '#chart1',  
     weighted: true, 
@@ -74,11 +78,22 @@ jsnx.draw(G1, {
               <pre class="prettyprint">
                 <code class="language-js">
 var G2 = jsnx.DiGraph();
+
+G2.add_nodes_from([1,2,3,4,5,[9,{color: '#008A00'}]], {color: '#0064C7'});
+
 G2.add_cycle([1,2,3,4,5]);
+
 G2.add_edges_from([[1,9], [9,1]]);
+
 jsnx.draw(G2, {
     element: '#chart2', 
-    with_labels: true
+    with_labels: true, 
+    node_style: {
+        fill: function(d) { 
+            return d.data.color; 
+        }
+    }, 
+    label_style: {fill: 'white' }
 }, true);
                </code>
             </pre>
@@ -92,6 +107,7 @@ jsnx.draw(G2, {
               <pre class="prettyprint">
                 <code class="language-js">
 var G3 = jsnx.Graph();
+
 G3.add_nodes_from([1,2,3,4], {group:0});
 G3.add_nodes_from([5,6,7], {group:1});
 G3.add_nodes_from([8,9,10,11], {group:2});
@@ -129,14 +145,15 @@ jsnx.draw(G3, {
       <script>
           var G1 = jsnx.Graph();
           G1.add_weighted_edges_from([[2,3,10]]);
-          G1.add_star([3,4,5], {weight: 5}); 
-          G1.add_star([2,1,0], {weight: 3}); 
+          G1.add_star([3,4,5,6], {weight: 5}); 
+          G1.add_star([2,1,0,-1], {weight: 3}); 
           jsnx.draw(G1,{element: '#chart1',  weighted: true, edge_style: {'stroke-width': 10}}, true);
 
           var G2 = jsnx.DiGraph();
+          G2.add_nodes_from([1,2,3,4,5,[9,{color: '#008A00'}]], {color: '#0064C7'});
           G2.add_cycle([1,2,3,4,5]);
           G2.add_edges_from([[1,9], [9,1]]);
-          jsnx.draw(G2, {element: '#chart2', with_labels: true}, true);
+          jsnx.draw(G2, {element: '#chart2', with_labels: true, node_style: {fill: function(d) { return d.data.color; }}, label_style: {fill: 'white' }}, true);
 
           var G3 = jsnx.Graph();
           G3.add_nodes_from([1,2,3,4], {group:0});
@@ -164,6 +181,11 @@ jsnx.draw(G3, {
                   stroke: '#999'
               }
           }, true);
+
+          d3.selectAll('svg').style('opacity', 0.01).transition().duration(1500)
+            .style('opacity', 1);
+
+
       </script>
   </body>
 </html>
