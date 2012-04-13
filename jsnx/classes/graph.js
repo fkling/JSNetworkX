@@ -1160,7 +1160,7 @@ jsnx.classes.Graph.prototype.selfloop_edges = function(opt_data) {
  * @export
  */
 jsnx.classes.Graph.prototype.number_of_selfloops = function() {
-    return this.selfloop_edges.length;
+    return this.selfloop_edges().length;
 };
 
 

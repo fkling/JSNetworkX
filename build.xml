@@ -13,6 +13,9 @@
     <property name="docs" location="docs" />
 
     <property name="testing" value="false" />
+    <property name="generators" value="true" />
+    <property name="algorithms" value="true" />
+
     <target name="init">
         <mkdir dir="${build}" />
         <mkdir dir="tools" />
@@ -29,17 +32,30 @@
     </target>
 
     <target name="compile" depends="init,get.closure,get.compiler">
+        <condition property="generators_flag" value="--namespace=jsnx.generators"
+            else="--namespace=jsnx">
+            <istrue value="${generators}" />
+        </condition>
+
+        <condition property="algorithms_flag" value="--namespace=jsnx.algorithms"
+            else="--namespace=jsnx">
+            <istrue value="${algorithms}" />
+        </condition>
+
         <exec executable="python" output="${build}/jsnetworkx.js" logError="yes">
             <arg value="${goog}/closure/bin/build/closurebuilder.py" />
             <arg value="--root=${goog}" />
             <arg value="--root=${nx}" />
             <arg value="--namespace=jsnx" />
+            <arg value="${generators_flag}" />
+            <!-- <arg value="${algorithms_flag}" /> -->
             <arg value="--output_mode=compiled" />
             <arg value="--compiler_flags=--output_wrapper=(function(){%output%}());" />
             <arg value="--compiler_flags=--compilation_level=ADVANCED_OPTIMIZATIONS" />
             <arg value="--compiler_flags=--generate_exports" />
             <arg value="--compiler_flags=--define=goog.DEBUG=false" />
             <arg value="--compiler_flags=--define=jsnx.TESTING=${testing}" />
+            <arg value="--compiler_flags=--externs=jsnx/externs/d3.js" />
             <arg value="--compiler_jar=tools/compiler.jar" />
         </exec>
     </target>

@@ -47,8 +47,6 @@ if(jsnx.TESTING) {
     goog.exportSymbol('jsnx.helper.fromkeys', jsnx.helper.fromkeys);
 }
 
-
-
 /**
  * Returns true if object is an iterator 
  * 
@@ -217,6 +215,48 @@ if(jsnx.TESTING) {
 
 
 /**
+ * Like goog.object.extend, but also extends nested objects *
+ * @param {Object} target  The object to modify.
+ * @param {...Object} var_args The objects from which values will be copied.
+ */
+jsnx.helper.extend = function(target, var_args) {
+  var key, source;
+  for (var i = 1; i < arguments.length; i++) {
+    source = arguments[i];
+    for (key in source) {
+      if(!goog.isDef(target[key]) || goog.typeOf(target[key]) !== 'object') {
+          target[key] = jsnx.helper.deepcopy(source[key]);
+      }
+      else if(goog.typeOf(target[key]) === 'object' && goog.typeOf(source) === 'object') {
+          jsnx.helper.extend(target[key], source[key]);
+      }
+    }
+
+    // For IE the for-in-loop does not contain any properties that are not
+    // enumerable on the prototype object (for example isPrototypeOf from
+    // Object.prototype) and it will also not include 'replace' on objects that
+    // extend String and change 'replace' (not that it is common for anyone to
+    // extend anything except Object).
+
+    for (var j = 0; j < goog.object.PROTOTYPE_FIELDS_.length; j++) {
+        key = goog.object.PROTOTYPE_FIELDS_[j];
+        if (Object.prototype.hasOwnProperty.call(source, key)) {
+            if(!goog.isDef(target[key]) || goog.typeOf(target[key]) !== 'object') {
+                target[key] = jsnx.helper.deepcopy(source[key]);
+            }
+            else if(goog.typeOf(target[key]) === 'object' && goog.typeOf(source) === 'object') {
+                jsnx.helper.extend(target[key], source[key]);
+            }
+        }
+    }
+  }
+};
+if(jsnx.TESTING) {
+    goog.exportSymbol('jsnx.helper.extend', jsnx.helper.extend);
+}
+
+
+/**
  * Helper to create an array from sequence types 
  * (arrays, array-like objects, objects, etc)
  *
@@ -228,7 +268,7 @@ if(jsnx.TESTING) {
  */
 jsnx.helper.toArray = function(sequence) {
     if(goog.isArrayLike(sequence)) {
-         return goog.array.toArray(sequence);
+        return goog.array.toArray(sequence);
     }
     else if(jsnx.helper.isIterator(sequence)) {
         return goog.iter.toArray(sequence);
@@ -306,7 +346,7 @@ jsnx.helper.iter = function(seq, f, this_obj) {
     if(goog.typeOf(seq) === 'object' && !goog.isArrayLike(seq) && !jsnx.helper.isIterator(seq)) {
         seq = goog.object.getKeys(/** @type {Object} */ seq);
     }
- 
+
     return goog.iter.toIterator(seq);
 };
 if(jsnx.TESTING) {
@@ -376,7 +416,6 @@ if(jsnx.TESTING) {
 }
 
 
-
 /**
  * Wraps an iterator to return a sentinel value instead of
  * raising an StopIteration exception. Returns undefined
@@ -400,7 +439,6 @@ goog.exportSymbol('jsnx.sentinelIterator', jsnx.helper.sentinelIterator);
 if(jsnx.TESTING) {
     goog.exportSymbol('jsnx.helper.sentinelIterator', jsnx.helper.sentinelIterator);
 }
-
 
 
 /**
@@ -427,8 +465,8 @@ jsnx.helper.isPlainObject = function(obj) {
         // Not own constructor property must be Object
         if ( obj.constructor &&
             !hasOwn.call(obj, "constructor") &&
-                    !hasOwn.call(obj.constructor.prototype, "isPrototypeOf") ) {
-            return false;
+            !hasOwn.call(obj.constructor.prototype, "isPrototypeOf") ) {
+                return false;
         }
     } catch ( e ) {
         // IE8,9 Will throw exceptions on certain host objects #9897
@@ -476,7 +514,7 @@ jsnx.helper.deepcopy = function(obj, memo_) {
         var c_ = goog.array.find(memo_, function(clone) {
             return obj === clone[0];
         });
-        
+
         if(c_ !== null) { // found copy
             return c_[1];
         }
@@ -534,7 +572,7 @@ jsnx.helper.deepcopy_instance = function(obj) {
     // create a new instance and assigne properties
     inst = new T_();
     for(prop in props) {
-       inst[prop] = props[prop];
+        inst[prop] = props[prop];
     }
 
     return inst; 

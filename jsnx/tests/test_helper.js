@@ -134,6 +134,29 @@ describe('Helper', function() {
         expect(copy.constructor).toBe(inst.constructor);
     });
 
+    it('Extends nested objects', function() {
+        var obj1 = {
+                foo: {
+                   bar: 5
+                }
+            },
+            obj2 = {
+                baz: 42,
+                foo: {
+                   baz: 6
+                }
+            };
+
+        helper.extend(obj1, obj2);
+
+        expect(obj1.foo).not.toBe(obj2.foo);
+        expect(obj1.baz).toEqual(obj2.baz);
+        expect(obj1.foo).toBe(obj1.foo);
+        expect(obj1.foo.baz).toEqual(6);
+        expect(obj1.foo.bar).toEqual(5);
+
+    });
+
 
     //TODO: write tests for isIterable and len
     

@@ -14,5 +14,6 @@
     "strict": true,
     "globalstrict": true,
     "iterator": true,
-    "sub": true
+    "sub": true,
+    "browser": true
 }
