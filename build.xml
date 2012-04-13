@@ -55,6 +55,7 @@
             <arg value="--compiler_flags=--generate_exports" />
             <arg value="--compiler_flags=--define=goog.DEBUG=false" />
             <arg value="--compiler_flags=--define=jsnx.TESTING=${testing}" />
+            <arg value="--compiler_flags=--externs=jsnx/externs/d3.js" />
             <arg value="--compiler_jar=tools/compiler.jar" />
         </exec>
     </target>

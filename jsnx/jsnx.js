@@ -27,3 +27,4 @@ jsnx.TESTING = false;
 goog.require('jsnx.exception');
 goog.require('jsnx.helper');
 goog.require('jsnx.classes');
+goog.require('jsnx.drawing');
