@@ -943,7 +943,13 @@ jsnx.drawing.jsnx_d3.bind_ = function(G, force, config, selections) {
             selections.node_selection = jsnx.drawing.jsnx_d3.remove_nodes_(this, 
                                         [n], force, selections.node_selection);
 
-            var s_ = jsnx.drawing.jsnx_d3.remove_edges_(this, this.edges_iter(n), force, 
+            var edges = this.edges_iter(n);
+
+            if(this.is_directed()) {
+                edges = goog.iter.chain(edges, this.in_edges_iter(n));
+            }
+            
+            var s_ = jsnx.drawing.jsnx_d3.remove_edges_(this, edges, force, 
                         selections.edge_selection, selections.edge_label_selection, 
                         edge_label_func);
             selections.edge_selection = s_[0];
@@ -961,7 +967,12 @@ jsnx.drawing.jsnx_d3.bind_ = function(G, force, config, selections) {
             selections.node_selection = jsnx.drawing.jsnx_d3.remove_nodes_(this, 
                                      nbunch, force, selections.node_selection);
 
-            var s_ = jsnx.drawing.jsnx_d3.remove_edges_(this, this.edges_iter(nbunch),
+            var edges = this.edges_iter(nbunch);
+            if(this.is_directed()) {
+                edges = goog.iter.chain(edges, this.in_edges_iter(nbunch));
+            }
+
+            var s_ = jsnx.drawing.jsnx_d3.remove_edges_(this, edges,
                          force, selections.edge_selection, 
                          selections.edge_label_selection, edge_label_func);
             selections.edge_selection = s_[0];
