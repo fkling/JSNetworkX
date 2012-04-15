@@ -204,7 +204,7 @@ jsnx.drawing.jsnx_d3.draw = function(G, config, opt_bind) {
         var weights =  config_['weights'];
         if(goog.typeOf(weights) === 'object') {
             weight_func = function(d) {
-                return goog.object.get(weights, d.node, 1);
+                return goog.object.get(weights, d['node'], 1);
             };
         }
         else if(goog.isFunction(weights)) {
@@ -212,7 +212,7 @@ jsnx.drawing.jsnx_d3.draw = function(G, config, opt_bind) {
         }
         else if (goog.isString(weights)) {
             weight_func = function(d) {
-                return goog.object.get(d.data, weights, 1);
+                return goog.object.get(d['data'], weights, 1);
             };
         }
         else {
@@ -309,11 +309,11 @@ jsnx.drawing.jsnx_d3.draw = function(G, config, opt_bind) {
         update_edge_position = function() {
             selections.edge_selection
                 .attr("d", function(d) {
-                    if(d.source !== d.target) {
-                        var x1 = d.source.x,
-                            y1 = d.source.y,
-                            x2 = d.target.x,
-                            y2 = d.target.y,
+                    if(d['source'] !== d['target']) {
+                        var x1 = d['source']['x'],
+                            y1 = d['source']['y'],
+                            x2 = d['target']['x'],
+                            y2 = d['target']['y'],
                             dx = Math.sqrt(Math.pow(x2 - x1, 2) +
                                 Math.pow(y2 - y1, 2));
 
@@ -322,7 +322,7 @@ jsnx.drawing.jsnx_d3.draw = function(G, config, opt_bind) {
 
                         
 
-                        if(G.has_edge(d.target.node, d.source.node)) {
+                        if(G.has_edge(d['target']['node'], d['source']['node'])) {
                             var angle = goog.math.angle(x1,y1,x2,y2),
                                 x3 = dx/2,
                                 y3 = -dy,
@@ -339,11 +339,11 @@ jsnx.drawing.jsnx_d3.draw = function(G, config, opt_bind) {
                     }
                 })
             .attr('transform', function(d) {
-                if(d.source !== d.target) {
-                    var x1 = d.source.x,
-                        y1 = d.source.y,
-                        x2 = d.target.x,
-                        y2 = d.target.y,
+                if(d['source'] !== d['target']) {
+                    var x1 = d['source']['x'],
+                        y1 = d['source']['y'],
+                        x2 = d['target']['x'],
+                        y2 = d['target']['y'],
                         angle =  goog.math.angle(x1,y1,x2,y2);
                         
                     return ['translate(',x1,',',y1,')', 'rotate(', angle,')'].join('');
@@ -356,19 +356,20 @@ jsnx.drawing.jsnx_d3.draw = function(G, config, opt_bind) {
             update_edge_label_position = function() {
                 selections.edge_label_selection
                 .attr('x', function(d) { 
-                    return Math.sqrt(Math.pow(d.target.x - d.source.x, 2) +
-                            Math.pow(d.target.y - d.source.y, 2))/2;
+                    return Math.sqrt(Math.pow(d['target']['x'] - d['source']['x'], 2) +
+                            Math.pow(d['target']['y'] - d['source']['y'], 2))/2;
                 })
                 .attr('y', function(d) { 
-                    return G.has_edge(d.target.node, d.source.node) ? -dy : -2; 
+                    return G.has_edge(d['target']['node'], d['source']['node']) ? -dy : -2; 
                 })
                 .attr('transform', function(d) {
-                    var x1 = d.source.x,
-                        y1 = d.source.y,
-                        x2 = d.target.x,
-                        y2 = d.target.y;
-                        var angle = goog.math.angle(x1, y1, x2, y2);
-                        return ['translate(',x1,',',y1,')rotate(', angle,')'].join('');
+                    var x1 = d['source']['x'],
+                        y1 = d['source']['y'],
+                        x2 = d['target']['x'],
+                        y2 = d['target']['y'];
+
+                    var angle = goog.math.angle(x1, y1, x2, y2);
+                    return ['translate(',x1,',',y1,')rotate(', angle,')'].join('');
                 });
             };
         }
@@ -377,12 +378,12 @@ jsnx.drawing.jsnx_d3.draw = function(G, config, opt_bind) {
         update_edge_position = function() {
             selections.edge_selection
             .attr("d", function(d) { 
-                var center = [(d.source.x + d.target.x) / 2, 
-                    (d.source.y + d.target.y) / 2];
+                var center = [(d['source']['x'] + d['target']['x']) / 2, 
+                    (d['source']['y'] + d['target']['y']) / 2];
 
-                    return ['M', d.source.x, d.source.y, 'L', 
+                    return ['M', d['source']['x'], d['source']['y'], 'L', 
                         center[0], center[1], 'L', 
-                        d.target.x, d.target.y].join(' ');
+                        d['target']['x'], d['target']['y']].join(' ');
             });
         };
 
@@ -391,18 +392,13 @@ jsnx.drawing.jsnx_d3.draw = function(G, config, opt_bind) {
             update_edge_label_position = function() {
 
                 selections.edge_label_selection
-                .attr('x', function(d) { return (d.source.x + d.target.x) / 2;})
-                .attr('y', function(d) { return -2 + (d.source.y + d.target.y) / 2;})
+                .attr('x', function(d) { return (d['source']['x'] + d['target']['x']) / 2;})
+                .attr('y', function(d) { return -2 + (d['source']['y'] + d['target']['y']) / 2;})
                 .attr('transform', function(d) {
-                    var center = [(d.source.x + d.target.x) / 2, 
-                        (d.source.y + d.target.y) / 2],
-                        source = d.source, target = d.target;
-                        if(target.x < source.x) {
-                            source = target;
-                            target = d.source;
-                        }
-                        var angle = goog.math.angle(d.source.x, d.source.y, 
-                                                    d.target.x, d.target.y);
+                    var center = [(d['source']['x'] + d['target']['x']) / 2, 
+                        (d['source']['y'] + d['target']['y']) / 2];
+                        var angle = goog.math.angle(d['source']['x'], d['source']['y'], 
+                                                    d['target']['x'], d['target']['y']);
 
                         if(angle > 90 && angle < 279) {
                             angle += 180;
@@ -418,7 +414,7 @@ jsnx.drawing.jsnx_d3.draw = function(G, config, opt_bind) {
         // update node position
         selections.node_selection
         .attr("transform", function(d) { 
-            return ['translate(',d.x,',',d.y,')'].join(''); 
+            return ['translate(',d['x'],',',d['y'],')'].join(''); 
         });
 
         update_edge_position();
