@@ -4,6 +4,7 @@ goog.provide('jsnx.classes.Graph');
 
 goog.require('goog.iter');
 goog.require('goog.math');
+goog.require('goog.json');
 goog.require('goog.object');
 goog.require('jsnx.convert');
 goog.require('jsnx.exception');
@@ -543,6 +544,9 @@ jsnx.classes.Graph.prototype.add_weighted_edges_from = function(ebunch, opt_weig
     this.add_edges_from(jsnx.helper.map(ebunch, function(e) {
         var attr = {};
         attr[opt_weight] = e[2];
+        if(!goog.isDef(attr[opt_weight])) { // simulate too few value to unpack error
+            throw new TypeError('Values must consist of three elements: ' + goog.json.serialize(e));
+        }
         return [e[0], e[1], attr];
     }), opt_attr);
 };
