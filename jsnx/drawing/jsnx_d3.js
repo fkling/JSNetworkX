@@ -150,14 +150,15 @@ jsnx.drawing.jsnx_d3.draw = function(G, config, opt_bind) {
                         .append('g')
                         .classed('edges', true)
                         .selectAll('.edge'),
-        node_selection = canvas
-                        .append('g')
-                        .classed('nodes', true)
-                        .selectAll('g.node'),
+
         edge_label_selection = canvas
                                 .append('g')
                                 .classed('edge_labels', true)
                                 .selectAll('text'),
+        node_selection = canvas
+                        .append('g')
+                        .classed('nodes', true)
+                        .selectAll('g.node'),
         force = d3.layout.force(),
         width = config_['width'] || parseInt(container.style('width'), 10),
         height = config_['height'] || parseInt(container.style('height'), 10),
@@ -179,7 +180,7 @@ jsnx.drawing.jsnx_d3.draw = function(G, config, opt_bind) {
         var labels =  config_['labels'];
         if(goog.typeOf(labels) === 'object') {
             label_func = function(d) {
-                return goog.object.get(labels, d.node, '');
+                return goog.object.get(labels, d['node'], '');
             };
         }
         else if(goog.isFunction(labels)) {
@@ -187,12 +188,12 @@ jsnx.drawing.jsnx_d3.draw = function(G, config, opt_bind) {
         }
         else if (goog.isString(labels)) {
             label_func = function(d) {
-                return d.data[labels];
+                return d['data'][labels];
             };
         }
         else {
             label_func = function(d) {
-                return d.node;
+                return d['node'];
             };
         }
     }
@@ -229,7 +230,7 @@ jsnx.drawing.jsnx_d3.draw = function(G, config, opt_bind) {
         }
         else if(goog.typeOf(elabels) === 'object') {
             edge_label_func = function(d) {
-                return goog.object.get(labels, d.node, '');
+                return goog.object.get(labels, d['node'], '');
             };
         }
         else if(goog.isFunction(elabels)) {
@@ -237,12 +238,12 @@ jsnx.drawing.jsnx_d3.draw = function(G, config, opt_bind) {
         }
         else if (goog.isString(elabels)) {
             edge_label_func = function(d) {
-                return d.data[elabels];
+                return d['data'][elabels];
             };
         }
         else {
             edge_label_func = function(d) {
-                return d.edge;
+                return d['edge'];
             };
         }
         config_['edge_labels'] = edge_label_func;
@@ -253,7 +254,7 @@ jsnx.drawing.jsnx_d3.draw = function(G, config, opt_bind) {
                 v = weight_func({data: v[2]});
                 return u > v ? u : v;
             }, 0),
-            scale = d3.scale.linear().range([1, config_['edge_style']['stroke-width']]).domain([1, max_weight]);
+            scale = d3.scale.linear().range([1, config_['edge_style']['stroke-width']]).domain([0, max_weight]);
 
         config_['edge_style']['stroke-width'] = function(d) {
             return scale(weight_func.call(this, d));
@@ -503,7 +504,7 @@ jsnx.drawing.jsnx_d3.add_nodes_ = function(G, nodes, force, selection,
     // add new data
     jsnx.helper.forEach(nodes, function(n) {
         var d = G['node'][n],
-        nobj = {node: n, data: d};
+        nobj = {'node': n, 'data': d, 'G': G};
         data.push(nobj);
         d[jsnx.drawing.jsnx_d3.D3_DATA_NAME_] = nobj;
     });
@@ -550,11 +551,12 @@ jsnx.drawing.jsnx_d3.add_edges_ = function(G, edges, force, selection,
         var u = ed[0], v = ed[1],
         d = ed[2] || G.get_edge_data(u, v),
         eobj = {
-            edge: [u,v],
+            'edge': [u,v],
             redge: [v, u],
-            source: G['node'][u][jsnx.drawing.jsnx_d3.D3_DATA_NAME_], 
-            target: G['node'][v][jsnx.drawing.jsnx_d3.D3_DATA_NAME_], 
-            data: d
+            'source': G['node'][u][jsnx.drawing.jsnx_d3.D3_DATA_NAME_], 
+            'target': G['node'][v][jsnx.drawing.jsnx_d3.D3_DATA_NAME_], 
+            'data': d,
+            'G': G
         };
         data.push(eobj);
         d[jsnx.drawing.jsnx_d3.D3_DATA_NAME_] = eobj;
@@ -694,7 +696,7 @@ jsnx.drawing.jsnx_d3.update_edge_attr_ = function(selection, label_selection,
  * @private
 */
 jsnx.drawing.jsnx_d3.node_key_function = function(d) {
-    return d.node;
+    return d['node'];
 };
 
 
@@ -707,7 +709,7 @@ jsnx.drawing.jsnx_d3.node_key_function = function(d) {
  * @private
 */
 jsnx.drawing.jsnx_d3.edge_key_function = function(d) {
-    return d.edge;
+    return d['edge'];
 };
 
 
@@ -940,22 +942,24 @@ jsnx.drawing.jsnx_d3.bind_ = function(G, force, config, selections) {
 
     G['remove_node'] = G.remove_node =  /** @this jsnx.Graph */function(n) {
         try {
-            selections.node_selection = jsnx.drawing.jsnx_d3.remove_nodes_(this, 
-                                        [n], force, selections.node_selection);
+            if(this.has_node(n)) {
+                selections.node_selection = jsnx.drawing.jsnx_d3.remove_nodes_(this, 
+                                            [n], force, selections.node_selection);
 
-            var edges = this.edges_iter(n);
+                var edges = this.edges_iter([n]);
 
-            if(this.is_directed()) {
-                edges = goog.iter.chain(edges, this.in_edges_iter(n));
+                if(this.is_directed()) {
+                    edges = goog.iter.chain(edges, this.in_edges_iter([n]));
+                }
+                
+                var s_ = jsnx.drawing.jsnx_d3.remove_edges_(this, edges, force, 
+                            selections.edge_selection, selections.edge_label_selection, 
+                            edge_label_func);
+                selections.edge_selection = s_[0];
+                selections.edge_label_selection = s_[1];
+
+                force.resume();
             }
-            
-            var s_ = jsnx.drawing.jsnx_d3.remove_edges_(this, edges, force, 
-                        selections.edge_selection, selections.edge_label_selection, 
-                        edge_label_func);
-            selections.edge_selection = s_[0];
-            selections.edge_label_selection = s_[1];
-
-            force.resume();
         }
         catch(e) {} // node is not in the graph, pass on to throw appropriate exception
         proto['remove_node'].apply(G, arguments);
