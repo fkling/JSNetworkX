@@ -266,8 +266,8 @@ jsnx.drawing.jsnx_d3.draw = function(G, config, opt_bind) {
 
     // set size and hide the wild movement of nodes at the beginning
     canvas
-        .attr('width', width)
-        .attr('height', height)
+        .attr('width', width + 'px')
+        .attr('height', height + 'px')
         .style("opacity", 1e-6)
         .transition()
         .duration(1000)
@@ -303,8 +303,24 @@ jsnx.drawing.jsnx_d3.draw = function(G, config, opt_bind) {
         config_['edge_attr']['marker-end'] = 'url(#Triangle)';
         config_['edge_style']['fill'] = 'none';
 
-        var dy = config_['layout_attr']['linkDistance']/3,
+        var ld = config_['layout_attr']['linkDistance'],
             offset = config_['edge_offset'];
+
+        if(!goog.isFunction(ld)) {
+            ld = function() {
+                return  config_['layout_attr']['linkDistance'];
+            };
+        }
+        if(goog.isArray(offset)) {
+            offset = function() {
+                 return  config_['edge_offset'];
+            };
+        }
+        if(goog.isNumber(offset)) {
+            offset = function() {
+                 return  [config_['edge_offset'], config_['edge_offset']];
+            };
+        }
 
         update_edge_position = function() {
             selections.edge_selection
@@ -315,26 +331,21 @@ jsnx.drawing.jsnx_d3.draw = function(G, config, opt_bind) {
                             x2 = d['target']['x'],
                             y2 = d['target']['y'],
                             dx = Math.sqrt(Math.pow(x2 - x1, 2) +
-                                Math.pow(y2 - y1, 2));
-
-
-
-
-                        
+                                Math.pow(y2 - y1, 2)),
+                            offset_ = offset(d);      
 
                         if(G.has_edge(d['target']['node'], d['source']['node'])) {
                             var angle = goog.math.angle(x1,y1,x2,y2),
+                                dy = ld(d)/3,
                                 x3 = dx/2,
                                 y3 = -dy,
                                 m = y3/x3,
                                 c = m*dx;
-                            return ['M', offset, m*offset, 'Q', dx/2, -dy, 
-                                dx - offset, -m*(dx - offset) + c].join(' ');
-
-
+                            return ['M', offset_[0], m*offset_[0], 'Q', dx/2, -dy, 
+                                dx - offset_[1], -m*(dx - offset_[1]) + c].join(' ');
                         }
                         else {
-                            return ['M', offset, '0 L', dx - offset, 0].join(' '); 
+                            return ['M', offset_[0], '0 L', dx - offset_[1], 0].join(' '); 
                         }
                     }
                 })
@@ -360,7 +371,7 @@ jsnx.drawing.jsnx_d3.draw = function(G, config, opt_bind) {
                             Math.pow(d['target']['y'] - d['source']['y'], 2))/2;
                 })
                 .attr('y', function(d) { 
-                    return G.has_edge(d['target']['node'], d['source']['node']) ? -dy : -2; 
+                    return G.has_edge(d['target']['node'], d['source']['node']) ? -ld(d)/3 : -2; 
                 })
                 .attr('transform', function(d) {
                     var x1 = d['source']['x'],
@@ -561,7 +572,8 @@ jsnx.drawing.jsnx_d3.add_edges_ = function(G, edges, force, selection,
     selection = selection.data(data, jsnx.drawing.jsnx_d3.edge_key_function);
     // create new elements
     selection.enter()
-    .append('path');
+    .append('path')
+    .classed('edge', true);
 
     if(opt_label_func) {
         label_selection = label_selection.data(data, 
