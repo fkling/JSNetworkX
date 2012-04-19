@@ -264,3 +264,17 @@ d3.scale.linear.prototype.range = function(range) {};
  */
 d3.scale.linear.prototype.domain = function(domain) {};
 
+
+
+
+/**
+ * @constructor
+ * @return {d3.behaviour.zoom}
+ */
+d3.behavior.zoom = function() {};
+
+/**
+ * @param {string} event
+ * @param {function} listener
+ */
+d3.behavior.zoom.prototype.on = function(event, listener) {};

@@ -155,8 +155,7 @@ jsnx.drawing.jsnx_d3.draw = function(G, config, opt_bind) {
     if(config_['with_zoom']) {
         parent_container = canvas
                 .call(d3.behavior.zoom().on('zoom', function() {
-                    var event = d3.event.sourceEvent,
-                    tr = d3.event.translate;
+                    var tr = d3['event']['translate'];
                     parent_container.attr('transform', 'translate(' +  tr[0] + ',' +  tr[1] + ')scale(' + d3.event.scale + ')');
                 }))
             .append('g');
