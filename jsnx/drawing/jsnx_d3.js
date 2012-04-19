@@ -103,6 +103,7 @@ jsnx.drawing.jsnx_d3.D3_DATA_NAME_ = '__d3datum__';
  *      - weighted_graph: boolean
  *      - weights: string or function
  *      - edge_offset: number
+ *      - with_zoom: boolean
  *
  *  @param {boolean} opt_bind Set to true to automatically update
  *      the output upon graph manipulation. Only works for adding nodes or edges
@@ -145,17 +146,32 @@ jsnx.drawing.jsnx_d3.draw = function(G, config, opt_bind) {
         d3nodes = [], d3links = [],
         canvas = container
                 .append('svg')
-                .classed('jsnx', true),
-        edge_selection = canvas
+                .classed('jsnx', true)
+                .attr('pointer-events', 'all'),
+        parent_container = canvas;
+
+
+
+    if(config_['with_zoom']) {
+        parent_container = canvas
+                .call(d3.behavior.zoom().on('zoom', function() {
+                    var event = d3.event.sourceEvent,
+                    tr = d3.event.translate;
+                    parent_container.attr('transform', 'translate(' +  tr[0] + ',' +  tr[1] + ')scale(' + d3.event.scale + ')');
+                }))
+            .append('g');
+    }
+
+    var edge_selection = parent_container
                         .append('g')
                         .classed('edges', true)
                         .selectAll('.edge'),
 
-        edge_label_selection = canvas
+        edge_label_selection = parent_container
                                 .append('g')
                                 .classed('edge_labels', true)
                                 .selectAll('text'),
-        node_selection = canvas
+        node_selection = parent_container
                         .append('g')
                         .classed('nodes', true)
                         .selectAll('g.node'),
@@ -1142,5 +1158,6 @@ jsnx.drawing.jsnx_d3.default_config_ = {
     'with_edge_labels': false,
     'edge_offset': 10,
     'weights': 'weight',
-    'weighted_stroke': true
+    'weighted_stroke': true,
+    'with_zoom': true
 };
