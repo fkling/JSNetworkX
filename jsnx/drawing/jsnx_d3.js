@@ -151,12 +151,18 @@ jsnx.drawing.jsnx_d3.draw = function(G, config, opt_bind) {
         parent_container = canvas;
 
 
-
+    var inv_scale = 1;
     if(config_['with_zoom']) {
         parent_container = canvas
                 .call(d3.behavior.zoom().on('zoom', function() {
+                    inv_scale = 1 / d3.event.scale;
                     var tr = d3['event']['translate'];
                     parent_container.attr('transform', 'translate(' +  tr[0] + ',' +  tr[1] + ')scale(' + d3.event.scale + ')');
+                    parent_container.selectAll('g.node > .node').attr('transform', 'scale(' + (1/d3.event.scale) + ')');
+                    redraw();
+                    parent_container.selectAll('g.edges > .edge').style('stroke-width', function(d) { 
+                        return  scale(weight_func.call(this, d)) * inv_scale; 
+                    });
                 }))
             .append('g');
     }
@@ -347,7 +353,9 @@ jsnx.drawing.jsnx_d3.draw = function(G, config, opt_bind) {
                             y2 = d['target']['y'],
                             dx = Math.sqrt(Math.pow(x2 - x1, 2) +
                                 Math.pow(y2 - y1, 2)),
-                            offset_ = offset(d);      
+                            offset_ = offset(d);
+
+                        offset_ = [offset_[0] * inv_scale, offset_[1] * inv_scale];
 
                         if(G.has_edge(d['target']['node'], d['source']['node'])) {
                             var angle = goog.math.angle(x1,y1,x2,y2),
@@ -436,7 +444,7 @@ jsnx.drawing.jsnx_d3.draw = function(G, config, opt_bind) {
         }
     }
 
-    force.on('tick', function() {
+    var redraw = function() {
         // update node position
         selections.node_selection
         .attr("transform", function(d) { 
@@ -445,7 +453,9 @@ jsnx.drawing.jsnx_d3.draw = function(G, config, opt_bind) {
 
         update_edge_position();
         update_edge_label_position();
-    });
+    };
+
+    force.on('tick', redraw);
 
 
 
