@@ -41,6 +41,11 @@
             else="--namespace=jsnx">
             <istrue value="${algorithms}" />
         </condition>
+        <condition property="pretty_print" value="--compiler_flags=--formatting=PRETTY_PRINT"
+            else="">
+            <istrue value="${testing}" />
+        </condition>
+
 
         <exec executable="python" output="${build}/jsnetworkx.js" logError="yes">
             <arg value="${goog}/closure/bin/build/closurebuilder.py" />
@@ -57,6 +62,7 @@
             <arg value="--compiler_flags=--define=jsnx.TESTING=${testing}" />
             <arg value="--compiler_flags=--externs=jsnx/externs/d3.js" />
             <arg value="--compiler_jar=tools/compiler.jar" />
+            <arg value="${pretty_print}" />
         </exec>
     </target>
 
