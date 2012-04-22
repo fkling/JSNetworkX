@@ -41,11 +41,6 @@
             else="--namespace=jsnx">
             <istrue value="${algorithms}" />
         </condition>
-        <condition property="pretty_print" value="--compiler_flags=--formatting=PRETTY_PRINT"
-            else="">
-            <istrue value="${testing}" />
-        </condition>
-
 
         <exec executable="python" output="${build}/jsnetworkx.js" logError="yes">
             <arg value="${goog}/closure/bin/build/closurebuilder.py" />
@@ -59,10 +54,27 @@
             <arg value="--compiler_flags=--compilation_level=ADVANCED_OPTIMIZATIONS" />
             <arg value="--compiler_flags=--generate_exports" />
             <arg value="--compiler_flags=--define=goog.DEBUG=false" />
-            <arg value="--compiler_flags=--define=jsnx.TESTING=${testing}" />
+            <arg value="--compiler_flags=--define=jsnx.TESTING=false" />
             <arg value="--compiler_flags=--externs=jsnx/externs/d3.js" />
             <arg value="--compiler_jar=tools/compiler.jar" />
-            <arg value="${pretty_print}" />
+        </exec>
+    </target>
+
+    <target name="test_compile" depends="init,get.closure,get.compiler">
+        <exec executable="python" output="${build}/jsnetworkx.js" logError="yes">
+            <arg value="${goog}/closure/bin/build/closurebuilder.py" />
+            <arg value="--root=${goog}" />
+            <arg value="--root=${nx}" />
+            <arg value="--namespace=jsnx" />
+            <arg value="--output_mode=compiled" />
+            <arg value="--compiler_flags=--formatting=PRETTY_PRINT" />
+            <arg value="--compiler_flags=--output_wrapper=(function(){%output%}());" />
+            <arg value="--compiler_flags=--compilation_level=ADVANCED_OPTIMIZATIONS" />
+            <arg value="--compiler_flags=--generate_exports" />
+            <arg value="--compiler_flags=--define=goog.DEBUG=false" />
+            <arg value="--compiler_flags=--define=jsnx.TESTING=true" />
+            <arg value="--compiler_flags=--externs=jsnx/externs/d3.js" />
+            <arg value="--compiler_jar=tools/compiler.jar" />
         </exec>
     </target>
 
