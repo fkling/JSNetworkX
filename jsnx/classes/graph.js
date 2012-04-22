@@ -1025,22 +1025,7 @@ jsnx.classes.Graph.prototype.to_directed = function() {
  * @export
  */
 jsnx.classes.Graph.prototype.to_undirected = function() {
-    var G = new jsnx.classes.Graph();
-    G['name'](this.name());
-    G.add_nodes_from(this);
-    G.add_edges_from((function() {
-        var u;
-        return jsnx.helper.nested_chain(this.adjacency_iter(), function(nd) {
-            u = nd[0];
-            return jsnx.helper.iteritems(nd[1]);
-        }, function(nbr) {
-            return [u, nbr[0], jsnx.helper.deepcopy(nbr[1])];
-        });
-    }.call(this)));
-    G['graph'] = jsnx.helper.deepcopy(this['graph']);
-    G['node'] = jsnx.helper.deepcopy(this['node']);
-
-    return G;
+    return jsnx.helper.deepcopy_instance(this);
 };
 
 
