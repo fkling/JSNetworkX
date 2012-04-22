@@ -327,5 +327,4 @@ TestDiGraph.prototype.test_remove_edges_from = function() {
 };
 
 // run tests
-var testDiGraph = new TestDiGraph();
-testDiGraph.run();
+(new TestDiGraph()).run();

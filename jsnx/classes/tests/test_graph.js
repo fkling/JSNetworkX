@@ -154,6 +154,7 @@ BaseGraphTester.prototype.test_add_cycle = function() {
     G.add_cycle(nlist);
     expect(oklist).toContain(this.sorted(G.edges(nlist)));
 
+    G = this.K3.copy();
     oklist = [ [['12','13',{'weight':1}],
         ['12','15',{'weight':1}],
         ['13','14',{'weight':1}],
@@ -539,7 +540,7 @@ TestGraph.prototype.test_data_input = function() {
     expect(this.sorted(jsnx.helper.items(G.adj))).toEqual([['1', {'2': {}}], ['2', {'1': {}}]]);
 };
 
-TestGraph.prototype.test_adjancency_iter = function() {
+TestGraph.prototype.test_adjacency_iter = function() {
     var G = this.K3;
 
     expect(jsnx.toArray(G.adjacency_iter())).toEqual([
