@@ -597,7 +597,7 @@ jsnx.classes.DiGraph.prototype.edges_iter = function(opt_nbunch, opt_data) {
 
     var nodes_nrbs, n, nbr;
 
-    if(!goog.isDefAndNotNull) {
+    if(!goog.isDefAndNotNull(opt_nbunch)) {
         nodes_nrbs = jsnx.helper.items(this['adj']);
     }
     else {
@@ -666,7 +666,7 @@ jsnx.classes.DiGraph.prototype.in_edges_iter = function(opt_nbunch, opt_data) {
         opt_nbunch = null;
     }
 
-    var nodes_nrbs, n, nbr;
+    var nodes_nrbs, n;
 
     if(!goog.isDefAndNotNull) {
         nodes_nrbs = jsnx.helper.items(this['pred']);
@@ -680,8 +680,7 @@ jsnx.classes.DiGraph.prototype.in_edges_iter = function(opt_nbunch, opt_data) {
     if(opt_data) {
         return jsnx.helper.nested_chain(nodes_nrbs, function(nd) {
             n = nd[0];
-            nbr = nd[1];
-            return jsnx.helper.iteritems(nbr);
+            return jsnx.helper.iteritems(nd[0]);
         }, function(nbrd) {
             return [nbrd[0], n, nbrd[1]];
         });
@@ -689,8 +688,7 @@ jsnx.classes.DiGraph.prototype.in_edges_iter = function(opt_nbunch, opt_data) {
     else {
         return jsnx.helper.nested_chain(nodes_nrbs, function(nd) {
             n = nd[0];
-            nbr = nd[1];
-            return jsnx.helper.iteritems(nbr);
+            return jsnx.helper.iteritems(nd[1]);
         }, function(nbrd) {
             return [nbrd[0], n];
         });
@@ -716,6 +714,7 @@ jsnx.classes.DiGraph.prototype.in_edges_iter = function(opt_nbunch, opt_data) {
 jsnx.classes.DiGraph.prototype.in_edges = function(opt_nbunch, opt_data) {
     return jsnx.helper.toArray(this.in_edges_iter(opt_nbunch, opt_data));
 };
+
 
 /**
  * Return an iterator for (node, degree).
