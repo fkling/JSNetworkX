@@ -257,6 +257,24 @@ if(jsnx.TESTING) {
 
 
 /**
+ * A simplified mixin version which only copies own properties
+ *
+ * @param {Object} target
+ * @param {Object} source
+ */
+jsnx.helper.mixin = function(target, source) {
+    for(var prop in source) {
+        if(source.hasOwnProperty(prop) && prop !== 'constructor') {
+            target[prop] = source[prop];
+        }
+    }
+};
+if(jsnx.TESTING) {
+    goog.exportSymbol('jsnx.helper.mixin', jsnx.helper.mixin);
+}
+
+
+/**
  * Helper to create an array from sequence types 
  * (arrays, array-like objects, objects, etc)
  *
