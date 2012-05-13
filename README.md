@@ -32,6 +32,8 @@ the functions from `networkx.classes.function` are available:
 
 - `jsnx.Graph`
 - `jsnx.DiGraph`
+- `jsnx.MultiGraph`
+- `jsnx.MultiDiGraph`
 - `jsnx.convert_to_undirected`
 - `jsnx.nodes`
 - `jsnx.nodes_iter`
@@ -144,8 +146,8 @@ In this case we decided to interpret the argument as node name. To set the `weig
 The development for JSNetworkX has just started, the rough roadmap is as follows:
 
 - Port unit tests to Jasmine (ongoing)
-- Port base classes (mostly done)
-- Implement renderer with D3
+- Port base classes (done)
+- Implement renderer with D3 (done, but subject to change)
 - Port algorithms module
 
 To ease the developement, we built JSNetworkX on top of Closure Library. This allows us also to use some more adanvaced features of the Google Closure Compiler and provides
@@ -164,7 +166,7 @@ The code is scattered with using bracket notation to access properties (`foo['ba
 
 To build the library on your own you need [`ant`](http://ant.apache.org/). `ant compile` will download all necessary dependencies (Closure library and compiler) and compile the files.
 
-To run the tests you have to set the `testing` flag:
-
-    ant compile -Dtesting=true
-
+You can run test either on the uncompiled or compiled code (`SpecRunner.html` and
+`SpecRunner_compiled.htm` respectively). To run the compiled test, you have to 
+build a special test version with `ant test_compile`, which just adds some 
+helper functions and creates an easier to read version of the compiled code.
