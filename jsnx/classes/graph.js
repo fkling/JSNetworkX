@@ -1163,7 +1163,7 @@ jsnx.classes.Graph.prototype.number_of_selfloops = function() {
  * @export
  */
 jsnx.classes.Graph.prototype.size = function(opt_weight) {
-    var s = goog.math.sum.apply(null, goog.object.getValues(this.degree(opt_weight))) / 2;
+    var s = goog.math.sum.apply(null, goog.object.getValues(this.degree(null, opt_weight))) / 2;
 
     if (!goog.isDefAndNotNull(opt_weight)) {
         return Math.floor(s); // int(s)
