@@ -298,7 +298,7 @@ jsnx.drawing.jsnx_d3.draw = function(G, config, opt_bind) {
 
     if(config_['pan_zoom']['enabled']) {
             
-        var scaled = config['pan_zoom']['scale'],
+        var scaled = config_['pan_zoom']['scale'],
             stroke_width = config_['edge_style']['stroke-width'];
 
         if(goog.isFunction(stroke_width)) {
