@@ -121,6 +121,13 @@ d3.selection.prototype.filter = function(selection){};
 
 
 /**
+ * @param {function} cb
+ * @return {!d3.selection}
+ */
+d3.selection.prototype.each = function(cb){};
+
+
+/**
  * @param {string} type
  * @param {function} opt_listener
  * @param {boolean} opt_capture
@@ -278,3 +285,28 @@ d3.behavior.zoom = function() {};
  * @param {function} listener
  */
 d3.behavior.zoom.prototype.on = function(event, listener) {};
+
+
+
+// Event object
+
+/**
+ * @constructor
+ * @return {d3.event}
+ */
+d3.event = function() {};
+
+
+/**
+ *  @type number 
+ */
+d3.event.prototype.scale = null;
+
+
+/**
+ *  @type Object
+ */
+d3.event.prototype.sourceEvent = {
+    /** @type boolean */
+    shiftKey: false
+};

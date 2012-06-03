@@ -102,8 +102,8 @@ jsnx.drawing.jsnx_d3.D3_DATA_NAME_ = '__d3datum__';
  *      - edge_label_style: Object
  *      - weighted_graph: boolean
  *      - weights: string or function
- *      - edge_offset: number
- *      - with_zoom: boolean
+ *      - edge_offset: number or function
+ *      - pan_zoom: object with properties `enabled` (bool) and `scale` (bool)
  *
  *  @param {boolean} opt_bind Set to true to automatically update
  *      the output upon graph manipulation. Only works for adding nodes or edges
@@ -134,7 +134,7 @@ jsnx.drawing.jsnx_d3.draw = function(G, config, opt_bind) {
     }
 
 
-    // initialze
+    // initialize
     jsnx.drawing.jsnx_d3.last_element_ = goog.object.get(config_, 'element', 
             jsnx.drawing.jsnx_d3.last_element_);
 
@@ -142,40 +142,21 @@ jsnx.drawing.jsnx_d3.draw = function(G, config, opt_bind) {
     d3.select(jsnx.drawing.jsnx_d3.last_element_).select('svg.jsnx').remove();
 
 
+    // set up base elements
     var container = d3.select(jsnx.drawing.jsnx_d3.last_element_),
         d3nodes = [], d3links = [],
         canvas = container
                 .append('svg')
                 .classed('jsnx', true)
                 .attr('pointer-events', 'all'),
-        parent_container = canvas;
+        parent_container = canvas.append('g');
 
-
-    var inv_scale = 1;
-    if(config_['with_zoom']) {
-        parent_container = canvas
-                .call(d3.behavior.zoom().on('zoom', function() {
-                    inv_scale = 1 / d3.event.scale;
-                    var tr = d3['event']['translate'];
-                    parent_container.attr('transform', 'translate(' +  tr[0] + ',' +  tr[1] + ')scale(' + d3.event.scale + ')');
-                    parent_container.selectAll('g.node > .node').attr('transform', 'scale(' + (1/d3.event.scale) + ')');
-                    redraw();
-                    parent_container.selectAll('g.edges > .edge').style('stroke-width', function(d) { 
-                        return  scale(weight_func.call(this, d)) * inv_scale; 
-                    });
-                }))
-            .append('g');
-    }
 
     var edge_selection = parent_container
                         .append('g')
                         .classed('edges', true)
-                        .selectAll('.edge'),
+                        .selectAll('g.edge'),
 
-        edge_label_selection = parent_container
-                                .append('g')
-                                .classed('edge_labels', true)
-                                .selectAll('text'),
         node_selection = parent_container
                         .append('g')
                         .classed('nodes', true)
@@ -192,11 +173,10 @@ jsnx.drawing.jsnx_d3.draw = function(G, config, opt_bind) {
         weighted =  config_['weighted'],
         selections = {
             node_selection: node_selection,
-            edge_selection: edge_selection,
-            edge_label_selection: edge_label_selection
+            edge_selection: edge_selection
         };
 
-    // determine text function
+    // determine node label function
     if(config_['with_labels']) {
         var labels =  config_['labels'];
         if(goog.typeOf(labels) === 'object') {
@@ -221,6 +201,8 @@ jsnx.drawing.jsnx_d3.draw = function(G, config, opt_bind) {
     config_['labels'] = label_func;
 
 
+    // if the graph should be weighted, we need a weight function
+    // these will be used as edge lables if no others are provided
     if(weighted) {
         var weights =  config_['weights'];
         if(goog.typeOf(weights) === 'object') {
@@ -243,6 +225,7 @@ jsnx.drawing.jsnx_d3.draw = function(G, config, opt_bind) {
         }
     }
 
+    // determine edge labels
     if(config_['with_edge_labels']) {
         var elabels = config_['edge_labels'];
 
@@ -270,6 +253,7 @@ jsnx.drawing.jsnx_d3.draw = function(G, config, opt_bind) {
         config_['edge_labels'] = edge_label_func;
     }
 
+    // scale the width of the edge according to the weight
     if(weighted && config_['weighted_stroke']) {
         var max_weight = goog.iter.reduce(G.edges_iter(true), function(u, v) {
                 v = weight_func({data: v[2]});
@@ -294,7 +278,9 @@ jsnx.drawing.jsnx_d3.draw = function(G, config, opt_bind) {
         .duration(1000)
         .style("opacity", 1);
 
+
     // initialize layout
+    // don't let the user set these:
     var exclude = {'size': true, 'nodes': true, 'links': true, 'start': true};
 
     jsnx.helper.forEach(layout_attr, function(attr) {
@@ -305,27 +291,88 @@ jsnx.drawing.jsnx_d3.draw = function(G, config, opt_bind) {
 
     force.nodes(d3nodes).links(d3links).size([width, height]);
 
+
+    // set up zoom and pan behaviour
+    var zoom = 1,
+        inv_scale = 1; // used to scale nodes and text accordingly
+
+    if(config_['pan_zoom']['enabled']) {
+            
+        var scaled = config['pan_zoom']['scale'],
+            stroke_width = config_['edge_style']['stroke-width'];
+
+        if(goog.isFunction(stroke_width)) {
+            config_['edge_style']['stroke-width'] = function() {
+                var width = stroke_width.apply(this, arguments);
+                return inv_scale * (+width || parseInt(width, 10));
+            };
+        }
+        else {
+            stroke_width = +stroke_width || parseInt(stroke_width, 10);
+            config_['edge_style']['stroke-width'] = function() {
+                return inv_scale * stroke_width;
+            };
+        }
+
+        // private scope, since these are just helper variables
+        (function() {
+
+            var zooming = false,
+                zoom_start_scale = 1,
+                zoom_start = zoom,
+                scale_regex = /scale\([^)]+\)/;
+
+            canvas.call(d3.behavior.zoom().on('zoom', function() {
+                var shiftKey = d3.event.sourceEvent.shiftKey,
+                    zoomed = (scaled && shiftKey) || !(scaled || shiftKey);
+
+                // if the graph is zoomed, we have to keep track of the 
+                // ration it was zoomed by
+                if(zoomed && !zooming) {
+                    zoom_start_scale = d3.event.scale;
+                    zoom_start = zoom;
+                    zooming = true;
+                }
+                else if (!zoomed && zooming) {
+                    zooming = false;
+                }
+
+                zoom =  zoomed ? zoom_start * (d3.event.scale/zoom_start_scale) : zoom;
+                inv_scale = !zoomed ?  zoom / d3.event.scale : inv_scale;
+
+                var tr = d3['event']['translate'];
+                parent_container.attr('transform', 'translate(' +  tr[0] + ',' +  tr[1] + ')scale(' + d3.event.scale + ')');
+                parent_container.selectAll('g.edge > .line').style('stroke-width', config_['edge_style']['stroke-width']);
+                redraw();
+            }));
+
+        }());
+    }
+
     var update_edge_position = goog.nullFunction,
         update_edge_label_position = goog.nullFunction;
 
     if(directed) { // don't rotate labels and draw curvy lines
-        // arrow heads
+
+        // arrow head definition
         canvas.append('defs')
-            .append('marker')
-            .attr('id', 'Triangle')
-            .attr('markerUnits', 'strokeWidth')
-            .attr('refX', '7')
-            .attr('refY', '5')
-            .attr('viewBox', '0 0 10 10')
-            .attr('orient', 'auto')
-            .append('path')
-            .attr('d', 'M 0 0 L 10 5 L 0 10 z');
+        .append('marker')
+        .attr('id', 'Triangle')
+        .attr('markerUnits', 'strokeWidth')
+        .attr('refX', '7')
+        .attr('refY', '5')
+        .attr('viewBox', '0 0 10 10')
+        .attr('orient', 'auto')
+        .append('path')
+        .attr('d', 'M 0 0 L 10 5 L 0 10 z');
 
         config_['edge_attr']['marker-end'] = 'url(#Triangle)';
         config_['edge_style']['fill'] = 'none';
 
+
         var ld = config_['layout_attr']['linkDistance'],
             offset = config_['edge_offset'];
+
 
         if(!goog.isFunction(ld)) {
             ld = function() {
@@ -334,130 +381,101 @@ jsnx.drawing.jsnx_d3.draw = function(G, config, opt_bind) {
         }
         if(goog.isArray(offset)) {
             offset = function() {
-                 return  config_['edge_offset'];
+                return  config_['edge_offset'];
             };
         }
         if(goog.isNumber(offset)) {
             offset = function() {
-                 return  [config_['edge_offset'], config_['edge_offset']];
+                return  [config_['edge_offset'], config_['edge_offset']];
             };
         }
 
         update_edge_position = function() {
-            selections.edge_selection
-                .attr("d", function(d) {
-                    if(d['source'] !== d['target']) {
-                        var x1 = d['source']['x'],
-                            y1 = d['source']['y'],
-                            x2 = d['target']['x'],
-                            y2 = d['target']['y'],
-                            dx = Math.sqrt(Math.pow(x2 - x1, 2) +
-                                Math.pow(y2 - y1, 2)),
-                            offset_ = offset(d);
 
-                        offset_ = [offset_[0] * inv_scale, offset_[1] * inv_scale];
-
-                        if(G.has_edge(d['target']['node'], d['source']['node'])) {
-                            var angle = goog.math.angle(x1,y1,x2,y2),
-                                dy = ld(d)/3,
-                                x3 = dx/2,
-                                y3 = -dy,
-                                m = y3/x3,
-                                c = m*dx;
-                            return ['M', offset_[0], m*offset_[0], 'Q', dx/2, -dy, 
-                                dx - offset_[1], -m*(dx - offset_[1]) + c].join(' ');
-                        }
-                        else {
-                            return ['M', offset_[0], '0 L', dx - offset_[1], 0].join(' '); 
-                        }
-                    }
-                })
-            .attr('transform', function(d) {
+            selections.edge_selection.each(function(d) {
                 if(d['source'] !== d['target']) {
-                    var x1 = d['source']['x'],
+                    var $this = d3.select(this),
+                        x1 = d['source']['x'],
                         y1 = d['source']['y'],
                         x2 = d['target']['x'],
                         y2 = d['target']['y'],
-                        angle =  goog.math.angle(x1,y1,x2,y2);
-                        
-                    return ['translate(',x1,',',y1,')', 'rotate(', angle,')'].join('');
+                        angle =  goog.math.angle(x1,y1,x2,y2),
+                        dx = Math.sqrt(Math.pow(x2 - x1, 2) +
+                                   Math.pow(y2 - y1, 2)),
+                        offset_ = offset(d);
+
+                    offset_ = [offset_[0] * inv_scale, offset_[1] * inv_scale];
+
+                    $this.attr('transform', ['translate(',x1,',',y1,')', 'rotate(', angle,')'].join(''));
+
+
+                    var reverse_edge_exists = d['G'].has_edge(d['target']['node'], d['source']['node']);
+                    if(reverse_edge_exists) {
+                        var dy = ld(d)/3,
+                        x3 = dx/2,
+                        y3 = -dy,
+                        m = y3/x3,
+                        c = m*dx;
+                        $this.select('.line').attr('d', ['M', offset_[0], m*offset_[0], 'Q', dx/2, -dy, 
+                            dx - offset_[1], -m*(dx - offset_[1]) + c].join(' '));
+                    }
+                    else {
+                        $this.select('.line').attr('d', ['M', offset_[0], '0 L', dx - offset_[1], 0].join(' ')); 
+                    }
+
+                    var scale = 1/inv_scale;
+                    $this.select('text')
+                        .attr('x',  dx * scale / 2)
+                        .attr('y', reverse_edge_exists ? scale * (-ld(d)/4) : 0)
+                        .attr('transform', 'scale(' + inv_scale + ')');
                 }
             });
-
         };
-        
-        if(config_['with_edge_labels']) {
-            update_edge_label_position = function() {
-                selections.edge_label_selection
-                .attr('x', function(d) { 
-                    return Math.sqrt(Math.pow(d['target']['x'] - d['source']['x'], 2) +
-                            Math.pow(d['target']['y'] - d['source']['y'], 2))/2;
-                })
-                .attr('y', function(d) { 
-                    return G.has_edge(d['target']['node'], d['source']['node']) ? -ld(d)/3 : -2; 
-                })
-                .attr('transform', function(d) {
-                    var x1 = d['source']['x'],
-                        y1 = d['source']['y'],
-                        x2 = d['target']['x'],
-                        y2 = d['target']['y'];
-
-                    var angle = goog.math.angle(x1, y1, x2, y2);
-                    return ['translate(',x1,',',y1,')rotate(', angle,')'].join('');
-                });
-            };
-        }
     }
     else {
         update_edge_position = function() {
-            selections.edge_selection
-            .attr("d", function(d) { 
-                var center = [(d['source']['x'] + d['target']['x']) / 2, 
-                    (d['source']['y'] + d['target']['y']) / 2];
+            selections.edge_selection.each(function(d) {
+                if(d['source'] !== d['target']) {
+                    var $this = d3.select(this),
+                        x1 = d['source']['x'],
+                        y1 = d['source']['y'],
+                        x2 = d['target']['x'],
+                        y2 = d['target']['y'],
+                        angle =  goog.math.angle(x1,y1,x2,y2),
+                        dx = Math.sqrt(Math.pow(x2 - x1, 2) +
+                                       Math.pow(y2 - y1, 2)),
+                        center = dx/2;
 
-                    return ['M', d['source']['x'], d['source']['y'], 'L', 
-                        center[0], center[1], 'L', 
-                        d['target']['x'], d['target']['y']].join(' ');
+                        $this.attr('transform', ['translate(',x1,',',y1,')', 'rotate(', angle,')'].join(''));
+                        $this.select('.line').attr('d', ['M 0 0 L', dx, '0'].join(' '));
+                        
+                        if(config_['with_edge_labels']) {
+
+                            $this.select('text')
+                                .attr('x', center * (1/inv_scale))
+                                .attr('y', 0)
+                                .attr('transform', 'scale(' + inv_scale + ')' + 
+                                      (angle > 90 && angle < 279 ? 
+                                          'rotate(180,' +  center * (1/inv_scale) +',0)' : 
+                                              ''));
+                        }
+                }
             });
         };
 
-        if(config_['with_edge_labels']) {
-
-            update_edge_label_position = function() {
-
-                selections.edge_label_selection
-                .attr('x', function(d) { return (d['source']['x'] + d['target']['x']) / 2;})
-                .attr('y', function(d) { return -2 + (d['source']['y'] + d['target']['y']) / 2;})
-                .attr('transform', function(d) {
-                    var center = [(d['source']['x'] + d['target']['x']) / 2, 
-                        (d['source']['y'] + d['target']['y']) / 2];
-                        var angle = goog.math.angle(d['source']['x'], d['source']['y'], 
-                                                    d['target']['x'], d['target']['y']);
-
-                        if(angle > 90 && angle < 279) {
-                            angle += 180;
-                        }
-                        return ['rotate(', angle,',', center[0],',', 
-                                        center[1], ')'].join('');
-                });
-            };
-        }
     }
 
     var redraw = function() {
         // update node position
         selections.node_selection
         .attr("transform", function(d) { 
-            return ['translate(',d['x'],',',d['y'],')'].join(''); 
+            return ['translate(',d['x'],',',d['y'],')', 'scale(' , inv_scale , ')'].join(''); 
         });
 
         update_edge_position();
-        update_edge_label_position();
     };
 
     force.on('tick', redraw);
-
-
 
     var nodes = G.nodes_iter(),
         edges = G.edges_iter();
@@ -470,15 +488,13 @@ jsnx.drawing.jsnx_d3.draw = function(G, config, opt_bind) {
 
     // update d3 node and link data
     selections.node_selection = jsnx.drawing.jsnx_d3.add_nodes_(G, nodes, force, 
-                         node_selection, config_['node_shape'], label_func);
+                            node_selection, config_['node_shape'], label_func);
 
-    var s_ = jsnx.drawing.jsnx_d3.add_edges_(G, edges, force, edge_selection, 
-                     edge_label_selection, edge_label_func);
-    selections.edge_selection = s_[0];
-    selections.edge_label_selection = s_[1];
+    selections.edge_selection  = jsnx.drawing.jsnx_d3.add_edges_(G, edges, force, 
+                                             edge_selection, edge_label_func);
 
     // apply attributes and styles
-    
+
     jsnx.drawing.jsnx_d3.update_node_attr_(selections.node_selection, {
         attr: config_['node_attr'],
         style: config_['node_style'],
@@ -486,8 +502,7 @@ jsnx.drawing.jsnx_d3.draw = function(G, config, opt_bind) {
         label_attr: config_['label_attr']
     }, config_['with_labels']);
 
-    jsnx.drawing.jsnx_d3.update_edge_attr_(selections.edge_selection, 
-                                           selections.edge_label_selection, {
+    jsnx.drawing.jsnx_d3.update_edge_attr_(selections.edge_selection, {
         attr: config_['edge_attr'],
         style: config_['edge_style'],
         label_style: config_['edge_label_style'],
@@ -507,6 +522,8 @@ jsnx.drawing.jsnx_d3.draw = function(G, config, opt_bind) {
     }
 
     force.start();
+
+    return force;
 };
 
 goog.exportSymbol('jsnx.draw', jsnx.drawing.jsnx_d3.draw);
@@ -544,11 +561,11 @@ jsnx.drawing.jsnx_d3.add_nodes_ = function(G, nodes, force, selection,
     selection = selection.data(data, jsnx.drawing.jsnx_d3.node_key_function);
     // create new elements
     var nsel = selection.enter()
-    .append('g')
-    .classed('node', true)
-    .call(force.drag);
+        .append('g')
+        .classed('node', true)
+        .call(force.drag);
 
-    nsel.append(node_shape).classed('node', true);
+    nsel.append(node_shape).classed('node-shape', true);
 
     if(opt_label_func) {
         nsel.append('text').text(opt_label_func);
@@ -556,7 +573,6 @@ jsnx.drawing.jsnx_d3.add_nodes_ = function(G, nodes, force, selection,
 
     return selection;
 };
-
 
 
 /**
@@ -567,7 +583,6 @@ jsnx.drawing.jsnx_d3.add_nodes_ = function(G, nodes, force, selection,
  *      default are all nodes
  * @param {d3.layout.force} force 
  * @param {d3.selection} selection D3 DOM node selection of nodes
- * @param {d3.selection} label_selection D3 DOM node selection of nodes
  * @param {function} opt_label_func Function to extract text for labels
  *
  * @return {Array.<d3.selection>}
@@ -575,7 +590,7 @@ jsnx.drawing.jsnx_d3.add_nodes_ = function(G, nodes, force, selection,
  * @private
 */
 jsnx.drawing.jsnx_d3.add_edges_ = function(G, edges, force, selection, 
-                                           label_selection, opt_label_func) {
+                                                              opt_label_func) {
     // Get current data
     var data = force.links();
     // add new data
@@ -596,19 +611,18 @@ jsnx.drawing.jsnx_d3.add_edges_ = function(G, edges, force, selection,
     // update data join
     selection = selection.data(data, jsnx.drawing.jsnx_d3.edge_key_function);
     // create new elements
-    selection.enter()
-    .append('path')
-    .classed('edge', true);
+    var esel = selection.enter()
+        .append('g')
+        .classed('edge', true);
+
+
+    esel.append('path').classed('line', true);
 
     if(opt_label_func) {
-        label_selection = label_selection.data(data, 
-                                      jsnx.drawing.jsnx_d3.edge_key_function);
-        label_selection.enter()
-        .append('text')
-        .text(opt_label_func);
+        esel.append('text').text(opt_label_func);
     }
 
-    return [selection, label_selection];
+    return selection;
 };
 
 
@@ -624,9 +638,9 @@ jsnx.drawing.jsnx_d3.add_edges_ = function(G, edges, force, selection,
  *      only update these nodes.
  * 
  * @private
-*/
+ */
 jsnx.drawing.jsnx_d3.update_node_attr_ = function(selection, node_style, 
-                                                  with_labels, opt_nodes) {
+                                                    with_labels, opt_nodes) {
 
     if(goog.isDefAndNotNull(opt_nodes)) {
         var nd = {};
@@ -638,7 +652,7 @@ jsnx.drawing.jsnx_d3.update_node_attr_ = function(selection, node_style,
         });
     }
 
-    var nodes = selection.selectAll('.node');
+    var nodes = selection.selectAll('.node-shape');
 
     goog.object.forEach(node_style.attr, function(value, attr) {
         nodes.attr(attr, value);
@@ -659,7 +673,6 @@ jsnx.drawing.jsnx_d3.update_node_attr_ = function(selection, node_style,
             text.style(style, value);
         });
     }
-
 };
 
 
@@ -667,7 +680,6 @@ jsnx.drawing.jsnx_d3.update_node_attr_ = function(selection, node_style,
  * Updates attributes of edges.
  *
  * @param {d3.selection} selection
- * @param {d3.selection} label_selection
  * @param {{style, attr, label_style, label_attr}} Object
  *      Holds the values for various attributes and styles of the node
  *      and its label
@@ -679,10 +691,10 @@ jsnx.drawing.jsnx_d3.update_node_attr_ = function(selection, node_style,
  * @param {boolean} opt_directed
  *
  * @private
-*/
-jsnx.drawing.jsnx_d3.update_edge_attr_ = function(selection, label_selection, 
-                                                  edge_style, opt_with_edge_labels, 
-                                                  opt_edges, opt_directed) {
+ */
+jsnx.drawing.jsnx_d3.update_edge_attr_ = function(selection, edge_style, 
+                                                  opt_with_edge_labels, 
+                                              opt_edges, opt_directed) {
 
     if(goog.isDefAndNotNull(opt_edges)) {
         var ed = {};
@@ -693,30 +705,27 @@ jsnx.drawing.jsnx_d3.update_edge_attr_ = function(selection, label_selection,
             return goog.object.containsKey(ed, d.edge) || opt_directed || 
                 goog.object.containsKey(ed, d.redge);
         });
-        label_selection = label_selection.filter(function(d) { 
-            return goog.object.containsKey(ed, d.edge) || opt_directed || 
-                goog.object.containsKey(ed, d.redge);
-        });
     }
 
+    var edges = selection.selectAll('.line');
     goog.object.forEach(edge_style.attr, function(value, attr) {
-        selection.attr(attr, value);
+        edges.attr(attr, value);
     });
 
     goog.object.forEach(edge_style.style, function(value, style) {
-        selection.style(style, value);
+        edges.style(style, value);
     });
 
     if(opt_with_edge_labels) {
+        var labels = selection.selectAll('text');
         goog.object.forEach(edge_style.label_attr, function(value, attr) {
-            label_selection.attr(attr, value);
+            labels.attr(attr, value);
         });
 
         goog.object.forEach(edge_style.label_style, function(value, style) {
-            label_selection.style(style, value);
+            labels.style(style, value);
         });
     }
-
 };
 
 
@@ -727,7 +736,7 @@ jsnx.drawing.jsnx_d3.update_edge_attr_ = function(selection, label_selection,
  * @return {*}
  *
  * @private
-*/
+ */
 jsnx.drawing.jsnx_d3.node_key_function = function(d) {
     return d['node'];
 };
@@ -740,7 +749,7 @@ jsnx.drawing.jsnx_d3.node_key_function = function(d) {
  * @return {*}
  *
  * @private
-*/
+ */
 jsnx.drawing.jsnx_d3.edge_key_function = function(d) {
     return d['edge'];
 };
@@ -757,7 +766,7 @@ jsnx.drawing.jsnx_d3.edge_key_function = function(d) {
  * @return {d3.selection} Updated selection
  *
  * @private
-*/
+ */
 jsnx.drawing.jsnx_d3.remove_nodes_ = function(G, nodes, force, selection) {
     // get current data set
     var data = force.nodes();
@@ -781,37 +790,28 @@ jsnx.drawing.jsnx_d3.remove_nodes_ = function(G, nodes, force, selection) {
  * @param {?} edges Edges to remove
  * @param {d3.layout.force} force The force the edges are bound to
  * @param {d3.selection} selection Selection of edge elements 
- * @param {d3.selection} label_selection Selection of edge label elements
  *
  * @return {Array.<d3.selection>} Updated selections 
  *
  * @private
-*/
-jsnx.drawing.jsnx_d3.remove_edges_ = function(G, edges, force, selection, 
-                                              label_selection) {
+ */
+jsnx.drawing.jsnx_d3.remove_edges_ = function(G, edges, force, selection) {
     // get current data set
     var data = force.links();
     // remove items from data
     jsnx.helper.forEach(edges, function(ed) {
-        goog.array.remove(data, 
-                  goog.object.get(G.get_edge_data(ed[0], ed[1], {}), 
-                      jsnx.drawing.jsnx_d3.D3_DATA_NAME_,
-                      null
-                 )
-        );
+        goog.array.remove(data, goog.object.get(
+            G.get_edge_data(ed[0], ed[1], {}),
+            jsnx.drawing.jsnx_d3.D3_DATA_NAME_, 
+            null
+         ));
     });
     // rebind data
     selection = selection.data(data, jsnx.drawing.jsnx_d3.edge_key_function);
     // remove SVG elements
     selection.exit().remove();
 
-    if(goog.isDefAndNotNull(label_selection)) { // remove labels too
-        label_selection = label_selection.data(data, 
-                                     jsnx.drawing.jsnx_d3.edge_key_function);
-        label_selection.exit().remove();
-    }
-
-    return [selection, label_selection];
+    return selection;
 };
 
 
@@ -824,12 +824,11 @@ jsnx.drawing.jsnx_d3.remove_edges_ = function(G, edges, force, selection,
  * @param {Object} config The configuration for the output
  * @param {Array} node_list list of D3 nodes
  * @param {Array} node_list list of D3 edges
- * @param {{node_seletion:d3.selection, edge_selection:d3.selection,
- *          edge_label_selection:d3.selection}}
+ * @param {{node_seletion:d3.selection, edge_selection:d3.selection }}
  *      Various D3 selections
  *
  * @private
-*/
+ */
 jsnx.drawing.jsnx_d3.bind_ = function(G, force, config, selections) {
 
     jsnx.drawing.jsnx_d3.unbind(G, false);
@@ -860,7 +859,7 @@ jsnx.drawing.jsnx_d3.bind_ = function(G, force, config, selections) {
 
         if(new_node) {
             selections.node_selection = jsnx.drawing.jsnx_d3.add_nodes_(this, 
-               [n], force, selections.node_selection, node_shape, label_func);
+                [n], force, selections.node_selection, node_shape, label_func);
         }
 
         // update node attributes
@@ -880,12 +879,12 @@ jsnx.drawing.jsnx_d3.bind_ = function(G, force, config, selections) {
 
         if(new_nodes.length > 0) { // add new nodes and update
             selections.node_selection = jsnx.drawing.jsnx_d3.add_nodes_(this, 
-            new_nodes, force, selections.node_selection, node_shape, label_func);                
+                new_nodes, force, selections.node_selection, node_shape, label_func);                
         }
 
         jsnx.drawing.jsnx_d3.update_node_attr_(selections.node_selection, 
-                                           node_style, with_labels, nbunch);
-        force.start();
+                                               node_style, with_labels, nbunch);
+       force.start();
     };
 
 
@@ -908,18 +907,14 @@ jsnx.drawing.jsnx_d3.bind_ = function(G, force, config, selections) {
         }
 
         if(new_edge) {
-            var s_ = jsnx.drawing.jsnx_d3.add_edges_(this, [[u,v]], force, 
-                     selections.edge_selection, selections.edge_label_selection, 
-                         edge_label_func);
-            selections.edge_selection = s_[0];
-            selections.edge_label_selection = s_[1];
+            selections.edge_selection = jsnx.drawing.jsnx_d3.add_edges_(this, 
+                [[u,v]], force, selections.edge_selection, edge_label_func);
         }
 
         jsnx.drawing.jsnx_d3.update_edge_attr_(selections.edge_selection,  
-                          selections.edge_label_selection, edge_style, 
-                          with_edge_labels, [[u,v]], directed);
+                                   edge_style, with_edge_labels, [[u,v]], directed);
 
-       force.start();
+        force.start();
     };
 
 
@@ -932,7 +927,8 @@ jsnx.drawing.jsnx_d3.bind_ = function(G, force, config, selections) {
             var u = ed[0], v = ed[1];
             if(!this.has_edge(u, v) && 
                !goog.object.containsKey(seen_edges, [u,v]) && 
-               (directed || !goog.object.containsKey(seen_edges, [v, u]))) {
+                       (directed || !goog.object.containsKey(seen_edges, [v, u]))) {
+
                 new_edges.push([u, v]);
                 seen_edges[[u,v]] = true;
                 if(!this.has_node(u) && !goog.object.containsKey(seen_nodes, u)) {
@@ -943,6 +939,7 @@ jsnx.drawing.jsnx_d3.bind_ = function(G, force, config, selections) {
                     new_nodes.push(v);
                     seen_nodes[v] = true;
                 }
+
             }
         }, this);
 
@@ -951,25 +948,21 @@ jsnx.drawing.jsnx_d3.bind_ = function(G, force, config, selections) {
         if(new_nodes.length > 0) {
             selections.node_selection = jsnx.drawing.jsnx_d3.add_nodes_(this, 
                                 new_nodes, force, selections.node_selection, 
-                                node_shape, label_func);
+                                                    node_shape, label_func);
 
             jsnx.drawing.jsnx_d3.update_node_attr_(selections.node_selection, 
                                            node_style, with_labels, new_nodes);
         }
 
         if(new_edges.length > 0) {
-            var s_ = jsnx.drawing.jsnx_d3.add_edges_(this, new_edges, force, 
-                        selections.edge_selection, selections.edge_label_selection, 
-                        edge_label_func);
-            selections.edge_selection = s_[0];
-            selections.edge_label_selection = s_[1];
+            selections.edge_selection = jsnx.drawing.jsnx_d3.add_edges_(this, 
+                new_edges, force, selections.edge_selection, edge_label_func);
         }
 
         jsnx.drawing.jsnx_d3.update_edge_attr_(selections.edge_selection, 
-                            selections.edge_label_selection, edge_style, 
-                            with_edge_labels, new_edges, directed);
+                                   edge_style, with_edge_labels, new_edges, directed);
 
-       force.start();
+        force.start();
     };
 
 
@@ -977,19 +970,16 @@ jsnx.drawing.jsnx_d3.bind_ = function(G, force, config, selections) {
         try {
             if(this.has_node(n)) {
                 selections.node_selection = jsnx.drawing.jsnx_d3.remove_nodes_(this, 
-                                            [n], force, selections.node_selection);
+                                       [n], force, selections.node_selection);
 
                 var edges = this.edges_iter([n]);
 
                 if(this.is_directed()) {
                     edges = goog.iter.chain(edges, this.in_edges_iter([n]));
                 }
-                
-                var s_ = jsnx.drawing.jsnx_d3.remove_edges_(this, edges, force, 
-                            selections.edge_selection, selections.edge_label_selection, 
-                            edge_label_func);
-                selections.edge_selection = s_[0];
-                selections.edge_label_selection = s_[1];
+
+                selections.edge_selection = jsnx.drawing.jsnx_d3.remove_edges_(this, 
+                    edges, force, selections.edge_selection);
 
                 force.resume();
             }
@@ -1002,20 +992,17 @@ jsnx.drawing.jsnx_d3.bind_ = function(G, force, config, selections) {
     G['remove_nodes_from'] = G.remove_nodes_from =  /** @this jsnx.Graph */function(nbunch) {
         try {
             selections.node_selection = jsnx.drawing.jsnx_d3.remove_nodes_(this, 
-                                     nbunch, force, selections.node_selection);
+                                       nbunch, force, selections.node_selection);
 
-            var edges = this.edges_iter(nbunch);
-            if(this.is_directed()) {
-                edges = goog.iter.chain(edges, this.in_edges_iter(nbunch));
-            }
+           var edges = this.edges_iter(nbunch);
+           if(this.is_directed()) {
+               edges = goog.iter.chain(edges, this.in_edges_iter(nbunch));
+           }
 
-            var s_ = jsnx.drawing.jsnx_d3.remove_edges_(this, edges,
-                         force, selections.edge_selection, 
-                         selections.edge_label_selection, edge_label_func);
-            selections.edge_selection = s_[0];
-            selections.edge_label_selection = s_[1];
+           selections.edge_selection = jsnx.drawing.jsnx_d3.remove_edges_(this, 
+               edges, force, selections.edge_selection);
 
-            force.resume();
+           force.resume();
         }
         catch(e){}
         proto['remove_nodes_from'].apply(G, arguments);
@@ -1024,10 +1011,8 @@ jsnx.drawing.jsnx_d3.bind_ = function(G, force, config, selections) {
 
     G['remove_edge'] = G.remove_edge =  /** @this jsnx.Graph */function(u,v) {
         try {
-            var s_ = jsnx.drawing.jsnx_d3.remove_edges_(this, [[u,v]], force,
-                    selections.edge_selection, selections.edge_label_selection);
-            selections.edge_selection = s_[0];
-            selections.edge_label_selection = s_[1];
+            selections.edge_selection = jsnx.drawing.jsnx_d3.remove_edges_(this, 
+               [[u,v]], force, selections.edge_selection);
 
             force.resume();
         }
@@ -1038,11 +1023,8 @@ jsnx.drawing.jsnx_d3.bind_ = function(G, force, config, selections) {
 
     G['remove_edges_from'] = G.remove_edges_from =  /** @this jsnx.Graph */function(ebunch) {
         try {
-            var s_ = jsnx.drawing.jsnx_d3.remove_edges_(this, ebunch, force,
-                                        selections.edge_selection, 
-                                        selections.edge_label_selection);
-            selections.edge_selection = s_[0];
-            selections.edge_label_selection = s_[1];
+            selections.edge_selection = jsnx.drawing.jsnx_d3.remove_edges_(this, 
+               ebunch, force, selections.edge_selection);
 
             force.resume();
         }
@@ -1056,11 +1038,8 @@ jsnx.drawing.jsnx_d3.bind_ = function(G, force, config, selections) {
                                        jsnx.drawing.jsnx_d3.node_key_function);
         selections.node_selection.exit().remove();
         selections.edge_selection = selections.edge_selection.data([], 
-                                      jsnx.drawing.jsnx_d3.edge_key_function);
+                                       jsnx.drawing.jsnx_d3.edge_key_function);
         selections.edge_selection.exit().remove();
-        selections.edge_label_selection = selections.edge_label_selection.data([],
-                                     jsnx.drawing.jsnx_d3.edge_key_function);
-        selections.edge_label_selection.exit().remove();
         force.nodes([]).links([]).resume();
         proto['clear'].apply(G, arguments);
     };
@@ -1068,7 +1047,7 @@ jsnx.drawing.jsnx_d3.bind_ = function(G, force, config, selections) {
     /**
      * @type boolean
      */
-    G.bound = true;
+                                                                                                                                                G.bound = true;
 };
 
 
@@ -1077,7 +1056,7 @@ jsnx.drawing.jsnx_d3.bind_ = function(G, force, config, selections) {
  *
  * @param {jsnx.Graph} G A Graph
  *
-*/
+ */
 jsnx.drawing.jsnx_d3.is_bound = function(G) {
     return G.bound;
 };
@@ -1091,7 +1070,7 @@ goog.exportSymbol('jsnx.is_bound', jsnx.drawing.jsnx_d3.is_bound);
  * @param {boolean} opt_clean (default=True)
  *    If true, all D3 data is removed from the graph
  *
-*/
+ */
 jsnx.drawing.jsnx_d3.unbind = function(G, opt_clean) {
     if(jsnx.drawing.jsnx_d3.is_bound(G)) {
         var proto = G.constructor.prototype;
@@ -1113,7 +1092,7 @@ goog.exportSymbol('jsnx.unbind', jsnx.drawing.jsnx_d3.unbind);
  * @param {jsnx.Graph} G A Graph
  *
  * @private
-*/
+ */
 jsnx.drawing.jsnx_d3.clean_ = function(G) {
     jsnx.helper.forEach(G.nodes_iter(true), function(nd) {
         goog.object.remove(nd[1], jsnx.drawing.jsnx_d3.D3_DATA_NAME_);
@@ -1129,7 +1108,7 @@ jsnx.drawing.jsnx_d3.clean_ = function(G) {
  *
  * @type Object
  * @private
-*/
+ */
 jsnx.drawing.jsnx_d3.default_config_ = {
     'layout_attr': {
         'charge': -120,
@@ -1160,6 +1139,7 @@ jsnx.drawing.jsnx_d3.default_config_ = {
     'edge_label_attr': {},
     'edge_label_style': {
         'font-size': '0.8em',
+        'dominant-baseline': 'central',
         'text-anchor': 'middle',
         '-webkit-user-select': 'none'
     },
@@ -1168,5 +1148,8 @@ jsnx.drawing.jsnx_d3.default_config_ = {
     'edge_offset': 10,
     'weights': 'weight',
     'weighted_stroke': true,
-    'with_zoom': true
+    'pan_zoom': {
+        'enabled': true,
+        'scale': true
+    }
 };
