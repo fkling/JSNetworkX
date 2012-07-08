@@ -215,6 +215,184 @@ if(jsnx.TESTING) {
 
 
 /**
+ * Implements Python's range function, returns an iterator.
+ *
+ * @param {number=} opt_start Number to start from
+ * @param {number} end Number to count to
+ * @param {number=} opt_step Stepsize
+ *
+ * @return {goog.iter.Iterator} 
+ */
+jsnx.helper.range = function(opt_start, end, opt_step) {
+
+    if(arguments.length === 0) {
+        return [];
+    }
+    else if(arguments.length === 1) {
+        end = opt_start;
+        opt_start = 0;
+        opt_step = 1;
+    }
+    else if(arguments.length === 2) {
+        opt_step = 1;
+    }
+    else if(arguments.length === 3 && arguments[2] === 0) {
+        throw "range() step argument must not be zero";
+    }
+
+    var iterator = new goog.iter.Iterator(),
+        negative = opt_step < 0,
+        counter = opt_start,
+        current;
+
+    iterator.next = function() {
+        if(negative && counter <= end || !negative && counter >= end) {
+            throw goog.iter.StopIteration;
+        }
+        current = counter;
+        counter += opt_step;
+        return current;
+    };
+
+    return iterator;
+};
+if(jsnx.TESTING) {
+    goog.exportSymbol('jsnx.helper.range', jsnx.helper.range);
+}
+
+
+/**
+ * Implements Python's itertools.combinations
+ *
+ * Return r length subsequences of elements from the input iterable.
+ *
+ * @param {?} iterable
+ * @param {number} r
+ *
+ * @return {goog.iter.Iterable}
+ */
+jsnx.helper.combinations = function(iterable, r) {
+    var pool = jsnx.helper.toArray(iterable),
+        n = pool.length;
+
+    if(r > n) {
+        return;
+    }
+
+    var indices = jsnx.helper.toArray(jsnx.helper.range(r)),
+        iterator = new goog.iter.Iterator();
+
+    /** @this {goog.iter.Iterator} */
+    iterator.next = function() {
+        var result = goog.array.map(indices, function(i) {
+            return pool[i];
+        });
+
+        this.next = function() {
+            var cont = false, i;
+            for(i = r; i--;) {
+                if(indices[i] != i + n - r) {
+                    cont = true;
+                    break;
+                }
+            }
+            if(!cont) {
+                throw goog.iter.StopIteration;
+            }
+            
+            indices[i] += 1;
+            for(var j = i+1; j < r; j++) {
+                indices[j] = indices[j-1] + 1;
+            }
+            return goog.array.map(indices, function(i) {
+                return pool[i];
+            });
+        };
+
+        return result;
+    };
+
+    return iterator;
+};
+if(jsnx.TESTING) {
+    goog.exportSymbol('jsnx.helper.combinations', jsnx.helper.combinations);
+}
+
+
+/**
+ * Implements Python's itertools.permutations
+ *
+ * Return successive r length permutations of elements in the iterable.
+ * *
+ * @param {?} iterable
+ * @param {number=} opt_r
+ *
+ * @return {goog.iter.Iterable}
+ */
+jsnx.helper.permutations = function(iterable, opt_r) {
+    var pool = jsnx.helper.toArray(iterable),
+        n = pool.length,
+        r = goog.isNumber(opt_r) ? opt_r : n;
+
+    if(r > n) {
+        return;
+    }
+
+    var indices = jsnx.helper.toArray(jsnx.helper.range(n)),
+        cycles = jsnx.helper.toArray(jsnx.helper.range(n, n - r, -1)),
+        iterator = new goog.iter.Iterator(),
+        itr = new goog.iter.Iterator(),
+        chain,
+        broke = true;
+
+    /** @this {goog.iter.Iterator} */
+    iterator.next = function() {
+        this.next = chain.next;
+        return  goog.array.map(indices.slice(0,r), function(i) {
+            return pool[i];
+        });
+
+    };
+
+    itr.next = function() {
+         return broke;
+    };
+
+    chain = jsnx.helper.nested_chain(itr, function(br) {
+        if(!br) {
+             throw goog.iter.StopIteration;
+        }
+        broke = false;
+        return jsnx.helper.range(r-1,-1,-1);
+    }, function(i) {
+        if(!broke) {
+            cycles[i] -= 1;
+            if(cycles[i] === 0) {
+                indices.splice.apply(indices, [i, indices.length].concat(indices.slice(i+1).concat([indices[i]])));
+                cycles[i] = n - i;
+            }
+            else {
+                var j = cycles[i],
+                    tmp = indices[i];
+                indices[i] = indices[indices.length-j];
+                indices[indices.length-j] = tmp;
+                broke = true;
+                return jsnx.helper.iter([goog.array.map(indices.slice(0,r), function(i) {
+                    return pool[i];
+                })]);
+            }
+        }
+    }, function(t) {
+        return t;
+    });
+
+    return iterator;
+};
+if(jsnx.TESTING) {
+    goog.exportSymbol('jsnx.helper.permutations', jsnx.helper.permutations);
+}
+
+/**
  * Like goog.object.extend, but also extends nested objects *
  * @param {Object} target  The object to modify.
  * @param {...Object} var_args The objects from which values will be copied.

@@ -21,6 +21,37 @@ describe('Helper', function() {
         expect(kv).toContain(['5', 42]);
     });
 
+    it('Creates proper ranges', function() {
+        var range = jsnx.helper.range(5);
+        expect(jsnx.helper.isIterator(range)).toBeTruthy();
+        expect(jsnx.toArray(range)).toEqual([0,1,2,3,4]);
+
+        range = jsnx.helper.range(5,10);
+        expect(jsnx.toArray(range)).toEqual([5,6,7,8,9]);
+
+        range = jsnx.helper.range(0,10,2);
+        expect(jsnx.toArray(range)).toEqual([0,2,4,6,8]);
+
+        range = jsnx.helper.range();
+        expect(jsnx.toArray(range)).toEqual([]);
+
+        // negative step size
+        range = jsnx.helper.range(10,5, -1);
+        expect(jsnx.toArray(range)).toEqual([10,9,8,7,6]);
+    });
+
+    it('Creates proper combinations', function() {
+        var comb = jsnx.helper.combinations([0,1,2,3], 3);
+        expect(jsnx.helper.isIterator(comb)).toBeTruthy();
+        expect(jsnx.toArray(comb)).toEqual([[0,1,2], [0,1,3], [0,2,3], [1,2,3]]);
+    });
+
+    it('Creates proper permutations', function() {
+        var comb = jsnx.helper.permutations([0,1,2]);
+        expect(jsnx.helper.isIterator(comb)).toBeTruthy();
+        expect(jsnx.toArray(comb)).toEqual([[0,1,2], [0,2,1], [1,0,2], [1,2,0], [2,0,1], [2,1,0]]);
+    });
+
     it('Maps objects to an iterator of (key,value) pairs (like Python\'s iteritems)', function() {
         var obj = {foo: 5, bar: [1,2], 5: 42},
             iter = helper.iteritems(obj);
