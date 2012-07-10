@@ -325,7 +325,7 @@ jsnx.classes.func.info = function(G, opt_n) {
             else {
                 var s = goog.math.sum.apply(null,
                            goog.object.getValues(G.degree()));
-                info += 'Average degree: ' + (s/nnodes).toFixed();
+                info += 'Average degree: ' + (s/nnodes).toFixed(4);
             }
         }
     }
