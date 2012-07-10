@@ -45,7 +45,7 @@ jsnx.NodeContainer;
  * @param {*=} opt_data Data to initialize graph.  If data=None (default) an
  *       empty graph is created. The data can be an edge list, or any
  *       NetworkX graph object.
- *  @param {Object=} opt_attr (default= no attributes)
+ * @param {Object=} opt_attr (default= no attributes)
  *       Attributes to add to graph as key=value pairs.
  *
  * @export
