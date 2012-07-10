@@ -100,7 +100,7 @@ jsnx.drawing.jsnx_d3.D3_DATA_NAME_ = '__d3datum__';
  *      - edge_labels: function or Dictionary or string
  *      - edge_label_attr: Object
  *      - edge_label_style: Object
- *      - weighted_graph: boolean
+ *      - weighted: boolean
  *      - weights: string or function
  *      - edge_offset: number or function
  *      - pan_zoom: object with properties `enabled` (bool) and `scale` (bool)
@@ -1146,6 +1146,7 @@ jsnx.drawing.jsnx_d3.default_config_ = {
     'with_labels': false,
     'with_edge_labels': false,
     'edge_offset': 10,
+    'weighted': false,
     'weights': 'weight',
     'weighted_stroke': true,
     'pan_zoom': {
