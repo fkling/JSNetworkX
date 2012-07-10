@@ -31,6 +31,12 @@
         <delete file="tools/compiler-latest.zip" />
     </target>
 
+    <target name="update.compiler" depends="init">
+        <delete file="tools/compiler.jar" />
+        <property name="compiler.present" value="false" />
+        <antcall target="get.compiler" />
+    </target>
+
     <target name="compile" depends="init,get.closure,get.compiler">
         <condition property="generators_flag" value="--namespace=jsnx.generators"
             else="--namespace=jsnx">
@@ -47,7 +53,7 @@
             <arg value="--root=${goog}" />
             <arg value="--root=${nx}" />
             <arg value="--namespace=jsnx" />
-            <arg value="${generators_flag}" />
+            <!-- <arg value="${generators_flag}" /> -->
             <!-- <arg value="${algorithms_flag}" /> -->
             <arg value="--output_mode=compiled" />
             <arg value="--compiler_flags=--output_wrapper=(function(){%output%}());" />
@@ -73,6 +79,23 @@
             <arg value="--compiler_flags=--generate_exports" />
             <arg value="--compiler_flags=--define=goog.DEBUG=false" />
             <arg value="--compiler_flags=--define=jsnx.TESTING=true" />
+            <arg value="--compiler_flags=--externs=jsnx/externs/d3.js" />
+            <arg value="--compiler_jar=tools/compiler.jar" />
+        </exec>
+    </target>
+
+    <target name="compress" depends="init,get.closure,get.compiler">
+        <exec executable="python" output="jsnetworkx.js" logError="yes">
+            <arg value="${goog}/closure/bin/build/closurebuilder.py" />
+            <arg value="--root=${goog}" />
+            <arg value="--root=${nx}" />
+            <arg value="--namespace=jsnx" />
+            <arg value="--output_mode=compiled" />
+            <arg value="--compiler_flags=--formatting=PRETTY_PRINT" />
+            <arg value="--compiler_flags=--output_wrapper=(function(){%output%}());" />
+            <arg value="--compiler_flags=--generate_exports" />
+            <arg value="--compiler_flags=--define=goog.DEBUG=false" />
+            <arg value="--compiler_flags=--define=jsnx.TESTING=false" />
             <arg value="--compiler_flags=--externs=jsnx/externs/d3.js" />
             <arg value="--compiler_jar=tools/compiler.jar" />
         </exec>
