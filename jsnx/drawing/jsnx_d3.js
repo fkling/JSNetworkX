@@ -599,7 +599,7 @@ jsnx.drawing.jsnx_d3.add_edges_ = function(G, edges, force, selection,
         d = ed[2] || G.get_edge_data(u, v),
         eobj = {
             'edge': [u,v],
-            redge: [v, u],
+            'redge': [v, u],
             'source': G['node'][u][jsnx.drawing.jsnx_d3.D3_DATA_NAME_], 
             'target': G['node'][v][jsnx.drawing.jsnx_d3.D3_DATA_NAME_], 
             'data': d,
@@ -648,7 +648,7 @@ jsnx.drawing.jsnx_d3.update_node_attr_ = function(selection, node_style,
             nd[goog.isArrayLike(value) ? value[0] : value] = true;  
         });
         selection = selection.filter(function(d) { 
-            return goog.object.containsKey(nd, d.node);
+            return goog.object.containsKey(nd, d['node']);
         });
     }
 
@@ -702,8 +702,8 @@ jsnx.drawing.jsnx_d3.update_edge_attr_ = function(selection, edge_style,
             ed[[value[0], value[1]]] = true;  
         });
         selection = selection.filter(function(d) { 
-            return goog.object.containsKey(ed, d.edge) || opt_directed || 
-                goog.object.containsKey(ed, d.redge);
+            return goog.object.containsKey(ed, d['edge']) || opt_directed || 
+                goog.object.containsKey(ed, d['redge']);
         });
     }
 
