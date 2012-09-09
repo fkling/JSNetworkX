@@ -176,7 +176,7 @@ jsnx.convert.to_dict_of_lists = function(G, nodelist) {
 
     return d;
 };
-goog.exportSymbol('jsnx.to_dict_of_lists', jsnx.to_dict_of_lists);
+goog.exportSymbol('jsnx.to_dict_of_lists', jsnx.convert.to_dict_of_lists);
 
 
 /**
