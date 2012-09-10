@@ -668,7 +668,7 @@ jsnx.classes.DiGraph.prototype.in_edges_iter = function(opt_nbunch, opt_data) {
 
     var nodes_nrbs, n;
 
-    if(!goog.isDefAndNotNull) {
+    if(!goog.isDefAndNotNull(opt_nbunch)) {
         nodes_nrbs = jsnx.helper.items(this['pred']);
     }
     else {
@@ -680,7 +680,7 @@ jsnx.classes.DiGraph.prototype.in_edges_iter = function(opt_nbunch, opt_data) {
     if(opt_data) {
         return jsnx.helper.nested_chain(nodes_nrbs, function(nd) {
             n = nd[0];
-            return jsnx.helper.iteritems(nd[0]);
+            return jsnx.helper.iteritems(nd[1]);
         }, function(nbrd) {
             return [nbrd[0], n, nbrd[1]];
         });
