@@ -39,6 +39,10 @@
     </target>
 
     <target name="compile" depends="init,get.closure,get.compiler">
+        <!-- Track changes again -->
+        <exec executable="git">
+            <arg line="update-index --no-assume-unchanged jsnetworkx.js" />
+        </exec>
         <exec executable="python" output="jsnetworkx.js" logError="yes">
             <arg value="${goog}/closure/bin/build/closurebuilder.py" />
             <arg value="--root=${goog}" />
@@ -59,6 +63,10 @@
         <antcall target="prepare.test">
             <param name="compiled" value="1"/>
         </antcall>
+        <!-- Ignore changes -->
+        <exec executable="git">
+            <arg line="update-index --assume-unchanged jsnetworkx.js" />
+        </exec>
         <exec executable="python" output="jsnetworkx.js" logError="yes">
             <arg value="${goog}/closure/bin/build/closurebuilder.py" />
             <arg value="--root=${goog}" />
@@ -77,6 +85,10 @@
     </target>
 
     <target name="compress" depends="init,get.closure,get.compiler">
+        <!-- Ignore changes -->
+        <exec executable="git">
+            <arg line="update-index --assume-unchanged jsnetworkx.js" />
+        </exec>
         <exec executable="python" output="jsnetworkx.js" logError="yes">
             <arg value="${goog}/closure/bin/build/closurebuilder.py" />
             <arg value="--root=${goog}" />
