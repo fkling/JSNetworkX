@@ -2,3 +2,5 @@ tools/compiler.jar
 build/
 test/
 SpecRunner.html
+.ant-targets-build.xml
+utils/
