@@ -1,3 +1,4 @@
-tools/
+tools/compiler.jar
 build/
 test/
+SpecRunner.html

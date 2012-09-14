@@ -11,50 +11,39 @@
     <property name="build" location="build" />
     <property name="dist" location="dist" />
     <property name="docs" location="docs" />
+    <property name="tools" location="tools" />
 
     <property name="testing" value="false" />
     <property name="generators" value="true" />
     <property name="algorithms" value="true" />
+    <property name="compiled" value="0" />
 
     <target name="init">
         <mkdir dir="${build}" />
-        <mkdir dir="tools" />
-        <available file="tools/compiler.jar" property="compiler.present"/>
+        <available file="${tools}/compiler.jar" property="compiler.present"/>
     </target>
 
     <target name="get.compiler" depends="init" unless="compiler.present">
         <echo>Downloading Google Closure Compiler...</echo>
-        <get src="http://closure-compiler.googlecode.com/files/compiler-latest.zip" dest="tools" />
-        <unzip src="tools/compiler-latest.zip" dest="tools">
+        <get src="http://closure-compiler.googlecode.com/files/compiler-latest.zip" dest="${tools}" />
+        <unzip src="${tools}/compiler-latest.zip" dest="${tools}">
             <patternset includes="compiler.jar" />
         </unzip>
-        <delete file="tools/compiler-latest.zip" />
+        <delete file="${tools}/compiler-latest.zip" />
     </target>
 
     <target name="update.compiler" depends="init">
-        <delete file="tools/compiler.jar" />
+        <delete file="${tools}/compiler.jar" />
         <property name="compiler.present" value="false" />
         <antcall target="get.compiler" />
     </target>
 
     <target name="compile" depends="init,get.closure,get.compiler">
-        <condition property="generators_flag" value="--namespace=jsnx.generators"
-            else="--namespace=jsnx">
-            <istrue value="${generators}" />
-        </condition>
-
-        <condition property="algorithms_flag" value="--namespace=jsnx.algorithms"
-            else="--namespace=jsnx">
-            <istrue value="${algorithms}" />
-        </condition>
-
         <exec executable="python" output="jsnetworkx.js" logError="yes">
             <arg value="${goog}/closure/bin/build/closurebuilder.py" />
             <arg value="--root=${goog}" />
             <arg value="--root=${nx}" />
             <arg value="--namespace=jsnx" />
-            <!-- <arg value="${generators_flag}" /> -->
-            <!-- <arg value="${algorithms_flag}" /> -->
             <arg value="--output_mode=compiled" />
             <arg value="--compiler_flags=--output_wrapper=(function(){%output%}());" />
             <arg value="--compiler_flags=--compilation_level=ADVANCED_OPTIMIZATIONS" />
@@ -62,11 +51,14 @@
             <arg value="--compiler_flags=--define=goog.DEBUG=false" />
             <arg value="--compiler_flags=--define=jsnx.TESTING=false" />
             <arg value="--compiler_flags=--externs=jsnx/externs/d3.js" />
-            <arg value="--compiler_jar=tools/compiler.jar" />
+            <arg value="--compiler_jar=${tools}/compiler.jar" />
         </exec>
     </target>
 
     <target name="test_compile" depends="init,get.closure,get.compiler">
+        <antcall target="prepare.test">
+            <param name="compiled" value="1"/>
+        </antcall>
         <exec executable="python" output="jsnetworkx.js" logError="yes">
             <arg value="${goog}/closure/bin/build/closurebuilder.py" />
             <arg value="--root=${goog}" />
@@ -80,7 +72,7 @@
             <arg value="--compiler_flags=--define=goog.DEBUG=false" />
             <arg value="--compiler_flags=--define=jsnx.TESTING=true" />
             <arg value="--compiler_flags=--externs=jsnx/externs/d3.js" />
-            <arg value="--compiler_jar=tools/compiler.jar" />
+            <arg value="--compiler_jar=${tools}/compiler.jar" />
         </exec>
     </target>
 
@@ -97,9 +89,21 @@
             <arg value="--compiler_flags=--define=goog.DEBUG=false" />
             <arg value="--compiler_flags=--define=jsnx.TESTING=false" />
             <arg value="--compiler_flags=--externs=jsnx/externs/d3.js" />
-            <arg value="--compiler_jar=tools/compiler.jar" />
+            <arg value="--compiler_jar=${tools}/compiler.jar" />
         </exec>
     </target>
+
+
+    <target name="prepare.test" depends="deps">
+        <exec executable="python">
+            <arg value="${tools}/test_collector.py" />
+            <arg value="${tools}/SpecRunner_template.html" />
+            <arg value="SpecRunner.html" />
+            <arg value="${nx}" />
+            <arg value="${compiled}" />
+        </exec>
+    </target>
+
 
     <target name="deps" depends="init,get.closure">
         <exec executable="python" output="${build}/deps.js" logError="yes">
