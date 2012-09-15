@@ -28,6 +28,7 @@ goog.require('jsnx.exception');
 goog.require('jsnx.helper');
 goog.require('jsnx.classes');
 goog.require('jsnx.drawing');
+goog.require('jsnx.algorithms');
 goog.require('jsnx.generators');
 goog.require('jsnx.relabel');
 goog.require('jsnx.utils');
