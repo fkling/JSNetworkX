@@ -299,7 +299,7 @@ jsnx.helper.combinations = function(iterable, r) {
         n = pool.length;
 
     if(r > n) {
-        return;
+        return new goog.iter.Iterator();
     }
 
     var indices = jsnx.helper.toArray(jsnx.helper.range(r)),
@@ -358,7 +358,7 @@ jsnx.helper.permutations = function(iterable, opt_r) {
         r = goog.isNumber(opt_r) ? opt_r : n;
 
     if(r > n) {
-        return;
+        return new goog.iter.Iterator();
     }
 
     var indices = jsnx.helper.toArray(jsnx.helper.range(n)),
