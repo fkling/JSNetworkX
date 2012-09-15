@@ -259,5 +259,3 @@ TestSquareClustering.prototype.test_lind_square_clustering = function() {
 (new TestClustering()).run();
 (new TestTransitivity()).run();
 (new TestSquareClustering()).run();
-
-//TODO: TestWightedClustering, TestClustering, TestTransitivity, TestSquareClustering
