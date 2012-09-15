@@ -215,6 +215,29 @@ if(jsnx.TESTING) {
 
 
 /**
+ * Max with callback function.
+ *
+ * @param {goog.iter.Iterable} seq
+ *
+ * @return {?}
+ */
+jsnx.helper.max = function(seq, map) {
+    if(!goog.isFunction(map)) {
+        seq = jsnx.helper.toArray(seq);
+    }
+    else {
+        seq = jsnx.helper.map(seq, function() {
+            return map.apply(null, arguments);
+        });
+    }
+    return Math.max.apply(null, seq);
+};
+if(jsnx.TESTING) {
+    goog.exportSymbol('jsnx.helper.max', jsnx.helper.max);
+}
+
+
+/**
  * Implements Python's range function, returns an iterator.
  *
  * @param {number=} opt_start Number to start from

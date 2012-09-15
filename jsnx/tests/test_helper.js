@@ -361,6 +361,14 @@ describe('Helper', function() {
 
     });
 
+    it('Max with custom mapping', function() {
+        var seq = [1,2,3];
+        expect(jsnx.helper.max(seq)).toEqual(3);
+        expect(jsnx.helper.max(seq, function(v) {
+            return 2*v;
+        })).toEqual(6);
+    });
+
 
     describe('toArray', function() {
 
