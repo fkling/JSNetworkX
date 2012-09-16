@@ -21,7 +21,7 @@ BaseTestClass.prototype.run = function() {
 };
 
 BaseTestClass.prototype.sorted = function(arr, f) {
-    arr = jsnx.toArray(arr);
+    arr = goog.array.clone(jsnx.toArray(arr));
     arr.sort(f);
     return arr;
 };
