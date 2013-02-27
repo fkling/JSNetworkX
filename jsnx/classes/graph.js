@@ -152,20 +152,8 @@ jsnx.classes.Graph.prototype.toString = function() {
 };
 
 
-// Implements __iter__
-/**
- * Iterate over the nodes. Can be used together with goog.iter.
- *
- * This is the closest we can get to the native Python iteration
- * capabilities (for now).
- *
- * @return {!goog.iter.Iterator}
- * @export
- */
-jsnx.classes.Graph.prototype.__iterator__ = function() {
-    return jsnx.helper.iter(this['adj']);
-};
-
+//  __iter__ is not supported, but simulated in jsnx.helper.forEach
+// We could implement __iterator__, but that breaks in Firefox
 
 // __contains__ is not supported, has_node has to be used
 

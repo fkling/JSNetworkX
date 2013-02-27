@@ -131,7 +131,10 @@ jsnx.helper.forEach = function(seq, callback, opt_this_obj, opt_expand) {
         };
     }
 
-    if(jsnx.helper.isIterator(seq)) {
+    if (seq instanceof jsnx.classes.Graph) {
+        goog.iter.forEach(jsnx.helper.iter(seq), callback, opt_this_obj);
+    }
+    else if(jsnx.helper.isIterator(seq)) {
         goog.iter.forEach(seq, callback, opt_this_obj);
     }
     else if(goog.isArrayLike(seq) || goog.isString(seq)) {
@@ -157,8 +160,11 @@ if(jsnx.TESTING) {
  * @return {(Array|Object|goog.iter.Iterator)}
  */
 jsnx.helper.map = function(sequence, callback, this_obj) {
-    if(goog.isArrayLike(sequence)) {
-         return goog.array.map(sequence, callback, this_obj);
+    if (sequence instanceof jsnx.classes.Graph) {
+        return jsnx.helper.map(jsnx.helper.iter(sequence), callback, this_obj);
+    }
+    else if(goog.isArrayLike(sequence)) {
+        return goog.array.map(sequence, callback, this_obj);
     }
     else if(jsnx.helper.isIterator(sequence)) {
         return goog.iter.map(sequence, callback, this_obj);
@@ -486,7 +492,10 @@ if(jsnx.TESTING) {
  * @return {Array}
  */
 jsnx.helper.toArray = function(sequence) {
-    if(goog.isArrayLike(sequence)) {
+    if (sequence instanceof jsnx.classes.Graph) {
+      return jsnx.helper.toArray(jsnx.helper.iter(sequence));
+    }
+    else if(goog.isArrayLike(sequence)) {
         return goog.array.toArray(sequence);
     }
     else if(jsnx.helper.isIterator(sequence)) {
@@ -562,7 +571,13 @@ if(jsnx.TESTING) {
  * @return {goog.iter.Iterator}
  */
 jsnx.helper.iter = function(seq, f, this_obj) {
-    if(goog.typeOf(seq) === 'object' && !goog.isArrayLike(seq) && !jsnx.helper.isIterator(seq)) {
+    if (seq instanceof jsnx.classes.Graph) {
+        return jsnx.helper.iter(seq['adj']);
+    }
+    else if (goog.typeOf(seq) === 'object' && 
+        !goog.isArrayLike(seq) && 
+        !jsnx.helper.isIterator(seq))
+    {
         seq = goog.object.getKeys(/** @type {Object} */ seq);
     }
 

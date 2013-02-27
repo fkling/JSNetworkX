@@ -49,11 +49,12 @@ jsnx.generators.degree_seq.havel_hakimi_graph = function(deg_sequence, opt_creat
     }
 
     // form list of [stubs,name] for each node.
-    var stublist = goog.iter.toArray(goog.iter.map(G, function(n) {
+    var stublist = goog.iter.toArray(jsnx.helper.map(G, function(n) {
         return [deg_sequence[n], n];
     }));
     // now connect the stubs
     while(stublist.length > 0) {
+        /*jshint loopfunc:true */
         stublist.sort(function(a, b) {
             // a and b are both arrays, sort by first element first
             if(a[0] !== b[0]) {

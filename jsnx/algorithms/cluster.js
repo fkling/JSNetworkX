@@ -309,7 +309,8 @@ goog.exportSymbol('jsnx.transitivity', jsnx.algorithms.cluster.transitivity);
  *      A dictionary keyed by node with the square clustering coefficient value.
  */
 jsnx.algorithms.cluster.square_clustering = function(G, opt_nodes) {
-    var nodes_iter = !goog.isDefAndNotNull(opt_nodes) ? G : G.nbunch_iter(opt_nodes),
+    var nodes_iter = !goog.isDefAndNotNull(opt_nodes) ? 
+              jsnx.helper.iter(G) : G.nbunch_iter(opt_nodes),
         clustering = {};
 
     goog.iter.forEach(nodes_iter, function(v) {

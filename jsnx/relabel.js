@@ -146,7 +146,7 @@ jsnx.relabel.relabel_copy_ = function(G, mapping) {
         }));
     }
 
-    H.add_nodes_from(goog.iter.map(G, function(n) {
+    H.add_nodes_from(goog.iter.map(jsnx.helper.iter(G), function(n) {
         return goog.object.get(mapping, n, n);
     }));
     var ndata = {};
