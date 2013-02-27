@@ -34,7 +34,13 @@ TestCliques.prototype.test_find_cliques1 = function() {
         return v;
     })));
 
-    expect(cl).toEqual([['2', '6', '1', '3'], ['2', '6', '4'], ['5', '4', '7'],
+    // Sort values because different browsers iterate over nodes in different
+    // order
+    expect(cl.map(function(v) {
+      v = goog.array.clone(v);
+      v.sort();
+      return v;
+    })).toEqual([['1', '2', '3', '6'], ['2', '4', '6'], ['4', '5', '7'],
                         ['8', '9'], ['10', '11']]);
 };
 
