@@ -4,3 +4,7 @@
 /vendor
 /jsnetworkx-custom.js
 /deps.js
+/.grunt/
+/_SpecRunner.html
+/_SpecRunner_compiled.html
+/jsnetworkx-test.js
