@@ -1,10 +1,10 @@
 {
-    "predef": [
-        "jsnx",
-        "goog",
-        "BaseTestClass",
-        "expect"
-    ],
+    "globals": {
+        "jsnx": true,
+        "goog": true,
+        "BaseTestClass": true,
+        "expect": true
+    },
 
     "curly": true,
     "latedef": true,

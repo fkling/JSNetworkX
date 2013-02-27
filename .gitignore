@@ -1,6 +1,6 @@
-/tools/compiler.jar
-/build/
-/test/
-/SpecRunner.html
-.ant-targets-build.xml
-/utils/
+/test
+/utils
+/node_modules
+/vendor
+/jsnetworkx-custom.js
+/deps.js
