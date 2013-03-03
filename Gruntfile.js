@@ -17,10 +17,10 @@ module.exports = function(grunt) {
     meta: {
       dist: 'dist/',
       wrapper: "(function(global, factory) { function extractNS(){ var g = {}; return factory.call(g, global),g.jsnx;} if(typeof define === 'function' && define.amd){ /*AMD*/ define(extractNS); } else if (typeof module !== 'undefined' && module.exports){ /*node*/ module.exports = extractNS(); } else { factory.call(global, global); } }(this, function(window) {%output%}));",
-      roots: ['jsnx/', 'vendor/closure_library/'],
+      roots: ['jsnx/', 'vendor/closure-library/'],
       paths: {
-        compiler: 'vendor/closure_compiler/compiler.jar',
-        library: 'vendor/closure_library/'
+        compiler: 'vendor/closure-compiler/compiler.jar',
+        library: 'vendor/closure-library/'
       }
     },
     jshint: {
@@ -57,7 +57,10 @@ module.exports = function(grunt) {
           compilation_level: 'ADVANCED_OPTIMIZATIONS',
           generate_exports: null,
           define: ['goog.DEBUG=false', 'jsnx.TESTING=false'],
-          externs: ['jsnx/externs/*']
+          externs: ['jsnx/externs/*'],
+          warning_level: 'VERBOSE',
+          jscomp_warning: ['strictModuleDepCheck'],
+          jscomp_error: ['checkDebuggerStatement', 'const', 'constantProperty', 'accessControls', 'visibility']
         }
       },
       test: {
@@ -68,7 +71,10 @@ module.exports = function(grunt) {
             compilation_level: 'ADVANCED_OPTIMIZATIONS',
             generate_exports: null,
             define: ["'goog.DEBUG=true'", "'jsnx.TESTING=true'"],
-            externs: ['jsnx/externs/*']
+            externs: ['jsnx/externs/*'],
+            warning_level: 'VERBOSE',
+            jscomp_warning: ['strictModuleDepCheck'],
+            jscomp_error: ['checkDebuggerStatement', 'const', 'constantProperty', 'accessControls', 'visibility']
           }
         },
         src: '<%= meta.roots %>',
@@ -172,8 +178,8 @@ module.exports = function(grunt) {
   });
 
   grunt.registerTask('cleanup', 'Remove test stuff', function() {
-    grunt.file.delete(grunt.config.get('compile.test.dest'));
-    grunt.file.delete(grunt.config.get('deps.default.dest'));
+    grunt.file['delete'](grunt.config.get('compile.test.dest'));
+    grunt.file['delete'](grunt.config.get('deps.default.dest'));
   });
 
 

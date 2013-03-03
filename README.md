@@ -18,48 +18,44 @@ of [Node](http://nodejs.org/) (you will also need [npm](https://npmjs.org/)).
 If you followed the instructions to install Node and npm, you can install the 
 grunt command line interface with:
 
-```bash
-npm install -g grunt-cli
-```
+    npm install -g grunt-cli
 
 The `package.json` file contains a set of node packages which JSNetworkX needs in
 addition to grunt. You can install those locally by executing the following 
 command in your JSNetworkX clone:
 
-```bash
-npm install ./ --dev
-```
+    npm install ./ --dev
 
 Last but not least, since JSNetworkX uses the [Google closure
 library](https://developers.google.com/closure/library/) and the
 [Google closure compiler](https://developers.google.com/closure/compiler/), you 
 have to provide those as well, in the folders `vendor/closure_library` and 
 `vendor/closure_compiler` resp.  
-The closure library can be installed via SVN:
+The closure library can be installed via Git:
 
-```bash
-svn checkout checkout http://closure-library.googlecode.com/svn/trunk/ vendor/closure_library/
-```
+    mkdir vendor/
+    git clone https://code.google.com/p/closure-library/
 
-and the compiler with
+If the files in `vendor/closure-library/closure/bin` are not executable, change
+them to be:
 
-```bash
-wget -nc http://closure-compiler.googlecode.com/files/compiler-latest.zip \
-&& unzip compiler-latest.zip -d vendor/closure_compiler/ \
-&& rm compiler-latest.zip
-```
+    chmod -R +x vendor/closure-library/closure/bin/*
+
+Download the compiler with
+
+    wget -nc http://closure-compiler.googlecode.com/files/compiler-latest.zip \
+    && unzip compiler-latest.zip -d vendor/closure-compiler/ \
+    && rm compiler-latest.zip
 
 ---
 
 Now we are ready to build! To check whether the closure library and compiler are
 correctly installed, run
 
-```bash
-grunt check
-```
+    grunt check
 
 All versions of JSNetworkX are build via `grunt compile`. This task accepts
-differnt targets:
+different targets:
 
 - `grunt compile:min` builds a version only containing base classes and
   utilities (no algorithms, generators or drawing).
@@ -75,18 +71,16 @@ All builds apart from `all` and `custom`  are put into `dist/`.
 Here are some examples for custom builds:
 
 This will build JSNetworkX with all generators:
-```bash
-grunt compile:custom --ns=generators
-```
-it is the same as 
-```bash
-grunt compile:custom --ns=jsnx.generators
-```
 
-This build only contains the ismorphism algorithms:
-```bash
-grunt compile:custom --ns=algorithms.isomorphism
-```
+    grunt compile:custom --ns=generators
+
+It is the same as 
+
+    grunt compile:custom --ns=jsnx.generators
+
+This build only contains the ismorphism algorithms and classic generators:
+
+    grunt compile:custom --ns=algorithms.isomorphism,generators.classic
 
 **Note:** Most modules have internal dependencies, so the final build will
 likely contain other modules as well.
