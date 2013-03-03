@@ -6,11 +6,21 @@ goog.require('goog.array');
 goog.require('goog.object');
 goog.require('goog.iter');
 
+/*jshint expr:true*/
+
+/** @typedef {(goog.iter.Iterable|Array|Object)} */
+jsnx.helper.Iterable;
+
+/** @typedef {(Array|{length:number})} */
+jsnx.helper.ArrayLike;
+
+
+/*jshint expr:false*/
 
 /**
  * Returns an object, given an array of (key, value) tuples.
  *
- * @param {?.<Array>} kvs Container of key,value tuples
+ * @param {jsnx.helper.Iterable} kvs Container of key,value tuples
  * 
  * @return {!Object}
  */
@@ -28,7 +38,7 @@ if(jsnx.TESTING) {
  * Returns an object, given an array of keys and an default value.
  * Like dict.fromkeys in Python.
  *
- * @param {?} keys Container of keys
+ * @param {jsnx.helper.Iterable} keys Container of keys
  * @param {*} opt_value the value, default is null
  *
  * @return {!Object}
@@ -50,7 +60,7 @@ if(jsnx.TESTING) {
 /**
  * Returns true if object is an iterator 
  * 
- * @param {?} obj
+ * @param {*} obj
  *  
  * @return {boolean}
  */
@@ -66,12 +76,14 @@ if(jsnx.TESTING) {
  * Returns true if object is an container which can be iterated over,
  * i.e. if it is an object, array, array-like object or an iterator.
  * 
- * @param {?} obj
+ * @param {*} obj
  *  
  * @return {boolean}
  */
 jsnx.helper.isIterable = function(obj) {
-    return goog.typeOf(obj) === 'object' || goog.isArrayLike(obj) || jsnx.isIterator(obj);
+    return goog.typeOf(obj) === 'object' || 
+      goog.isArrayLike(obj) || 
+      jsnx.helper.isIterator(obj);
 };
 if(jsnx.TESTING) {
     goog.exportSymbol('jsnx.helper.isIterable', jsnx.helper.isIterable);
@@ -86,11 +98,11 @@ if(jsnx.TESTING) {
  * @param {(string|Array|Object|{length})} obj Object to determine the length of
  *  
  * @return {number} The number of elements
+ * @throws {TypeError} When length cannot be determined
  */
 jsnx.helper.len = function(obj) {
     if(goog.isString(obj) || 
-       goog.isArrayLike(obj) || 
-       goog.object.containsKey(obj, 'length')) {
+       goog.isArrayLike(obj)) {
         return obj.length;
     }
     else if(jsnx.helper.isPlainObject(obj)) {
@@ -108,12 +120,13 @@ if(jsnx.TESTING) {
 /**
  * Helper to iterate over sequence types (arrays, array-like objects, objects, etc)
  *
- * @param {!(goog.iter.Iterable|Object)} seq
- * @param {function} callback
- * @param {*} opt_this_obj
- * @param {boolean} opt_expand If true, elements of the sequence are expected
+ * @param {jsnx.helper.Iterable} seq
+ * @param {function(this:T, ...)} callback
+ * @param {T=} opt_this_obj
+ * @param {boolean=} opt_expand If true, elements of the sequence are expected
  *      to be array-like and each item in these elements is passed as 
  *      argument to the callback
+ * @template T
  */
 jsnx.helper.forEach = function(seq, callback, opt_this_obj, opt_expand) {
 
@@ -125,7 +138,7 @@ jsnx.helper.forEach = function(seq, callback, opt_this_obj, opt_expand) {
 
     if(opt_expand) {
         var orig_callback = callback;
-        /** @this opt_this_obj */
+        /** @this {*} */
         callback = function(val) {
             orig_callback.apply(this, val);
         };
@@ -135,10 +148,18 @@ jsnx.helper.forEach = function(seq, callback, opt_this_obj, opt_expand) {
         goog.iter.forEach(jsnx.helper.iter(seq), callback, opt_this_obj);
     }
     else if(jsnx.helper.isIterator(seq)) {
-        goog.iter.forEach(seq, callback, opt_this_obj);
+        goog.iter.forEach(
+          /** @type {goog.iter.Iterable} */ (seq),
+          callback,
+          opt_this_obj
+        );
     }
     else if(goog.isArrayLike(seq) || goog.isString(seq)) {
-        goog.array.forEach(seq, callback, opt_this_obj);
+        goog.array.forEach(
+          /** @type {jsnx.helper.ArrayLike} */ (seq),
+          callback,
+          opt_this_obj
+        );
     }
     else if(goog.isObject(seq)) {
         jsnx.helper.forEach(goog.object.getKeys(seq), callback, opt_this_obj);
@@ -153,9 +174,10 @@ if(jsnx.TESTING) {
 /**
  * Helper to map sequence types (arrays, array-like objects, objects, etc)
  *
- * @param {(goog.iter.Iterable|Object)} sequence
- * @param {function} callback
- * @param {*} this_obj
+ * @param {jsnx.helper.Iterable} sequence
+ * @param {function(this:T,...)} callback
+ * @param {T=} this_obj
+ * @template T
  *
  * @return {(Array|Object|goog.iter.Iterator)}
  */
@@ -164,10 +186,18 @@ jsnx.helper.map = function(sequence, callback, this_obj) {
         return jsnx.helper.map(jsnx.helper.iter(sequence), callback, this_obj);
     }
     else if(goog.isArrayLike(sequence)) {
-        return goog.array.map(sequence, callback, this_obj);
+        return goog.array.map(
+          /** @type {jsnx.helper.ArrayLike} */ (sequence),
+          callback,
+          this_obj
+        );
     }
     else if(jsnx.helper.isIterator(sequence)) {
-        return goog.iter.map(sequence, callback, this_obj);
+        return goog.iter.map(
+          /** @type {goog.iter.Iterable} */ (sequence),
+          callback,
+          this_obj
+        );
     }
     else if(goog.isObject(sequence)) {
         return goog.object.map(sequence, callback, this_obj);
@@ -184,11 +214,11 @@ if(jsnx.TESTING) {
 /**
  * Helper to zip sequence types (arrays, array-like objects, objects, etc)
  *
- * @param {(goog.iter.Iterable|Object),...} var_args
+ * @param {...(jsnx.helper.Iterable)} var_args
  *
- * @return {(Array|Object|goog.iter.Iterator)}
+ * @return {!(Array|Object|goog.iter.Iterator)}
  */
-jsnx.helper.zip = function() {
+jsnx.helper.zip = function(var_args) {
     var args = arguments,
         first = args[0];
     if(goog.isArrayLike(first)) {
@@ -223,18 +253,19 @@ if(jsnx.TESTING) {
 /**
  * Max with callback function.
  *
- * @param {goog.iter.Iterable} seq
+ * @param {jsnx.helper.Iterable} seq
+ * @param {function(...)=} opt_map
  *
- * @return {?}
+ * @return {number}
  */
-jsnx.helper.max = function(seq, map) {
-    if(!goog.isFunction(map)) {
+jsnx.helper.max = function(seq, opt_map) {
+    if(!goog.isFunction(opt_map)) {
         seq = jsnx.helper.toArray(seq);
     }
     else {
-        seq = jsnx.helper.map(seq, function() {
-            return map.apply(null, arguments);
-        });
+        seq = jsnx.helper.toArray(jsnx.helper.map(seq, function() {
+            return opt_map.apply(null, arguments);
+        }));
     }
     return Math.max.apply(null, seq);
 };
@@ -246,19 +277,23 @@ if(jsnx.TESTING) {
 /**
  * Implements Python's range function, returns an iterator.
  *
- * @param {number=} opt_start Number to start from
- * @param {number} end Number to count to
- * @param {number=} opt_step Stepsize
+ * If one argument n is passed, iteratos over 0...n.
+ * If two arguments i,j are passed, iterates over i...j.
+ * If three arguments i,j,k are passed, iterates over i, i+k, i+2k, ...j
  *
- * @return {goog.iter.Iterator} 
+ * @param {?number=} opt_start Number to start from
+ * @param {?number=} opt_end Number to count to
+ * @param {?number=} opt_step Stepsize
+ *
+ * @return {!goog.iter.Iterator}
  */
-jsnx.helper.range = function(opt_start, end, opt_step) {
+jsnx.helper.range = function(opt_start, opt_end, opt_step) {
 
     if(arguments.length === 0) {
-        return [];
+        return goog.iter.toIterator([]);
     }
     else if(arguments.length === 1) {
-        end = opt_start;
+        opt_end = opt_start;
         opt_start = 0;
         opt_step = 1;
     }
@@ -275,7 +310,7 @@ jsnx.helper.range = function(opt_start, end, opt_step) {
         current;
 
     iterator.next = function() {
-        if(negative && counter <= end || !negative && counter >= end) {
+        if(negative && counter <= opt_end || !negative && counter >= opt_end) {
             throw goog.iter.StopIteration;
         }
         current = counter;
@@ -295,10 +330,10 @@ if(jsnx.TESTING) {
  *
  * Return r length subsequences of elements from the input iterable.
  *
- * @param {?} iterable
+ * @param {jsnx.helper.Iterable} iterable
  * @param {number} r
  *
- * @return {goog.iter.Iterable}
+ * @return {goog.iter.Iterator}
  */
 jsnx.helper.combinations = function(iterable, r) {
     var pool = jsnx.helper.toArray(iterable),
@@ -353,10 +388,10 @@ if(jsnx.TESTING) {
  *
  * Return successive r length permutations of elements in the iterable.
  * *
- * @param {?} iterable
+ * @param {jsnx.helper.Iterable} iterable
  * @param {number=} opt_r
  *
- * @return {goog.iter.Iterable}
+ * @return {goog.iter.Iterator}
  */
 jsnx.helper.permutations = function(iterable, opt_r) {
     var pool = jsnx.helper.toArray(iterable),
@@ -425,6 +460,8 @@ if(jsnx.TESTING) {
  * Like goog.object.extend, but also extends nested objects *
  * @param {Object} target  The object to modify.
  * @param {...Object} var_args The objects from which values will be copied.
+ *
+ * @suppress {visibility}
  */
 jsnx.helper.extend = function(target, var_args) {
   var key, source;
@@ -485,21 +522,19 @@ if(jsnx.TESTING) {
  * Helper to create an array from sequence types 
  * (arrays, array-like objects, objects, etc)
  *
- * @param {(goog.iter.Iterable|Object)} sequence
- * @param {function} callback
- * @param {*} this_obj
+ * @param {jsnx.helper.Iterable} sequence
  *
- * @return {Array}
+ * @return {!Array}
  */
 jsnx.helper.toArray = function(sequence) {
     if (sequence instanceof jsnx.classes.Graph) {
       return jsnx.helper.toArray(jsnx.helper.iter(sequence));
     }
     else if(goog.isArrayLike(sequence)) {
-        return goog.array.toArray(sequence);
+        return goog.array.toArray(/** @type jsnx.helper.ArrayLike */ (sequence));
     }
     else if(jsnx.helper.isIterator(sequence)) {
-        return goog.iter.toArray(sequence);
+        return goog.iter.toArray(/** @type {goog.iter.Iterable} */ (sequence));
     }
     else if(goog.isObject(sequence)) {
         return goog.object.getKeys(sequence);
@@ -540,7 +575,7 @@ if(jsnx.TESTING) {
  *
  * @param {Object} obj to extract the key-values from
  *
- * @return {goog.iter.Iterator}
+ * @return {!goog.iter.Iterator}
  */
 jsnx.helper.iteritems = function(obj) {
     var iterator = new goog.iter.Iterator(),
@@ -566,11 +601,11 @@ if(jsnx.TESTING) {
  *
  * The iterator object implements the goog.iter.Iterator interface.
  *
- * @param {(Object|goog.iter.Iterable)} seq
+ * @param {jsnx.helper.Iterable} seq
  *
- * @return {goog.iter.Iterator}
+ * @return {!goog.iter.Iterator}
  */
-jsnx.helper.iter = function(seq, f, this_obj) {
+jsnx.helper.iter = function(seq) {
     if (seq instanceof jsnx.classes.Graph) {
         return jsnx.helper.iter(seq['adj']);
     }
@@ -578,10 +613,10 @@ jsnx.helper.iter = function(seq, f, this_obj) {
         !goog.isArrayLike(seq) && 
         !jsnx.helper.isIterator(seq))
     {
-        seq = goog.object.getKeys(/** @type {Object} */ seq);
+        seq = goog.object.getKeys(/** @type {Object} */ (seq));
     }
 
-    return goog.iter.toIterator(seq);
+    return goog.iter.toIterator(/** @type {goog.iter.Iterable} */ (seq));
 };
 if(jsnx.TESTING) {
     goog.exportSymbol('jsnx.helper.iter', jsnx.helper.iter);
@@ -595,9 +630,10 @@ if(jsnx.TESTING) {
  * the value is silently ignored.
  *
  * @param {goog.iter.Iterable} iterable 
- * @param {function} var_args functions to successivly return a new iterator
+ * @param {...function(?):*} var_args functions to successivly return 
+ *    a new iterator
  */
-jsnx.helper.nested_chain = function(iterable) {
+jsnx.helper.nested_chain = function(iterable, var_args) {
     var iterator = new goog.iter.Iterator(),
         args = goog.array.slice(arguments, 1);
 
@@ -695,6 +731,8 @@ jsnx.helper.isPlainObject = function(obj) {
         return false;
     }
 
+    obj = /** @type {Object} */ (obj);
+
     try {
         // Not own constructor property must be Object
         if ( obj.constructor &&
@@ -713,7 +751,7 @@ jsnx.helper.isPlainObject = function(obj) {
     var key;
     for ( key in obj ) {}
 
-    return key === undefined || hasOwn.call( obj, key );
+    return key === undefined || hasOwn.call(obj, key);
 };
 if(jsnx.TESTING) {
     goog.exportSymbol('jsnx.helper.isPlainObject', jsnx.helper.isPlainObject);
@@ -735,9 +773,11 @@ if(jsnx.TESTING) {
  * but also works with circular references. Though it 
  * might be slow for large, nested objects. 
  *
- * @param {*} obj The value to copy.
+ * @param {T} obj The value to copy.
+ * @param {!Array=} memo_ Only used internally
  *
- * @return {*} A copy of the value
+ * @return {T} A copy of the value
+ * @template T
  */
 jsnx.helper.deepcopy = function(obj, memo_) {
     memo_ = memo_ || [];
@@ -780,16 +820,21 @@ if(jsnx.TESTING) {
  *
  * @see #deepcopy
  *
- * @param {*} obj The value to copy.
+ * @param {T} obj The value to copy.
  *
- * @return {*} A copy of the value
+ * @return {T} A copy of the value
+ * @template T
  */
 jsnx.helper.deepcopy_instance = function(obj) {
     // temprory constructor, we don't know if the original expects
     // parameter
-    var T_ = function() {},
-        props = {},
-        prop, inst;
+    /**
+     * @constructor
+     */
+    var T_ = function() {};
+    var props = {};
+    var prop;
+    var inst;
 
     T_.prototype = obj.constructor.prototype;
 

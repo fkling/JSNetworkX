@@ -9,7 +9,7 @@ goog.require('jsnx.exception');
 /**
  * Return a copy of the graph nodes in a list.
  *
- * @param {jsnx.Graph} G Graph
+ * @param {jsnx.classes.Graph} G Graph
  *
  * @return {Array} List of nodes
  */
@@ -22,7 +22,7 @@ goog.exportSymbol('jsnx.nodes', jsnx.classes.func.nodes);
 /**
  * Return an iterator over the graph nodes.
  *
- * @param {jsnx.Graph} G Graph
+ * @param {jsnx.classes.Graph} G Graph
  *
  * @return {goog.iter.Iterator} Iterator over graph nodes
  */
@@ -38,7 +38,7 @@ goog.exportSymbol('jsnx.nodes_iter', jsnx.classes.func.nodes_iter);
  * Return all edges if nbunch is unspecified or nbunch=None.
  * For digraphs, edges=out_edges
  *
- * @param {jsnx.Graph} G Graph
+ * @param {jsnx.classes.Graph} G Graph
  * @param {jsnx.NodeContainer=} opt_nbunch Nodes
  *
  * @return {Array} List of edges
@@ -55,7 +55,7 @@ goog.exportSymbol('jsnx.edges', jsnx.classes.func.edges);
  * Return all edges if nbunch is unspecified or nbunch=None.
  * For digraphs, edges=out_edges
  *
- * @param {jsnx.Graph} G Graph
+ * @param {jsnx.classes.Graph} G Graph
  * @param {jsnx.NodeContainer=} opt_nbunch Nodes
  *
  * @return {goog.iter.Iterator} Iterator over edges
@@ -70,7 +70,7 @@ goog.exportSymbol('jsnx.edges_iter', jsnx.classes.func.edges_iter);
  * Return degree of single node or of nbunch of nodes.
  * If nbunch is ommitted, then return degrees of *all* nodes.
  *
- * @param {jsnx.Graph} G Graph
+ * @param {jsnx.classes.Graph} G Graph
  * @param {jsnx.NodeContainer=} opt_nbunch Nodes
  * @param {string=} opt_weight Weight attribute name
  *
@@ -85,7 +85,7 @@ goog.exportSymbol('jsnx.degree', jsnx.classes.func.degree);
 /**
  * Return a list of nodes connected to node n.
  *
- * @param {jsnx.Graph} G Graph
+ * @param {jsnx.classes.Graph} G Graph
  * @param {jsnx.Node} n Node
  *
  * @return {Array} List of nodes
@@ -99,7 +99,7 @@ goog.exportSymbol('jsnx.neighbors', jsnx.classes.func.neighbors);
 /**
  * Return the number of nodes in the graph.
  *
- * @param {jsnx.Graph} G Graph
+ * @param {jsnx.classes.Graph} G Graph
  *
  * @return {number} Number of nodes
  */
@@ -112,7 +112,7 @@ goog.exportSymbol('jsnx.number_of_nodes', jsnx.classes.func.number_of_nodes);
 /**
  * Return the number of edges in the graph.
  *
- * @param {jsnx.Graph} G Graph
+ * @param {jsnx.classes.Graph} G Graph
  *
  * @return {number} Number of edges
  */
@@ -137,7 +137,7 @@ goog.exportSymbol('jsnx.number_of_edges', jsnx.classes.func.number_of_edges);
  * The density is 0 for an graph without edges and 1.0 for a complete graph.
  * The density of multigraphs can be higher than 1.
  *
- * @param {jsnx.Graph} G Graph
+ * @param {jsnx.classes.Graph} G Graph
  *
  * @return {number} Density
  */
@@ -170,13 +170,13 @@ goog.exportSymbol('jsnx.density', jsnx.classes.func.density);
  * (Order(number_of_edges))
  *
  *
- * @param {jsnx.Graph} G Graph
+ * @param {jsnx.classes.Graph} G Graph
  *
  * @return {Array} A list of frequencies of degrees.
  *      The degree values are the index in the list.
  */
 jsnx.classes.func.degree_histogram = function(G) {
-    var degseq = goog.object.getValues(G.degree()),
+    var degseq = goog.object.getValues(/** @type {Object} */ (G.degree())),
         dmax = Math.max.apply(Math, degseq) + 1,
         freq = goog.array.repeat(0, dmax);
 
@@ -192,7 +192,7 @@ goog.exportSymbol('jsnx.degree_histogram', jsnx.classes.func.degree_histogram);
 /**
  * Return True if graph is directed.
  *
- * @param {jsnx.Graph} G Graph
+ * @param {jsnx.classes.Graph} G Graph
  *
  * @return {boolean}  True if graph is directed
  */
@@ -210,9 +210,9 @@ goog.exportSymbol('jsnx.is_directed', jsnx.classes.func.is_directed);
  *
  * @see #is_frozen
  *
- * @param {jsnx.Graph} G Graph
+ * @param {jsnx.classes.Graph} G Graph
  *
- * @return {jsnx.Graph} A reference to the input graph
+ * @return {jsnx.classes.Graph} A reference to the input graph
  */
 jsnx.classes.func.freeze = function(G) {
     function frozen() {
@@ -241,7 +241,7 @@ goog.exportSymbol('jsnx.freeze', jsnx.classes.func.freeze);
  *
  * @see #freeze
  *
- * @param {jsnx.Graph} G Graph
+ * @param {jsnx.classes.Graph} G Graph
  *
  * @return {boolean}  True if graph is frozen.
  */
@@ -256,8 +256,8 @@ goog.exportSymbol('jsnx.is_frozen', jsnx.classes.func.is_frozen);
  *
  * Note:  subgraph(G) calls G.subgraph()
  *
- * @param {jsnx.Graph} G Graph
- * @param {jsnx.NodeContainer=} opt_nbunch 
+ * @param {jsnx.classes.Graph} G Graph
+ * @param {jsnx.NodeContainer} nbunch 
  *      A container of nodes that will be iterated through once (thus
  *      it should be an iterator or be iterable).  Each element of the
  *      container should be a valid node type: any hashable type except
@@ -265,10 +265,10 @@ goog.exportSymbol('jsnx.is_frozen', jsnx.classes.func.is_frozen);
  *      Nodes in nbunch that are not in the graph will be (quietly)
  *      ignored.
  *
- * @return {jsnx.Graph} Subgraph
+ * @return {jsnx.classes.Graph} Subgraph
  */
-jsnx.classes.func.subgraph = function(G, opt_nbunch) {
-    return G.subgraph(opt_nbunch);
+jsnx.classes.func.subgraph = function(G, nbunch) {
+    return G.subgraph(nbunch);
 };
 goog.exportSymbol('jsnx.subgraph', jsnx.classes.func.subgraph);
 
@@ -278,11 +278,11 @@ goog.exportSymbol('jsnx.subgraph', jsnx.classes.func.subgraph);
  *
  * Notes: Graph, node, and edge data is not propagated to the new graph.
  *
- * @param {jsnx.Graph} G Graph
+ * @param {jsnx.classes.Graph} G Graph
  * @param {boolean} opt_with_nodes (default=True)
  *      Include nodes.
  *
- * @return {jsnx.Graph} A copy of the graph
+ * @return {jsnx.classes.Graph} A copy of the graph
  */
 jsnx.classes.func.create_empty_copy = function(G, opt_with_nodes) {
     if(!goog.isDef(opt_with_nodes)) {
@@ -301,8 +301,8 @@ goog.exportSymbol('jsnx.create_empty_copy', jsnx.classes.func.create_empty_copy)
 /**
  * Print short summary of information for the graph G or the node n.
  *
- * @param {jsnx.Graph} G Graph
- * @param {jsnx.Node} opt_n A node in the graph G
+ * @param {jsnx.classes.Graph} G Graph
+ * @param {jsnx.Node=} opt_n A node in the graph G
  *
  * @return {string} Info
  */
@@ -323,8 +323,10 @@ jsnx.classes.func.info = function(G, opt_n) {
                            goog.object.getValues(G.out_degree())) / nnodes).toFixed(4);
             }
             else {
-                var s = goog.math.sum.apply(null,
-                           goog.object.getValues(G.degree()));
+                var s = goog.math.sum.apply(
+                    null,
+                     goog.object.getValues(/** @type {Object} */ (G.degree()))
+                );
                 info += 'Average degree: ' + (s/nnodes).toFixed(4);
             }
         }
@@ -347,13 +349,14 @@ goog.exportSymbol('jsnx.info', jsnx.classes.func.info);
 /**
  * Set node attributes from dictionary of nodes and values
  *
- * @param {jsnx.Graph} G Graph
+ * @param {jsnx.classes.Graph} G Graph
  * @param {string} name Attribute name
  * @param {Object} attributes Dictionary of attributes keyed by node
  */
 jsnx.classes.func.set_node_attributes = function(G, name, attributes) {
     goog.object.forEach(attributes, function(value, node) {
-        G.node[node][name] = value;
+        G['node'][node][name] = value;
+
     });
 };
 goog.exportSymbol('jsnx.set_node_attributes', jsnx.classes.func.set_node_attributes);
@@ -362,7 +365,7 @@ goog.exportSymbol('jsnx.set_node_attributes', jsnx.classes.func.set_node_attribu
 /**
  * Get node attributes from graph
  *
- * @param {jsnx.Graph} G Graph
+ * @param {jsnx.classes.Graph} G Graph
  * @param {string} name Attribute name
  *
  * @return {!Object} Dictionary of attributes keyed by node.
@@ -387,7 +390,7 @@ goog.exportSymbol('jsnx.get_node_attributes', jsnx.classes.func.get_node_attribu
  * I.e. {@code [1,2]} becomes {@code "1,2"}. This onlt works properly if
  * the node does not contain a comma itself.
  *
- * @param {jsnx.Graph} G Graph
+ * @param {jsnx.classes.Graph} G Graph
  * @param {string} name Attribute name
  * @param {Object} attributes Dictionary of attributes keyed by edge (tuple).
  */
@@ -407,14 +410,14 @@ goog.exportSymbol('jsnx.set_edge_attributes', jsnx.classes.func.set_edge_attribu
  * {@code "node1,node2"} string. You'd have to call {@code .split(',')} on
  * the keys to extract the actual node names.
  *
- * @param {jsnx.Graph} G Graph
+ * @param {jsnx.classes.Graph} G Graph
  * @param {string} name Attribute name
  *
  * @return {!Object} Dictionary of attributes keyed by edge.
  */
-jsnx.classes.func.get_node_attributes = function(G, name) {
+jsnx.classes.func.get_edge_attributes = function(G, name) {
     var dict = {};
-    goog.object.forEach(G.edges(true), function(edged) {
+    goog.object.forEach(G.edges(null, true), function(edged) {
         if(goog.object.containsKey(edged[2], name)) {
             dict[[edged[0], edged[1]]] = edged[2][name];
         }

@@ -23,13 +23,13 @@ goog.require('jsnx.exception');
  * @see #convert_node_labels_to_integers
  *
  * @param {jsnx.classes.Graph} G A JSNetworkX graph
- * @param {Object|function} mapping 
+ * @param {(Object|function(jsnx.Node):jsnx.Node)} mapping 
  *      A dictionary with the old labels as keys and new labels as values.
  *      A partial mapping is allowed.
  * @param {boolean=} opt_copy (default: true)
  *      If True return a copy or if False relabel the nodes in place.
  *
- * @return {?jsnx.classes.Graph}
+ * @return {jsnx.classes.Graph}
  */
 jsnx.relabel.relabel_nodes = function(G, mapping, opt_copy) {
     // you can pass a function f(old_label)->new_label
@@ -38,6 +38,7 @@ jsnx.relabel.relabel_nodes = function(G, mapping, opt_copy) {
     if(goog.isFunction(mapping)) {
         m = {};
         goog.iter.forEach(G.nodes_iter(), function(n) {
+            mapping = /** @type {function(jsnx.Node):jsnx.Node} */ (mapping);
             m[n] = mapping(n);
         });
     }
@@ -52,6 +53,15 @@ jsnx.relabel.relabel_nodes = function(G, mapping, opt_copy) {
 goog.exportSymbol('jsnx.relabel_nodes', jsnx.relabel.relabel_nodes);
 
 
+/**
+ * @param {jsnx.classes.Graph} G A JSNetworkX graph
+ * @param {(Object|function(jsnx.Node):jsnx.Node)} mapping 
+ *      A dictionary with the old labels as keys and new labels as values.
+ *      A partial mapping is allowed.
+ *
+ * @return {jsnx.classes.Graph}
+ * @private
+ */
 jsnx.relabel.relabel_inplace_ = function(G, mapping) {
     var old_labels = new goog.structs.Set(goog.object.getKeys(mapping)),
         nodes;
@@ -59,7 +69,7 @@ jsnx.relabel.relabel_inplace_ = function(G, mapping) {
     if(old_labels.intersection(mapping).getCount() > 0) {
         // labels sets overlap
         // can we topological sort and still do the relabeling?
-        var D = jsnx.classes.DiGraph(jsnx.helper.items(mapping));
+        var D = new jsnx.classes.DiGraph(jsnx.helper.items(mapping));
         D.remove_edges_from(D.selfloop_edges());
         try {
             nodes = jsnx.algorithms.dag.topological_sort(D);
@@ -99,11 +109,13 @@ jsnx.relabel.relabel_inplace_ = function(G, mapping) {
         }
         G.add_node(new_, G['node'][old]);
         if(multigraph) {
+            G = /** @type {jsnx.classes.MultiGraph} */ (G);
             new_edges = goog.array.map(G.edges(old, true, true), function(d) {
                 return [new_, d[1], d[2], d[3]];
             });
 
             if(directed) {
+                G = /** @type {jsnx.classes.MultiDiGraph} */ (G);
                 new_edges = goog.array.concat(new_edges, goog.array.map(G.in_edges(old, true, true), function(d) {
                     return [d[0], new_, d[2], d[3]];
                 }));
@@ -127,11 +139,21 @@ jsnx.relabel.relabel_inplace_ = function(G, mapping) {
 };
 
 
+/**
+ * @param {jsnx.classes.Graph} G A JSNetworkX graph
+ * @param {(Object|function(jsnx.Node):jsnx.Node)} mapping 
+ *      A dictionary with the old labels as keys and new labels as values.
+ *      A partial mapping is allowed.
+ *
+ * @return {jsnx.classes.Graph}
+ * @private
+ */
 jsnx.relabel.relabel_copy_ = function(G, mapping) {
     var H = new G.constructor();
     H.name('(' + G.name() + ')');
     if(G.is_multigraph()) {
-        H.add_edges_from(goog.iter.map(G.edges_iter(true, true), function(d) {
+        G = /** @type {jsnx.classes.MultiGraph} */ (G);
+        H.add_edges_from(goog.iter.map(G.edges_iter(null, true, true), function(d) {
             return [goog.object.get(mapping, d[0], d[0]),
                     goog.object.get(mapping, d[1], d[1]),
                     d[2],
@@ -139,7 +161,7 @@ jsnx.relabel.relabel_copy_ = function(G, mapping) {
         }));
     }
     else {
-        H.add_edges_from(goog.iter.map(G.edges_iter(true), function(d) {
+        H.add_edges_from(goog.iter.map(G.edges_iter(null, true), function(d) {
             return [goog.object.get(mapping, d[0], d[0]),
                     goog.object.get(mapping, d[1], d[1]),
                     goog.object.clone(d[2])];
@@ -163,20 +185,20 @@ jsnx.relabel.relabel_copy_ = function(G, mapping) {
 /**
  * Return a copy of G node labels replaced with integers.
  *
- * @param {jsnx.Graph} G A JSNetworkX graph
- * @param {number=} opt_first_label (default=0)
+ * @param {jsnx.classes.Graph} G A JSNetworkX graph
+ * @param {?number=} opt_first_label (default=0)
  *      An integer specifying the offset in numbering nodes.
  *      The n new integer labels are numbered first_label, ..., n-1+first_label.
- * @param {string=} opt_ordering (default="default")
+ * @param {?string=} opt_ordering (default="default")
  *      "default" : inherit node ordering from G.nodes() 
  *      "sorted"  : inherit node ordering from sorted(G.nodes())
  *      "increasing degree" : nodes are sorted by increasing degree
  *      "decreasing degree" : nodes are sorted by decreasing degree
- * @param {boolean=} opt_discard_old_labels (default=true)
+ * @param {?boolean=} opt_discard_old_labels (default=true)
  *      If true discard old labels. If false, create a node attribute 
  *      'old_label' to hold the old labels.
  *
- * @return {jsnx.Graph}
+ * @return {jsnx.classes.Graph}
  */
 jsnx.relabel.convert_node_labels_to_integers = function(G, opt_first_label, 
                                                         opt_ordering,
@@ -200,16 +222,16 @@ jsnx.relabel.convert_node_labels_to_integers = function(G, opt_first_label,
     //   returned but made an attribute of the new graph.
 
     if(arguments.length === 3 && goog.isBoolean(opt_ordering)) {
-        opt_discard_old_labels = opt_ordering;
+        opt_discard_old_labels = /** @type {boolean} */ (opt_ordering);
         opt_ordering = null;
     }
     else if(arguments.length === 2) {
         if(goog.isBoolean(opt_first_label)) {
-            opt_discard_old_labels = opt_first_label;
+            opt_discard_old_labels = /** @type {boolean} */ (opt_first_label);
             opt_first_label = null;
         }
         else if(goog.isString(opt_first_label)) {
-            opt_ordering = opt_first_label;
+            opt_ordering = /** @type {string} */ (opt_first_label);
             opt_first_label = null;
         }
     }

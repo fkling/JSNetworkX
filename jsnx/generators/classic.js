@@ -32,11 +32,11 @@ jsnx.generators.classic.tree_edges_ = function(n, r) {
     }, function(i) {
         try {
             var target = nodes.next();
-            parents.append(target);
+            parents.push(target);
             return [source, target];
         }
         catch(e) {
-            if(e !== jsnx.iter.StopIteration) {
+            if(e !== goog.iter.StopIteration) {
                 throw e;
             }
         }
@@ -135,11 +135,12 @@ goog.exportSymbol('jsnx.cycle_graph', jsnx.generators.classic.cycle_graph);
  *
  *  @see create_empty_copy
  *
- *  @param{number=} opt_n The number of nodes to add to the graph
- *  @param{jsnx.classes.Graph=} opt_create_using Graph instance to empty and
+ *  @param{?number=} opt_n The number of nodes to add to the graph
+ *  @param{?jsnx.classes.Graph=} opt_create_using Graph instance to empty and
  *      add nodes to.
  *  
  *  @return {jsnx.classes.Graph}
+ *  @suppress {checkTypes} 
  */
 jsnx.generators.classic.empty_graph = function(opt_n, opt_create_using) {
     if(opt_n instanceof jsnx.classes.Graph) {

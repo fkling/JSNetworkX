@@ -63,7 +63,7 @@ goog.require('goog.array');
  *
  * @param {jsnx.classes.Graph} G
  *
- * @return {goog.iter.Iterator}
+ * @return {!goog.iter.Iterator}
  */
 jsnx.algorithms.clique.find_cliques = function(G) {
     // Cache nbrs and find first pivot (highest degree)
@@ -103,7 +103,7 @@ jsnx.algorithms.clique.find_cliques = function(G) {
         var n, result, iterable;
         if(smallcand.getCount() > 0) {
             // any nodes left to check?
-            n = goog.iter.nextOrValue(smallcand);
+            n = goog.iter.toIterator(smallcand).next();
             smallcand.remove(n);
         }
         else {
@@ -331,9 +331,9 @@ jsnx.algorithms.clique.extend_ = function(nnbrs, cand, done, so_far, cliques) {
  * An optional list of cliques can be input if already computed.
  *
  * @param {jsnx.classes.Graph} G graph
- * @param {Array=} opt_cliques
+ * @param {(Array|goog.iter.Iterable)=} opt_cliques
  *
- * @return number;
+ * @return {number};
  */
 jsnx.algorithms.clique.graph_clique_number = function(G, opt_cliques) {
     if(!goog.isDefAndNotNull(opt_cliques)) {
@@ -354,9 +354,9 @@ goog.exportSymbol('jsnx.graph_clique_number', jsnx.algorithms.clique.graph_cliqu
  * An optional list of cliques can be input if already computed.
  *
  * @param {jsnx.classes.Graph} G graph
- * @param {Array=} opt_cliques
+ * @param {(Array|goog.iter.Iterable)=} opt_cliques
  *
- * @return number;
+ * @return {number}
  */
 jsnx.algorithms.clique.graph_number_of_cliques = function(G, opt_cliques) {
     if(!goog.isDefAndNotNull(opt_cliques)) {
@@ -377,14 +377,17 @@ goog.exportSymbol('jsnx.graph_number_of_cliques', jsnx.algorithms.clique.graph_n
  * Optional list of cliques can be input if already computed.
  *
  * @param {jsnx.classes.Graph} G graph
- * @param {?Array} opt_nodes List of nodes
- * @param {?Array} opt_cliques List of cliques
+ * @param {jsnx.NodeContainer=} opt_nodes List of nodes
+ * @param {(Array|goog.iter.Iterable)=} opt_cliques List of cliques
  *
- * @return {number|Array}
+ * @return {!(Object|number)}
  */
 jsnx.algorithms.clique.number_of_cliques = function(G, opt_nodes, opt_cliques) {
     if(!goog.isDefAndNotNull(opt_cliques)) {
         opt_cliques = goog.iter.toArray(jsnx.algorithms.clique.find_cliques(G));
+    }
+    else {
+        opt_cliques = goog.iter.toArray(opt_cliques);
     }
 
     if(!goog.isDefAndNotNull(opt_nodes)) {
@@ -394,18 +397,25 @@ jsnx.algorithms.clique.number_of_cliques = function(G, opt_nodes, opt_cliques) {
     var numcliq;
     if(!goog.isArray(opt_nodes)) {
         var v = opt_nodes;
-        numcliq = goog.array.filter(opt_cliques, function(c) {
-            // account for string and number nodes
-            return  goog.array.contains(c, v) || goog.array.contains(c, v + '');
-        }).length;
+        numcliq = goog.array.filter(
+            goog.asserts.assertArray(opt_cliques),
+            function(/**Array*/c) {
+              // account for string and number nodes
+              return  goog.array.contains(c, v) || goog.array.contains(c, v + '');
+            }
+        ).length;
     }
     else {
         numcliq = {};
-        goog.array.forEach(opt_nodes, function(v) {
-            numcliq[v] = goog.array.filter(opt_cliques, function(c) {
-                // account for string and number nodes
-                return  goog.array.contains(c, v) || goog.array.contains(c, v + '');
-            }).length;
+        goog.array.forEach(opt_nodes, function(/**jsnx.Node*/v) {
+            numcliq[v] = goog.array.filter(
+                goog.asserts.assertArray(opt_cliques),
+                function(/**Array*/c) {
+                  // account for string and number nodes
+                  return  goog.array.contains(c, v) || 
+                      goog.array.contains(c, v + '');
+                }
+            ).length;
         });
     }
     return numcliq;

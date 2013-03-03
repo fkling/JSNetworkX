@@ -21,7 +21,7 @@ goog.require('goog.math');
  * @param {jsnx.NodeContainer=} opt_nodes (default: all nodes)
  *      Compute triangles for nodes in this container.
  *
- * @return {Object} Number of triangles keyed by node label.
+ * @return {!(Object|number)} Number of triangles keyed by node label.
  */
 jsnx.algorithms.cluster.triangles = function(G, opt_nodes) {
     if (G.is_directed()) {
@@ -30,7 +30,7 @@ jsnx.algorithms.cluster.triangles = function(G, opt_nodes) {
         );
     }
 
-    if(G.has_node(opt_nodes)) {
+    if (goog.isDefAndNotNull(opt_nodes) && G.has_node(opt_nodes)) {
         // return single value
         return Math.floor(jsnx.algorithms.cluster.triangles_and_degree_iter_(G, opt_nodes).next()[2] / 2);
     }
@@ -55,7 +55,7 @@ goog.exportSymbol('jsnx.triangles', jsnx.algorithms.cluster.triangles);
  * @param {jsnx.NodeContainer=} opt_nodes (default: all nodes)
  *      Compute triangles for nodes in this container.
  *
- * @return {goog.iter.Iterator}
+ * @return {!goog.iter.Iterator}
  */
 jsnx.algorithms.cluster.triangles_and_degree_iter_ = function(G, opt_nodes) {
     if (G.is_multigraph()) {
@@ -101,7 +101,9 @@ jsnx.algorithms.cluster.triangles_and_degree_iter_ = function(G, opt_nodes) {
  * @param {string=} opt_weight (default: 'weight')
  *      The name of edge weight attribute.
  *
- * @return {goog.iter.Iterator}
+ * @return {!goog.iter.Iterator}
+ *
+ * @suppress {checkTypes}
  */
 jsnx.algorithms.cluster.weighted_triangles_and_degree_iter_ = function(G, opt_nodes,
                                                                        opt_weight) {
@@ -111,7 +113,7 @@ jsnx.algorithms.cluster.weighted_triangles_and_degree_iter_ = function(G, opt_no
         );
     }
     
-    if(!goog.isDef(opt_weight)) {
+    if(!goog.isString(opt_weight)) {
         opt_weight = 'weight';
     }
 
@@ -121,7 +123,7 @@ jsnx.algorithms.cluster.weighted_triangles_and_degree_iter_ = function(G, opt_no
     }
     else {
         max_weight = jsnx.helper.max(G.edges(true), function(ed) {
-            return goog.object.get(ed[2], opt_weight, 1);
+            return goog.object.get(ed[2], /** @type {string} */ (opt_weight), 1);
         });
     }
 
@@ -142,14 +144,26 @@ jsnx.algorithms.cluster.weighted_triangles_and_degree_iter_ = function(G, opt_no
             seen = new goog.structs.Set();
 
         goog.iter.forEach(inbrs, function(j) {
-            var wij = goog.object.get(G.get_node(i)[j], opt_weight, 1) / max_weight;
+            var wij = goog.object.get(
+                G.get_node(i)[j],
+                /** @type {string} */ (opt_weight),
+                1
+            ) / max_weight;
             seen.add(j);
             var jnbrs = (new goog.structs.Set(goog.object.getKeys(G.get_node(j))))
                         .difference(seen); // this keeps from double counting
 
             goog.iter.forEach(inbrs.intersection(jnbrs), function(k) {
-                var wjk= goog.object.get(G.get_node(j)[k], opt_weight, 1) / max_weight,
-                    wki = goog.object.get(G.get_node(i)[k], opt_weight, 1) / max_weight;
+                var wjk = goog.object.get(
+                    G.get_node(j)[k],
+                    /** @type {string} */ (opt_weight),
+                    1
+                ) / max_weight;
+                var wki = goog.object.get(
+                    G.get_node(i)[k],
+                    /** @type {string} */ (opt_weight),
+                    1
+                ) / max_weight;
                 weighted_triangles += Math.pow(wij * wjk * wki, 1/3);
             });
         });
@@ -172,12 +186,12 @@ jsnx.algorithms.cluster.weighted_triangles_and_degree_iter_ = function(G, opt_no
  *
  *
  * @param {jsnx.classes.Graph} G graph
- * @param {jsnx.NodeContainer=} opt_nodes (default: all nodes)
+ * @param {?jsnx.NodeContainer=} opt_nodes (default: all nodes)
  *      Compute average clustering for nodes in this container.
- * @param {string=} opt_weight (default: null)
+ * @param {?string=} opt_weight (default: null)
  *      The edge attribute that holds the numerical value used as a weight.
  *      If None, then each edge has weight 1.
- * @param {boolean=} opt_count_zeros (default: true)
+ * @param {?boolean=} opt_count_zeros (default: true)
  *       If False include only the nodes with nonzero clustering in the average.
  *
  * @return {number}
@@ -186,28 +200,33 @@ jsnx.algorithms.cluster.average_clustering = function(G, opt_nodes, opt_weight,
                                                       opt_count_zeros) {
     if(arguments.length === 2) {
         if(goog.isString(opt_nodes)) {
-            opt_weight = opt_nodes;
+            opt_weight = /** @type {string} */ (opt_nodes);
             opt_nodes = null;
         }
         else if(goog.isBoolean(opt_nodes)) {
-            opt_count_zeros = opt_nodes;
+            opt_count_zeros = /** @type {boolean} */ (opt_nodes);
             opt_nodes = null;
         }
     }
     else if(arguments.length === 3) {
         if(goog.isBoolean(opt_weight)) {
-            opt_count_zeros = opt_weight;
+            opt_count_zeros = /** @type {boolean} */ (opt_weight);
             opt_weight = null;
         }
     }
-    if(!goog.isDefAndNotNull(opt_weight)) {
-        opt_weight = null;
-    }
+
     if(!goog.isDefAndNotNull(opt_count_zeros)) {
         opt_count_zeros = true;
     }
 
-    var c = goog.object.getValues(jsnx.algorithms.cluster.clustering(G, opt_nodes, opt_weight));
+    var c = goog.object.getValues(
+        /** @type {Object} */ (jsnx.algorithms.cluster.clustering(
+            G,
+            opt_nodes,
+            opt_weight
+        ))
+    );
+
     if(!opt_count_zeros) {
         c = goog.array.filter(c, function(v) {
             return v > 0;
@@ -231,11 +250,11 @@ goog.exportSymbol('jsnx.average_clustering', jsnx.algorithms.cluster.average_clu
  *
  *
  * @param {jsnx.classes.Graph} G graph
- * @param {jsnx.NodeContainer=} opt_nodes (default: all nodes)
+ * @param {?jsnx.NodeContainer=} opt_nodes (default: all nodes)
  *      Compute average clustering for nodes in this container.
- * @param {string=} opt_weight (default: null)
+ * @param {?string=} opt_weight (default: null)
  *
- * @return {number|Object} Clustering coefficient at specified nodes
+ * @return {!(number|Object)} Clustering coefficient at specified nodes
  */
 jsnx.algorithms.cluster.clustering = function(G, opt_nodes, opt_weight) {
     if (G.is_directed()) {
@@ -263,8 +282,8 @@ jsnx.algorithms.cluster.clustering = function(G, opt_nodes, opt_weight) {
         }
     });
 
-    if(G.has_node(opt_nodes)) {
-        return goog.object.getValues(clusterc)[0];
+    if (goog.isDefAndNotNull(opt_nodes) && G.has_node(opt_nodes)) {
+        return /** @type {number} */ (goog.object.getValues(clusterc)[0]);
     }
     return clusterc;
 };
@@ -305,7 +324,7 @@ goog.exportSymbol('jsnx.transitivity', jsnx.algorithms.cluster.transitivity);
  * @param {jsnx.NodeContainer} opt_nodes (default: all)
  *      Compute clustering for nodes in this container.
  *
- * @return {Object} 
+ * @return {!Object} 
  *      A dictionary keyed by node with the square clustering coefficient value.
  */
 jsnx.algorithms.cluster.square_clustering = function(G, opt_nodes) {
@@ -338,7 +357,7 @@ jsnx.algorithms.cluster.square_clustering = function(G, opt_nodes) {
             clustering[v] /= potential;
         }
     });
-    if(G.has_node(opt_nodes)) {
+    if (goog.isDefAndNotNull(opt_nodes) && G.has_node(opt_nodes)) {
         return goog.object.getValues(clustering)[0]; // return single value
     }
     return clustering;

@@ -1,9 +1,9 @@
 "use strict";
 /**
- * This module provides functions to convert 
+ * This module provides functions to convert
  * NetworkX graphs to and from other formats.
  *
- * The preferred way of converting data to a NetworkX graph 
+ * The preferred way of converting data to a NetworkX graph
  * is through the graph constuctor.  The constructor calls
  * the to_networkx_graph() function which attempts to guess the
  * input type and convert it automatically.
@@ -12,8 +12,9 @@
 
 goog.provide('jsnx.convert');
 
-goog.require('goog.object');
 goog.require('goog.array');
+goog.require('goog.asserts');
+goog.require('goog.object');
 goog.require('goog.structs.Set');
 goog.require('goog.iter');
 
@@ -25,17 +26,20 @@ goog.require('goog.iter');
  * If create_using.clear() works, assume it returns a graph object.
  * Otherwise raise an exception because create_using is not a jsnx graph.
  *
- * @return {jsnx.Graph}
+ * @param {jsnx.classes.Graph=} opt_create_using
+ *
+ * @return {jsnx.classes.Graph}
+ *
  * @private
  */
-jsnx.convert.prep_create_using_ = function(create_using) {
+jsnx.convert.prep_create_using_ = function(opt_create_using) {
     var G;
 
-    if(!goog.isDefAndNotNull(create_using)) {
-        G = new jsnx.Graph();
+    if(!goog.isDefAndNotNull(opt_create_using)) {
+        G = new jsnx.classes.Graph();
     }
     else {
-        G = create_using;
+        G = opt_create_using;
 
         try {
             G.clear();
@@ -51,35 +55,44 @@ jsnx.convert.prep_create_using_ = function(create_using) {
 /**
  * Make a jsnx graph from a known data structure.
  *
- * @param {Object} data An object to be converted
+ * @param {?} data An object to be converted
  *     Current known types are:
  *        any jsnx graph
  *        dict-of-dicts
  *        dict-of-lists
  *        list of edges
  *
- * @param {jsnx.Graph} create_using NetworkX graph
+ * @param {jsnx.classes.Graph=} opt_create_using NetworkX graph
  *     Use specified graph for result.  Otherwise a new graph is created.
- * 
- * @param {boolean} multigraph_input (default false)
+ *
+ * @param {boolean=} opt_multigraph_input (default false)
  *     If true and  data is a dict_of_dicts,
  *     try to create a multigraph assuming dict_of_dict_of_lists.
  *     If data and create_using are both multigraphs then create
  *     a multigraph from a multigraph.
  *
- * @return {jsnx.Graph}
+ * @return {jsnx.classes.Graph}
  */
-jsnx.convert.to_networkx_graph = function(data, create_using, multigraph_input) {
-    var result;
+jsnx.convert.to_networkx_graph = function(data, opt_create_using, opt_multigraph_input) {
+    var result = null;
 
     // jsnx graph
-    if(data.hasOwnProperty('adj')) {
+    if (data.hasOwnProperty('adj')) {
+      /** @preserveTry */
        try {
-            result = jsnx.convert.from_dict_of_dicts(data['adj'], create_using, data.is_multigraph());
-            if(goog.object.containsKey(data, 'graph') && goog.typeOf(data['graph']) === 'object') {
+            result = jsnx.convert.from_dict_of_dicts(
+                data['adj'],
+                opt_create_using,
+                data.is_multigraph()
+            );
+            if (goog.object.containsKey(data, 'graph') &&
+                goog.typeOf(data['graph']) === 'object')
+            {
                 result['graph'] = goog.object.clone(data['graph']);
             }
-            if(goog.object.containsKey(data, 'node') && goog.typeOf(data['node']) === 'object') {
+            if (goog.object.containsKey(data, 'node') &&
+                goog.typeOf(data['node']) === 'object')
+            {
                 result['node'] = goog.object.map(data['node'], function(element) {
                     return goog.object.clone(element);
                 });
@@ -93,14 +106,20 @@ jsnx.convert.to_networkx_graph = function(data, create_using, multigraph_input) 
 
     // dict of dicts / lists
     if(goog.typeOf(data) === 'object') {
+        /** @preserveTry */
         try {
-            return jsnx.convert.from_dict_of_dicts(data, create_using, multigraph_input);
+            return jsnx.convert.from_dict_of_dicts(
+              data,
+              opt_create_using,
+              opt_multigraph_input
+            );
         }
         catch(e) {
+            /** @preserveTry */
             try {
-                return jsnx.convert.from_dict_of_lists(data, create_using);
+                return jsnx.convert.from_dict_of_lists(data, opt_create_using);
             }
-            catch(e) {
+            catch(ex) {
                 throw new Error('Input is not known type.');
             }
         }
@@ -108,13 +127,16 @@ jsnx.convert.to_networkx_graph = function(data, create_using, multigraph_input) 
 
     // list of edges
     if(goog.isArrayLike(data)) {
+        /** @preserveTry */
         try {
-            return jsnx.convert.from_edgelist(data, create_using);
+            return jsnx.convert.from_edgelist(data, opt_create_using);
         }
         catch(e) {
             throw new Error('Input is not valid edge list');
         }
     }
+
+    return result;
 };
 goog.exportSymbol('jsnx.to_networkx_graph', jsnx.convert.to_networkx_graph);
 
@@ -122,26 +144,26 @@ goog.exportSymbol('jsnx.to_networkx_graph', jsnx.convert.to_networkx_graph);
 /**
  * Return a new undirected representation of the graph G.
  *
- * @param {jsnx.Graph} G Graph to convert
+ * @param {jsnx.classes.Graph} G Graph to convert
  *
- * @return {jsnx.Graph}
+ * @return {!jsnx.classes.Graph}
  */
 jsnx.convert.convert_to_undirected = function(G) {
     return G.to_undirected();
 };
-goog.exportSymbol('jsnx.convert_to_undirected', jsnx.convert_to_undirected);
+goog.exportSymbol('jsnx.convert_to_undirected', jsnx.convert.convert_to_undirected);
 
 
 /**
  * Return a new directed representation of the graph G.
  *
- * @param {jsnx.Graph} G Graph to convert
- * @return {jsnx.Graph}
+ * @param {jsnx.classes.Graph} G Graph to convert
+ * @return {!jsnx.classes.Graph}
  */
 jsnx.convert.convert_to_directed = function(G) {
     return G.to_directed();
 };
-goog.exportSymbol('jsnx.convert_to_undirected', jsnx.convert_to_directed);
+goog.exportSymbol('jsnx.convert_to_undirected', jsnx.convert.convert_to_directed);
 
 
 /**
@@ -149,28 +171,29 @@ goog.exportSymbol('jsnx.convert_to_undirected', jsnx.convert_to_directed);
  *
  * Completely ignores edge data for MultiGraph and MultiDiGraph.
  *
- * @param {jsnx.Graph} G A jsnx graph
- * @param {goog.iter.Iterable} nodelist Use only nodes specified in nodelist
+ * @param {jsnx.classes.Graph} G A jsnx graph
+ * @param {jsnx.NodeContainer=} opt_nodelist Use only nodes specified in nodelist
  *
- * @return {Object.<(string|number), Array>} 
+ * @return {!Object.<Array>}
  */
-jsnx.convert.to_dict_of_lists = function(G, nodelist) {
+jsnx.convert.to_dict_of_lists = function(G, opt_nodelist) {
 
-    // assume that nodelist is an array
-    var contains = function(n) {
-            return goog.array.contains(nodelist, n);
-        },
-        d = {};
+    var contains = function(/**jsnx.Node*/n) {
+        return goog.array.contains(goog.asserts.assertArray(opt_nodelist), n);
+    };
+    var d = {};
 
-    if(!goog.isDef(nodelist)) {
-        nodelist = G;
-        
-        contains = function(n) {
-            return nodelist.contains(n);
+    if(!goog.isDefAndNotNull(opt_nodelist)) {
+        opt_nodelist = G;
+        contains = function(/**jsnx.Node*/n) {
+            return opt_nodelist.has_node(n);
         };
     }
+    else {
+      opt_nodelist = jsnx.helper.toArray(opt_nodelist);
+    }
 
-    jsnx.helper.forEach(nodelist, function(n) {
+    jsnx.helper.forEach(opt_nodelist, function(/**jsnx.Node*/n) {
         d[n] = goog.array.filter(G.neighbors(n), contains);
     });
 
@@ -182,18 +205,19 @@ goog.exportSymbol('jsnx.to_dict_of_lists', jsnx.convert.to_dict_of_lists);
 /**
  * Return a graph from a dictionary of lists.
  * *
- * @param {Object.<(number|string), Array>} d A dictionary of lists adjacency representation.
- * @param {jsnx.Graph} create_using Use specified graph for result.  Otherwise a new graph is created.
+ * @param {!Object.<Array>} d A dictionary of lists adjacency representation.
+ * @param {jsnx.classes.Graph=} opt_create_using Use specified graph for result.
+ *    Otherwise a new graph is created.
  *
- * @return {jsnx.Graph} 
+ * @return {!jsnx.classes.Graph}
  */
-jsnx.convert.from_dict_of_lists = function(d, create_using) {
-    var G = jsnx.convert.prep_create_using_(create_using);
+jsnx.convert.from_dict_of_lists = function(d, opt_create_using) {
+    var G = jsnx.convert.prep_create_using_(opt_create_using);
     G.add_nodes_from(d);
 
     if(G.is_multigraph() && !G.is_directed()) {
         // a dict_of_lists can't show multiedges.  BUT for undirected graphs,
-        // each edge shows up twice in the dict_of_lists.  
+        // each edge shows up twice in the dict_of_lists.
         // So we need to treat this case separately.
         var seen = {};
 
@@ -225,52 +249,56 @@ jsnx.convert.from_dict_of_lists = function(d, create_using) {
 /**
  * Return adjacency representation of graph as a dictionary of dictionaries.
  *
- * @param {jsnx.Graph} G A jsnx Graph
- * @param {Array} nodelist Use only nodes specified in nodelist
- * @param {Array} edge_data If provided,  the value of the dictionary will be
+ * @param {jsnx.classes.Graph} G A jsnx Graph
+ * @param {jsnx.NodeContainer=} opt_nodelist Use only nodes specified in nodelist
+ * @param {Object=} opt_edge_data If provided,  the value of the dictionary will be
  *      set to edge_data for all edges.  This is useful to make
  *      an adjacency matrix type representation with 1 as the edge data.
- *      If edgedata is null or undefined, the edgedata in G is used to fill the values.
+ *      If edgedata is null or undefined, the edgedata in G is used to fill
+ *      the values.
  *      If G is a multigraph, the edgedata is a dict for each pair (u,v).
  *
- * @return {Object.<Object>}
+ * @return {!Object.<Object>}
  */
- jsnx.convert.to_dict_of_dicts = function(G, nodelist, edge_data) {
+ jsnx.convert.to_dict_of_dicts = function(G, opt_nodelist, opt_edge_data) {
      var dod = {};
 
-     if(!goog.isDef(nodelist)) {
-         if(!goog.isDef(edge_data)) {
-             goog.iter.forEach(G.adjacency_iter(), function(nbrdict, u) {
-                 dod[u] = goog.object.clone(nbrdict);
+     if (goog.isDefAndNotNull(opt_nodelist)) {
+         opt_nodelist = jsnx.helper.toArray(opt_nodelist);
+         if(goog.isDefAndNotNull(opt_edge_data)) {
+             goog.array.forEach(opt_nodelist, function(u) {
+                 dod[u] = {};
+                 goog.object.forEach(G.get_node(u), function(data, v) {
+                     goog.asserts.assertArray(opt_nodelist);
+                     if(goog.array.contains(opt_nodelist, v)) {
+                         dod[u][v] = opt_edge_data;
+                     }
+                 });
              });
          }
-         else { // edge_data is not undefined
-            goog.iter.forEach(G.adjacency_iter(), function(nbrdict, u) {
-                dod[u] = goog.object.map(nbrdict, function() {
-                    return edge_data;
-                });
-            });
-         }
-     }
-     else { // nodelist is not undefined
-         if(!goog.isDef(edge_data)) {
-            goog.array.forEach(nodelist, function(u) {
+         else { // nodelist and edge_data are defined
+            goog.array.forEach(opt_nodelist, function(u) {
                 dod[u] = {};
                 goog.object.forEach(G.get_node(u), function(data, v) {
-                    if(goog.array.contains(nodelist, v)) {
+                    goog.asserts.assertArray(opt_nodelist);
+                    if(goog.array.contains(opt_nodelist, v)) {
                         dod[u][v] = data;
                     }
                 });
             });
          }
-         else { // nodelist and edge_data are not undefined
-             goog.array.forEach(nodelist, function(u) {
-                 dod[u] = {};
-                 goog.object.forEach(G.get_node(u), function(data, v) {
-                     if(goog.array.contains(nodelist, v)) {
-                         dod[u][v] = edge_data;
-                     }
-                 });
+     }
+     else { // nodelist is undefined
+         if(goog.isDefAndNotNull(opt_edge_data)) {
+            goog.iter.forEach(G.adjacency_iter(), function(nbrdict, u) {
+                dod[u] = goog.object.map(nbrdict, function() {
+                    return opt_edge_data;
+                });
+            });
+         }
+         else { // edge_data is defined
+             goog.iter.forEach(G.adjacency_iter(), function(nbrdict, u) {
+                 dod[u] = goog.object.clone(nbrdict);
              });
          }
      }
@@ -282,22 +310,23 @@ jsnx.convert.from_dict_of_lists = function(d, create_using) {
 /**
  * Return a graph from a dictionary of dictionaries.
  *
- * @param {Object.<Object>} d A dictionary of dictionaries adjacency representation.
- * @param {jsnx.Graph} create_using Use specified graph for result.  
+ * @param {!Object.<!Object>} d A dictionary of dictionaries adjacency 
+ *      representation.
+ * @param {jsnx.classes.Graph=} opt_create_using Use specified graph for result.
  *      Otherwise a new graph is created.
- * @param {boolean} multigraph_input (default=False)  
- *      When True, the values of the inner dict are assumed 
+ * @param {boolean=} opt_multigraph_input (default=False)
+ *      When True, the values of the inner dict are assumed
  *      to be containers of edge data for multiple edges.
  *      Otherwise this routine assumes the edge data are singletons.
  *
- * @return {jsnx.Graph}
+ * @return {jsnx.classes.Graph}
  */
-jsnx.convert.from_dict_of_dicts = function(d, create_using, multigraph_input) {
-    var G = jsnx.convert.prep_create_using_(create_using), edgelist, seen;
+jsnx.convert.from_dict_of_dicts = function(d, opt_create_using, opt_multigraph_input) {
+    var G = jsnx.convert.prep_create_using_(opt_create_using), edgelist, seen;
     G.add_nodes_from(d);
 
     // is dict a MultiGraph or MultiDiGraph?
-    if (multigraph_input) {
+    if (opt_multigraph_input) {
         // make a copy  of the list of edge data (but not the edge data)
         if (G.is_directed()) {
             if (G.is_multigraph()) {
@@ -419,17 +448,17 @@ jsnx.convert.from_dict_of_dicts = function(d, create_using, multigraph_input) {
 /**
  * Return a list of edges in the graph.
  *
- * @param {jsnx.Graph} G A jsnx graph
- * @param {Array} nodelist Use only nodes specified in nodelist
- *  
- * @return {Array}  
+ * @param {jsnx.classes.Graph} G A jsnx graph
+ * @param {jsnx.NodeContainer=} opt_nodelist Use only nodes specified in nodelist
+ *
+ * @return {!Array}
  */
-jsnx.convert.to_edgelist = function(G, nodelist) {
-    if(!goog.isDef(nodelist)) {
-        return G.edges(true);
+jsnx.convert.to_edgelist = function(G, opt_nodelist) {
+    if(goog.isDefAndNotNull(opt_nodelist)) {
+        return G.edges(opt_nodelist, true);
     }
     else {
-        return G.edges(nodelist, true);
+        return G.edges(null, true);
     }
 };
 
@@ -437,14 +466,14 @@ jsnx.convert.to_edgelist = function(G, nodelist) {
 /**
  * Return a graph from a list of edges.
  *
- * @param {Array} edgelist Edge tuples 
- * @param {jsnx.Graph} create_using Use specified graph for result.  
+ * @param {Array.<Array>} edgelist Edge tuples
+ * @param {jsnx.classes.Graph=} opt_create_using Use specified graph for result.
  *      Otherwise a new graph is created.
  *
- * @return {jsnx.Graph}
+ * @return {!jsnx.classes.Graph}
  */
-jsnx.convert.from_edgelist = function(edgelist, create_using) {
-    var G = jsnx.convert.prep_create_using_(create_using);
+jsnx.convert.from_edgelist = function(edgelist, opt_create_using) {
+    var G = jsnx.convert.prep_create_using_(opt_create_using);
     G.add_edges_from(edgelist);
     return G;
 };

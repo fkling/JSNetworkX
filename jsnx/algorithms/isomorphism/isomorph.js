@@ -15,8 +15,8 @@ goog.require('jsnx.helper');
  * Note:
  * Checks for matching degree, triangle, and number of cliques sequences.
  *
- * @param {jsnx.Graph} G1
- * @param {jsnx.Graph} G2
+ * @param {!jsnx.classes.Graph} G1
+ * @param {!jsnx.classes.Graph} G2
  *
  * @return {boolean}  False if graphs are definitely not isomorphic.
  *
@@ -29,11 +29,13 @@ jsnx.algorithms.isomorphism.could_be_isomorphic = function(G1, G2) {
     }
 
     // Check local properties
+    /** @type string */
+    var v;
     var d1 = G1.degree(),
         t1 = jsnx.algorithms.cluster.triangles(G1),
         c1 = jsnx.algorithms.clique.number_of_cliques(G1),
         props1 = [];
-    for(var v in d1) {
+    for(v in d1) {
         props1.push([d1[v], t1[v], c1[v]]);
     }
     props1.sort(function(a, b) {
@@ -50,7 +52,7 @@ jsnx.algorithms.isomorphism.could_be_isomorphic = function(G1, G2) {
         t2 = jsnx.algorithms.cluster.triangles(G2),
         c2 = jsnx.algorithms.clique.number_of_cliques(G2),
         props2 = [];
-    for(var v in d2) {
+    for(v in d2) {
         props2.push([d2[v], t2[v], c2[v]]);
     }
     props2.sort(function(a, b) {
@@ -83,8 +85,8 @@ goog.exportSymbol('jsnx.could_be_isomorphic', jsnx.algorithms.isomorphism.could_
  * Note:
  * Checks for matching degree and triangle sequences.
  *
- * @param {jsnx.Graph} G1
- * @param {jsnx.Graph} G2
+ * @param {!jsnx.classes.Graph} G1
+ * @param {!jsnx.classes.Graph} G2
  *
  * @return {boolean}  False if graphs are definitely not isomorphic.
  *
@@ -97,10 +99,12 @@ jsnx.algorithms.isomorphism.fast_could_be_isomorphic = function(G1, G2) {
     }
 
     // Check local properties
+    /** @type string */
+    var v;
     var d1 = G1.degree(),
         t1 = jsnx.algorithms.cluster.triangles(G1),
         props1 = [];
-    for(var v in d1) {
+    for(v in d1) {
         props1.push([d1[v], t1[v]]);
     }
     props1.sort(function(a, b) {
@@ -113,7 +117,7 @@ jsnx.algorithms.isomorphism.fast_could_be_isomorphic = function(G1, G2) {
     var d2 = G2.degree(),
         t2 = jsnx.algorithms.cluster.triangles(G2),
         props2 = [];
-    for(var v in d2) {
+    for(v in d2) {
         props2.push([d2[v], t2[v]]);
     }
     props2.sort(function(a, b) {
@@ -143,8 +147,8 @@ goog.exportSymbol('jsnx.fast_could_be_isomorphic', jsnx.algorithms.isomorphism.f
  * Note:
  * Checks for matching degree sequences.
  *
- * @param {jsnx.Graph} G1
- * @param {jsnx.Graph} G2
+ * @param {!jsnx.classes.Graph} G1
+ * @param {!jsnx.classes.Graph} G2
  *
  * @return {boolean}  False if graphs are definitely not isomorphic.
  *
@@ -157,10 +161,10 @@ jsnx.algorithms.isomorphism.faster_could_be_isomorphic = function(G1, G2) {
     }
 
     // Check local properties
-    var d1 = goog.object.getValues(G1.degree());
+    var d1 = goog.object.getValues(/** @type {Object} */ (G1.degree()));
     d1.sort();
 
-    var d2 = goog.object.getValues(G2.degree());
+    var d2 = goog.object.getValues(/** @type {Object} */ (G2.degree()));
     d2.sort();
 
     if(!goog.array.equals(d1, d2)) {

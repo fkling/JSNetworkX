@@ -1,3 +1,4 @@
+/*jshint expr:true*/
 /**
  * @fileoverview Externs for D3 V2
  *
@@ -10,7 +11,7 @@
 var d3Selector;
 
 /**
- * @typedef {(number|string|function)}
+ * @typedef {(number|string|Function)}
  */
 var d3Value;
 
@@ -19,23 +20,17 @@ var d3Value;
  */
 var d3;
 
-
-/**
- * @type d3
- */
-var d3 = {};
-
 // Core classes
 
 
 /**
- * @param {d3Selector}
+ * @param {d3Selector} selector
  * @return {!d3.selection} selector
  */
 d3.select = function(selector){};
 
 /**
- * @param {d3Selector}
+ * @param {d3Selector} selector
  * @return {!d3.selection} selector
  */
 d3.selectAll = function(selector){};
@@ -50,15 +45,15 @@ d3.selection = function(){};
 
 /**
  * @param {string} key
- * @param {d3Value} opt_value
+ * @param {d3Value=} opt_value
  * @return {(string|!d3.selection)}
  */
 d3.selection.prototype.attr = function(key, opt_value){};
 
 
 /**
- * @param {string} key
- * @param {boolean} opt_add_remove
+ * @param {string} value
+ * @param {boolean=} opt_add_remove
  * @return {!d3.selection}
  */
 d3.selection.prototype.classed = function(value, opt_add_remove){};
@@ -66,18 +61,17 @@ d3.selection.prototype.classed = function(value, opt_add_remove){};
 
 /**
  * @param {string} key
- * @param {d3Value} opt_value
+ * @param {d3Value=} opt_value
  * @return {(string|!d3.selection)}
  */
 d3.selection.prototype.style = function(key, opt_value){};
 
 
 /**
- * @param {string} text
- * @param {d3Value} opt_value
+ * @param {d3Value=} opt_value
  * @return {(string|!d3.selection)}
  */
-d3.selection.prototype.text = function(key, opt_value){};
+d3.selection.prototype.text = function(opt_value){};
 
 
 /**
@@ -94,9 +88,10 @@ d3.selection.prototype.remove = function(){};
 
 
 /**
- * @param {Array} opt_value
- * @param {function} opt_key
+ * @param {Array.<T>=} opt_value
+ * @param {function(T)=} opt_key
  * @return {(Array | !d3.selection)}
+ * @template T
  */
 d3.selection.prototype.data = function(opt_value, opt_key){};
 
@@ -114,14 +109,14 @@ d3.selection.prototype.exit = function(){};
 
 
 /**
- * @param {(d3Selector|function)} selection
+ * @param {(d3Selector|function(Object))} selection
  * @return {!d3.selection}
  */
 d3.selection.prototype.filter = function(selection){};
 
 
 /**
- * @param {function} cb
+ * @param {function(Object)} cb
  * @return {!d3.selection}
  */
 d3.selection.prototype.each = function(cb){};
@@ -129,8 +124,8 @@ d3.selection.prototype.each = function(cb){};
 
 /**
  * @param {string} type
- * @param {function} opt_listener
- * @param {boolean} opt_capture
+ * @param {function(Object)=} opt_listener
+ * @param {boolean=} opt_capture
  * @return {!d3.selection}
  */
 d3.selection.prototype.on = function(type, opt_listener, opt_capture){};
@@ -157,11 +152,29 @@ d3.selection.prototype.selectAll = function(selector){};
 
 
 /**
- * @param {function} func
+ * @param {function()} func
  * @return {!d3.selection}
  */
 d3.selection.prototype.call = function(func){};
 
+/**
+ * @constructor
+ * @extends {d3.selection}
+ */
+d3.transition = function() {};
+
+/**
+ * @param {number} duration
+ * @return {!d3.transition}
+ */
+d3.transition.prototype.duration = function(duration) {};
+
+
+// Layouts
+/**
+ * @type {Object}
+ */
+d3.layout = {};
 
 
 // Force layout
@@ -171,6 +184,12 @@ d3.selection.prototype.call = function(func){};
  * @return {!d3.layout.force}
  */
 d3.layout.force = function(){};
+
+/**
+ * @param {Array} size
+ * @return {(Array|!d3.layout.force)}
+ */
+d3.layout.force.prototype.size = function(size){};
 
 /**
  * @param {number} distance
@@ -241,7 +260,7 @@ d3.layout.force.prototype.resume = function(){};
 
 /**
  * @param {string} type
- * @param {function} listener
+ * @param {function()} listener
  * @return {!d3.layout.force}
  */
 d3.layout.force.prototype.on = function(type, listener){};
@@ -254,59 +273,68 @@ d3.layout.force.prototype.drag = function(){};
 
 
 /**
- * @constructor
- * @return {(number|d3.scale.linear)}
+ * @typedef {function(?):?}
+ */
+var d3scale;
+
+// nasty hack to make scales work :-/
+
+/**
+ * @param {Array} domain
+ * @return {d3scale}
+ */
+Function.prototype.domain = function(domain) {};
+
+/**
+ * @param {Array} range
+ * @return {d3scale}
+ */
+Function.prototype.range = function(range) {};
+
+/**
+ * @return {!d3scale}
  */
 d3.scale.linear = function() {};
 
-/**
- * @param {Array} range
- * @return {d3.scale.linear}
- */
-d3.scale.linear.prototype.range = function(range) {};
 
 /**
- * @param {Array} range
- * @return {d3.scale.linear}
+ * @type {Object}
  */
-d3.scale.linear.prototype.domain = function(domain) {};
-
-
+d3.behavior = {};
 
 
 /**
  * @constructor
- * @return {d3.behaviour.zoom}
+ * @return {d3.behavior.zoom}
  */
 d3.behavior.zoom = function() {};
 
+
 /**
  * @param {string} event
- * @param {function} listener
+ * @param {function(string, function(Object))} listener
  */
 d3.behavior.zoom.prototype.on = function(event, listener) {};
-
 
 
 // Event object
 
 /**
- * @constructor
- * @return {d3.event}
+ * @typedef {Object}
  */
-d3.event = function() {};
+d3.event;
 
 
 /**
  *  @type number 
  */
-d3.event.prototype.scale = null;
+d3.event.scale = 0;
 
 
 /**
  *  @type Object
  */
-d3.event.prototype.sourceEvent = {
+d3.event.sourceEvent = {
     /** @type boolean */
     shiftKey: false
 };

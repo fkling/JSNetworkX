@@ -22,7 +22,7 @@ goog.require('jsnx.helper');
 /**
  * Holds a reference to the last container element for convenience.
  *
- * @type {(?string|Element)}
+ * @type {?(string|Element)}
  * @private
  */
 jsnx.drawing.jsnx_d3.last_container_element_ = null;
@@ -41,7 +41,7 @@ jsnx.drawing.jsnx_d3.last_configuration_ = null;
 /**
  * A list of graph mutator methods.
  *
- * @type {Array.<string?}
+ * @type {Array.<string>}
  * @const
  * @private
  */
@@ -54,7 +54,7 @@ jsnx.drawing.jsnx_d3.MUTATOR_METHODS_ = ['add_node', 'add_nodes_from',
  * The name of the attribute the D3 data is assigned to in the node and
  * edge data.
  *
- * @type string
+ * @type {string}
  * @const
  * @private
  */
@@ -65,8 +65,8 @@ jsnx.drawing.jsnx_d3.D3_DATA_NAME_ = '__d3datum__';
  * Draw graph G with D3.
  *
  *
- * @param {jsnx.Graph} G The graph to draw
- * @param {Object} config A dictionary of configuration parameters
+ * @param {jsnx.classes.Graph} G The graph to draw
+ * @param {?Object=} config A dictionary of configuration parameters
  *      for D3. The following options are available:
  *
  *      - element: DOMElement or selector string. REQUIRED
@@ -105,19 +105,19 @@ jsnx.drawing.jsnx_d3.D3_DATA_NAME_ = '__d3datum__';
  *      - edge_offset: number or function
  *      - pan_zoom: object with properties `enabled` (bool) and `scale` (bool)
  *
- *  @param {boolean} opt_bind Set to true to automatically update
+ *  @param {?boolean=} opt_bind Set to true to automatically update
  *      the output upon graph manipulation. Only works for adding nodes or edges
  *      for now.
- *
+ * @suppress {checkTypes}
  */
 jsnx.drawing.jsnx_d3.draw = function(G, config, opt_bind) {
     if(goog.isBoolean(config)) {
-        opt_bind = config;
+        opt_bind = /** @type {boolean} */ (config);
         config = null;
     }
 
     config = config || jsnx.drawing.jsnx_d3.last_configuration_ || {};
-    var d3 = /** @type d3 */ config['d3'] || window['d3'];
+    var d3 = /** @type d3 */ (config['d3'] || window['d3']);
 
     var config_ = {};
     jsnx.helper.extend(config_, jsnx.drawing.jsnx_d3.default_config_, config);
@@ -255,11 +255,17 @@ jsnx.drawing.jsnx_d3.draw = function(G, config, opt_bind) {
 
     // scale the width of the edge according to the weight
     if(weighted && config_['weighted_stroke']) {
-        var max_weight = goog.iter.reduce(G.edges_iter(true), function(u, v) {
+        var max_weight = goog.iter.reduce(
+            G.edges_iter(null, true), 
+            function(u, v) {
                 v = weight_func({data: v[2]});
                 return u > v ? u : v;
-            }, 0),
-            scale = d3.scale.linear().range([1, config_['edge_style']['stroke-width']]).domain([0, max_weight]);
+            },
+            0
+        );
+        var scale = d3.scale.linear()
+            .range([1, config_['edge_style']['stroke-width']])
+            .domain([0, max_weight]);
 
         config_['edge_style']['stroke-width'] = function(d) {
             return scale(weight_func.call(this, d));
@@ -533,23 +539,23 @@ goog.exportSymbol('jsnx.draw', jsnx.drawing.jsnx_d3.draw);
  * Helper function to create new node objects for the force layout and
  * create the necessary SVG elements.
  * 
- * @param {jsnx.Graph} G 
+ * @param {jsnx.classes.Graph} G 
  * @param {jsnx.NodeContainer} nodes The nodes to include from the Graph
  *      default are all nodes
  * @param {d3.layout.force} force The layout
  * @param {d3.selection} selection D3 DOM node selection of nodes
  * @param {string} node_shape The name of a SVG element to use for the node
- * @param {function=} opt_label_func A function to extract the value of the
- *      labels of the nodes. If none is provided, no labels are drawn.
+ * @param {Function=} opt_label_func A function to extract the value of 
+ *     the labels of the nodes. If none is provided, no labels are drawn.
  *
- * @return {d3.selection} The new selection of SVG elements.
+ * @return {!d3.selection} The new selection of SVG elements.
  *
  * @private
 */
 jsnx.drawing.jsnx_d3.add_nodes_ = function(G, nodes, force, selection, 
                                            node_shape, opt_label_func) {
     // Get current data
-    var data = force.nodes();
+    var data = /** @type {Array} */ (force.nodes());
     // add new data
     jsnx.helper.forEach(nodes, function(n) {
         var d = G['node'][n],
@@ -558,7 +564,10 @@ jsnx.drawing.jsnx_d3.add_nodes_ = function(G, nodes, force, selection,
         d[jsnx.drawing.jsnx_d3.D3_DATA_NAME_] = nobj;
     });
     // update data join
-    selection = selection.data(data, jsnx.drawing.jsnx_d3.node_key_function);
+    selection = /** @type {d3.selection} */ (selection.data(
+      data,
+      jsnx.drawing.jsnx_d3.node_key_function
+    ));
     // create new elements
     var nsel = selection.enter()
         .append('g')
@@ -578,21 +587,21 @@ jsnx.drawing.jsnx_d3.add_nodes_ = function(G, nodes, force, selection,
 /**
  * Helper function to create new edge objects for the force layout.
  * 
- * @param {jsnx.Graph} G 
- * @param {*} edges The nodes to include from the Graph
+ * @param {jsnx.classes.Graph} G 
+ * @param {?} edges The nodes to include from the Graph
  *      default are all nodes
  * @param {d3.layout.force} force 
  * @param {d3.selection} selection D3 DOM node selection of nodes
- * @param {function} opt_label_func Function to extract text for labels
+ * @param {Function=} opt_label_func Function to extract text for labels
  *
- * @return {Array.<d3.selection>}
+ * @return {!d3.selection}
  *
  * @private
 */
 jsnx.drawing.jsnx_d3.add_edges_ = function(G, edges, force, selection, 
                                                               opt_label_func) {
     // Get current data
-    var data = force.links();
+    var data = /** @type {Array} */ (force.links());
     // add new data
     jsnx.helper.forEach(edges,  function(ed) {
         var u = ed[0], v = ed[1],
@@ -609,7 +618,10 @@ jsnx.drawing.jsnx_d3.add_edges_ = function(G, edges, force, selection,
         d[jsnx.drawing.jsnx_d3.D3_DATA_NAME_] = eobj;
     });
     // update data join
-    selection = selection.data(data, jsnx.drawing.jsnx_d3.edge_key_function);
+    selection = /** @type {d3.selection} */ (selection.data(
+      data,
+      jsnx.drawing.jsnx_d3.edge_key_function
+    ));
     // create new elements
     var esel = selection.enter()
         .append('g')
@@ -630,17 +642,21 @@ jsnx.drawing.jsnx_d3.add_edges_ = function(G, edges, force, selection,
  * Updates attributes of nodes.
  *
  * @param {d3.selection} selection
- * @param {{style, attr, label_style, label_attr}} Object
+ * @param {{style, attr, label_style, label_attr}} node_style
  *      Holds the values for various attributes and styles of the node
  *      and its label
- * @param {boolean} with_labels
- * @param {jsnx.NodeContainer} opt_nodes a container of nodes. If set, 
+ * @param {boolean=} opt_with_labels
+ * @param {jsnx.NodeContainer=} opt_nodes a container of nodes. If set, 
  *      only update these nodes.
  * 
  * @private
  */
-jsnx.drawing.jsnx_d3.update_node_attr_ = function(selection, node_style, 
-                                                    with_labels, opt_nodes) {
+jsnx.drawing.jsnx_d3.update_node_attr_ = function(
+  selection,
+  node_style,
+  opt_with_labels,
+  opt_nodes
+) {
 
     if(goog.isDefAndNotNull(opt_nodes)) {
         var nd = {};
@@ -663,7 +679,7 @@ jsnx.drawing.jsnx_d3.update_node_attr_ = function(selection, node_style,
     });
 
 
-    if(with_labels) {
+    if(opt_with_labels) {
         var text = selection.selectAll('text');
         goog.object.forEach(node_style.label_attr, function(value, attr) {
             text.attr(attr, value);
@@ -680,15 +696,12 @@ jsnx.drawing.jsnx_d3.update_node_attr_ = function(selection, node_style,
  * Updates attributes of edges.
  *
  * @param {d3.selection} selection
- * @param {{style, attr, label_style, label_attr}} Object
- *      Holds the values for various attributes and styles of the node
- *      and its label
  * @param {{attr, style, label_attr, label_style}} edge_style
- * @param {boolean} opt_with_edge_labels If true, the label is updated as well
+ * @param {boolean=} opt_with_edge_labels If true, the label is updated as well
  *      If true, the edge selection is not filtered for reverse edges
- * @param {?} opt_edges If set, only updates the styles of the provided
+ * @param {?=} opt_edges If set, only updates the styles of the provided
  *      edges
- * @param {boolean} opt_directed
+ * @param {boolean=} opt_directed
  *
  * @private
  */
@@ -732,8 +745,8 @@ jsnx.drawing.jsnx_d3.update_edge_attr_ = function(selection, edge_style,
 /**
  * Key function to extract the join value for the SVG nodes and the data.
  *
- * @param {Object} The current datum
- * @return {*}
+ * @param {Object} d The current datum
+ * @return {jsnx.Node}
  *
  * @private
  */
@@ -745,8 +758,8 @@ jsnx.drawing.jsnx_d3.node_key_function = function(d) {
 /**
  * Key function to extract the join value for the SVG nodes and the data.
  *
- * @param {Object} The current datum
- * @return {*}
+ * @param {Object} d The current datum
+ * @return {string}
  *
  * @private
  */
@@ -758,10 +771,10 @@ jsnx.drawing.jsnx_d3.edge_key_function = function(d) {
 /**
  * Helper function to add new node objects for the force layout.
  * 
- * @param {jsnx.Graph} G 
+ * @param {jsnx.classes.Graph} G 
  * @param {jsnx.NodeContainer} nodes to remove from the graph
- * @param {jsnx.layout.force} force The force the nodes are bound to
- * @param {Array} node_list The list to remove the node objects from
+ * @param {d3.layout.force} force The force the nodes are bound to
+ * @param {d3.selection} selection Selection of node elements
  *
  * @return {d3.selection} Updated selection
  *
@@ -769,13 +782,16 @@ jsnx.drawing.jsnx_d3.edge_key_function = function(d) {
  */
 jsnx.drawing.jsnx_d3.remove_nodes_ = function(G, nodes, force, selection) {
     // get current data set
-    var data = force.nodes();
+    var data = /** @type {Array} */ (force.nodes());
     // remove items from data
     jsnx.helper.forEach(G.nbunch_iter(nodes), function(n) {
         goog.array.remove(data, G['node'][n][jsnx.drawing.jsnx_d3.D3_DATA_NAME_]);
     });
     // rebind data
-    selection = selection.data(data, jsnx.drawing.jsnx_d3.node_key_function);
+    selection = /** @type {d3.selection} */ (selection.data(
+      data,
+      jsnx.drawing.jsnx_d3.node_key_function
+    ));
     // remove SVG elements
     selection.exit().remove();
 
@@ -786,18 +802,18 @@ jsnx.drawing.jsnx_d3.remove_nodes_ = function(G, nodes, force, selection) {
 /**
  * Helper function to remove edge objects for the force layout.
  * 
- * @param {jsnx.Graph} G 
+ * @param {jsnx.classes.Graph} G
  * @param {?} edges Edges to remove
  * @param {d3.layout.force} force The force the edges are bound to
  * @param {d3.selection} selection Selection of edge elements 
  *
- * @return {Array.<d3.selection>} Updated selections 
+ * @return {!d3.selection} Updated selection
  *
  * @private
  */
 jsnx.drawing.jsnx_d3.remove_edges_ = function(G, edges, force, selection) {
     // get current data set
-    var data = force.links();
+    var data = /** @type {Array} */ (force.links());
     // remove items from data
     jsnx.helper.forEach(edges, function(ed) {
         goog.array.remove(data, goog.object.get(
@@ -807,7 +823,10 @@ jsnx.drawing.jsnx_d3.remove_edges_ = function(G, edges, force, selection) {
          ));
     });
     // rebind data
-    selection = selection.data(data, jsnx.drawing.jsnx_d3.edge_key_function);
+    selection =/** @type d3.selection */ (selection.data(
+      data,
+      jsnx.drawing.jsnx_d3.edge_key_function
+    ));
     // remove SVG elements
     selection.exit().remove();
 
@@ -820,11 +839,10 @@ jsnx.drawing.jsnx_d3.remove_edges_ = function(G, edges, force, selection) {
  * Binds the output to the graph. This overrides mutator methods. To "free"
  * the graph, you can call jsnx.unbind (which is public)
  *
- * @param {jsnx.Graph} G A Graph
+ * @param {jsnx.classes.Graph} G A Graph
+ * @param {d3.layout.force} force Force layout
  * @param {Object} config The configuration for the output
- * @param {Array} node_list list of D3 nodes
- * @param {Array} node_list list of D3 edges
- * @param {{node_seletion:d3.selection, edge_selection:d3.selection }}
+ * @param {{node_selection:d3.selection, edge_selection:d3.selection }} selections
  *      Various D3 selections
  *
  * @private
@@ -853,7 +871,8 @@ jsnx.drawing.jsnx_d3.bind_ = function(G, force, config, selections) {
         with_edge_labels = config['with_edge_labels'],
         directed = G.is_directed();
 
-    G['add_node'] = G.add_node = /** @this jsnx.Graph */function(n) {
+    G['add_node'] = G.add_node = 
+      /** @this jsnx.classes.Graph */ function(n) {
         var new_node = !this.has_node(n);
         proto['add_node'].apply(this, arguments);
 
@@ -870,7 +889,8 @@ jsnx.drawing.jsnx_d3.bind_ = function(G, force, config, selections) {
     };
 
 
-    G['add_nodes_from'] = G.add_nodes_from =  /** @this jsnx.Graph */function(nbunch) {
+    G['add_nodes_from'] = G.add_nodes_from =  
+      /** @this jsnx.classes.Graph */ function(nbunch) {
         var new_nodes = goog.array.filter(jsnx.helper.toArray(nbunch), function(n) {
             return !this.has_node(goog.isArrayLike(n) ? n[0] : n);
         }, this);
@@ -888,7 +908,8 @@ jsnx.drawing.jsnx_d3.bind_ = function(G, force, config, selections) {
     };
 
 
-    G['add_edge'] = G.add_edge =  /** @this jsnx.Graph */function(u, v) {
+    G['add_edge'] = G.add_edge =
+      /** @this jsnx.classes.Graph */ function(u, v) {
         var new_edge = !this.has_edge(u, v),
         new_nodes = [];
         if(new_edge) {
@@ -918,7 +939,8 @@ jsnx.drawing.jsnx_d3.bind_ = function(G, force, config, selections) {
     };
 
 
-    G['add_edges_from'] = G.add_edges_from =  /** @this jsnx.Graph */function(ebunch) {
+    G['add_edges_from'] = G.add_edges_from =  
+      /** @this jsnx.classes.Graph */ function(ebunch) {
         var new_edges = [], new_nodes = [],
             seen_edges = {}, seen_nodes = {},
             directed = this.is_directed();
@@ -966,7 +988,8 @@ jsnx.drawing.jsnx_d3.bind_ = function(G, force, config, selections) {
     };
 
 
-    G['remove_node'] = G.remove_node =  /** @this jsnx.Graph */function(n) {
+    G['remove_node'] = G.remove_node =
+      /** @this jsnx.classes.Graph */ function(n) {
         try {
             if(this.has_node(n)) {
                 selections.node_selection = jsnx.drawing.jsnx_d3.remove_nodes_(this, 
@@ -989,7 +1012,8 @@ jsnx.drawing.jsnx_d3.bind_ = function(G, force, config, selections) {
     };
 
 
-    G['remove_nodes_from'] = G.remove_nodes_from =  /** @this jsnx.Graph */function(nbunch) {
+    G['remove_nodes_from'] = G.remove_nodes_from =
+      /** @this jsnx.classes.Graph */ function(nbunch) {
         try {
             selections.node_selection = jsnx.drawing.jsnx_d3.remove_nodes_(this, 
                                        nbunch, force, selections.node_selection);
@@ -1009,7 +1033,8 @@ jsnx.drawing.jsnx_d3.bind_ = function(G, force, config, selections) {
     };
 
 
-    G['remove_edge'] = G.remove_edge =  /** @this jsnx.Graph */function(u,v) {
+    G['remove_edge'] = G.remove_edge =
+      /** @this jsnx.classes.Graph */ function(u,v) {
         try {
             selections.edge_selection = jsnx.drawing.jsnx_d3.remove_edges_(this, 
                [[u,v]], force, selections.edge_selection);
@@ -1021,10 +1046,15 @@ jsnx.drawing.jsnx_d3.bind_ = function(G, force, config, selections) {
     };
 
 
-    G['remove_edges_from'] = G.remove_edges_from =  /** @this jsnx.Graph */function(ebunch) {
+    G['remove_edges_from'] = G.remove_edges_from =
+      /** @this jsnx.classes.Graph */ function(ebunch) {
         try {
-            selections.edge_selection = jsnx.drawing.jsnx_d3.remove_edges_(this, 
-               ebunch, force, selections.edge_selection);
+            selections.edge_selection = jsnx.drawing.jsnx_d3.remove_edges_(
+                  this,
+                  ebunch,
+                  force,
+                  selections.edge_selection
+            );
 
             force.resume();
         }
@@ -1033,12 +1063,18 @@ jsnx.drawing.jsnx_d3.bind_ = function(G, force, config, selections) {
     };
 
 
-    G['clear'] = G.clear =  /** @this jsnx.Graph */function() {
-        selections.node_selection = selections.node_selection.data([], 
-                                       jsnx.drawing.jsnx_d3.node_key_function);
+    G['clear'] = G.clear =  /** @this jsnx.classes.Graph */ function() {
+        selections.node_selection = 
+          /** @type {d3.selection} */ (selections.node_selection.data(
+            [],
+            jsnx.drawing.jsnx_d3.node_key_function
+        ));
         selections.node_selection.exit().remove();
-        selections.edge_selection = selections.edge_selection.data([], 
-                                       jsnx.drawing.jsnx_d3.edge_key_function);
+        selections.edge_selection = 
+          /** @type {d3.selection} */ (selections.edge_selection.data(
+            [],
+            jsnx.drawing.jsnx_d3.edge_key_function
+        ));
         selections.edge_selection.exit().remove();
         force.nodes([]).links([]).resume();
         proto['clear'].apply(G, arguments);
@@ -1054,7 +1090,7 @@ jsnx.drawing.jsnx_d3.bind_ = function(G, force, config, selections) {
 /**
  * Returns True if the graph is bound to an output.
  *
- * @param {jsnx.Graph} G A Graph
+ * @param {jsnx.classes.Graph} G A Graph
  *
  */
 jsnx.drawing.jsnx_d3.is_bound = function(G) {
@@ -1066,8 +1102,8 @@ goog.exportSymbol('jsnx.is_bound', jsnx.drawing.jsnx_d3.is_bound);
 /**
  * Resets mutator methods to the originals
  *
- * @param {jsnx.Graph} G graph
- * @param {boolean} opt_clean (default=True)
+ * @param {jsnx.classes.Graph} G graph
+ * @param {boolean=} opt_clean (default=True)
  *    If true, all D3 data is removed from the graph
  *
  */
@@ -1089,7 +1125,7 @@ goog.exportSymbol('jsnx.unbind', jsnx.drawing.jsnx_d3.unbind);
 /**
  * Removes any D3 data from the Graph.
  *
- * @param {jsnx.Graph} G A Graph
+ * @param {jsnx.classes.Graph} G A Graph
  *
  * @private
  */
@@ -1097,7 +1133,7 @@ jsnx.drawing.jsnx_d3.clean_ = function(G) {
     jsnx.helper.forEach(G.nodes_iter(true), function(nd) {
         goog.object.remove(nd[1], jsnx.drawing.jsnx_d3.D3_DATA_NAME_);
     });
-    jsnx.helper.forEach(G.edges_iter(true), function(ed) {
+    jsnx.helper.forEach(G.edges_iter(null, true), function(ed) {
         goog.object.remove(ed[2], jsnx.drawing.jsnx_d3.D3_DATA_NAME_);
     });
 };

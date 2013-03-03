@@ -76,20 +76,21 @@ jsnx.classes.MultiGraph['__name__'] = 'MultiGraph';
  *
  * @param {jsnx.Node} u node
  * @param {jsnx.Node} v node
- * @param {(number|string)=} opt_key identifier
+ * @param {?(number|string)=} opt_key identifier
  *      Used to distinguish multiedges between a pair of nodes. Default is
  *      the lowest unused integer.
- * @param {Object} opt_attr_dict  Dictionary of edge attributes.  
+ * @param {?Object=} opt_attr_dict  Dictionary of edge attributes.  
  *      Key/value pairs will update existing data associated with the edge.
  *
  * @override
  * @export
+ * @suppress {checkTypes}
  */
 jsnx.classes.MultiGraph.prototype.add_edge = function(u, v, opt_key, opt_attr_dict) {
     var datadict, keydict;
 
     if(goog.isDefAndNotNull(opt_key) && !(goog.isString(opt_key) || goog.isNumber(opt_key))) {
-        opt_attr_dict = opt_key;
+        opt_attr_dict = goog.asserts.assertObject(opt_key);
         opt_key = null;
     }
 
@@ -121,7 +122,7 @@ jsnx.classes.MultiGraph.prototype.add_edge = function(u, v, opt_key, opt_attr_di
                 opt_key += 1;
             }
         }
-        datadict = goog.object.get(keydict, opt_key, {});
+        datadict = goog.object.get(keydict, ''+opt_key, {});
         goog.object.extend(datadict, opt_attr_dict);
         keydict[opt_key] = datadict;
     }
@@ -151,7 +152,7 @@ jsnx.classes.MultiGraph.prototype.add_edge = function(u, v, opt_key, opt_attr_di
  * @see #ad_weighted_edges_from
  *
  *
- * @param {?} ebunch container of edges
+ * @param {jsnx.helper.Iterable} ebunch container of edges
  *      Each edge given in the container will be added to the
  *      graph. The edges can be:
  *
@@ -159,7 +160,7 @@ jsnx.classes.MultiGraph.prototype.add_edge = function(u, v, opt_key, opt_attr_di
  *          - 3-tuples (u,v,d) for an edge attribute dict d or
  *          - 4-tuples (u,v,k,d) for an edge identified by key k
  *
- * @param {Object} opt_attr_dict Dictionary of edge attributes.
+ * @param {Object=} opt_attr_dict Dictionary of edge attributes.
  *       Key/value pairs will update existing data associated with each edge.
  *
  * @override
@@ -230,7 +231,7 @@ jsnx.classes.MultiGraph.prototype.add_edges_from = function(ebunch, opt_attr_dic
  *
  * @param {jsnx.Node} u
  * @param {jsnx.Node} v
- * @param {(number|string)} opt_key
+ * @param {(number|string)=} opt_key
  *      Used to distinguish multiple edges between a pair of nodes.
  *      If null or undefined remove a single (abritrary) edge between u and v.
  *
@@ -293,9 +294,9 @@ jsnx.classes.MultiGraph.prototype.remove_edges_from = function(ebunch) {
         try {
             this.remove_edge(e[0], e[1], e[2]);
         }
-        catch(e) {
-            if(!(e instanceof jsnx.exception.JSNetworkXError)) {
-                throw e;
+        catch(ex) {
+            if(!(ex instanceof jsnx.exception.JSNetworkXError)) {
+                throw ex;
             }
         }
     }, this);
@@ -307,7 +308,7 @@ jsnx.classes.MultiGraph.prototype.remove_edges_from = function(ebunch) {
  *
  * @param {jsnx.Node} u node
  * @param {jsnx.Node} v node
- * @param {(string|number)} opt_key If specified return True only 
+ * @param {(string|number)=} opt_key If specified return True only 
  *      if the edge with key is found.
  *
  * @return {boolean} True if edge is in the graph, False otherwise.
@@ -340,14 +341,14 @@ jsnx.classes.MultiGraph.prototype.has_edge = function(u, v, opt_key) {
  *
  * @see #edges_iter
  *
- * @param {jsnx.NodeContainer} opt_nbunch A container of nodes.
+ * @param {?jsnx.NodeContainer=} opt_nbunch A container of nodes.
  *      The container will be iterated through once.
- * @param {boolean} opt_data (default=False)
+ * @param {?boolean=} opt_data (default=False)
  *      Return two tuples (u,v) (False) or three-tuples (u,v,data) (True).
- * @param {boolean} opt_keys (default=False)
+ * @param {?boolean=} opt_keys (default=False)
  *      Return two tuples (u,v) (False) or three-tuples (u,v,key) (True).
  *
- * @return {Array} list of edge tuples
+ * @return {!Array} list of edge tuples
  *      Edges that are adjacent to any node in nbunch, or a list
  *      of all edges if nbunch is not specified.
  *
@@ -371,14 +372,14 @@ jsnx.classes.MultiGraph.prototype.edges = function(opt_nbunch, opt_data, opt_key
  *
  * @see #edges_iter
  *
- * @param {jsnx.NodeContainer} opt_nbunch A container of nodes.
+ * @param {?jsnx.NodeContainer=} opt_nbunch A container of nodes.
  *      The container will be iterated through once.
- * @param {boolean} opt_data (default=False)
+ * @param {?boolean=} opt_data (default=False)
  *      If True, return edge attribute dict with each edge.
- * @param {boolean} opt_keys (default=False)
+ * @param {?boolean=} opt_keys (default=False)
  *      If True, return edge keys with each edge.
  *
- * @return {goog.iter.Iterator}
+ * @return {!goog.iter.Iterator}
  *      An iterator of (u,v), (u,v,d) or (u,v,key,d) tuples of edges.
  *
  * @override
@@ -389,7 +390,7 @@ jsnx.classes.MultiGraph.prototype.edges_iter = function(opt_nbunch, opt_data, op
         if(goog.isBoolean(opt_data)) {
             opt_keys = opt_data;
         }
-        opt_data = opt_nbunch;
+        opt_data = goog.asserts.assertBoolean(opt_nbunch);
         opt_nbunch = null;
     }
 
@@ -401,9 +402,13 @@ jsnx.classes.MultiGraph.prototype.edges_iter = function(opt_nbunch, opt_data, op
         nodes_nbrs = jsnx.helper.iteritems(this['adj']);
     }
     else {
-        nodes_nbrs = jsnx.helper.map(this.nbunch_iter(opt_nbunch), function(n) {
-            return [n, this['adj'][n]];
-        }, this);
+        nodes_nbrs = /** @type {goog.iter.Iterator} */ (jsnx.helper.map(
+          this.nbunch_iter(opt_nbunch),
+          function(n) {
+              return [n, this['adj'][n]];
+          },
+          this
+        ));
     }
 
     if(opt_data) {
@@ -495,9 +500,10 @@ jsnx.classes.MultiGraph.prototype.edges_iter = function(opt_nbunch, opt_data, op
  * @param {jsnx.Node} v node
  * @param {(string|number)=} opt_key Return data only for the edge with 
  *      specified key.
- * @param {?} opt_default Value to return if the edge (u,v) is not found.
+ * @param {T=} opt_default Value to return if the edge (u,v) is not found.
  *
- * @return {Object} The edge attribute dictionary.
+ * @return {(Object|T)} The edge attribute dictionary.
+ * @template T
  *
  * @override
  * @export
@@ -513,7 +519,7 @@ jsnx.classes.MultiGraph.prototype.get_edge_data = function(u, v, opt_key, opt_de
             return this['adj'][u][v];
         }
         else {
-            return goog.object.get(this['adj'][u][v], opt_key, opt_default);
+            return goog.object.get(this['adj'][u][v], ''+opt_key, opt_default);
         }
     }
     else {
@@ -528,13 +534,13 @@ jsnx.classes.MultiGraph.prototype.get_edge_data = function(u, v, opt_key, opt_de
  * @see #degree
  *
  *
- * @param {jsnx.NodeContainer} opt_nbunch  A container of nodes
+ * @param {?(jsnx.Node|jsnx.NodeContainer)=} opt_nbunch  A container of nodes
  *      The container will be iterated through once.
- * @param {string=} opt_weight  The edge attribute that holds the numerical 
+ * @param {?string=} opt_weight  The edge attribute that holds the numerical 
  *      value used as a weight.  If None, then each edge has weight 1.
  *      The degree is the sum of the edge weights adjacent to the node.
  *
- * @return {goog.iter.Iterator} The iterator returns two-tuples of (node, degree).
+ * @return {!goog.iter.Iterator} The iterator returns two-tuples of (node, degree).
  *
  * @override
  * @export
@@ -546,9 +552,13 @@ jsnx.classes.MultiGraph.prototype.degree_iter = function(opt_nbunch, opt_weight)
         nodes_nbrs = jsnx.helper.iteritems(this['adj']);
     }
     else {
-        nodes_nbrs = jsnx.helper.map(this.nbunch_iter(opt_nbunch), function(n) {
-            return [n, this['adj'][n]];
-        }, this);
+        nodes_nbrs = /** @type {goog.iter.Iterator} */ (jsnx.helper.map(
+          this.nbunch_iter(opt_nbunch),
+          function(n) {
+              return [n, this['adj'][n]];
+          },
+          this
+        ));
     }
 
     if(!goog.isDefAndNotNull(opt_weight)) {
@@ -574,13 +584,13 @@ jsnx.classes.MultiGraph.prototype.degree_iter = function(opt_nbunch, opt_weight)
 
             goog.object.forEach(nbrs, function(data) {
                 goog.object.forEach(data, function(d) {
-                    deg += goog.object.get(d, opt_weight, 1);
+                    deg += goog.object.get(d, goog.asserts.assert(opt_weight), 1);
                 });
             });
 
             if(goog.object.containsKey(nbrs, n)) {
                 goog.object.forEach(nbrs[n], function(d) {
-                    deg += goog.object.get(d, opt_weight, 1);
+                    deg += goog.object.get(d, goog.asserts.assert(opt_weight), 1);
                 });
             }
 
@@ -630,7 +640,7 @@ jsnx.classes.MultiGraph.prototype.is_directed = function() {
  *      This is in contrast to the similar D = DiGraph(G) which returns a
  *      shallow copy of the data.
  *
- * @return {jsnx.classes.MultiDiGraph} 
+ * @return {!jsnx.classes.MultiDiGraph} 
  *      A directed graph with the same name, same nodes, and with
  *      each edge (u,v,data) replaced by two directed edges
  *      (u,v,data) and (v,u,data).
@@ -668,10 +678,10 @@ jsnx.classes.MultiGraph.prototype.to_directed = function() {
  * @see #number_of_selfloops
  *
  *
- * @param {boolean} opt_data  (default=False)
+ * @param {boolean=} opt_data  (default=False)
  *      Return selfloop edges as two tuples (u,v) (data=False)
  *      or three-tuples (u,v,data) (data=True)
- * @param {boolean} opt_keys  (default=False)
+ * @param {boolean=} opt_keys  (default=False)
  *       If True, return edge keys with each edge
  *
  * @return {Array} A list of all selfloop edges
@@ -776,9 +786,9 @@ jsnx.classes.MultiGraph.prototype.number_of_edges = function(opt_u, opt_v) {
  *      G.subgraph(nbunch).copy()
  *
  *
- * @param {jsnx.NodeContainer} nbunch A container of nodes which will be 
+ * @param {jsnx.NodeContainer=} nbunch A container of nodes which will be 
  *      iterated through once.
- * @param {jsnx.classes.MultiGraph} A subgraph of the graph with the same 
+ * @return {jsnx.classes.MultiGraph} A subgraph of the graph with the same 
  *      edge attributes.
  *
  * @override

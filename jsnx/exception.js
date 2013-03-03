@@ -7,6 +7,7 @@ goog.provide('jsnx.exception');
 /**
  * Base class for exceptions in JSNetworkX.
  * @constructor
+ * @extends {Error}
  */
 jsnx.exception.JSNetworkXException = function(message) {
     this.name = 'JSNetworkXException';
@@ -22,6 +23,7 @@ goog.exportSymbol('jsnx.JSNetworkXException', jsnx.exception.JSNetworkXException
 /**
  * Exception for a serious error in JSNetworkX.
  * @constructor
+ * @extends {jsnx.exception.JSNetworkXException}
  */
 jsnx.exception.JSNetworkXError = function(message) {
     goog.base(this, message);
@@ -35,6 +37,7 @@ goog.exportSymbol('jsnx.JSNetworkXError', jsnx.exception.JSNetworkXError);
  * In Graphs and Combinatorics Conference, George Washington University.
  * New York: Springer-Verlag, 1973.
  * @constructor
+ * @extends {jsnx.exception.JSNetworkXException}
  */
 jsnx.exception.JSNetworkXPointlessConcept = function(message) {
     goog.base(this, message);
@@ -47,6 +50,7 @@ goog.exportSymbol('jsnx.JSNetworkXPointlessConcept', jsnx.exception.JSNetworkXPo
 /**
  * Exception for unexpected termination of algorithms.
  * @constructor
+ * @extends {jsnx.exception.JSNetworkXException}
  */
 jsnx.exception.JSNetworkXAlgorithmError = function(message) {
     goog.base(this, message);
@@ -60,6 +64,7 @@ goog.exportSymbol('jsnx.JSNetworkXAlgorithmError', jsnx.exception.JSNetworkXAlgo
  * Exception raised by algorithms trying to solve a problem
  * instance that has no feasible solution.
  * @constructor
+ * @extends {jsnx.exception.JSNetworkXAlgorithmError}
  */
 jsnx.exception.JSNetworkXUnfeasible = function(message) {
     goog.base(this, message);
@@ -73,6 +78,7 @@ goog.exportSymbol('jsnx.JSNetworkXUnfeasible', jsnx.exception.JSNetworkXUnfeasib
  * Exception for algorithms that should return a path when running
  * on graphs where such a path does not exist.
  * @constructor
+ * @extends {jsnx.exception.JSNetworkXUnfeasible}
  */
 jsnx.exception.JSNetworkXNoPath = function(message) {
     goog.base(this, message);
@@ -86,6 +92,7 @@ goog.exportSymbol('jsnx.JSNetworkXNoPath', jsnx.exception.JSNetworkXNoPath);
  * Exception raised by algorithms trying to solve a maximization
  * or a minimization problem instance that is unbounded.
  * @constructor
+ * @extends {jsnx.exception.JSNetworkXAlgorithmError}
  */
 jsnx.exception.JSNetworkXUnbounded = function(message) {
     goog.base(this, message);

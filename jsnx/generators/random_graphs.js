@@ -52,7 +52,7 @@ jsnx.generators.random_graphs.fast_gnp_random_graph = function(n, p,
         lr;
 
     if(opt_directed) {
-        G = jsnx.classes.DiGraph(G);
+        G = new jsnx.classes.DiGraph(G);
         while(v < n) {
             lr = Math.log(1 - Math.random());
             w = w + 1 + Math.floor(lr/lp);
@@ -112,10 +112,10 @@ jsnx.generators.random_graphs.gnp_random_graph = function(n, p, opt_directed) {
     var G, edges;
 
     if(opt_directed) {
-        G = jsnx.classes.DiGraph();    
+        G = new jsnx.classes.DiGraph();
     }
     else {
-        G = jsnx.classes.Graph();
+        G = new jsnx.classes.Graph();
     }
     G.add_nodes_from(jsnx.helper.range(n));
     G.name('gnp_random_graph(' + n + ',' + p  + ')');
