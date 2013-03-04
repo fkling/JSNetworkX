@@ -1,11 +1,40 @@
 # JSNetworkX - NetworkX for JavaScript
 
-**JSNetworkX** is a port of [NetworkX](http://networkx.lanl.gov/), a popular graph library for Python, to JavaScript.
+**JSNetworkX** is a port of [NetworkX](http://networkx.lanl.gov/) v1.6, a popular
+graph library for Python, to JavaScript.
 
-JSNetworkX allows you to build, process and analyze graphs in JavaScript. It can be used together with [D3.js](http://d3js.org/) in the browser to create interactive graph visualizations.
-
+JSNetworkX allows you to build, process and analyze graphs in JavaScript. It 
+can be used together with [D3.js](http://d3js.org/) in the browser to create 
+interactive graph visualizations.
 
 Have a look at the [wiki](https://github.com/fkling/JSNetworkX/wiki) for more information.
+
+## How to use
+
+### Browser
+Simply download [jsnetworkx.js](jsnetworkx.js) and include it in your page:
+
+    <script src="jsnetworkx.js></script>
+
+The [`dist/` folder](dist/) contains different versions, depending on your needs. These
+are:
+
+- `jsnetworkx-min.js`: Contains only graph classes and utilties, no algorithms,
+  generators, visualization etc.
+- `jsnetworkx-drawing.js`: Like the min version, but with visualization.
+- `jsnetworkx-node.js`: A special node version with everything but
+  visualization.
+
+If you want to visualize graphs, you have to include [D3.js](http://d3js.org/)
+as well.
+
+### Node
+Install JSNetworkX with
+
+    npm install https://github.com/fkling/JSNetworkX.git
+
+The package will be made available as official node module once it reaches an
+undetermined feature completeness level.
 
 ## How to build
 
