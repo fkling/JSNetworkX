@@ -1,4 +1,5 @@
-/*global BaseMultiGraphTester:true, BaseAttrGraphTester:true, TestGraph:true, expect: true*/
+/*global BaseMultiGraphTester:true, BaseAttrGraphTester:true, 
+  TestGraph:true, TestMultiGraph:true, expect: true*/
 /*jshint strict:false*/
 
 function BaseMultiDiGraphTester(name) {

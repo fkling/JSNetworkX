@@ -138,6 +138,7 @@ jsnx.algorithms.graphical.is_valid_degree_sequence_erdos_gallai = function(deg_s
         }
     }
     var sum_deg, sum_min;
+    /*jshint loopfunc:true*/
     for(i = 0, l = sigk.length; i < l; i++) {
         sum_deg = goog.math.sum.apply(null, deg_seq.slice(0, sigk[i]));
         sum_min = sigk[i] * (sigk[i] - 1) + 
