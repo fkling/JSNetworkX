@@ -14,10 +14,21 @@ goog.require('jsnx.helper');
 jsnx.generators.classic.tree_edges_ = function(n, r) {
     // helper function for trees
     // yields edges in rooted tree at 0 with n nodes and branching ratio r
-    var nodes = jsnx.helper.range(n),
-        parents = [nodes.next()],
-        iterator = new goog.iter.Iterator(),
-        source;
+    var nodes = jsnx.helper.range(n);
+    var source;
+    var parents;
+    var iterator = new goog.iter.Iterator();
+    try {
+        parents = [nodes.next()];
+    }
+    catch(ex) {
+      if (ex !== goog.iter.StopIteration) {
+        throw ex;
+      }
+      else {
+        return iterator;
+      }
+    }
 
     iterator.next = function() {
         if(parents.length === 0) {
@@ -43,8 +54,64 @@ jsnx.generators.classic.tree_edges_ = function(n, r) {
     });
 };
 
-//TODO: full_rary_tree
-//TODO: balanced_tree
+
+/**
+ * Creates a full r-ary tree of n vertices.
+ * Sometimes called a k-ary, n-ary, or m-ary tree.  "... all non-leaf
+ * vertices have exactly r children and all levels are full except
+ * for some rightmost position of the bottom level (if a leaf at the
+ * bottom level is missing, then so are all of the leaves to its
+ * right."
+ *
+ * @param {number} r branching factor of the tree
+ * @param {number} n number of nodes in the tree
+ * @param {jsnx.classes.Graph=} opt_create_using
+ *   Use specified type to construct graph
+ *
+ * @return {jsnx.classes.Graph} An r-ary tree with n nodes.
+ * @export
+ */
+jsnx.generators.classic.full_rary_tree = function(r, n, opt_create_using) {
+  var G = jsnx.generators.classic.empty_graph(n, opt_create_using);
+  G.add_edges_from(jsnx.generators.classic.tree_edges_(n,r));
+  return G;
+};
+goog.exportSymbol('jsnx.full_rary_tree', jsnx.generators.classic.full_rary_tree);
+
+
+/**
+ * Return the perfectly balanced r-tree of height h.
+ *
+ * This is the rooted tree where all leaves are at distance h from
+ * the root. The root has degree r and all other internal nodes have
+ * degree r+1.
+ *
+ * Node labels are the integers 0 (the root) up to  number_of_nodes - 1.
+ *
+ * Also refered to as a complete r-ary tree.
+ *
+ * @param {number} r  Branching factor of the tree 
+ * @param {number} h Height of the tree
+ * @param {jsnx.classes.Graph} opt_create_using 
+ *    Use specified type to construct graph
+ *
+ * @return {jsnx.classes.Graph}
+ * @export
+ */
+jsnx.generators.classic.balanced_tree = function(r, h, opt_create_using) {
+  var n;
+  if (r === 1) {
+    n = 2;
+  }
+  else {
+    n = Math.floor((1 - Math.pow(r, (h+1))) / (1 - r));
+  }
+  var G = jsnx.generators.classic.empty_graph(n, opt_create_using);
+  G.add_edges_from(jsnx.generators.classic.tree_edges_(n,r));
+  return G;
+};
+goog.exportSymbol('jsnx.balanced_tree', jsnx.generators.classic.balanced_tree);
+
 //TODO: barbell_graph
 
 /**
@@ -56,6 +123,7 @@ jsnx.generators.classic.tree_edges_ = function(n, r) {
  *      add nodes to.
  *  
  *  @return {jsnx.classes.Graph}
+ *  @export
  */
 jsnx.generators.classic.complete_graph = function(n, opt_create_using) {
     var G = jsnx.generators.classic.empty_graph(n, opt_create_using);
@@ -86,6 +154,7 @@ goog.exportSymbol('jsnx.complete_graph', jsnx.generators.classic.complete_graph)
  *      add nodes to.
  *  
  * @return {jsnx.classes.Graph}
+ * @export
  */
 jsnx.generators.classic.cycle_graph = function(n, opt_create_using) {
     var G = jsnx.generators.classic.path_graph(n, opt_create_using);
@@ -140,6 +209,7 @@ goog.exportSymbol('jsnx.cycle_graph', jsnx.generators.classic.cycle_graph);
  *      add nodes to.
  *  
  *  @return {jsnx.classes.Graph}
+ *  @export
  *  @suppress {checkTypes} 
  */
 jsnx.generators.classic.empty_graph = function(opt_n, opt_create_using) {
@@ -183,6 +253,7 @@ goog.exportSymbol('jsnx.empty_graph', jsnx.generators.classic.empty_graph);
  *      add nodes to.
  *
  * @return {jsnx.classes.Graph}
+ * @export
  */
 jsnx.generators.classic.null_graph = function(opt_create_using) {
     var G = jsnx.generators.classic.empty_graph(0, opt_create_using);
@@ -202,6 +273,7 @@ goog.exportSymbol('jsnx.null_graph', jsnx.generators.classic.null_graph);
  *      add nodes to.
  *
  * @return {jsnx.classes.Graph}
+ * @export
  */
 jsnx.generators.classic.path_graph = function(n, opt_create_using) {
     var G = jsnx.generators.classic.empty_graph(n, opt_create_using);
@@ -222,6 +294,7 @@ goog.exportSymbol('jsnx.path_graph', jsnx.generators.classic.path_graph);
  *      add nodes to.
  *
  * @return {jsnx.classes.Graph}
+ * @export
  */
 jsnx.generators.classic.trivial_graph = function(opt_create_using) {
     var G = jsnx.generators.classic.empty_graph(1, opt_create_using);
