@@ -8,6 +8,7 @@ goog.require('goog.structs.Set');
 goog.require('jsnx.classes.DiGraph');
 goog.require('jsnx.helper');
 goog.require('jsnx.exception');
+goog.require('jsnx.algorithms.dag');
 
 /**
  * Relabel the nodes of the graph G.

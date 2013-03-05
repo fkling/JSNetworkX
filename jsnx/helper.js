@@ -95,13 +95,17 @@ if(jsnx.TESTING) {
  * the number of elements in the array or object or the length
  * of a string.
  * 
- * @param {(string|Array|Object|{length})} obj Object to determine the length of
+ * @param {(string|Object|goog.array.ArrayLike|jsnx.classes.Graph)} obj
+ *    Object to determine the length of
  *  
  * @return {number} The number of elements
  * @throws {TypeError} When length cannot be determined
  */
 jsnx.helper.len = function(obj) {
-    if(goog.isString(obj) || 
+    if (obj instanceof jsnx.classes.Graph) {
+      return obj.number_of_nodes();
+    }
+    else if(goog.isString(obj) || 
        goog.isArrayLike(obj)) {
         return obj.length;
     }
@@ -859,3 +863,18 @@ jsnx.helper.deepcopy_instance = function(obj) {
 if(jsnx.TESTING) {
     goog.exportSymbol('jsnx.helper.deepcopy_instance', jsnx.helper.deepcopy_instance);
 }
+
+/**
+ * Computes the GCD of two numbers.
+ *
+ * @param {number} x
+ * @param {number} y
+ *
+ * @return {number} gcs
+ */
+jsnx.helper.gcd = function gcd(x, y) {
+  if (y === 0) {
+    return x;
+  }
+  return gcd(y, x % y);
+};
