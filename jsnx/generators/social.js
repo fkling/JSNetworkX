@@ -7,6 +7,7 @@ goog.provide('jsnx.generators.social');
 
 goog.require('jsnx.classes.Graph');
 goog.require('jsnx.helper');
+goog.require('goog.array');
 
 
 /**
