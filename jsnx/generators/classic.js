@@ -3,6 +3,8 @@ goog.provide('jsnx.generators.classic');
 
 goog.require('jsnx.classes.Graph');
 goog.require('jsnx.helper');
+goog.require('goog.array');
+goog.require('goog.iter');
 
 
 /**
@@ -238,7 +240,80 @@ jsnx.generators.classic.empty_graph = function(opt_n, opt_create_using) {
 };
 goog.exportSymbol('jsnx.empty_graph', jsnx.generators.classic.empty_graph);
 
-//TODO: grid_2d_graph
+/**
+ * Return the 2d grid graph of mxn nodes,
+ * each connected to its nearest neighbors.
+ * Optional argument periodic=True will connect
+ * boundary nodes via periodic boundary conditions. 
+ *
+ * @param {number} m Number of rows
+ * @param {number} n Number of columns
+ * @param {boolean=} opt_periodic
+ * @param {jsnx.classes.Graph=} opt_create_using
+ *
+ * @return {jsnx.classes.Graph}
+ * @export
+ */
+jsnx.generators.classic.grid_2d_graph = function(m, n, opt_periodic, opt_create_using) {
+  var G = jsnx.generators.classic.empty_graph(0, opt_create_using);
+  G.name('grid_2d_graph');
+  var rows = goog.iter.toArray(jsnx.helper.range(m));
+  var columns = goog.iter.toArray(jsnx.helper.range(n));
+  goog.array.forEach(rows, function(i) {
+    goog.array.forEach(columns, function(j) {
+      G.add_node([i,j].toString());
+    });
+  });
+  goog.iter.forEach(jsnx.helper.range(1,m), function(i) {
+    goog.array.forEach(columns, function(j) {
+      G.add_edge([i,j].toString(), [i-1,j].toString());
+    });
+  });
+  goog.array.forEach(rows, function(i) {
+    goog.iter.forEach(jsnx.helper.range(1,n), function(j) {
+      G.add_edge([i,j].toString(), [i,j-1].toString());
+    });
+  });
+  if (G.is_directed()) {
+    goog.iter.forEach(jsnx.helper.range(0, m - 1), function(i) {
+      goog.array.forEach(columns, function(j) {
+        G.add_edge([i,j].toString(), [i+1,j].toString());
+      });
+    });
+    goog.array.forEach(rows, function(i) {
+      goog.iter.forEach(jsnx.helper.range(0, n - 1), function(j) {
+        G.add_edge([i,j].toString(), [i,j+1].toString());
+      });
+    });
+  }
+
+  if (opt_periodic) {
+    if (n > 2) {
+      goog.array.forEach(rows, function(i) {
+        G.add_edge([i,0].toString(), [i,n-1].toString());
+      });
+      if (G.is_directed()) {
+        goog.array.forEach(rows, function(i) {
+          G.add_edge([i,n-1].toString(), [i,0].toString());
+        });
+      }
+    }
+    if (m > 2) {
+      goog.array.forEach(columns, function(j) {
+        G.add_edge([0,j].toString(), [m-1,j].toString());
+      });
+      if (G.is_directed()) {
+        goog.array.forEach(columns, function(j) {
+          G.add_edge([m-1,j].toString(), [0,j].toString());
+        });
+      }
+    }
+    G.name('periodic_grid_2d_graph(' + m + ',' + n + ')');
+  }
+  return G;
+};
+goog.exportSymbol('jsnx.grid_2d_graph', jsnx.generators.classic.grid_2d_graph);
+
 //TODO: grid_graph
 //TODO: hypercube_graph
 //TODO: ladder_graph

@@ -131,7 +131,7 @@ TestGeneratorClassic.prototype.test_empty_graph = function() {
     expect(G.name()).toEqual('empty_graph(42)');
     expect(G instanceof jsnx.MultiGraph);
 
-    /* TODO:
+    /* TODO: peterson_graph
     // create empty graph from another
     var pete = jsnx.petersen_graph();
     G = jsnx.empty_graph(42, pete);
@@ -142,7 +142,20 @@ TestGeneratorClassic.prototype.test_empty_graph = function() {
     */
 };
 
-//TODO: test_grid_2d_graph
+TestGeneratorClassic.prototype.test_grid_2d_graph = function() {
+  var n = 5;
+  var m = 6;
+
+  var G = jsnx.grid_2d_graph(n,m);
+  expect(jsnx.number_of_nodes(G)).toBe(n*m);
+  expect(jsnx.degree_histogram(G)).toEqual([0,0,4,2*(n+m)-8,(n-2)*(m-2)]);
+  var DG = jsnx.grid_2d_graph(n, m, false, jsnx.DiGraph());
+  expect(DG.succ).toEqual(G.adj);
+  expect(DG.pred).toEqual(G.adj);
+  var MG = jsnx.grid_2d_graph(n, m, false, jsnx.MultiGraph());
+  expect(MG.edges()).toEqual(G.edges());
+};
+
 //TODO: test_grid_graph
 //TODO: test_hypercube_graph
 //TODO: test_ladder_grap    h
