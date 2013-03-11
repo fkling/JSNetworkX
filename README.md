@@ -19,13 +19,13 @@ Simply download [jsnetworkx.js](jsnetworkx.js) and include it in your page:
 The [`dist/` folder](dist/) contains different versions, depending on your needs. These
 are:
 
-- `jsnetworkx-min.js`: Contains only graph classes and utiliy functions, no 
+- `jsnetworkx-base.js`: Contains only graph classes and utiliy functions, no 
   algorithms, generators, visualization etc.
-- `jsnetworkx-drawing.js`: Like the min version, but with visualization.
+- `jsnetworkx-drawing.js`: Like the base version, but with visualization.
 - `jsnetworkx-node.js`: A special node version with everything but
   visualization.
 
-(**Note:** Even tough the "min" version does not include algorithms explicitly,
+(**Note:** Even tough the "base" version does not include algorithms explicitly,
 some might be included due to internal dependencies)
 
 If you want to [visualize
@@ -93,12 +93,12 @@ correctly installed, run
 All versions of JSNetworkX are built via `grunt compile`. This task accepts
 various targets:
 
-- `grunt compile:min` builds a version only containing base classes and
+- `grunt compile:base` builds a version only containing base classes and
   utilities (no algorithms, generators or drawing).
-- `grunt compile:drawing` like `min`, but includes drawing.
+- `grunt compile:drawing` like `base`, but includes drawing.
 - `grunt compile:all` includes everyting.
 - `grunt compile:node` like, `all`, but without drawing.
-- `grunt compile:custom` like, `min`, but also includes all modules specified 
+- `grunt compile:custom` like, `base`, but also includes all modules specified 
  with the `--ns` options. The modules can be passed with or without the leading 
  `jsnx.` namespace.
 

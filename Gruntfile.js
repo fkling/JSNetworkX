@@ -4,8 +4,8 @@
 var path = require('path');
 
 var namespaces = {};
-namespaces.min = ['jsnx'];
-namespaces.node = namespaces.min.concat('jsnx.algorithms', 'jsnx.generators');
+namespaces.base = ['jsnx'];
+namespaces.node = namespaces.base.concat('jsnx.algorithms', 'jsnx.generators');
 namespaces.all = namespaces.node.concat('jsnx.drawing');
 
 module.exports = function(grunt) {
@@ -80,12 +80,12 @@ module.exports = function(grunt) {
         src: '<%= meta.roots %>',
         dest: '<%= pkg.name%>-test.js'
       },
-      min: {
+      base: {
         options: {
-          namespaces: namespaces.min
+          namespaces: namespaces.base
         },
         src: '<%= meta.roots %>',
-        dest: '<%= meta.dist %><%= pkg.name%>-min.js'
+        dest: '<%= meta.dist %><%= pkg.name%>-base.js'
       },
       node: {
         options: {
@@ -103,7 +103,7 @@ module.exports = function(grunt) {
       },
       drawing: {
         options: {
-          namespaces: namespaces.min.concat('jsnx.drawing')
+          namespaces: namespaces.base.concat('jsnx.drawing')
         },
         src: '<%= meta.roots %>',
         dest: '<%= meta.dist %><%= pkg.name%>-drawing.js'
@@ -205,7 +205,7 @@ module.exports = function(grunt) {
     'jshint',
     'compile:test',
     'jasmine:compiled',
-    'compile:min',
+    'compile:base',
     'compile:node',
     'compile:drawing',
     'compile:all',
