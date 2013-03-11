@@ -33,7 +33,7 @@ module.exports = function(grunt) {
       options: {
         specs: 'jsnx/**/tests/test_*.js',
         vendor: '<%= meta.paths.library %>closure/goog/base.js',
-        helpers:  ['deps.js', 'jasmine/BaseTestClass.js', 'jasmine/ThrowMatcher.js']
+        helpers:  ['deps.js', 'jasmine/BaseTestClass.js', 'jasmine/*Matcher.js']
       },
       normal: {
         src: ['jsnx/jsnx.js', 'jsnx/algorithms/algorithms.js', 'jsnx/generators/generators.js']
@@ -42,7 +42,7 @@ module.exports = function(grunt) {
         src: ['<%= pkg.name %>-test.js'],
         options: {
           outfile: '_SpecRunner_compiled.html',
-          helpers:  ['jasmine/gcc_deps.js', 'jasmine/BaseTestClass.js', 'jasmine/ThrowMatcher.js']
+          helpers:  ['jasmine/gcc_deps.js', 'jasmine/BaseTestClass.js', 'jasmine/*Matcher.js']
         }
       }
     },
