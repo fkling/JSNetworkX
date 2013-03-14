@@ -264,7 +264,7 @@ jsnx.drawing.jsnx_d3.draw = function(G, config, opt_bind) {
             0
         );
         var scale = d3.scale.linear()
-            .range([1, config_['edge_style']['stroke-width']])
+            .range([2, config_['edge_style']['stroke-width']])
             .domain([0, max_weight]);
 
         config_['edge_style']['stroke-width'] = function(d) {
@@ -303,22 +303,7 @@ jsnx.drawing.jsnx_d3.draw = function(G, config, opt_bind) {
         inv_scale = 1; // used to scale nodes and text accordingly
 
     if(config_['pan_zoom']['enabled']) {
-            
-        var scaled = config_['pan_zoom']['scale'],
-            stroke_width = config_['edge_style']['stroke-width'];
-
-        if(goog.isFunction(stroke_width)) {
-            config_['edge_style']['stroke-width'] = function() {
-                var width = stroke_width.apply(this, arguments);
-                return inv_scale * (+width || parseInt(width, 10));
-            };
-        }
-        else {
-            stroke_width = +stroke_width || parseInt(stroke_width, 10);
-            config_['edge_style']['stroke-width'] = function() {
-                return inv_scale * stroke_width;
-            };
-        }
+        var scaled = config_['pan_zoom']['scale'];
 
         // private scope, since these are just helper variables
         (function() {
@@ -348,7 +333,6 @@ jsnx.drawing.jsnx_d3.draw = function(G, config, opt_bind) {
 
                 var tr = d3['event']['translate'];
                 parent_container.attr('transform', 'translate(' +  tr[0] + ',' +  tr[1] + ')scale(' + d3.event.scale + ')');
-                parent_container.selectAll('g.edge > .line').style('stroke-width', config_['edge_style']['stroke-width']);
                 redraw();
             }));
 
@@ -358,46 +342,48 @@ jsnx.drawing.jsnx_d3.draw = function(G, config, opt_bind) {
     var update_edge_position = goog.nullFunction,
         update_edge_label_position = goog.nullFunction;
 
+
+          var offset = config_['edge_offset'],
+            node_radius = config_['node_attr']['r'],
+            node_strw = config_['node_style']['stroke-width'];
+
+        if (config_['node_shape'] === 'circle') {
+          if (!goog.isFunction(node_radius)) {
+            node_radius = function() {
+              return config_['node_attr']['r'];
+            };
+          }
+          if (!goog.isFunction(node_strw)) {
+            node_strw = function() {
+              return config_['node_style']['stroke-width'];
+            };
+          }
+          offset = function(d) {
+            return [node_radius(d.source) + node_strw(d.source), 
+                   node_radius(d.target) + node_strw(d.target)];
+          };
+        }
+        else {
+          if(goog.isArray(offset)) {
+              offset = function() {
+                  return  config_['edge_offset'];
+              };
+          }
+          if(goog.isNumber(offset)) {
+              offset = function() {
+                  return  [config_['edge_offset'], config_['edge_offset']];
+              };
+          }
+        }
+        var strw = config_['edge_style']['stroke-width'];
+        if (!goog.isFunction(strw)) {
+          strw = function() {
+            return config_['edge_style']['stroke-width'];
+          };
+        }
+
     if(directed) { // don't rotate labels and draw curvy lines
-
-        // arrow head definition
-        canvas.append('defs')
-        .append('marker')
-        .attr('id', 'Triangle')
-        .attr('markerUnits', 'strokeWidth')
-        .attr('refX', '7')
-        .attr('refY', '5')
-        .attr('viewBox', '0 0 10 10')
-        .attr('orient', 'auto')
-        .append('path')
-        .attr('d', 'M 0 0 L 10 5 L 0 10 z');
-
-        config_['edge_attr']['marker-end'] = 'url(#Triangle)';
-        config_['edge_style']['fill'] = 'none';
-
-
-        var ld = config_['layout_attr']['linkDistance'],
-            offset = config_['edge_offset'];
-
-
-        if(!goog.isFunction(ld)) {
-            ld = function() {
-                return  config_['layout_attr']['linkDistance'];
-            };
-        }
-        if(goog.isArray(offset)) {
-            offset = function() {
-                return  config_['edge_offset'];
-            };
-        }
-        if(goog.isNumber(offset)) {
-            offset = function() {
-                return  [config_['edge_offset'], config_['edge_offset']];
-            };
-        }
-
         update_edge_position = function() {
-
             selections.edge_selection.each(function(d) {
                 if(d['source'] !== d['target']) {
                     var $this = d3.select(this),
@@ -414,25 +400,13 @@ jsnx.drawing.jsnx_d3.draw = function(G, config, opt_bind) {
 
                     $this.attr('transform', ['translate(',x1,',',y1,')', 'rotate(', angle,')'].join(''));
 
-
-                    var reverse_edge_exists = d['G'].has_edge(d['target']['node'], d['source']['node']);
-                    if(reverse_edge_exists) {
-                        var dy = ld(d)/3,
-                        x3 = dx/2,
-                        y3 = -dy,
-                        m = y3/x3,
-                        c = m*dx;
-                        $this.select('.line').attr('d', ['M', offset_[0], m*offset_[0], 'Q', dx/2, -dy, 
-                            dx - offset_[1], -m*(dx - offset_[1]) + c].join(' '));
-                    }
-                    else {
-                        $this.select('.line').attr('d', ['M', offset_[0], '0 L', dx - offset_[1], 0].join(' ')); 
-                    }
+                    var shift = strw(d) * inv_scale;
+                    $this.select('.line').attr('d', ['M', offset_[0], 0, 'L', offset_[0], -shift/2, 'L', dx - offset_[1] - 2*shift, -shift/2, 'L', dx - offset_[1] - 2*shift, -shift, 'L', dx - offset_[1], 0, 'z'].join(' ')); 
 
                     var scale = 1/inv_scale;
                     $this.select('text')
                         .attr('x',  dx * scale / 2)
-                        .attr('y', reverse_edge_exists ? scale * (-ld(d)/4) : 0)
+                        .attr('y', -shift/2*scale)
                         .attr('transform', 'scale(' + inv_scale + ')');
                 }
             });
@@ -450,25 +424,26 @@ jsnx.drawing.jsnx_d3.draw = function(G, config, opt_bind) {
                         angle =  goog.math.angle(x1,y1,x2,y2),
                         dx = Math.sqrt(Math.pow(x2 - x1, 2) +
                                        Math.pow(y2 - y1, 2)),
-                        center = dx/2;
+                        center = dx/2,
+                        offset_ = offset(d);
 
-                        $this.attr('transform', ['translate(',x1,',',y1,')', 'rotate(', angle,')'].join(''));
-                        $this.select('.line').attr('d', ['M 0 0 L', dx, '0'].join(' '));
-                        
-                        if(config_['with_edge_labels']) {
+                    offset_ = [offset_[0] * inv_scale, offset_[1] * inv_scale];
 
-                            $this.select('text')
-                                .attr('x', center * (1/inv_scale))
-                                .attr('y', 0)
-                                .attr('transform', 'scale(' + inv_scale + ')' + 
-                                      (angle > 90 && angle < 279 ? 
-                                          'rotate(180,' +  center * (1/inv_scale) +',0)' : 
-                                              ''));
-                        }
+                    var shift = strw(d) * inv_scale;
+                    $this.attr('transform', ['translate(',x1,',',y1,')', 'rotate(', angle,')'].join(''));
+                    $this.select('.line').attr('d', ['M', offset_[0], shift/4, 'L', offset_[0], -shift/4, 'L', dx - offset_[1], -shift/4, 'L', dx - offset_[1], shift/4, 'z'].join(' ')); 
+                    if(config_['with_edge_labels']) {
+                        $this.select('text')
+                          .attr('x', center * (1/inv_scale))
+                          .attr('y', 0)
+                          .attr('transform', 'scale(' + inv_scale + ')' + 
+                              (angle > 90 && angle < 279 ? 
+                              'rotate(180,' +  center * (1/inv_scale) +',0)' : '')
+                          );
+                    }
                 }
             });
         };
-
     }
 
     var redraw = function() {
@@ -726,8 +701,11 @@ jsnx.drawing.jsnx_d3.update_edge_attr_ = function(selection, edge_style,
     });
 
     goog.object.forEach(edge_style.style, function(value, style) {
-        edges.style(style, value);
+        if (style != 'stroke-width') {
+          edges.style(style, value);
+        }
     });
+    edges.style('stroke-width', 0);
 
     if(opt_with_edge_labels) {
         var labels = selection.selectAll('text');
@@ -1083,7 +1061,7 @@ jsnx.drawing.jsnx_d3.bind_ = function(G, force, config, selections) {
     /**
      * @type boolean
      */
-                                                                                                                                                G.bound = true;
+    G.bound = true;
 };
 
 
@@ -1148,21 +1126,22 @@ jsnx.drawing.jsnx_d3.clean_ = function(G) {
 jsnx.drawing.jsnx_d3.default_config_ = {
     'layout_attr': {
         'charge': -120,
-        'linkDistance': 40
+        'linkDistance': 60
     },
     'node_shape': 'circle',
     'node_attr': {
         'r': 10 // radius of 5
     },
     'node_style': {
+        'stroke-width': 2,
         'stroke': '#333',
         'fill': '#999',
         'cursor': 'pointer'
     },
     'edge_attr': {},
     'edge_style': {
-        'stroke': '#000',
-        'stroke-width': 2
+        'fill': '#000',
+        'stroke-width': 3
     },
     'label_attr': {},
     'label_style': {
