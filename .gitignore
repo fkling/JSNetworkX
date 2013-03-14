@@ -1,2 +1,4 @@
-build/
-tools/
+/vendor
+/node_modules
+/test
+/utils

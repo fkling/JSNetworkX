@@ -28,7 +28,7 @@
                   stroke: 'none'
               },
               edge_style: {
-                  stroke: '#999'
+                  fill: '#999'
               }
     }, true);
 }());
