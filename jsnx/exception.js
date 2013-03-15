@@ -8,6 +8,7 @@ goog.provide('jsnx.exception');
  * Base class for exceptions in JSNetworkX.
  * @constructor
  * @extends {Error}
+ * @export
  */
 jsnx.exception.JSNetworkXException = function(message) {
     this.name = 'JSNetworkXException';
@@ -24,6 +25,7 @@ goog.exportSymbol('jsnx.JSNetworkXException', jsnx.exception.JSNetworkXException
  * Exception for a serious error in JSNetworkX.
  * @constructor
  * @extends {jsnx.exception.JSNetworkXException}
+ * @export
  */
 jsnx.exception.JSNetworkXError = function(message) {
     goog.base(this, message);
@@ -38,6 +40,7 @@ goog.exportSymbol('jsnx.JSNetworkXError', jsnx.exception.JSNetworkXError);
  * New York: Springer-Verlag, 1973.
  * @constructor
  * @extends {jsnx.exception.JSNetworkXException}
+ * @export
  */
 jsnx.exception.JSNetworkXPointlessConcept = function(message) {
     goog.base(this, message);
@@ -51,6 +54,7 @@ goog.exportSymbol('jsnx.JSNetworkXPointlessConcept', jsnx.exception.JSNetworkXPo
  * Exception for unexpected termination of algorithms.
  * @constructor
  * @extends {jsnx.exception.JSNetworkXException}
+ * @export
  */
 jsnx.exception.JSNetworkXAlgorithmError = function(message) {
     goog.base(this, message);
@@ -65,6 +69,7 @@ goog.exportSymbol('jsnx.JSNetworkXAlgorithmError', jsnx.exception.JSNetworkXAlgo
  * instance that has no feasible solution.
  * @constructor
  * @extends {jsnx.exception.JSNetworkXAlgorithmError}
+ * @export
  */
 jsnx.exception.JSNetworkXUnfeasible = function(message) {
     goog.base(this, message);
@@ -79,6 +84,7 @@ goog.exportSymbol('jsnx.JSNetworkXUnfeasible', jsnx.exception.JSNetworkXUnfeasib
  * on graphs where such a path does not exist.
  * @constructor
  * @extends {jsnx.exception.JSNetworkXUnfeasible}
+ * @export
  */
 jsnx.exception.JSNetworkXNoPath = function(message) {
     goog.base(this, message);
@@ -93,6 +99,7 @@ goog.exportSymbol('jsnx.JSNetworkXNoPath', jsnx.exception.JSNetworkXNoPath);
  * or a minimization problem instance that is unbounded.
  * @constructor
  * @extends {jsnx.exception.JSNetworkXAlgorithmError}
+ * @export
  */
 jsnx.exception.JSNetworkXUnbounded = function(message) {
     goog.base(this, message);

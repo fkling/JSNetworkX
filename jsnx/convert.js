@@ -72,6 +72,7 @@ jsnx.convert.prep_create_using_ = function(opt_create_using) {
  *     a multigraph from a multigraph.
  *
  * @return {jsnx.classes.Graph}
+ * @export
  */
 jsnx.convert.to_networkx_graph = function(data, opt_create_using, opt_multigraph_input) {
     var result = null;
@@ -147,6 +148,7 @@ goog.exportSymbol('jsnx.to_networkx_graph', jsnx.convert.to_networkx_graph);
  * @param {jsnx.classes.Graph} G Graph to convert
  *
  * @return {!jsnx.classes.Graph}
+ * @export
  */
 jsnx.convert.convert_to_undirected = function(G) {
     return G.to_undirected();
@@ -159,6 +161,7 @@ goog.exportSymbol('jsnx.convert_to_undirected', jsnx.convert.convert_to_undirect
  *
  * @param {jsnx.classes.Graph} G Graph to convert
  * @return {!jsnx.classes.Graph}
+ * @export
  */
 jsnx.convert.convert_to_directed = function(G) {
     return G.to_directed();
@@ -175,6 +178,7 @@ goog.exportSymbol('jsnx.convert_to_undirected', jsnx.convert.convert_to_directed
  * @param {jsnx.NodeContainer=} opt_nodelist Use only nodes specified in nodelist
  *
  * @return {!Object.<Array>}
+ * @export
  */
 jsnx.convert.to_dict_of_lists = function(G, opt_nodelist) {
 
@@ -210,6 +214,7 @@ goog.exportSymbol('jsnx.to_dict_of_lists', jsnx.convert.to_dict_of_lists);
  *    Otherwise a new graph is created.
  *
  * @return {!jsnx.classes.Graph}
+ * @export
  */
 jsnx.convert.from_dict_of_lists = function(d, opt_create_using) {
     var G = jsnx.convert.prep_create_using_(opt_create_using);
@@ -259,6 +264,7 @@ jsnx.convert.from_dict_of_lists = function(d, opt_create_using) {
  *      If G is a multigraph, the edgedata is a dict for each pair (u,v).
  *
  * @return {!Object.<Object>}
+ * @export
  */
  jsnx.convert.to_dict_of_dicts = function(G, opt_nodelist, opt_edge_data) {
      var dod = {};
@@ -320,6 +326,7 @@ jsnx.convert.from_dict_of_lists = function(d, opt_create_using) {
  *      Otherwise this routine assumes the edge data are singletons.
  *
  * @return {jsnx.classes.Graph}
+ * @export
  */
 jsnx.convert.from_dict_of_dicts = function(d, opt_create_using, opt_multigraph_input) {
     var G = jsnx.convert.prep_create_using_(opt_create_using), edgelist, seen;
@@ -452,6 +459,7 @@ jsnx.convert.from_dict_of_dicts = function(d, opt_create_using, opt_multigraph_i
  * @param {jsnx.NodeContainer=} opt_nodelist Use only nodes specified in nodelist
  *
  * @return {!Array}
+ * @export
  */
 jsnx.convert.to_edgelist = function(G, opt_nodelist) {
     if(goog.isDefAndNotNull(opt_nodelist)) {
@@ -471,6 +479,7 @@ jsnx.convert.to_edgelist = function(G, opt_nodelist) {
  *      Otherwise a new graph is created.
  *
  * @return {!jsnx.classes.Graph}
+ * @export
  */
 jsnx.convert.from_edgelist = function(edgelist, opt_create_using) {
     var G = jsnx.convert.prep_create_using_(opt_create_using);
