@@ -34,6 +34,7 @@ goog.require('jsnx.helper');
  * @param {boolean} opt_directed (default=False) If True return a directed graph
  *
  * @return {jsnx.classes.Graph}
+ * @export
  */
 jsnx.generators.random_graphs.fast_gnp_random_graph = function(n, p,
                                                                opt_directed) {
@@ -107,6 +108,7 @@ goog.exportSymbol('jsnx.fast_gnp_random_graph', jsnx.generators.random_graphs.fa
  * @param {boolean} opt_directed (default=False) If True return a directed graph
  *
  * @return {jsnx.classes.Graph}
+ * @export
  */
 jsnx.generators.random_graphs.gnp_random_graph = function(n, p, opt_directed) {
     var G, edges;
@@ -141,11 +143,7 @@ jsnx.generators.random_graphs.gnp_random_graph = function(n, p, opt_directed) {
     return G;
 };
 goog.exportSymbol('jsnx.gnp_random_graph', jsnx.generators.random_graphs.gnp_random_graph);
-
-jsnx.generators.random_graphs.binomial_graph = jsnx.generators.random_graphs.gnp_random_graph;
 goog.exportSymbol('jsnx.binomial_graph', jsnx.generators.random_graphs.gnp_random_graph);
-
-jsnx.generators.random_graphs.erdos_renyi_graph = jsnx.generators.random_graphs.gnp_random_graph;
 goog.exportSymbol('jsnx.erdos_renyi_graph', jsnx.generators.random_graphs.gnp_random_graph);
 
 //TODO: newman_watts_strogatz_graph

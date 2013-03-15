@@ -22,6 +22,7 @@ goog.require('goog.math');
  *      Compute triangles for nodes in this container.
  *
  * @return {!(Object|number)} Number of triangles keyed by node label.
+ * @export
  */
 jsnx.algorithms.cluster.triangles = function(G, opt_nodes) {
     if (G.is_directed()) {
@@ -195,6 +196,7 @@ jsnx.algorithms.cluster.weighted_triangles_and_degree_iter_ = function(G, opt_no
  *       If False include only the nodes with nonzero clustering in the average.
  *
  * @return {number}
+ * @export
  */
 jsnx.algorithms.cluster.average_clustering = function(G, opt_nodes, opt_weight, 
                                                       opt_count_zeros) {
@@ -255,6 +257,7 @@ goog.exportSymbol('jsnx.average_clustering', jsnx.algorithms.cluster.average_clu
  * @param {?string=} opt_weight (default: null)
  *
  * @return {!(number|Object)} Clustering coefficient at specified nodes
+ * @export
  */
 jsnx.algorithms.cluster.clustering = function(G, opt_nodes, opt_weight) {
     if (G.is_directed()) {
@@ -304,6 +307,7 @@ goog.exportSymbol('jsnx.clustering', jsnx.algorithms.cluster.clustering);
  * @param {jsnx.classes.Graph} G graph
  *
  * @return {number} Transitivity
+ * @export
  */
 jsnx.algorithms.cluster.transitivity = function(G) {
     var triangles = 0, // 6 times number of triangles
@@ -326,6 +330,7 @@ goog.exportSymbol('jsnx.transitivity', jsnx.algorithms.cluster.transitivity);
  *
  * @return {!Object} 
  *      A dictionary keyed by node with the square clustering coefficient value.
+ * @export
  */
 jsnx.algorithms.cluster.square_clustering = function(G, opt_nodes) {
     var nodes_iter = !goog.isDefAndNotNull(opt_nodes) ? 

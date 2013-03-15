@@ -31,6 +31,7 @@ goog.require('jsnx.algorithms.dag');
  *      If True return a copy or if False relabel the nodes in place.
  *
  * @return {jsnx.classes.Graph}
+ * @export
  */
 jsnx.relabel.relabel_nodes = function(G, mapping, opt_copy) {
     // you can pass a function f(old_label)->new_label
@@ -200,6 +201,7 @@ jsnx.relabel.relabel_copy_ = function(G, mapping) {
  *      'old_label' to hold the old labels.
  *
  * @return {jsnx.classes.Graph}
+ * @export
  */
 jsnx.relabel.convert_node_labels_to_integers = function(G, opt_first_label, 
                                                         opt_ordering,

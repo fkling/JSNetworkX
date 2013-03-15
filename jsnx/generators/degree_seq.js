@@ -29,6 +29,7 @@ goog.require('jsnx.exception');
  * @param {jsnx.classes.Graph} opt_create_using 
  *      Return graph of this type. The instance will be cleared.
  *      Multigraphs and directed graphs are not allowed.
+ * @export
  */
 jsnx.generators.degree_seq.havel_hakimi_graph = function(deg_sequence, opt_create_using) {
     if(!jsnx.algorithms.graphical.is_valid_degree_sequence(deg_sequence)) {

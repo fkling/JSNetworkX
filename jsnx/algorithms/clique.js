@@ -64,6 +64,7 @@ goog.require('goog.array');
  * @param {jsnx.classes.Graph} G
  *
  * @return {!goog.iter.Iterator}
+ * @export
  */
 jsnx.algorithms.clique.find_cliques = function(G) {
     // Cache nbrs and find first pivot (highest degree)
@@ -242,6 +243,7 @@ goog.exportSymbol('jsnx.find_cliques', jsnx.algorithms.clique.find_cliques);
  * @param {jsnx.classes.Graph} G
  *
  * @return {!Array}
+ * @export
  */
 jsnx.algorithms.clique.find_cliques_recursive = function(G) {
     var nnbrs = {};
@@ -334,6 +336,7 @@ jsnx.algorithms.clique.extend_ = function(nnbrs, cand, done, so_far, cliques) {
  * @param {(Array|goog.iter.Iterable)=} opt_cliques
  *
  * @return {number};
+ * @export
  */
 jsnx.algorithms.clique.graph_clique_number = function(G, opt_cliques) {
     if(!goog.isDefAndNotNull(opt_cliques)) {
@@ -357,6 +360,7 @@ goog.exportSymbol('jsnx.graph_clique_number', jsnx.algorithms.clique.graph_cliqu
  * @param {(Array|goog.iter.Iterable)=} opt_cliques
  *
  * @return {number}
+ * @export
  */
 jsnx.algorithms.clique.graph_number_of_cliques = function(G, opt_cliques) {
     if(!goog.isDefAndNotNull(opt_cliques)) {
@@ -381,6 +385,7 @@ goog.exportSymbol('jsnx.graph_number_of_cliques', jsnx.algorithms.clique.graph_n
  * @param {(Array|goog.iter.Iterable)=} opt_cliques List of cliques
  *
  * @return {!(Object|number)}
+ * @export
  */
 jsnx.algorithms.clique.number_of_cliques = function(G, opt_nodes, opt_cliques) {
     if(!goog.isDefAndNotNull(opt_cliques)) {

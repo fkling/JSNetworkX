@@ -20,6 +20,7 @@ goog.require('jsnx.utils.misc');
  *
  * @return {boolean} 
  *      True if deg_sequence is a valid degree sequence and False if not.
+ * @export
  */
 
 jsnx.algorithms.graphical.is_valid_degree_sequence = function(deg_sequence, opt_method) {
@@ -51,6 +52,7 @@ goog.exportSymbol('jsnx.is_valid_degree_sequence', jsnx.algorithms.graphical.is_
  *
  * @return {boolean} 
  *      True if deg_sequence is a valid degree sequence and False if not.
+ * @export
  */
 jsnx.algorithms.graphical.is_valid_degree_sequence_havel_hakimi = function(deg_sequence) {
     //some simple tests
@@ -111,6 +113,7 @@ goog.exportSymbol('jsnx.is_valid_degree_sequence_havel_hakimi', jsnx.algorithms.
  *
  * @return {boolean} 
  *      True if deg_sequence is a valid degree sequence and False if not.
+ * @export
  */
 jsnx.algorithms.graphical.is_valid_degree_sequence_erdos_gallai = function(deg_sequence) {
     //some simple tests

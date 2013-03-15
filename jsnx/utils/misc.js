@@ -23,6 +23,7 @@ goog.require('goog.ui.IdGenerator');
  * @param {Array} intlist
  *
  * @return {boolean}
+ * @export
  */
 jsnx.utils.misc.is_list_of_ints = function(intlist) {
     if(!goog.isArrayLike(intlist)) {
@@ -47,6 +48,7 @@ goog.exportSymbol('jsnx.utils.is_list_of_ints', jsnx.utils.misc.is_list_of_ints)
  * @param {Array} numbers
  *
  * @return {goog.iter.Iterator}
+ * @export
  */
 jsnx.utils.misc.cumulative_sum = function(numbers) {
     var csum = 0;
@@ -62,6 +64,7 @@ goog.exportSymbol('jsnx.utils.cumulative_sum', jsnx.utils.misc.cumulative_sum);
  * Generate a unique node label.
  *
  * @return {string}
+ * @export
  */
 jsnx.utils.misc.generate_unique_node = function() {
     return goog.ui.IdGenerator.getInstance().getNextUniqueId();
