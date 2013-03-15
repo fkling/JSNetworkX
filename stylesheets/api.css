@@ -1,0 +1,30 @@
+.accordion {
+  margin-bottom: 0;
+}
+
+.exec {
+  font-style: italic;
+  color: #999;
+}
+
+.exec.implemented {
+  font-style: normal;
+  font-weight: bolder;
+  color: green;
+}
+
+.impl_info {
+  float: right;
+}
+
+.accordion-heading {
+  position: relative;
+}
+
+.wont .accordion-heading, .wont .exec, .exec.wont {
+  text-decoration: line-through;
+}
+
+.wont .accordion-heading {
+  background-color: #fff;
+}
