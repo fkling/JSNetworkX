@@ -221,16 +221,17 @@ jsnx.classes.func.freeze = function(G) {
         );
     }
 
-    G.add_node = frozen;
-    G.add_nodes_from = frozen;
-    G.remove_node = frozen;
-    G.remove_nodes_from = frozen;
-    G.add_edge = frozen;
-    G.add_edges_from = frozen;
-    G.remove_edge = frozen;
-    G.remove_edges_from = frozen;
-    G.clear = frozen;
-    G.frozen = true;
+    // This double assignment is necessary for the closure compiler
+    G['add_node'] = G.add_node = frozen;
+    G['add_nodes_from'] = G.add_nodes_from = frozen;
+    G['remove_node'] = G.remove_node = frozen;
+    G['remove_nodes_from'] = G.remove_nodes_from = frozen;
+    G['add_edge'] = G.add_edge = frozen;
+    G['add_edges_from'] = G.add_edges_from = frozen;
+    G['remove_edge'] = G.remove_edge = frozen;
+    G['remove_edges_from'] = G.remove_edges_from = frozen;
+    G['clear'] = G.clear = frozen;
+    G['frozen'] = G.frozen = true;
     return G;
 };
 goog.exportSymbol('jsnx.freeze', jsnx.classes.func.freeze);

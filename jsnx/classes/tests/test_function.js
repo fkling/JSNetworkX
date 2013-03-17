@@ -107,7 +107,7 @@ TestFunction.prototype.test_density = function() {
     expect(jsnx.density(G)).toEqual(0.0);
 };
 
-TestFunction.prototype.freeze = function() {
+TestFunction.prototype.test_freeze = function() {
     var G = jsnx.freeze(this.G);
     expect(G.frozen).toBeTruthy();
     expect(function(){ G.add_node(1);}).toThrow('JSNetworkXError');
@@ -121,7 +121,7 @@ TestFunction.prototype.freeze = function() {
     expect(function(){ G.clear();}).toThrow('JSNetworkXError');
 };
 
-TestFunction.prototype.is_frozen = function() {
+TestFunction.prototype.test_is_frozen = function() {
     expect(jsnx.is_frozen(this.G)).toBeFalsy();
     var G = jsnx.freeze(this.G);
     expect(G.frozen).toEqual(jsnx.is_frozen(G));
