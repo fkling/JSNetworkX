@@ -1,5 +1,5 @@
 import networkx as nx
-from types import ModuleType, FunctionType
+from types import ModuleType, FunctionType, ClassType
 import json
 
 API = {
@@ -7,6 +7,8 @@ API = {
     "functions": set(),
     "types": set(),
 }
+
+exclude = set(['setup_module', 'teardown_module'])
 
 def inspect_module(API, m):
     for k, v in m.__dict__.iteritems():
@@ -17,13 +19,13 @@ def inspect_module(API, m):
             if name not in API["modules"]:
                 API["modules"].add(name)
                 inspect_module(API, v)
-        elif type(v) == type and v.__module__.startswith('networkx'):
+        elif (type(v) == type or isinstance(v, ClassType)) and v.__module__.startswith('networkx'):
             module = v.__module__
             name = v.__name__
             t = (module, name, name in  nx.__dict__ and nx.__dict__[name].__module__ == module)
             if t not in API["types"]:
                 API["types"].add(t)
-        elif isinstance(v, FunctionType) and v.__module__.startswith('networkx'):
+        elif isinstance(v, FunctionType) and v.__module__.startswith('networkx') and v.__name__ not in exclude:
             module = v.__module__
             name = v.__name__
             t = (module, name, name in  nx.__dict__ and nx.__dict__[name].__module__ == module)

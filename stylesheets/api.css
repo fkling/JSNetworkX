@@ -1,3 +1,6 @@
+.sidebar {
+  max-width: 270px;
+}
 .accordion {
   margin-bottom: 0;
 }
@@ -5,11 +8,12 @@
 .exec {
   font-style: italic;
   color: #999;
+  font-weight: normal !important;
 }
 
 .exec.implemented {
   font-style: normal;
-  font-weight: bolder;
+  font-weight: bolder !important;
   color: green;
 }
 
@@ -21,10 +25,18 @@
   position: relative;
 }
 
+.wont:not(.exec) {
+  opacity: 0.5
+}
+
 .wont .accordion-heading, .wont .exec, .exec.wont {
   text-decoration: line-through;
 }
 
 .wont .accordion-heading {
   background-color: #fff;
+}
+
+.hide {
+  display: none;
 }

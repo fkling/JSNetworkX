@@ -3,16 +3,38 @@ layout: main
 menu: API progress
 title: API porting progress
 css: [api]
+sub: An overview of ported and to be ported methods and modules.
 ---
+
+<div class="row">
+  <div class="span3">
+    <div class="sidebar" data-spy="affix" data-offset-top="210">
+      <h4>View</h4>
+      <div class="btn-group" data-toggle="buttons-radio" id="filter">
+        <button id="filter-all" type="button" class="btn active">All</button>
+        <button id="filter-available" type="button" class="btn">Available</button>
+      </div>
+      <h4>Legend</h4>
+      <dl>
+        <dt class="exec implemented">Name</dt>
+        <dd>Implemented method</dd>
+        <dt class="exec">Name</dt>
+        <dd>Unimplemented method</dd>
+        <dt class="exec wont">Name</dt>
+        <dd>Module/method which won't be ported</dd>
+        <dt class="exec implemented">Name <i class="icon-heart"></i></dt>
+        <dd>Method is also available at the root, i.e. <code>jsnx.Name</code></dd>
+      </dl>
+    </div>
+  </div>
+  <div class="span9">
+    <div id="api" class="accordion"></div>
+  </div>
+</div>
 
 <script src="https://raw.github.com/fkling/JSNetworkX/master/jsnetworkx.js"></script>
 <script src="javascripts/wont_implement.js"></script>
-<div class="btn-group" data-toggle="buttons-radio" id="filter">
-  <button id="filter-all" type="button" class="btn active">All</button>
-  <button id="filter-available" type="button" class="btn">Available</button>
-</div>
-<br>
-<div id="api" class="accordion"></div>
+<script src="javascripts/gradients.js"></script>
 <script>
   var elements = {};
   $('#filter').on('click', 'button', function() {
@@ -63,6 +85,9 @@ css: [api]
       }
     });
 
+    var color = d3.scale.linear()
+      .domain([0, 50, 100]).range(['#FFAAAA', '#FFFDAA', '#AAFFAA']);
+
     $.each(elements, function(n, $ele) {
       if ($(this).closest('.wont').length > 0) {
         return;
@@ -74,12 +99,9 @@ css: [api]
       var impl = $exec.filter('.implemented').length;
       var p = Math.floor(impl / total * 100);
       var $header = $ele.parent().prev();
-      if (p === 100) {
-        $header.css('background-color', '#99FF99'); 
-      }
-      else {
-        $header.css('background', '-webkit-linear-gradient(left, #BBFFBB, #BBFFBB ' + (Math.max(0, p-5)) + '%, #FFFFFF ' + p + '%, #FFFFFF)');
-      }
+      var bc = color(p);
+      $header.css('background', 'linear-gradient(to right, ' + bc + ', ' + bc + ' ' +  p + '%, #FFFFFF ' + p + '%, #FFFFFF)');
+      $header.css('background', 'linear-gradient(left, ' + bc + ', ' + bc + ' ' +  p/2 + '%, #FFFFFF ' + p + '%, #FFFFFF)');
       if (n !== 'jsnx' && $ele.children('.exec.implemented').length > 0) {
         $header.children('span')
         .append('&nbsp;&nbsp;')

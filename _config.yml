@@ -1,0 +1,17 @@
+auto: true
+menu:
+  - name: Home
+    url: index.html
+  - name: Getting Started
+    url: getting_started.html
+  - name: Documentation
+  - name: Examples
+  - name: API progress
+    url: api_progress.html
+exclude:
+  - test
+  - utils
+  - vendor
+  - tools
+  - node_modules
+  - examples

@@ -1,82 +1,67 @@
-<!doctype html>
-<html>
-  <head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="chrome=1">
-    <title>JSNetworkX by fkling</title>
-    
-    <link rel="stylesheet" href="stylesheets/styles.css">
-    <link rel="stylesheet" href="stylesheets/pygment_trac.css">
-    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
-    <!--[if lt IE 9]>
-    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
-    <![endif]-->
-  </head>
-  <body>
-    <div class="wrapper">
-      <header>
-        <h1>JSNetworkX</h1>
-        <p>A port of the NetworkX graph library to JavaScript</p>
-              <div id="chart" style="width:100%; height: 220px;"></div>
-      <p style="font-size: 0.8em">
-              (the example graph from the NetworkX web site made with JSNetworkX (<a href="javascripts/graph.js">have a look at the source</a>))
-          </p>
-        <p class="view"><a href="https://github.com/fkling/JSNetworkX">View the Project on GitHub <small>fkling/JSNetworkX</small></a></p>
-        <ul>
-          <li><a href="https://github.com/fkling/JSNetworkX/zipball/master">Download <strong>ZIP File</strong></a></li>
-          <li><a href="https://github.com/fkling/JSNetworkX/tarball/master">Download <strong>TAR Ball</strong></a></li>
-          <li><a href="https://github.com/fkling/JSNetworkX">Fork On <strong>GitHub</strong></a></li>
-      </ul>
-      </header>
-      <section>
-      <h2>What is JSNetworkX?</h2>
+---
+layout: main
+menu: Home
+sub: 'A JavaScript port of the <a href="http://networkx.github.com/">NetworkX</a> graph library.'
+---
 
-
-        
-
-<p>JSNetworkX is a port of the popular Python graph library <a href="http://networkx.lanl.gov/">NetworkX</a>. Lets describe it with their words:</p>
+<div class="row" style="padding-top: 30px">
+<div class="span7">
+<p>
+JSNetworkX is a port of the popular Python graph library <a href="http://networkx.lanl.gov/">NetworkX</a>. From their website:
+</p>
 
 <blockquote>
-<p>NetworkX is a Python language software package for the creation, manipulation, and study of the structure, dynamics, and function of complex networks.</p>
+  <p>NetworkX is a Python language software package for the creation, manipulation, and study of the structure, dynamics, and function of complex networks.</p>
 
-<p>With NetworkX you can load and store networks in standard and nonstandard data formats, generate many types of random and classic networks, analyze network structure, build network models, design new network algorithms, draw networks, and much more.</p>
+  <p>With NetworkX you can load and store networks in standard and nonstandard data formats, generate many types of random and classic networks, analyze network structure, build network models, design new network algorithms, draw networks, and much more.</p>
 </blockquote>
-
-<p><strong>Note:</strong> Development is still in an early stage and only some core classes have been ported so far, namely <code>Graph</code>, <code>DiGraph</code> and some helper functions (have a look at the <a href="https://github.com/fkling/JSNetworkX/blob/master/README.md">README file</a> for more information).</p>
-
-<h2>Getting started</h2>
-
-<p><a href="examples/">Here are some quick examples of how to use JSNetworkX.</a></p>
-
-<p>For more examples and information about the methods, please have a look at the original <a href="http://networkx.lanl.gov/">NetworkX documentation</a>.</p>
-
-<p>Also note that there a couple of differences, which are mentioned in the <a href="https://github.com/fkling/JSNetworkX/blob/master/README.md">README</a>.</p>
-
-<h2>Download</h2>
-
-<p><a href="https://raw.github.com/fkling/JSNetworkX/master/jsnetworkx.js">Download the minified library</a> and give it a try!</p>
-      </section>
-      <footer>
-        <p>This project is maintained by <a href="https://github.com/fkling">fkling</a></p>
-        <p><small>Hosted on GitHub Pages &mdash; Theme by <a href="https://github.com/orderedlist">orderedlist</a></small></p>
-      </footer>
-    </div>
-    <script src="javascripts/scale.fix.js"></script>
-    <script src="javascripts/d3.v2.min.js"></script>
-    <script src="javascripts/jsnetworkx.js"></script>
-    <script src="javascripts/graph.js"></script>
-    
-    <!-- Piwik --> 
-<script type="text/javascript">
-var pkBaseURL = (("https:" == document.location.protocol) ? "https://piwik.reblaus-kleinkunst.de/" : "http://piwik.reblaus-kleinkunst.de/");
-document.write(unescape("%3Cscript src='" + pkBaseURL + "piwik.js' type='text/javascript'%3E%3C/script%3E"));
-</script><script type="text/javascript">
-try {
-var piwikTracker = Piwik.getTracker(pkBaseURL + "piwik.php", 4);
-piwikTracker.trackPageView();
-piwikTracker.enableLinkTracking();
-} catch( err ) {}
-</script><noscript><p><img src="http://piwik.reblaus-kleinkunst.de/piwik.php?idsite=4" style="border:0" alt="" /></p></noscript>
-<!-- End Piwik Tracking Code -->
-  </body>
-</html>
+<p>
+JSNetworkX aims to bring graph processing to JavaScript, client- and
+server-side, and to provide an easy way to visualize graphs in the
+browser.
+</p>
+<div style="text-align: center">
+<a class="btn btn-success btn-large download" href="https://raw.github.com/fkling/JSNetworkX/master/jsnetworkx.js">Download JSNetworkX</a>
+</div>
+<div class="alert alert-block">
+  <h4>Important!</h4>
+  JSNetworkX is still
+  in an early stage of development and only a part of NetworkX was ported.
+  The <a href="api_progress.html">API progress page</a> provides a list of methods and modules which are 
+  available to use. The base graph classes and SVG drawing are already 
+  available.
+</div>
+<h2>To Do</h2>
+<p>There is still a lot of work to do to complete this library:</p>
+<ul>
+  <li>Port, port, port</li>
+  <li>Support generic objects for nodes</li>
+  <li>Improve drawing API and provide other visualization techniques (canvas, webgl)</li>
+  <li>Generate documentation</li>
+</ul>
+<h2>Credits</h2>
+<p>JSNetworkX and this website make use of a various libraries and tools and we want to hereby thank them</p>
+<ul>
+  <li><a href="http://networkx.github.com/">NetworkX</a></li>
+  <li><a href="https://developers.google.com/closure/">Google Closure Tools</a></li>
+  <li><a href="http://pivotal.github.com/jasmine/">Jasmin</a></li>
+  <li><a href="http://gruntjs.com/">Grunt</a></li>
+  <li><a href="http://nodejs.org/">Node.js</a></li>
+  <li><a href="http://d3js.org/">D3.js</a></li>
+</ul>
+<hr>
+<ul>
+  <li><a href="http://twitter.github.com/bootstrap/">Bootstrap</a></li>
+  <li><a href="http://jquery.com/">jQuery</a></li>
+  <li><a href="https://code.google.com/p/google-code-prettify/">Google Code Prettify</a></li>
+  <li><a href="https://github.com/">Github</a></li>
+</ul>
+</div>
+  <div class="span5">
+    <div id="canvas" data-spy="affix" data-offset-top="210">
+      <span class="description"></span> 
+    </div> 
+  </div>
+</div>
+<script src="javascripts/examples.js"></script>
+<script src="javascripts/rotate_examples.js"></script>

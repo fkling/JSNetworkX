@@ -1,0 +1,65 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <title>{% if page.title %} {{ page.title }} | {%endif%}JSNetworkX</title>
+    <link href="stylesheets/styles.css" rel="stylesheet" media="screen">
+    <link href="stylesheets/bootstrap.min.css" rel="stylesheet" media="screen">
+    <link href="stylesheets/bootstrap-responsive.min.css" rel="stylesheet">
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <script src="http://code.jquery.com/jquery.js"></script>
+    <script src="javascripts/bootstrap.min.js"></script>
+    <script src="javascripts/d3.v2.min.js"></script>
+    <script src="javascripts/scale.fix.js"></script>
+    <script src="javascripts/jsnetworkx.js"></script>
+    {% for item in page.css %}
+      <link href="stylesheets/{{ item }}.css" rel="stylesheet">
+    {% endfor %}
+  </head>
+  <body>
+    <a href="https://github.com/fkling/JSNetworkX"><img style="z-index: 10000;position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_orange_ff7600.png" alt="Fork me on GitHub"></a>
+    <div class="navbar navbar-inverse navbar-fixed-top">
+      <div class="navbar-inner">
+        <div class="container">
+          <ul class="nav">
+            {% for item in site.menu %}
+              <li class="{%if page.menu contains item.name %} active{% endif %}">
+                <a  href="{%if item.url %}{{item.url}}{%else%}{{item.name | downcase}}.html{%endif%}">{{ item.name }}</a>
+              </li>
+            {% endfor %}
+          </ul>
+        </div>
+      </div>
+    </div>
+    <header id="overview">
+      <div id="header-chart"></div>
+      <div class="container {% if page.menu == 'Home' %}center{% endif %}">
+        <h1>{% if page.title %} {{ page.title }} {% else %}JSNetworkX{% endif %}</h1>
+        <p class="lead">{{ page.sub }}</p>
+      </div>
+    </header>
+    <div class="container">
+      {{ content }}
+    </div>
+    {% if page.menu != 'Home' %}
+    <script src="javascripts/graph.js"></script>
+    {% endif %}
+    </script>
+    <!-- Piwik  
+    <script type="text/javascript">
+      var pkBaseURL = (("https:" == document.location.protocol) ? "https://piwik.reblaus-kleinkunst.de/" : "http://piwik.reblaus-kleinkunst.de/");
+      document.write(unescape("%3Cscript src='" + pkBaseURL + "piwik.js' type='text/javascript'%3E%3C/script%3E"));
+      </script><script type="text/javascript">
+      try {
+        var piwikTracker = Piwik.getTracker(pkBaseURL + "piwik.php", 4);
+        piwikTracker.trackPageView();
+        piwikTracker.enableLinkTracking();
+      } catch( err ) {}
+    </script><noscript><p><img src="http://piwik.reblaus-kleinkunst.de/piwik.php?idsite=4" style="border:0" alt="" /></p></noscript>
+    <!-- End Piwik Tracking Code -->
+  </body>
+</html>
