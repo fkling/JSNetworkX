@@ -189,7 +189,7 @@ console.log(G.edges());
 </pre>
 </section>
 <section id="data">
-  <h2 class="page-heading">Node and edge data</h2>
+  <h2 class="page-header">Node and edge data</h2>
   <p>A great feature of NetworkX is the possibility to assign any data to nodes
   and edges and of course JSNetworkX allows you to do this too.</p>
 
@@ -239,9 +239,8 @@ G.adj[0][1].color = 'blue'; // or G.adj[1][0].color =  ...
 console.log(G.nodes(true));
 // shows [["0",{"foo":"bar"}],["1",{}]]
 console.log(G.edges(true));
-// shows [["0","1",{"color":"blue"}]]"[
+// shows [["0","1",{"color":"blue"}]]
 </pre>
-</section>
 
 <div class="alert"><strong>Warning</strong> 
   You should directly modify the <code>G.nodes</code> or <code>G.adj</code> 
@@ -290,7 +289,7 @@ jsnx.draw(G, {
 </pre>
 </section>
 <section id="analysis">
-  <h2>Analyzing graphs</h2>
+  <h2 class="page-header">Analyzing graphs</h2>
   <p>NetworkX provides a variety of algorithms to analyze graphs, such as detecting
   cliques, computing shortest paths or the centrality of a graph. JSNetworkX 
   aims to provide those algorithms as well. You can see the progress and which
@@ -327,7 +326,117 @@ jsnx.draw(G, {
 </pre>
 </section>
 <section id="drawing">
-  <h2>Drawing graphs</h2>
+  <h2 class="page-header">Drawing graphs</h2>
+  <div class="alert alert-info">
+  <strong>Info</strong> 
+  The drawing API is not finalized yet and will be extended greatly to make it
+  easier to customize and modify visualizations.
+  </div>
+
+  <p>You already have seen some examples of how to draw graphs. Here is a more
+  detailed introduction.</p>
+
+  <p>JSNetworkX uses <a href="http://d3js.org/">d3.js</a> to draw graphs as SVG.
+  d3 is a very powerful library to bind data to DOM elements and provides many useful
+  methods for data visualization. You are encouraged to learn more about it to 
+  get the most out of drawing graphs.  JSNetworkX takes care of setting up the 
+  connections between the graph, the layout and the SVG elements, and lets you 
+  apply custom styles to nodes and edges.
+  </p>
+
+  <p><code>jsnx.draw</code> is the method with which you can draw a graph and
+  it accepts the following arguments:
+  </p>
+<pre>
+jsnx.draw(G, options [, update]);
+</pre>
+  <ul>
+    <li><code>G</code> can be either a directed or undirected graph. Multi edge graphs are not supported.</li>
+    <li><code>options</code> is an object which controls the look and behavior of the visualization.</li>
+    <li><code>update</code> is a boolean value and controls whether modifications to the graph should be reflects in the visualization.</li>
+  </ul>
+
+ <h4>Drawing options</h4>
+ <p>A complete list of options with explanation can be found 
+ <a href="https://github.com/fkling/JSNetworkX/wiki/Drawing-graphs">in the wiki</a>.
+ In the following we will describe the most important options and concepts you need to know about.
+ </p>
+ <p>The only <em>required</em> option is <code>element</code>, so that the library
+ knows where to draw the graph. It can either be a CSS selector or a DOM element.
+ Internally, the method uses <code>d3.select</code> to select the element.
+ </p>
+ <p><code>jsnx.draw</code> will add a new <code>&lt;svg&gt;</code> container to
+ the element, which by default has the same width and height as its parent. You
+ can explicitly set the dimensions by specifying the <code>width</code> and
+ <code>height</code> options.
+ </p>
+ <p>The most interesting options are probably <code>node_style</code>,
+ <code>node_attr</code>, <code>edge_style</code> and <code>edge_attr</code>, which
+ with you can specify the look of nodes and edges. Since the graph is drawn
+ with SVG elements, the <code>*_style</code> options should hold values for 
+ CSS properties and the <code>*_attr</code> options values for element attributes.
+ If you are not very familiar with SVG, have a look at the <a href="https://developer.mozilla.org/en/docs/SVG">MDN SVG documentation</a>.
+ The options are explained in greater detail in the next section.
+ </p>
+ <h4>Data binding and styling</h4>
+ <p>As mentioned earlier, d3's main feature is the <a href="http://mbostock.github.com/d3/tutorial/circle.html">binding of data to DOM elements</a>.
+ This is also the foundation for the graph visualization: Each SVG element
+ representing a node or edge has an object bound to it, with various information.
+ <br>
+ By using a function as one of the style or attribute values, you will have access to that information,
+ because internally, the library just passes the values along to
+ d3's <a href="https://github.com/mbostock/d3/wiki/Selections#wiki-style"><code>.style</code> and</a>
+ <a href="https://github.com/mbostock/d3/wiki/Selections#wiki-attr"><code>.attr</code> methods</a>.
+ </p>
+ <p>The data object bound to an element for a node has the following properties:</p>
+ <ul>
+   <li><code>node</code>, the node value</li>
+   <li><code>data</code>, the node data from the graph (see <a href="#data">Node and edge data</a>)</li>
+   <li><code>G</code>, a reference to the graph object
+  </ul>
+  <p>The data object for an edge has similar properties:</p>
+ <ul>
+   <li><code>edge</code>, a 2-tuple (array) containing the nodes this edge connects</li>
+   <li><code>data</code>, the edge data from the graph (see <a href="#data">Node and edge data</a>)</li>
+   <li><code>G</code>, a reference to the graph object
+  </ul>
+  <p>To better illustrate this concept, here is a small example: Each node in 
+  the graph has a property <code>count</code>. We will later use this
+  property to draw the nodes in different sizes. The nodes are drawn as 
+  <code>&lt;circle&gt;</code> SVG elements and the radius is controlled by the
+  elements <code>r</code> <strong>attribute</strong>. Hence we have to use the
+  <code>node_attr</code> option.
+</p>
+<pre class="prettyprint linenums" data-example="run" data-draw="false">
+var G = jsnx.Graph();
+G.add_node(1, {count: 12});
+G.add_node(2, {count: 8});
+G.add_node(3, {count: 15});
+G.add_edges_from([[1,2],[2,3]]);
+
+jsnx.draw(G, {
+  element: '#demo-canvas',
+  with_labels: true,
+  node_attr: {
+    r: function(d) {
+      // `d` has the properties `node`, `data` and `G`
+      return d.data.count;
+    }
+  }
+});
+</pre>
+  <h4>Graph layouts</h4>
+  <p>JSNetworkX currently only supports a <a href="https://github.com/mbostock/d3/wiki/Force-Layout">force based layout</a> but
+  we will add other layouts in the future.
+  </p>
+<h4>Limitations and other drawing techniques</h4>
+<p>SVG has its pros and cons. It is easier to add interaction but there is an
+upper limit of how elements can be drawn, which depends a lot on the user's 
+computer and browser.
+</p>
+<p>We aim to support different drawing techniques, like canvas and WebGL and with 
+the expectation that this will allow us to draw larger graphs reasonably well.
+</p>
 </section>
   </div>
 </div>
