@@ -1,6 +1,10 @@
-.sidebar {
-  max-width: 270px;
+#api {
+  margin-top: 40px;
 }
+.sidebar h4 {
+  margin-top: 0;
+}
+
 .accordion {
   margin-bottom: 0;
 }

@@ -80,7 +80,11 @@
   }
 
   // append run button
-  $('<button class="btn btn-small btn-primary" style="position: absolute; top:0;right:0;">Show</button>')
+  $('<button>', {
+    'class': "btn btn-small btn-primary demo-button",
+    style: "position: absolute; top:0;right:0;",
+    text: 'Show'
+  })
     .appendTo($examples)
     .click(function() {
       prepare_example(this.parentNode);

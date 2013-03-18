@@ -40,15 +40,13 @@ header .lead {
   margin-left:-20px;
 }
 
-.sidebar-nav {
-  margin-top: 30px;
-  width: 200px;
-  font-size: 18px;
-}
-
-#canvas.affix, .sidebar.affix {
+#canvas.affix, .sidenav.affix {
   top: 70px;
   position: fixed;
+}
+
+.sidenav.affix {
+  width: 190px;
 }
 
 #canvas {
@@ -70,15 +68,56 @@ header .lead {
   padding: 5px;
 }
 
+#canvas.affix {
+  width: 378px;
+}
+
 section {
   padding-top: 30px;
 }
 
+.sidebar {
+  padding-top: 70px;
+}
+
+@media (min-width: 1200px) {
+  .sidenav.affix {
+    width: 240px;
+  }
+
+  #canvas.affix {
+    width: 468px;
+  }
+}
+
+@media (max-width: 979px) and (min-width: 768px) {
+  .sidenav.affix {
+    width: 136px;
+  }
+  header {
+    margin-top: -20px;
+  }
+
+  #canvas.affix {
+    width: 288px;
+  }
+}
 
 @media (max-width: 767px) {
   header {
+    margin-top: -20px;
     padding: 40px 20px;
     margin-left: -20px;
     margin-right: -20px;
+  }
+
+  .sidenav.affix {
+    position: static;
+    width: 100%;
+  }
+
+  #canvas.affix {
+    position: relative;
+    width: 100%;
   }
 }
