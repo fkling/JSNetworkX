@@ -8,6 +8,7 @@ var wont_implement = [
   'jsnx.external',
   'jsnx.linalg',
   'jsnx.readwrite.gpickle',
+  'jsnx.release',
   'jsnx.tests',
   'jsnx.utils.decorators',
   'jsnx.utils.misc.default_opener',

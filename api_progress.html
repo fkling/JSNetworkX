@@ -28,9 +28,7 @@ sub: An overview of ported and to be ported methods and modules.
     </div>
   </div>
   <div class="span9">
-    <section>
     <div id="api" class="accordion"></div>
-    </section>
   </div>
 </div>
 
@@ -53,11 +51,11 @@ sub: An overview of ported and to be ported methods and modules.
 
   $.getJSON('networkx_api.json', function(api) {
     $.each(api.modules.slice(1), function(i, m) {
-      genererate_output(m.replace('networkx', 'jsnx'));
+      genererate_output(m);
     });
 
     $.each(api.types, function(i, t) {
-      var m = t[0].replace('networkx', 'jsnx');
+      var m = t[0];
       var n = t[1].replace('NetworkX', 'JSNetworkX');
       var e = exists(m, n);
       var ele = $('<div />', {
@@ -72,7 +70,7 @@ sub: An overview of ported and to be ported methods and modules.
       }
     });
     $.each(api.functions, function(i, t) {
-      var m = t[0].replace('networkx', 'jsnx');
+      var m = t[0];
       var e = exists(m, t[1]);
       var ele = $('<div />', {
         'class': 'exec' + (e ? ' implemented' : ''),
