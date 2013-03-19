@@ -69,7 +69,7 @@ if(jsnx.TESTING) {
  * @return {boolean}
  */
 jsnx.helper.isIterator = function(obj) {
-    return obj instanceof goog.iter.Iterator || goog.isFunction(obj.__iterator__);
+    return goog.isDefAndNotNull(obj) && (obj instanceof goog.iter.Iterator || goog.isFunction(obj.__iterator__));
 };
 if(jsnx.TESTING) {
     goog.exportSymbol('jsnx.helper.isIterator', jsnx.helper.isIterator);
@@ -662,30 +662,51 @@ jsnx.helper.nested_chain = function(iterable, var_args) {
         return iterator;
     }
 
-    var child = null;
+    var stack_pointer = 0;
+    var stack_size = args.length;
+    var stack = [iterable];
 
     iterator.next = function() {
-        var result, next;
+      do {
         try {
-            while(!goog.isDef(result)) {
-                result = child.next();
+          var next_value, next_result;
+          do {
+            next_value = stack[stack_pointer].next();
+            if (goog.isDef(next_value)) {
+              next_result = args[stack_pointer](next_value);
             }
-        }
-        catch(e) {
-            while(!goog.isDef(next) || !goog.isDef(result)) {
-                next = iterable.next();
-                result = args[0](next);
-            }
+          }
+          while(!goog.isDef(next_value));
 
-            if(jsnx.helper.isIterator(result)) {
-                child = jsnx.helper.nested_chain.apply(null, goog.array.concat([result], goog.array.slice(args, 1)));
-                return iterator.next();
+          if (jsnx.helper.isIterator(next_result)) {
+            // anything more to call?
+            if (stack_pointer === stack_size - 1) {
+              return next_result;
+            }
+            // push on stack
+            stack.push(next_result);
+            stack_pointer += 1;
+          }
+          else if(goog.isDef(next_result)) {
+            return next_result;
+          }
+        }
+        catch(ex) {
+          if (ex !== goog.iter.StopIteration) {
+            throw ex;
+          }
+          else {
+            if (stack_pointer > 0) {
+              stack.pop();
+              stack_pointer -= 1;
             }
             else {
-                child = null;
+              throw ex;
             }
+          }
         }
-        return result;
+      }
+      while(true);
     };
 
     return iterator;
