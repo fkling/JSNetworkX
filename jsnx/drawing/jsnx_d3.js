@@ -381,6 +381,7 @@ jsnx.drawing.jsnx_d3.draw = function(G, config, opt_bind) {
             return config_['edge_style']['stroke-width'];
           };
         }
+        var label_offset = config_['edge_label_offset'];
 
     if(directed) { // don't rotate labels and draw curvy lines
         update_edge_position = function() {
@@ -398,15 +399,19 @@ jsnx.drawing.jsnx_d3.draw = function(G, config, opt_bind) {
 
                     offset_ = [offset_[0] * inv_scale, offset_[1] * inv_scale];
 
-                    $this.attr('transform', ['translate(',x1,',',y1,')', 'rotate(', angle,')'].join(''));
+                    $this.attr('transform', 
+                      ['translate(',x1,',',y1,')', 'rotate(', angle,')'].join('')
+                    );
 
                     var shift = strw(d) * inv_scale;
-                    $this.select('.line').attr('d', ['M', offset_[0], 0, 'L', offset_[0], -shift/2, 'L', dx - offset_[1] - 2*shift, -shift/2, 'L', dx - offset_[1] - 2*shift, -shift, 'L', dx - offset_[1], 0, 'z'].join(' ')); 
+                    var arrow_start_point = dx - offset_[1] - 2*shift;
+                    var half_shift = shift/2;
+                    $this.select('.line').attr('d', ['M', offset_[0], 0, 'L', offset_[0], -half_shift, 'L', arrow_start_point, -half_shift, 'L', arrow_start_point,  -shift, 'L', dx - offset_[1], 0, 'z'].join(' ')); 
 
                     var scale = 1/inv_scale;
                     $this.select('text')
-                        .attr('x',  dx * scale / 2)
-                        .attr('y', -shift/2*scale)
+                        .attr('x',  (label_offset['x'] * scale) + offset_[0] + (dx*scale - offset_[0] - offset_[1]) / 2)
+                        .attr('y', -strw(d)/2 + -label_offset['y'] * scale)
                         .attr('transform', 'scale(' + inv_scale + ')');
                 }
             });
@@ -429,15 +434,17 @@ jsnx.drawing.jsnx_d3.draw = function(G, config, opt_bind) {
 
                     offset_ = [offset_[0] * inv_scale, offset_[1] * inv_scale];
 
+                    var scale = 1/inv_scale;
                     var shift = strw(d) * inv_scale;
+                    var flip = angle > 90 && angle < 279;
                     $this.attr('transform', ['translate(',x1,',',y1,')', 'rotate(', angle,')'].join(''));
                     $this.select('.line').attr('d', ['M', offset_[0], shift/4, 'L', offset_[0], -shift/4, 'L', dx - offset_[1], -shift/4, 'L', dx - offset_[1], shift/4, 'z'].join(' ')); 
                     if(config_['with_edge_labels']) {
                         $this.select('text')
-                          .attr('x', center * (1/inv_scale))
-                          .attr('y', 0)
+                        .attr('x',  ((flip ? 1 : -1) * label_offset['x'] * scale) + offset_[0] + (dx*scale - offset_[0] - offset_[1]) / 2)
+                        .attr('y', -strw(d)/4 + -label_offset['y'] * scale)
                           .attr('transform', 'scale(' + inv_scale + ')' + 
-                              (angle > 90 && angle < 279 ? 
+                              (flip ? 
                               'rotate(180,' +  center * (1/inv_scale) +',0)' : '')
                           );
                     }
@@ -1154,9 +1161,12 @@ jsnx.drawing.jsnx_d3.default_config_ = {
     'edge_label_attr': {},
     'edge_label_style': {
         'font-size': '0.8em',
-        'dominant-baseline': 'central',
         'text-anchor': 'middle',
         '-webkit-user-select': 'none'
+    },
+    'edge_label_offset': {
+      'x': 0,
+      'y': 0.5
     },
     'with_labels': false,
     'with_edge_labels': false,

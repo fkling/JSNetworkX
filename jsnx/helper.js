@@ -17,6 +17,10 @@ jsnx.helper.ArrayLike;
 
 /*jshint expr:false*/
 
+// exposes goog.iter.filter for easier processing of iterators in user code
+goog.exportSymbol('jsnx.filter', goog.iter.filter);
+
+
 /**
  * Returns an object, given an array of (key, value) tuples.
  *
@@ -210,6 +214,7 @@ jsnx.helper.map = function(sequence, callback, this_obj) {
         throw new TypeError();
     }
 };
+goog.exportSymbol('jsnx.map', jsnx.helper.map);
 if(jsnx.TESTING) {
     goog.exportSymbol('jsnx.helper.map', jsnx.helper.map);
 }
