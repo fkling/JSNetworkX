@@ -1,7 +1,7 @@
 {
   "name": "jsnetworkx",
-  "version": "0.0.1",
-  "description": "A port of the Pythong graph library NetworkX. For more info, visit http://networkx.github.com/.",
+  "version": "0.1",
+  "description": "A port of the Python graph library NetworkX. For more info, visit http://networkx.github.com/.",
   "keywords": [
     "graph",
     "science"

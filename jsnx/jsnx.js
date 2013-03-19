@@ -29,3 +29,9 @@ goog.require('jsnx.helper');
 goog.require('jsnx.classes');
 goog.require('jsnx.relabel');
 goog.require('jsnx.utils');
+
+/**
+ * @type {string}
+ * @export
+ */
+jsnx.version = '0.1';
