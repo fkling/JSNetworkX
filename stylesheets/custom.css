@@ -1,0 +1,57 @@
+legend label {
+  font-size: 21px;
+  line-height: 40px;
+}
+
+legend input[type=checkbox] {
+  vertical-align: 2px;
+  line-height: 40px;
+  font-size: 21px;
+}
+
+fieldset {
+  margin-top: 20px;
+}
+
+fieldset ul {
+  padding-left: 10px;
+}
+
+fieldset ul li label {
+  font-size: 16px;
+}
+
+
+fieldset ul li input {
+  vertical-align: 2px;
+}
+
+.loader {
+  display: none;
+}
+
+fieldset.download {
+  padding-top: 20px;
+  border-top: 1px solid #e5e5e5;
+}
+
+fieldset.download button {
+  padding: 10px 50px;
+  font-size: 21px;
+}
+
+#builder.loading .loader {
+  display: block;
+}
+
+#builder.loading ul {
+  display: none;
+}
+
+#builder.loading legend {
+  opacity: 0.8;
+}
+
+#builder.loading .download > div {
+  display: none;
+}

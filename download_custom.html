@@ -1,0 +1,56 @@
+---
+layout: main
+menu: Customize
+title: Custom download
+css: [custom]
+sub: Select the modules you want to include
+---
+
+<div class="row">
+  <div class="offset2 span8">
+    <form id="builder">
+      <fieldset>
+        <legend>Version</legend>
+        <label class="radio">
+          <input name="version" type="radio" checked value="master"> Latest
+        </label>
+        <label class="radio">
+          <input name="version" type="radio" value="v0.1"> v0.1
+        </label>
+      </fieldset>
+      <fieldset id="builder-algorithms">
+        <legend>
+          <label>
+            <input type="checkbox" name="all" value="algorithms">
+            Algorithms
+          </label>
+        </legend>
+        <div class="loader">Loading...</div>
+        <div class="row">
+          <div class="span4"><ul class="unstyled"></ul></div>
+          <div class="span4"><ul class="unstyled"></ul></div>
+        </div>
+      </fieldset>
+      <fieldset id="builder-generators">
+        <legend>
+          <label>
+            <input type="checkbox" name="all" value="generators">
+            Generators
+          </label>
+        </legend>
+        <div class="loader">Loading...</div>
+        <div class="row">
+          <div class="span4"><ul class="unstyled"></ul></div>
+          <div class="span4"><ul class="unstyled"></ul></div>
+        </div>
+      </fieldset>
+      <fieldset class="download">
+        <div class="text-center">
+          <button class="btn btn-success btn-large" type="button">Download</button>
+          <p><em><small>(This can take a while, please be patient)</small></em></p>
+        </div<
+      </fieldset>
+    </form>
+  </div>
+</div>
+<script src="javascripts/custom.js"></script>
