@@ -1,0 +1,120 @@
+---
+layout: main
+menu: Documentation
+title: Documentation
+css: [prettify]
+---
+
+<div class="row">
+  <div class="offset1 span10">
+    <section>
+    <p>A dedicated documentation for JSNetworkX does not exist yet, but we are 
+    working on it. Until then,
+    please have a look at the excellent <a href="http://networkx.github.com/documentation/latest/">NetworkX documentation</a>.
+    JSNetworkX uses (almost always) the same method names. A list of available
+    methods can be found on the <a href="api_progress.html">API progress page</a>.
+    </p>
+    <p>There are a couple of technical differences between the Python and JavaScript
+    API, which are explained below.
+    </p>
+    </section>
+    <section>
+      <h2>Python/JavaScript differences</h2>
+      JavaScript is not Python, therefore some of the more advanced features, such as generators or certain "magic methods" are not available. This is a list of the most significant differences.
+
+      <h3>Data types which can be nodes</h3>
+      <div class="alert alert-info">
+      <strong>Info</strong>
+      We are working on support for generic objects, which will lift the limitations
+      mentioned in this section.
+      </div>
+      <p>In Python, each <strong>hashable</strong> object can be a node. This 
+      holds true for JavaScript as well, to some degree. Since nodes are stored 
+      as property names of an object, all node values are essentially converted to strings.
+      </p>
+      <p>
+      This bears no problem for strings or numbers (with a caveat, mentioned in the next paragraph)
+      but each other type has to be handled with care. For example, the default 
+      string representation of any object is <code>"[object Object]"</code>,
+      which means that two different objects will map to the same node.<br>
+      If you want to use an object as a node, you have to override its 
+      <code>toString()</code> method.
+      </p>
+      <p>
+      Even more attention has to be paid when retrieving nodes from the graph. Since all nodes are converted to strings, only the string representation of the node can be returned. That means all number nodes ( <code>1</code> ) will be returned as numeric strings ( <code>"1"</code> ).
+      </p>
+      <p>
+      If the original value is required, it is advised to either add it as node attribute or maintain an external map.
+      </p>
+
+      <h3>Node access</h3>
+      <p>
+      In Python, one can simply access a node of a graph using <code>G[n]</code>.
+      Technically this is possible in JavaScript as well, but to keep the 
+      implementation simple, JSNetworkX does not support this access path. 
+      Instead, one has to use <code>G.get_node(n)</code>.
+      </p>
+
+      <h3>Iterators and Generators</h3>
+      <div class="alert alert-info">
+      <strong>Info</strong>
+      ECMAScript 6 will support <a href="http://wiki.ecmascript.org/doku.php?id=harmony:iterators">iterators</a> 
+      and <a href="http://wiki.ecmascript.org/doku.php?id=harmony:generators">generators</a>. We 
+      plan to implement them as soon as possible.
+      </div>
+      <p>
+      The official JavaScript standard (ECMAScript) does currently not support iterators.
+      Mozilla's JavaScript implementation provides them in version 1.7, but since
+      this is not supported by other browsers, it is not really usable. We use the
+      closure library's iterator implementation which is compatible to Mozilla's
+      implementation.
+      </p>
+      <p>
+      Each object which implements an <code>.__iterator__()</code> function which returns an object having a <code>.next()</code> method (can be the same object) can be used as iterator.<br>
+      Such an object is returned by every method which is supposed to return a generator and you can process them by using <code>jsnx.forEach</code> or <code>jsnx.toArray</code>, as shown in the example:
+      </p>
+      <pre class="prettyprint linenums">
+jsnx.forEach(G.nodes_iter(), function(node) {
+  console.log(node);
+});
+
+// jsnx.sentinelIterator wraps an iterator to return a sentinel value instead 
+// of throwing a StopIteraton expecption
+var gen = jsnx.SentinelIterator(G.nodes_iter(), null);
+var node;
+while((node = gen.next()) !== null) {
+  console.log(node);
+}
+</pre>
+
+      <h3> Keyword arguments</h3>
+      <p>
+      JavaScript only supports positional arguments. If a NetworkX method accepts a variable number of keyword arguments, a dictionary (object) has to be passed instead. So, <code>G.add_node('foo', data=42)</code> becomes <code>G.add_node('foo', {data: 42})</code>.
+      </p>
+
+      <h3>Optional arguments</h3>
+      <p>Some methods have one or more optional arguments. In Python one can simply use keyword arguments to pass the desired arguments. In JSNetworkX, optional arguments can be omitted, as long as the arguments are of different types and therefore distinguishable.
+      </p>
+
+      <p> For example, this is ok:</p>
+      <pre class="prettyprint linenums">
+// Python: G.edges(data=true)
+G.edges(true);
+</pre>
+      <p>but this is ambiguous:</p>
+      <pre class="prettyprint linenums">
+// Python: G.degree(weight='weight')
+G.degree('weight'); // get node with name 'weight' or is the weight attribute name 'weight' ?
+</pre>
+      <p>In this case we decided to interpret the argument as node name. To set the <em>weight</em> attribute name and to get all nodes, <em>null</em> or <em>undefined</em> has to be passed as first argument:
+      </p>
+      <pre class="prettyprint linenums">
+G.degree(null, 'weight');
+</pre>
+    </section>
+  </div>
+</div>
+<script src="javascripts/prettify.js"></script>
+<script>
+  window.prettyPrint && window.prettyPrint();
+</script>
