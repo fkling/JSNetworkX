@@ -1,6 +1,6 @@
 body {
   padding-top: 40px;
-  background-color: #fcfcfc !important;
+  background-color: #fbfbfb !important;
 }
 
 .center {
@@ -42,13 +42,14 @@ header .lead {
 }
 
 .navbar-inner {
-  background: #fff !important;
+  background: #fbfbfb !important;
   -webkit-box-shadow: none !important;
   -moz-box-shadow: none !important;
   box-shadow: none !important;
 }
 
 .navbar.affix .navbar-inner {
+  background: #fff !important;
   -webkit-box-shadow: 0 1px 10px rgba(0,0,0,0.1) !important;
   -moz-box-shadow: 0 1px 10px rgba(0,0,0,0.1) !important;
   box-shadow: 0 1px 10px rgba(0,0,0,0.1) !important;
