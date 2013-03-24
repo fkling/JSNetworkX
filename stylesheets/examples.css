@@ -1,0 +1,36 @@
+#canvas {
+  position: fixed;
+  top: 50%;
+  margin-top: -200px;
+  height: 400px;
+  border: 1px solid #aaa;
+  border-radius: 3px;
+  -moz-border-radius: 3px;
+  -webkit-border-radius: 3px;
+  width: 460px;
+}
+
+#canvas .description {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background-color: #EEE;
+  border-top: 1px solid #999;
+  border-bottom-left-radius: inherit;
+  border-bottom-right-radius: inherit;
+  padding: 5px;
+}
+
+#canvas.affix {
+  position: fixed;
+  top: 80px;
+}
+
+h4 {
+  margin-top: 40px;
+}
+
+.example.active pre {
+  border: 1px solid #333;
+}
