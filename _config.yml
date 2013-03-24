@@ -2,10 +2,10 @@ auto: true
 menu:
   - name: Home
     url: index.html
-  - name: Getting Started
+  - name: Getting started
     url: getting_started.html
-  - name: Documentation
   - name: Examples
+  - name: Documentation
   - name: API progress
     url: api_progress.html
   - name: Customize

@@ -35,8 +35,8 @@
       jsnx.draw(G, $.extend({
         element: canvas,
         layout_attr: {
-          charge: -500,
-          linkDistance: 40,
+          charge: -300,
+          linkDistance: 20,
           gravity: 0.5
         },
         pan_zoom: {

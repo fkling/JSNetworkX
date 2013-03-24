@@ -18,28 +18,19 @@
       }
     }
 
-    // build algorithm list
-    var algorithms = [];
-    collect_modules(version.algorithms, [], algorithms);
-    algorithms.sort();
-    for (var i = 0, l = algorithms.length; i < l; i++) {
-      var fs = $('<li><label><input type="checkbox" name="algorithm" value="algorithms.' + algorithms[i] + '"> ' + algorithms[i] + '</label></li>')
-        .appendTo($('#builder-algorithms ul').get(i < Math.ceil(l/2) ? 0 : 1));
-      // build children here
-    }
+    $('fieldset.cat').each(function() {
+      var modules = [];
+      var name = $(this).data('name');
+      collect_modules(version[name], [], modules);
+      modules.sort();
+      for (var i = 0, l = modules.length; i < l; i++) {
+        var fs = $('<li><label><input type="checkbox" name="' + name + '" value="' + [name, modules[i]].join('.') + '"> ' + modules[i] + '</label></li>')
+          .appendTo($(this).find('ul').get(i < Math.ceil(l/2) ? 0 : 1));
+      }
+    });
 
-    // build generators list
-    var generators = [];
-    collect_modules(version.generators, [], generators);
-    algorithms.sort();
-    for (var i = 0, l = generators.length; i < l; i++) {
-      var fs = $('<li><label><input type="checkbox" name="generator" value="generators.' + generators[i] + '"> ' + generators[i] + '</label></li>')
-        .appendTo($('#builder-generators ul').get(i < Math.ceil(l/2) ? 0 : 1));
-      // build children here
-    }
     $('#builder').removeClass('loading');
-    $('#builder-algorithms, #builder-generators').find('legend input')
-      .prop('checked', true).change();
+    $('.cat').find('legend input').prop('checked', true).change();
   }
 
   $('input[name="version"]').change(function() {
@@ -66,7 +57,7 @@
     }
   }).triggerHandler('change');
 
-  $('#builder-algorithms, #builder-generators').on('change', 'input', function() {
+  $('.cat').on('change', 'input', function() {
     if (this.name === 'all') {
       $(this).closest('fieldset')
         .find('input').not(this)
@@ -85,30 +76,19 @@
     // get all selected modules
     // first check categories
     var modules = [];
-    var algorithms = $('#builder-algorithms input[name=all]').prop('checked');
-    var generators = $('#builder-generators input[name=all]').prop('checked');
-
-    if (algorithms) {
-      modules.push('algorithms');
-    }
-    else {
-      $('#builder-algorithms ul input').filter(function() {
-        return this.checked;
-      }).each(function() {
-        modules.push(this.value);
-      });
-    }
-
-    if (generators) {
-      modules.push('generators');
-    }
-    else {
-      $('#builder-generators ul input').filter(function() {
-        return this.checked;
-      }).each(function() {
-        modules.push(this.value);
-      });
-    }
+    $('.cat').each(function() {
+      var all = $(this).find('input[name=all]').prop('checked');
+      if (all) {
+        modules.push($(this).data('name'));
+      }
+      else {
+        $(this).find('ul input').filter(function() {
+          return this.checked;
+        }).each(function() {
+          modules.push(this.value);
+        });
+      }
+    });
 
     // make request
     var version = $('#builder input[name=version]').val();

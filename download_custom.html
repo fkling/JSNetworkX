@@ -3,11 +3,16 @@ layout: main
 menu: Customize
 title: Custom download
 css: [custom]
-sub: Select the modules you want to include
 ---
 
 <div class="row">
   <div class="offset2 span8">
+    <section>
+    <p>You can choose here which modules you want to include in your JSNetworkX
+    build. For more information about the available methods, have a look at the
+    <a href="api_progress.html">API progress</a> and <a href="reference.html">
+      reference</a> pages.
+    </p>
     <form id="builder">
       <fieldset>
         <legend>Version</legend>
@@ -18,7 +23,7 @@ sub: Select the modules you want to include
           <input name="version" type="radio" value="v0.1"> v0.1
         </label>
       </fieldset>
-      <fieldset id="builder-algorithms">
+      <fieldset class="cat" data-name="algorithms">
         <legend>
           <label>
             <input type="checkbox" name="all" value="algorithms">
@@ -31,7 +36,7 @@ sub: Select the modules you want to include
           <div class="span4"><ul class="unstyled"></ul></div>
         </div>
       </fieldset>
-      <fieldset id="builder-generators">
+      <fieldset class="cat" data-name="generators">
         <legend>
           <label>
             <input type="checkbox" name="all" value="generators">
@@ -44,13 +49,22 @@ sub: Select the modules you want to include
           <div class="span4"><ul class="unstyled"></ul></div>
         </div>
       </fieldset>
+      <fieldset class="cat" data-name="drawing">
+        <legend>
+          <label>
+            <input type="checkbox" name="all" value="drawing">
+            Drawing
+          </label>
+        </legend>
+      </fieldset>
       <fieldset class="download">
         <div class="text-center">
           <button class="btn btn-success btn-large" type="button">Download</button>
           <p><em><small>(This can take a while, please be patient)</small></em></p>
-        </div<
+        </div>
       </fieldset>
     </form>
+    </section>
   </div>
 </div>
 <script src="javascripts/custom.js"></script>

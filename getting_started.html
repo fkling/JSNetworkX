@@ -1,18 +1,17 @@
 ---
 layout: main
-menu: Getting Started
-title: "Getting Started"
-sub: "Your first steps with JSNetworkX"
+menu: Getting started
+title: Getting started
 css: [prettify, getting_started]
 ---
 
 <div class="row">
   <div class="span3 sidebar">
-    <ul class="nav nav-list sidenav" data-spy="affix" data-offset-top="240">
+    <ul class="nav nav-list sidenav" data-spy="affix" data-offset-top="140">
       <li><a href="#install">Installation</a></li>
       <li><a href="#create">Create a graph</a></li>
       <li><a href="#nodes_edges">Nodes and edges</a></li>
-      <li><a href="#data">Node and edge data</a></li>
+      <li><a href="#attributes">Attributes</a></li>
       <li><a href="#analysis">Analyzing graphs</a></li>
       <li><a href="#drawing">Drawing</a></li>
     </ul>
@@ -188,28 +187,29 @@ console.log(G.edges());
 // shows []
 </pre>
 </section>
-<section id="data">
-  <h2 class="page-header">Node and edge data</h2>
-  <p>A great feature of NetworkX is the possibility to assign any data to nodes
-  and edges and of course JSNetworkX allows you to do this too.</p>
+<section id="attributes">
+  <h2 class="page-header">Node and edge attributes</h2>
+  <p>A great feature of NetworkX is the possibility to assign arbitrary attributes 
+  to nodes and edges and of course JSNetworkX allows you to do this too.</p>
 
   <h4>New nodes, edges</h4>
   <p><code>G.add_node</code>
-  accepts an object as second argument. This will be the node's data. Similarly, 
-  <code>G.add_nodes_from</code> accepts a list of <strong>2-tuples</strong>, 
-  where the first element is the node, and the second element is a data object.
-  It also accepts an object as second argument. Data passed through this object 
-  will be added to all nodes.
+  accepts an object as second argument. Its properties will be the node's 
+  attributes. Similarly, <code>G.add_nodes_from</code> accepts a list of 
+  <strong>2-tuples</strong>, where the first element is the node, and the second 
+  element is a data object.  It also accepts an object as second argument. 
+  Attributes passed through this object will be added to all nodes.
   </p>
 <pre class="prettyprint linenums">
 var G = jsnx.Graph();
-// Adds a new node, 10, with the data {some_data: 42}
+// Adds a new node, 10, with the attribute {some_data: 42}
 G.add_node(10, {some_data: 42});
 
-// Adds the nodes, "foo" and "bar", with individual data and data for both nodes
+// Adds the nodes, "foo" and "bar", with individual attributes and 
+// attributes for both nodes
 G.add_nodes_from([['foo', {size: 5}], ['bar', {size: 10}]], {color: 'blue'});
 
-// Passing `true` to `G.nodes` changes the return value to include the data for each node
+// Passing `true` to `G.nodes` changes the return value to include the attributes for each node
 console.log(G.nodes(true));
 // shows
 // [
@@ -220,10 +220,10 @@ console.log(G.nodes(true));
 </pre>
 <p>It works the same for edges: <code>G.add_edge</code> accepts an object as third
 argument and <code>G.add_edges_from</code> a list of 3-tuples, where the first two
-elements are nodes and the third one is a data object.</p>
+elements are nodes and the third one is an attributes object.</p>
 
 <h4>Existing nodes, edges</h4>
-<p> You have two ways to set data on <em>existing</em> nodes and edges: 
+<p> You have two ways to set attributes on <em>existing</em> nodes and edges: 
 Either just add the node (edge) again, the passed data will be <strong>merged</strong>,
 or access the nodes (edges) via the graphs <code>G.node</code> (<code>G.adj</code>)
 properties.
@@ -443,6 +443,5 @@ the expectation that this will allow us to draw larger graphs reasonably well.
 <script src="javascripts/prettify.js"></script>
 <script>
   window.prettyPrint && window.prettyPrint();
-  $('body').scrollspy();
 </script>
 <script src="javascripts/demo.js"></script>

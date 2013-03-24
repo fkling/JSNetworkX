@@ -1,0 +1,46 @@
+#canvas.affix {
+  top: 70px;
+  position: fixed;
+}
+#canvas {
+
+  height: 400px;
+  border: 1px solid #999;
+  border-radius: 5px;
+  position: relative;
+}
+
+#canvas .description {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background-color: #EEE;
+  border-top: 1px solid #999;
+  border-bottom-left-radius: inherit;
+  border-bottom-right-radius: inherit;
+  padding: 5px;
+}
+
+#canvas.affix {
+  width: 378px;
+}
+
+@media (min-width: 1200px) {
+  #canvas.affix {
+    width: 468px;
+  }
+}
+
+@media (max-width: 979px) and (min-width: 768px) {
+  #canvas.affix {
+    width: 288px;
+  }
+}
+
+@media (max-width: 767px) {
+  #canvas.affix {
+    position: relative;
+    width: 100%;
+  }
+}

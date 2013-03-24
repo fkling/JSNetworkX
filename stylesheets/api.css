@@ -1,7 +1,14 @@
-#api {
-  margin-top: 40px;
+section {
+  margin-top: 30px;
 }
-.sidebar h4 {
+.loader {
+  display: none;
+}
+
+.loading .loader {
+  display: block;
+}
+.sidebar h4:first-child {
   margin-top: 0;
 }
 

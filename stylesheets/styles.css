@@ -1,13 +1,30 @@
+body {
+  padding-top: 40px;
+  background-color: #fcfcfc !important;
+}
+
 .center {
   text-align: center;
 }
 
 header {
-  margin-top: 40px;
   position: relative;
   padding: 40px 0px;
-  color: #EFEFEF;
-  background-color: #111;
+  color: #f7f7f7;
+  background-color: #202020;
+  border-bottom: 1px solid #dfdfdf;
+}
+
+body.sub header {
+  color: #555;
+  padding: 20px 0px;
+  background-color: #fff;
+}
+
+body.sub header h1 {
+  font-size: 40px;
+  line-height: 40px;
+  font-weight: normal;
 }
 
 header h1 {
@@ -24,12 +41,37 @@ header .lead {
   letter-spacing: 0.1em;
 }
 
-.btn.download {
-  font-size: 24px;
-  padding: 10px 20px;
+.navbar-inner {
+  background: #fff !important;
+  -webkit-box-shadow: none !important;
+  -moz-box-shadow: none !important;
+  box-shadow: none !important;
+}
+
+.navbar.affix .navbar-inner {
+  -webkit-box-shadow: 0 1px 10px rgba(0,0,0,0.1) !important;
+  -moz-box-shadow: 0 1px 10px rgba(0,0,0,0.1) !important;
+  box-shadow: 0 1px 10px rgba(0,0,0,0.1) !important;
+}
+
+.navbar .nav .active a {
+  color: #333 !important;
+  text-decoration: none;
+  background-color: transparent !important;
+  font-weight: bold;
+  -webkit-box-shadow: none !important;
+  -moz-box-shadow: none !important;
+  box-shadow: none !important;
+}
+
+.download {
   margin: 10px 0px;
 }
 
+.download .btn {
+  padding: 15px 20px;
+  font-size: 24px;
+}
 
 #header-chart {
   position: absolute;
@@ -40,7 +82,7 @@ header .lead {
   margin-left:-20px;
 }
 
-#canvas.affix, .sidenav.affix {
+.sidenav.affix {
   top: 70px;
   position: fixed;
 }
@@ -49,28 +91,6 @@ header .lead {
   width: 190px;
 }
 
-#canvas {
-  height: 400px;
-  border: 1px solid #999;
-  border-radius: 5px;
-  position: relative;
-}
-
-#canvas .description {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  background-color: #EEE;
-  border-top: 1px solid #999;
-  border-bottom-left-radius: inherit;
-  border-bottom-right-radius: inherit;
-  padding: 5px;
-}
-
-#canvas.affix {
-  width: 378px;
-}
 
 section {
   padding-top: 30px;
@@ -80,13 +100,21 @@ section {
   padding-top: 70px;
 }
 
+.sidebar .nav-list li.active a {
+  color: #fff;
+  background-color: #262626;
+  border-radius: 3px;
+  -moz-border-radius: 3px;
+  -webkit-border-radius: 3px;
+}
+
+.sidebar .nav-list li a {
+  color: #555;
+}
+
 @media (min-width: 1200px) {
   .sidenav.affix {
     width: 240px;
-  }
-
-  #canvas.affix {
-    width: 468px;
   }
 }
 
@@ -97,18 +125,14 @@ section {
   header {
     margin-top: -20px;
   }
-
-  #canvas.affix {
-    width: 288px;
-  }
 }
 
 @media (max-width: 767px) {
   header {
-    margin-top: -20px;
     padding: 40px 20px;
     margin-left: -20px;
     margin-right: -20px;
+    margin-top: -20px;
   }
 
   .sidenav.affix {
@@ -116,8 +140,7 @@ section {
     width: 100%;
   }
 
-  #canvas.affix {
-    position: relative;
-    width: 100%;
+  .navbar p.navbar-text {
+    display: none;
   }
 }

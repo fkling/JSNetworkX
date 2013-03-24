@@ -36,14 +36,15 @@
 
   jsnx.draw(G, {element: '#header-chart',
             layout_attr: {
-              charge: -180,
-              linkDistance: 30
+              charge: -100,
+              linkDistance: 20,
+              gravity: 0.3
             },
             pan_zoom: {
               enabled: false
             },
             node_attr: {
-              r: 6
+              r: 4
             },
             node_style: {
               fill: function(d) {

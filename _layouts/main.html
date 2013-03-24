@@ -5,8 +5,8 @@
     <meta http-equiv="X-UA-Compatible" content="chrome=1">
     <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
     <title>{% if page.title %} {{ page.title }} | {%endif%}JSNetworkX</title>
-    <link href="stylesheets/styles.css" rel="stylesheet" media="screen">
     <link href="stylesheets/bootstrap.min.css" rel="stylesheet" media="screen">
+    <link href="stylesheets/styles.css" rel="stylesheet" media="screen">
     <link href="stylesheets/bootstrap-responsive.min.css" rel="stylesheet">
     <!--[if lt IE 9]>
     <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
@@ -20,9 +20,8 @@
       <link href="stylesheets/{{ item }}.css" rel="stylesheet">
     {% endfor %}
   </head>
-  <body>
-    <a href="https://github.com/fkling/JSNetworkX"><img style="z-index: 10000;position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_orange_ff7600.png" alt="Fork me on GitHub"></a>
-    <div class="navbar navbar-inverse navbar-fixed-top">
+  <body class="{% if page.menu == 'Home' %}home{%else%}sub{%endif%}" data-spy="scroll" data-target=".sidebar">
+    <div class="navbar navbar-fixed-top" data-spy="affix" data-offset-top="1">
       <div class="navbar-inner">
         <div class="container">
           <ul class="nav">
@@ -32,6 +31,11 @@
               </li>
             {% endfor %}
           </ul>
+          <p class="navbar-text pull-right">
+            <a href="https://github.com/fkling/JSNetworkX">
+              Fork me on <strong>GitHub</strong>
+            </a>
+          </p>
         </div>
       </div>
     </div>
@@ -39,7 +43,7 @@
       <div id="header-chart"></div>
       <div class="container {% if page.menu == 'Home' %}center{% endif %}">
         <h1>{% if page.title %} {{ page.title }} {% else %}JSNetworkX{% endif %}</h1>
-        <p class="lead">{{ page.sub }}</p>
+        {% if page.sub %}<p class="lead">{{ page.sub }}</p>{% endif %}
       </div>
     </header>
     <div class="container">
@@ -48,7 +52,6 @@
     {% if page.menu != 'Home' %}
     <script src="javascripts/graph.js"></script>
     {% endif %}
-    </script>
     <!-- Piwik  
     <script type="text/javascript">
       var pkBaseURL = (("https:" == document.location.protocol) ? "https://piwik.reblaus-kleinkunst.de/" : "http://piwik.reblaus-kleinkunst.de/");
