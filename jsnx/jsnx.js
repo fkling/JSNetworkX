@@ -34,4 +34,4 @@ goog.require('jsnx.utils');
  * @type {string}
  * @export
  */
-jsnx.version = '0.1';
+jsnx.version = '0.1.1';
