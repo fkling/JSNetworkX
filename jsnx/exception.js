@@ -107,3 +107,14 @@ jsnx.exception.JSNetworkXUnbounded = function(message) {
 };
 goog.inherits(jsnx.exception.JSNetworkXUnbounded, jsnx.exception.JSNetworkXAlgorithmError);
 goog.exportSymbol('jsnx.JSNetworkXUnbounded', jsnx.exception.JSNetworkXUnbounded);
+
+/*** Simulate Python error classes ***/
+/**
+ * @constructor
+ */
+jsnx.exception.KeyError = function(message) {
+  this.name = 'KeyError';
+};
+jsnx.exception.KeyError.prototype = new Error();
+jsnx.exception.KeyError.prototype.constructor = jsnx.exception.KeyError;
+goog.exportSymbol('jsnx.KeyError', jsnx.exception.KeyError);
