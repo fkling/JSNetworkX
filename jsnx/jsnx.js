@@ -24,12 +24,6 @@ goog.provide('jsnx');
 /**@define {boolean}*/
 jsnx.TESTING = true;
 
-goog.require('jsnx.exception');
-goog.require('jsnx.helper');
-goog.require('jsnx.classes');
-goog.require('jsnx.relabel');
-goog.require('jsnx.utils');
-
 /**
  * @type {string}
  * @export

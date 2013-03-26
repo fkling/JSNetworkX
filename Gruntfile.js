@@ -4,7 +4,15 @@
 var path = require('path');
 
 var namespaces = {};
-namespaces.base = ['jsnx'];
+namespaces.base = [
+  'jsnx',
+  'jsnx.exception',
+  'jsnx.helper',
+  'jsnx.classes',
+  'jsnx.contrib',
+  'jsnx.relabel',
+  'jsnx.utils'
+];
 namespaces.node = namespaces.base.concat('jsnx.algorithms', 'jsnx.generators');
 namespaces.all = namespaces.node.concat('jsnx.drawing');
 
