@@ -26,7 +26,7 @@ css: [prettify, getting_started]
 &lt;script src="jsnetworkx.js&gt;&lt;/script&gt;
 </pre>
 <p>
-There are several <a href="https://github.com/fkling/JSNetworkX/blob/master/dist/">other version</a> for you to choose from. These
+There are several <a href="https://github.com/fkling/JSNetworkX/blob/master/dist/">other versions</a> for you to choose from. These
 are:</p>
 <ul>
   <li>
@@ -45,12 +45,12 @@ are:</p>
 algorithms explicitly, some might be included due to internal dependencies.
 </div>
 
-<p>You can even <a href="https://github.com/fkling/JSNetworkX#how-to-build">build your own version</a> and decide which modules to include.</p>
+<p>You can even <a href="download_custom.html">build your own version</a> and decide which modules to include.</p>
 
 <p>
 If you want to <a href="https://github.com/fkling/JSNetworkX/wiki/Drawing-graphs">visualize graphs</a>, 
 you have to include <a href="http://d3js.org/">D3.js</a> as well.<br>
-<span class="label label-important">Important</span> It seems that <a href="https://github.com/mbostock/d3/tree/v2.9.3">d3 version 2.9.3</a> works most reliably if you want to use the force layout and be able to drag nodes and pan the canvas.
+<span class="label label-important">Important</span> It seems that <a href="https://github.com/mbostock/d3/tree/v2.9.3">D3 version 2.9.3</a> works most reliably if you want to use the force layout and be able to drag nodes and pan the canvas.
 </p>
 
 <h3>Node.js</h3>
@@ -70,7 +70,7 @@ var jsnx = require('jsnetworkx');
 </section>
 <section id="create">
 <h2 class="page-header">Create a graph</h2>
-  <p><em>If you are already familiar with NetworkX, than most of the following 
+  <p><em>If you are already familiar with NetworkX, then most of the following 
   information will already be familiar to you. Most (if not all) method and function names are the same as in NetworkX.</em></p>
 
 <p>Once you included JSNetworkX you can start working with graphs. If you are 
@@ -115,7 +115,7 @@ structure of the graph.
 <section id="nodes_edges">
   <h2 class="page-header">Nodes and edges</h2>
 
-  <p>Once we obtained a graph, we want to modify it, by adding or removing nodes and edges, or access node and edge information.</p>
+  <p>Once you obtained a graph, you can modify it, by adding or removing nodes and edges, or access node and edge information.</p>
 
   <h4>Adding and removing nodes</h4>
   <p>Single nodes can be added with <code>G.add_node</code> and a collection 
@@ -131,8 +131,8 @@ G.add_nodes_from([3, 5, 7, 11]);
 console.log(G.nodes());
 // shows ["1", "3", "5", "7", "11"]
 </pre>
-<p><code>G.nodes</code> returns an array nodes, which shows us that The graph 
-has now four nodes, namely 1, 3, 5 and 7.
+<p><code>G.nodes</code> returns an array nodes, which shows us that the graph 
+now has four nodes, namely 1, 3, 5 and 7.
 </p>
 <div class="alert alert-block alert-warning">
   <h4>Node data type: String</h4>
@@ -243,7 +243,7 @@ console.log(G.edges(true));
 </pre>
 
 <div class="alert"><strong>Warning</strong> 
-  You should directly modify the <code>G.nodes</code> or <code>G.adj</code> 
+  You should <strong>not</strong> directly modify the <code>G.nodes</code> or <code>G.adj</code> 
   properties, since this can lead to inconsistency within the graph.
 </div>
 <div class="alert alert-error">
@@ -336,8 +336,8 @@ jsnx.draw(G, {
   <p>You already have seen some examples of how to draw graphs. Here is a more
   detailed introduction.</p>
 
-  <p>JSNetworkX uses <a href="http://d3js.org/">d3.js</a> to draw graphs as SVG.
-  d3 is a very powerful library to bind data to DOM elements and provides many useful
+  <p>JSNetworkX uses <a href="http://d3js.org/">D3.js</a> to draw graphs as SVG.
+  D3 is a very powerful library to bind data to DOM elements and provides many useful
   methods for data visualization. You are encouraged to learn more about it to 
   get the most out of drawing graphs.  JSNetworkX takes care of setting up the 
   connections between the graph, the layout and the SVG elements, and lets you 
@@ -379,13 +379,13 @@ jsnx.draw(G, options [, update]);
  The options are explained in greater detail in the next section.
  </p>
  <h4>Data binding and styling</h4>
- <p>As mentioned earlier, d3's main feature is the <a href="http://mbostock.github.com/d3/tutorial/circle.html">binding of data to DOM elements</a>.
+ <p>As mentioned earlier, D3's main feature is the <a href="http://mbostock.github.com/d3/tutorial/circle.html">binding of data to DOM elements</a>.
  This is also the foundation for the graph visualization: Each SVG element
  representing a node or edge has an object bound to it, with various information.
  <br>
  By using a function as one of the style or attribute values, you will have access to that information,
  because internally, the library just passes the values along to
- d3's <a href="https://github.com/mbostock/d3/wiki/Selections#wiki-style"><code>.style</code> and</a>
+ D3's <a href="https://github.com/mbostock/d3/wiki/Selections#wiki-style"><code>.style</code> and</a>
  <a href="https://github.com/mbostock/d3/wiki/Selections#wiki-attr"><code>.attr</code> methods</a>.
  </p>
  <p>The data object bound to an element for a node has the following properties:</p>

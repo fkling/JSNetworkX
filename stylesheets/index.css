@@ -3,7 +3,7 @@
   position: fixed;
 }
 #canvas {
-
+  background-color: white;
   height: 400px;
   border: 1px solid #999;
   border-radius: 5px;
@@ -11,6 +11,7 @@
 }
 
 #canvas .description {
+  color: #777;
   position: absolute;
   bottom: 0;
   left: 0;
@@ -40,6 +41,8 @@
 
 @media (max-width: 767px) {
   #canvas.affix {
+    top: 0;
+    margin-bottom: 10px;
     position: relative;
     width: 100%;
   }

@@ -79,8 +79,8 @@ jsnx.forEach(G.nodes_iter(), function(node) {
 });
 
 // jsnx.sentinelIterator wraps an iterator to return a sentinel value instead 
-// of throwing a StopIteraton expecption
-var gen = jsnx.SentinelIterator(G.nodes_iter(), null);
+// of throwing a StopIteraton exception
+var gen = jsnx.sentinelIterator(G.nodes_iter(), null);
 var node;
 while((node = gen.next()) !== null) {
   console.log(node);
@@ -96,7 +96,7 @@ while((node = gen.next()) !== null) {
       <p>Some methods have one or more optional arguments. In Python one can simply use keyword arguments to pass the desired arguments. In JSNetworkX, optional arguments can be omitted, as long as the arguments are of different types and therefore distinguishable.
       </p>
 
-      <p> For example, this is ok:</p>
+      <p> For example, this is OK:</p>
       <pre class="prettyprint linenums">
 // Python: G.edges(data=true)
 G.edges(true);

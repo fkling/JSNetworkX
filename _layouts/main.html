@@ -21,34 +21,43 @@
     {% endfor %}
   </head>
   <body class="{% if page.menu == 'Home' %}home{%else%}sub{%endif%}" data-spy="scroll" data-target=".sidebar">
-    <div class="navbar navbar-fixed-top" data-spy="affix" data-offset-top="1">
-      <div class="navbar-inner">
-        <div class="container">
-          <ul class="nav">
-            {% for item in site.menu %}
+    <div id="wrap">
+      <div class="navbar navbar-fixed-top" data-spy="affix" data-offset-top="1">
+        <div class="navbar-inner">
+          <div class="container">
+            <ul class="nav">
+              {% for item in site.menu %}
               <li class="{%if page.menu contains item.name %} active{% endif %}">
-                <a  href="{%if item.url %}{{item.url}}{%else%}{{item.name | downcase}}.html{%endif%}">{{ item.name }}</a>
+              <a  href="{%if item.url %}{{item.url}}{%else%}{{item.name | downcase}}.html{%endif%}">{{ item.name }}</a>
               </li>
-            {% endfor %}
-          </ul>
-          <p class="navbar-text pull-right">
+              {% endfor %}
+            </ul>
+            <p class="navbar-text pull-right">
             <a href="https://github.com/fkling/JSNetworkX">
               Fork me on <strong>GitHub</strong>
             </a>
-          </p>
+            </p>
+          </div>
         </div>
       </div>
-    </div>
-    <header id="overview">
+      <div id="header">
       <div id="header-chart"></div>
-      <div class="container {% if page.menu == 'Home' %}center{% endif %}">
+      <div class="container {% if page.menu == 'Home' %}text-center{% endif %}">
         <h1>{% if page.title %} {{ page.title }} {% else %}JSNetworkX{% endif %}</h1>
         {% if page.sub %}<p class="lead">{{ page.sub }}</p>{% endif %}
       </div>
-    </header>
-    <div class="container">
-      {{ content }}
+      </div>
+      <div class="container">
+        {{ content }}
+      </div>
+      <div id="push"></div>
     </div>
+      <div id="footer">
+        <div class="container">
+          <p class="muted credit text-center">JSNetworkX is developed and maintained by <a href="http://felix-kling.de">Felix Kling</a> || <a href="mailto:jsnetworkx@felix-kling.de">jsnetworkx@felix-kling.de</a> || <a href="https://github.com/fkling/JSNetworkX">GitHub</a>
+          </p>
+        </div>
+      </div>
     {% if page.menu != 'Home' %}
     <script src="javascripts/graph.js"></script>
     {% endif %}
