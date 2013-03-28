@@ -19,3 +19,4 @@ exclude:
   - node_modules
   - examples
   - jsnx
+  - jsnetworkx-test.js
