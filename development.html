@@ -1,0 +1,93 @@
+---
+layout: main
+menu: Development
+title: Development
+css: [prettify]
+---
+
+<div class="row">
+  <div class="offset1 span10">
+    <section>
+    <p>JSNetworkX is an ambitious project and there is still a lot of work to 
+    be done. <a href="api_progress.html">Only a small percentage of the NetworkX has been ported yet</a> and 
+    reaching feature completeness is one of the top priorities. However, there
+    are a couple of important architectural issues which are being worked on:
+    </p>
+    <ul>
+      <li>
+        <div><strong>Generic node support</strong> <em>(in progress)</em></div>
+        <p>Python can support any hashable data type as node value. The current
+        implementation in JavaScript converts every value to a string, which
+        is especially annoying when retrieving the nodes back again.</p>
+        <p>Support for generic node values will be achieved through a forward 
+        compatible implementation of 
+        <a href="http://wiki.ecmascript.org/doku.php?id=harmony:simple_maps_and_sets">ES6 maps</a>.
+        This implementation will differ from Python in that it will treat objects
+        as generally hashable (by assigning a unique identifier). Arrays will be considered
+        as unhashable. JSNetworkX will provide a Python <em>tuple</em> 
+        compatible type for convenience.
+        </p>
+      </li>
+      <li>
+      <div><strong>Better and more flexible drawing API</strong> <em>(in progress)</em> </div>
+      <p>JSNetworkX currently only supports drawing graphs as SVG with <a href="http://d3js.org/">D3.js</a>.
+      While changes to the graph update the visualization, it is not possible
+      to bind the same graph to multiple visualizations or change options (such
+      as the layout or node/edge styles) afterwards. The whole code is more or
+      less sticked together.</p>
+      <p>The new drawing API will introduce a proper inheritance model which
+      will simplify the extension to support different visualization methods, such
+      as WebGL (which is being worked upon as well, with <a href="http://mrdoob.github.com/three.js/">three.js</a>).
+      It also allows to changes to visualization after it was created.
+      Important design goals for the new API and implementations are:
+      </p>
+      <ul>
+        <li>Works "out of the box".</li>
+        <li>Visualizations should be highly customizable, i.e. the should allow access to the underlying technology (SVG, WebGL) if desired.</li>
+        <li>The interface should be as homogeneous as possible across different implementations/technologies.</li>
+      </ul>
+      </li>
+      <li>
+        <div>
+          <strong>Automatic generation of documentation/reference</strong>
+          <p>There is currently no easily browse-able documentation available.
+          While the API that JSNetworkX currently implements is kept closely to 
+          the original API and therefore the <a href="http://networkx.github.com/documentation/latest/reference/index.html">NetworkX documentation</a>
+          can be use, <a href="documentation.html">are some differences</a> and 
+          future changes might introduce even more differences.
+          </p>
+          <p>The source code is fully documented and contains the same information
+          as the original Python code, so generating accessible documentation
+          with <a href="http://usejsdoc.org/">JSDoc</a> is possible.
+          
+        </div>
+      </li>
+      <li>
+        <div><strong>Explicit Node.js support</strong></div>
+        <p>JSNetworkX was started with the intention to simplify the visualization
+        of graph data in the browser. Some NetworkX methods make use of functionalities
+        typically not found in browser. However, Node.js is becoming increasingly
+        popular and some of these functionalities are available in Node.js (such as file system
+        support).</p>
+        <p>Thanks to the Google closure compiler, this is easy to achieve. In 
+        ADVANCED_OPTIMIZATIONS mode, the compiler removes unreachable code, so 
+        setting a flag indicating a Node.js build (or a non-Node.js build)  would 
+        remove the Node.js-specific code from the final output.
+        </p>
+      </li>
+      <li>
+        <div><strong>Support long running processes</strong></div>
+        <p>Complex computations which require long running processes usually don't
+        pose any problems on the server. In the browser though, long running processes
+        will freeze the page.</p>
+        <p>The typical approach to this problem is to provide some kind of callback
+        API for the calling code and perform the computation asynchronously. I
+        believe this is the right approach here as well and try to find a solution
+        which allows any algorithmic method to be easily converted to work 
+        asynchronously.
+        </p>
+      </li>
+    </ul>
+    </section>
+  </div>
+</div>
