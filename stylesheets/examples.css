@@ -1,8 +1,7 @@
 #canvas {
-  position: fixed;
-  top: 50%;
-  margin-top: -200px;
-  height: 400px;
+  position: relative;
+  height: 200px;
+  margin-top: 80px;
   border: 1px solid #aaa;
   border-radius: 3px;
   -moz-border-radius: 3px;
@@ -22,15 +21,28 @@
   padding: 5px;
 }
 
-#canvas.affix {
-  position: fixed;
-  top: 80px;
-}
-
-h4 {
-  margin-top: 40px;
+.example {
+  padding-top: 40px;
 }
 
 .example.active pre {
   border: 1px solid #333;
+}
+
+@media (min-width: 1200px) {
+  #canvas {
+    width: 468px;
+  }
+}
+
+@media (max-width: 979px) and (min-width: 768px) {
+  #canvas {
+    width: 288px;
+  }
+}
+
+@media (max-width: 767px) {
+  #canvas {
+    display: none;
+  }
 }
