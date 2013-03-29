@@ -93,14 +93,26 @@
     // make request
     var version = $('#builder input[name=version]').val();
     version = version === 'master' ? 'latest' : version;
+    var name = 'jQuery_iframe_' + jQuery.now();
+    var iframe;
+    var form;
 
-    var iframe = document.createElement('iframe');
-    iframe.onload = function() {
-      this.parentNode.removeChild(this);
-    };
-    iframe.style.display = 'none';
-    iframe.src = 'http://jsnetworkxh.herokuapp.com/?version=' + version + '&modules=' + modules.join(',');
-    document.body.appendChild(iframe);
+    iframe = $('<iframe>').attr('name', name).appendTo('head');
+
+    form = $('<form>')
+    .attr('method', 'POST') // GET or POST
+    .attr('action', 'http://jsnetworkxh.herokuapp.com')
+    .attr('target', name);
+
+    $.each({version: version, modules: modules.join(',')}, function(k, v) {
+      $('<input>')
+      .attr('type', 'hidden')
+      .attr('name', k)
+      .attr('value', v)
+      .appendTo(form);
+    });
+
+    form.appendTo('body').submit();
   });
 
 }());
