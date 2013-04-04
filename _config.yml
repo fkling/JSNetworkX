@@ -1,7 +1,7 @@
 auto: true
 menu:
   - name: Home
-    url: index.html
+    url: /
   - name: Getting started
     url: getting_started.html
   - name: Examples
