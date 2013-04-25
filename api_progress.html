@@ -20,7 +20,7 @@ css: [api]
         <dt class="exec">Name</dt>
         <dd>Unimplemented</dd>
         <dt class="exec wont">Name</dt>
-        <dd>Won't be ported</dd>
+        <dd>Not planned to be ported</dd>
         <dt class="exec implemented">Name <i class="icon-heart"></i></dt>
         <dd>Available at the root, i.e. <code>jsnx.Name</code></dd>
       </dl>
@@ -28,15 +28,22 @@ css: [api]
   </div>
   <div class="span9 loading">
     <section>
-    <p class="">This is an overview of the modules and methods which have
+    <p class="">This is a rough overview of the modules and methods which have
     been and are going to be ported from NetworkX to JSNetworkX.<br>
     Methods / modules which are only found in JSNetworkX, i.e. which are not
-    officially part of NetworkX, are not listed here.<br>
-    <br>
+    officially part of NetworkX, are not listed here.
+    </p>
+    <p>
     Some modules won't be ported since they have third party dependencies (such 
     as Numpy) or use technology not available to JavaScript in the browser.
-    <hr>
+    Other modules might be marked as not portable until a decision about their
+    implementation was made or have been ported but are completely different
+    than their Python counterpart (e.g. the <code>drawing</code> module).
     </p>
+    <p>
+    The information provided here is based on the <a href="https://github.com/fkling/JSNetworkX">latest version</a>.
+    </p>
+    <hr>
     <div class="lead loader">Loading ...</div>
     <div id="api" class="accordion"></div>
     </section>
