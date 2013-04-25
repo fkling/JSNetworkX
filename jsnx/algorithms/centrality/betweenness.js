@@ -10,16 +10,23 @@ goog.require('goog.object');
 goog.require('goog.array');
 
 /**
- * @typedef {Object}
- * @property {number=} k (default=null) If k is not null use k node samples to estimate betweenness.
+ * Optional "named" arguments to pass to jsnx.algorithms.centrality.betweenness_centrality.
+ * 
+ * k (default=null)
+ *     If k is not null use k node samples to estimate betweenness.
  *     The value of k <= n where n is the number of nodes in the graph.
  *     Higher values give better approximation.
- * @property {boolean=} normalized (default=false) If true the betweenness values are normalized by `2/((n-1)(n-2))` 
+ * normalized (default=false)
+ *     If true the betweenness values are normalized by `2/((n-1)(n-2))` 
  *     for graphs, and `1/((n-1)(n-2))` for directed graphs where `n` 
  *     is the number of nodes in G. 
- * @property {string=} weight (default=null) If null, all edge weights are considered equal.
+ * weight (default=null)
+ *     If null, all edge weights are considered equal.
  *     Otherwise holds the name of the edge attribute used as weight.
- * @property {boolean=} endpoints (default=false) If true include the endpoints in the shortest path counts.
+ * endpoints (default=false)
+ *     If true include the endpoints in the shortest path counts.
+ *
+ * @typedef {{k: number=, normalized: boolean=, weight: string=, endpoints: boolean=}}
  */
 jsnx.algorithms.centrality.betweenness_centrality_args;
 
@@ -74,7 +81,7 @@ jsnx.algorithms.centrality.betweenness_centrality_args;
  * @param {jsnx.algorithms.centrality.betweenness_centrality_args=} opt_arg_dict (default=null)
  * 
  * @return {Object} object with node keys with betweenness centrality as the value.
- * @expose
+ * @export
  */
 jsnx.algorithms.centrality.betweenness_centrality = function(G, opt_arg_dict) {
     opt_arg_dict = opt_arg_dict || {};
@@ -122,12 +129,17 @@ goog.exportSymbol('jsnx.betweenness_centrality', jsnx.algorithms.centrality.betw
 
 
 /**
- * @typedef {Object}
- * @property {!boolean=} normalized (default=false) If true the betweenness values are normalized by `2/(n(n-1))` 
+ * Optional "named" arguments to pass to jsnx.algorithms.centrality.edge_betweenness_centrality.
+ * 
+ * normalized (default=false)
+ *     If true the betweenness values are normalized by `2/(n(n-1))` 
  *     for graphs, and `1/(n(n-1))` for directed graphs where `n` 
  *     is the number of nodes in G. 
- * @property {string=} weight (default=null) If null, all edge weights are considered equal.
+ * weight (default=null)
+ *     If null, all edge weights are considered equal.
  *     Otherwise holds the name of the edge attribute used as weight.
+ * 
+ * @typedef {{normalized: boolean=, weight: string=}}
  */
 jsnx.algorithms.centrality.edge_betweenness_centrality_args;
 
@@ -169,7 +181,7 @@ jsnx.algorithms.centrality.edge_betweenness_centrality_args;
  * @param {jsnx.algorithms.centrality.edge_betweenness_centrality_args=} opt_arg_dict (default=null)
  * 
  * @return {Object} object with edge keys with betweenness centrality as the value.
- * @expose
+ * @export
  */
 jsnx.algorithms.centrality.edge_betweenness_centrality = function(G, opt_arg_dict) {
     opt_arg_dict = opt_arg_dict || {};
