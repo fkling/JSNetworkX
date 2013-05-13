@@ -28,4 +28,4 @@ jsnx.TESTING = true;
  * @type {string}
  * @export
  */
-jsnx.version = '0.1.2next';
+jsnx.version = '0.2.0';

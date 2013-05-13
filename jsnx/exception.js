@@ -114,6 +114,7 @@ goog.exportSymbol('jsnx.JSNetworkXUnbounded', jsnx.exception.JSNetworkXUnbounded
  */
 jsnx.exception.KeyError = function(message) {
   this.name = 'KeyError';
+  this.message = message;
 };
 jsnx.exception.KeyError.prototype = new Error();
 jsnx.exception.KeyError.prototype.constructor = jsnx.exception.KeyError;

@@ -1,16 +1,12 @@
-/*jshint strict:false, sub:true*/
-/*global expect:true, goog: true, jsnx:true, BaseTestClass:true*/
+/*jshint strict:false, node:true*/
 
+var assert= require('assert');
+var jsnx = require('../../../../jsnetworkx-test');
 var iso = jsnx.algorithms.isomorphism;
 
-function TestIsomorph(name) {
-    goog.base(this, name || "TestIsomorph");
-}
+exports.TestIsomorph = {
 
-goog.inherits(TestIsomorph, BaseTestClass);
-
-
-TestIsomorph.prototype.setUp = function() {
+  beforeEach: function() {
     this.G1 = jsnx.Graph();
     this.G2 = jsnx.Graph();
     this.G3 = jsnx.Graph();
@@ -19,29 +15,28 @@ TestIsomorph.prototype.setUp = function() {
     this.G2.add_edges_from([[10,20],[20,30],[10,30],[10,50]]);
     this.G3.add_edges_from([[1,2],[1,3],[1,5],[2,5]]);
     this.G4.add_edges_from([[1,2],[1,3],[1,5],[2,4]]);
-};
+  },
 
-TestIsomorph.prototype.test_could_be_isomorphic = function() {
-    expect(iso.could_be_isomorphic(this.G1, this.G2)).toBe(true);
-    expect(iso.could_be_isomorphic(this.G1, this.G3)).toBe(true);
-    expect(iso.could_be_isomorphic(this.G1, this.G4)).toBe(false);
-    expect(iso.could_be_isomorphic(this.G3, this.G2)).toBe(true);
-};
+  test_could_be_isomorphic: function() {
+    assert(iso.could_be_isomorphic(this.G1, this.G2));
+    assert(iso.could_be_isomorphic(this.G1, this.G3));
+    assert(!iso.could_be_isomorphic(this.G1, this.G4));
+    assert(iso.could_be_isomorphic(this.G3, this.G2));
+  },
 
-TestIsomorph.prototype.test_fast_could_be_isomorphic = function() {
-    expect(iso.fast_could_be_isomorphic(this.G3, this.G2)).toEqual(true);
-};
+  test_fast_could_be_isomorphic: function() {
+    assert(iso.fast_could_be_isomorphic(this.G3, this.G2));
+  },
 
-TestIsomorph.prototype.test_faster_could_be_isomorphic = function() {
-    expect(iso.faster_could_be_isomorphic(this.G3, this.G2)).toEqual(true);
-};
+  test_faster_could_be_isomorphic: function() {
+    assert(iso.faster_could_be_isomorphic(this.G3, this.G2));
+  }
 
-/* TODO:
-TestIsomorph.prototype.test_is_isomorphic = function() {
-    expect(iso.is_isomorphic(this.G1, this.G2)).toEqual(true);
-    expect(iso.is_isomorphic(this.G1, this.G4)).toEqual(false);
-};
+  // TODO
+  /*
+  test_is_isomorphic: function() {
+    assert(iso.is_isomorphic(this.G1, this.G2));
+    assert(iso.is_isomorphic(this.G1, this.G4));
+  },
 */
-
-(new TestIsomorph()).run();
-
+};

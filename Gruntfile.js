@@ -37,21 +37,11 @@ module.exports = function(grunt) {
       },
       all: ['Gruntfile.js', 'jsnx/**/*.js']
     },
-    jasmine: {
-      options: {
-        specs: 'jsnx/**/tests/test_*.js',
-        vendor: '<%= meta.paths.library %>closure/goog/base.js',
-        helpers:  ['deps.js', 'jasmine/BaseTestClass.js', 'jasmine/*Matcher.js']
-      },
-      normal: {
-        src: ['jsnx/jsnx.js', 'jsnx/algorithms/algorithms.js', 'jsnx/generators/generators.js']
-      },
-      compiled: {
-        src: ['<%= pkg.name %>-test.js'],
-        options: {
-          outfile: '_SpecRunner_compiled.html',
-          helpers:  ['jasmine/gcc_deps.js', 'jasmine/BaseTestClass.js', 'jasmine/*Matcher.js']
-        }
+    mocha: {
+      all: {
+        src: ['jsnx/**/tests/test_*.js'],
+        ui: 'exports',
+        reporter: 'spec'
       }
     },
     compile: {
@@ -71,7 +61,25 @@ module.exports = function(grunt) {
           jscomp_error: ['checkDebuggerStatement', 'const', 'constantProperty', 'accessControls', 'visibility']
         }
       },
-      test: {
+      test_simple: { // used for easier debugging
+        options: {
+          namespaces: namespaces.all,
+          compilerOpts: {
+            output_wrapper: '<%= meta.wrapper %>',
+            compilation_level: 'SIMPLE_OPTIMIZATIONS',
+            formatting: 'PRETTY_PRINT',
+            generate_exports: null,
+            define: ["'goog.DEBUG=true'", "'jsnx.TESTING=true'"],
+            externs: ['jsnx/externs/*.js'],
+            warning_level: 'VERBOSE',
+            jscomp_warning: ['strictModuleDepCheck'],
+            jscomp_error: ['checkDebuggerStatement', 'const', 'constantProperty', 'accessControls', 'visibility']
+          }
+        },
+        src: '<%= meta.roots %>',
+        dest: '<%= pkg.name%>-test.js'
+      },
+      test_advanced: {
         options: {
           namespaces: namespaces.all,
           compilerOpts: {
@@ -79,7 +87,7 @@ module.exports = function(grunt) {
             compilation_level: 'ADVANCED_OPTIMIZATIONS',
             generate_exports: null,
             define: ["'goog.DEBUG=true'", "'jsnx.TESTING=true'"],
-            externs: ['jsnx/externs/*'],
+            externs: ['jsnx/externs/*.js'],
             warning_level: 'VERBOSE',
             jscomp_warning: ['strictModuleDepCheck'],
             jscomp_error: ['checkDebuggerStatement', 'const', 'constantProperty', 'accessControls', 'visibility']
@@ -131,11 +139,13 @@ module.exports = function(grunt) {
         dest: './deps.js'
       }
     },
-    connect: {
-      server: {
-        options: {
-          keepalive: true
-        }
+    watch: {
+      scripts: {
+        files: ['jsnx/**/*.js', '!jsnx/**/tests/*'],
+        tasks: ['compile:test_simple']
+      },
+      options: {
+        interrupt: true
       }
     }
   });
@@ -154,6 +164,26 @@ module.exports = function(grunt) {
     ns.push('jsnx');
     grunt.config.set('compile.custom.options.namespaces', ns);
   }
+
+
+  // Test task with mocha
+  grunt.registerMultiTask('mocha', 'Runs tests with mocha', function() {
+    var async = this.async();
+    var Mocha = require('mocha');
+    var mocha = new Mocha({
+      ui: this.data.ui || 'exports',
+      reporter: this.data.reporter || 'spec'
+    });
+    this.filesSrc.forEach(function(f) {
+      mocha.addFile(f);
+    });
+    mocha.run(function(failures){
+      if (failures > 0) {
+        grunt.fail.fatal(failures + ' test cases were unsuccessful');
+      }
+      async(failures === 0);
+    });
+  });
 
   // Check whether compiler and library exist
   grunt.registerTask('check', 'Checks whether dependencies exist', function() {
@@ -193,30 +223,27 @@ module.exports = function(grunt) {
 
   grunt.loadNpmTasks('grunt-contrib-jshint');
   grunt.loadNpmTasks('grunt-closure-tools');
-  grunt.loadNpmTasks('grunt-contrib-jasmine');
-  grunt.loadNpmTasks('grunt-contrib-connect');
 
   grunt.renameTask('closureBuilder', 'compile');
   grunt.renameTask('closureDepsWriter', 'deps');
-  grunt.registerTask('test', ['check', 'deps', 'compile:test', 'jasmine', 'cleanup']);
-  grunt.registerTask('buildtest', [
-    'check',
-    'deps',
-    'jasmine:normal:build',
-    'compile:test',
-    'jasmine:compiled:build',
-    'connect:server',
-    'cleanup'
-  ]);
   grunt.registerTask('buildall', [
     'check',
     'jshint',
-    'compile:test',
-    'jasmine:compiled',
+    'compile:test_advanced',
+    'mocha',
     'compile:base',
     'compile:node',
     'compile:drawing',
     'compile:all',
+    'cleanup'
+  ]);
+
+  grunt.registerTask('test', [
+    'check',
+    'compile:test_simple',
+    'mocha',
+    'compile:test_advanced',
+    'mocha',
     'cleanup'
   ]);
 };

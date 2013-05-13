@@ -1,134 +1,149 @@
-/*jshint strict:false*/
+/*jshint strict:false, node:true*/
+
+var assert = require('assert');
+var jsnx = require('../../../jsnetworkx-test');
 
 
-function TestFunction() {
-    goog.base(this, 'TestFunction');
-}
-
-goog.inherits(TestFunction, BaseTestClass);
-
-TestFunction.prototype.setUp = function() {
+exports.TestFunction = {
+  beforeEach: function() {
     this.G = jsnx.Graph({0:[1,2,3], 1:[1,2,0], 4:[]}, {name: 'Test'});
-    this.Gdegree = {0:3, 1:2, 3:1, 4:0};
-    this.Gnodes = ['0', '1', '2', '3', '4'];
-    this.Gedges = [['0','1'],['0','2'],['0','3'],['1','0'],['1','1'],['1','2']];
+    this.Gdegree = new jsnx.Map({0:3, 1:2, 3:1, 4:0});
+    this.Gnodes = [0, 1, 2, 3, 4];
+    this.Gedges = [[0,1],[0,2],[0,3],[1,0],[1,1],[1,2]];
     this.DG = jsnx.DiGraph({0:[1,2,3], 1:[1,2,0], 4:[]});
-    this.DGin_degree = {0:1, 1:2, 2:2, 3:1, 4:0};
-    this.Dout_degree = {0:3, 1:3, 2:0, 3:0, 4:0};
-    this.DGnodes = ['0', '1', '2', '3', '4'];
-    this.DGedges = [['0','1'],['0','2'],['0','3'],['1','0'],['1','1'],['1','2']];
-};
+    this.DGin_degree = new jsnx.Map({0:1, 1:2, 2:2, 3:1, 4:0});
+    this.Dout_degree = new jsnx.Map({0:3, 1:3, 2:0, 3:0, 4:0});
+    this.DGnodes = [0, 1, 2, 3, 4];
+    this.DGedges = [[0,1],[0,2],[0,3],[1,0],[1,1],[1,2]];
+  },
 
-TestFunction.prototype.test_nodes = function() {
-    expect(this.G.nodes()).toEqual(jsnx.nodes(this.G));
-    expect(this.DG.nodes()).toEqual(jsnx.nodes(this.DG));
-};
+  test_nodes: function() {
+    assert.deepEqual(this.G.nodes(), jsnx.nodes(this.G));
+    assert.deepEqual(this.DG.nodes(), jsnx.nodes(this.DG));
+  },
 
-TestFunction.prototype.test_edges = function() {
-    expect(this.G.edges()).toEqual(jsnx.edges(this.G));
-    expect(this.DG.edges()).toEqual(jsnx.edges(this.DG));
-    expect(this.G.edges([0,1,3])).toEqual(jsnx.edges(this.G, [0,1,3]));
-    expect(this.DG.edges([0,1,3])).toEqual(jsnx.edges(this.DG, [0,1,3]));
-};
+  test_edges: function() {
+    assert.deepEqual(this.G.edges(), jsnx.edges(this.G));
+    assert.deepEqual(this.DG.edges(), jsnx.edges(this.DG));
+    assert.deepEqual(this.G.edges([0,1,3]), jsnx.edges(this.G, [0,1,3]));
+    assert.deepEqual(this.DG.edges([0,1,3]), jsnx.edges(this.DG, [0,1,3]));
+  },
 
-TestFunction.prototype.test_nodes_iter = function() {
-    expect(jsnx.toArray(this.G.nodes())).toEqual(jsnx.toArray(jsnx.nodes(this.G)));
-    expect(jsnx.toArray(this.DG.nodes())).toEqual(jsnx.toArray(jsnx.nodes(this.DG)));
-};
+  test_nodes_iter: function() {
+    assert.deepEqual(
+      jsnx.toArray(this.G.nodes_iter()),
+      jsnx.toArray(jsnx.nodes_iter(this.G))
+    );
+    assert.deepEqual(
+      jsnx.toArray(this.DG.nodes_iter()),
+      jsnx.toArray(jsnx.nodes(this.DG))
+    );
+  },
 
-TestFunction.prototype.test_edges_iter = function() {
-    expect(jsnx.toArray(this.G.edges()))
-        .toEqual(jsnx.toArray(jsnx.edges(this.G)));
-    expect(jsnx.toArray(this.DG.edges()))
-        .toEqual(jsnx.toArray(jsnx.edges(this.DG)));
-    expect(jsnx.toArray(this.G.edges([0,1,3])))
-        .toEqual(jsnx.toArray(jsnx.edges(this.G, [0,1,3])));
-    expect(jsnx.toArray(this.DG.edges([0,1,3])))
-        .toEqual(jsnx.toArray(jsnx.edges(this.DG, [0,1,3])));
-};
+  test_edges_iter: function() {
+    assert.deepEqual(
+      jsnx.toArray(this.G.edges()),
+      jsnx.toArray(jsnx.edges(this.G))
+    );
+    assert.deepEqual(
+      jsnx.toArray(this.DG.edges()),
+      jsnx.toArray(jsnx.edges(this.DG))
+    );
+    assert.deepEqual(
+      jsnx.toArray(this.G.edges([0,1,3])),
+      jsnx.toArray(jsnx.edges(this.G, [0,1,3]))
+    );
+    assert.deepEqual(
+      jsnx.toArray(this.DG.edges([0,1,3])),
+      jsnx.toArray(jsnx.edges(this.DG, [0,1,3]))
+    );
+  },
 
-TestFunction.prototype.test_degree = function() {
-    expect(this.G.degree()).toEqual(jsnx.degree(this.G));
-    expect(this.DG.degree()).toEqual(jsnx.degree(this.DG));
-    expect(this.G.degree([0,1])).toEqual(jsnx.degree(this.G, [0,1]));
-    expect(this.DG.degree([0,1])).toEqual(jsnx.degree(this.DG, [0,1]));
-    expect(this.G.degree(null, 'weight')).toEqual(jsnx.degree(this.G, null, 'weight'));
-    expect(this.DG.degree(null, 'weight')).toEqual(jsnx.degree(this.DG, null, 'weight'));
-};
+  test_degree: function() {
+    assert.deepEqual(this.G.degree(), jsnx.degree(this.G));
+    assert.deepEqual(this.DG.degree(), jsnx.degree(this.DG));
+    assert.deepEqual(this.G.degree([0,1]), jsnx.degree(this.G, [0,1]));
+    assert.deepEqual(this.DG.degree([0,1]), jsnx.degree(this.DG, [0,1]));
+    assert.deepEqual(this.G.degree(null, 'weight'), jsnx.degree(this.G, null, 'weight'));
+    assert.deepEqual(this.DG.degree(null, 'weight'), jsnx.degree(this.DG, null, 'weight'));
+  },
 
-TestFunction.prototype.test_neighbors = function() {
-    expect(this.G.neighbors(1)).toEqual(jsnx.neighbors(this.G, 1));
-    expect(this.DG.neighbors(1)).toEqual(jsnx.neighbors(this.DG, 1));
-};
+  test_neighbors: function() {
+    assert.deepEqual(this.G.neighbors(1), jsnx.neighbors(this.G, 1));
+    assert.deepEqual(this.DG.neighbors(1), jsnx.neighbors(this.DG, 1));
+  },
 
-TestFunction.prototype.test_number_of_nodes = function() {
-    expect(this.G.number_of_nodes()).toEqual(jsnx.number_of_nodes(this.G));
-    expect(this.DG.number_of_nodes()).toEqual(jsnx.number_of_nodes(this.DG));
-};
+  test_number_of_nodes: function() {
+    assert.equal(this.G.number_of_nodes(), jsnx.number_of_nodes(this.G));
+    assert.equal(this.DG.number_of_nodes(), jsnx.number_of_nodes(this.DG));
+  },
 
-TestFunction.prototype.test_number_of_edges = function() {
-    expect(this.G.number_of_edges()).toEqual(jsnx.number_of_edges(this.G));
-    expect(this.DG.number_of_edges()).toEqual(jsnx.number_of_edges(this.DG));
-};
+  test_number_of_edges: function() {
+    assert.equal(this.G.number_of_edges(), jsnx.number_of_edges(this.G));
+    assert.equal(this.DG.number_of_edges(), jsnx.number_of_edges(this.DG));
+  },
 
-TestFunction.prototype.test_is_directed = function() {
-    expect(this.G.is_directed()).toEqual(jsnx.is_directed(this.G));
-    expect(this.DG.is_directed()).toEqual(jsnx.is_directed(this.DG));
-};
+  test_is_directed: function() {
+    assert.equal(this.G.is_directed(), jsnx.is_directed(this.G));
+    assert.equal(this.DG.is_directed(), jsnx.is_directed(this.DG));
+  },
 
-TestFunction.prototype.test_subgraph = function() {
-    expect(this.G.subgraph([0,1,2,4])).toEqual(jsnx.subgraph(this.G, [0,1,2,4]));
-    expect(this.DG.subgraph([0,1,2,4])).toEqual(jsnx.subgraph(this.DG, [0,1,2,4]));
-};
+  test_subgraph: function() {
+    assert.deepEqual(this.G.subgraph([0,1,2,4]), jsnx.subgraph(this.G, [0,1,2,4]));
+    assert.deepEqual(this.DG.subgraph([0,1,2,4]), jsnx.subgraph(this.DG, [0,1,2,4]));
+  },
 
-TestFunction.prototype.test_create_empty_copy = function() {
+  test_create_empty_copy: function() {
     var G = jsnx.create_empty_copy(this.G, false);
-    expect(G.nodes()).toEqual([]);
-    expect(G.graph).toEqual({});
-    expect(G.node).toEqual({});
-    expect(G.edge).toEqual({});
+    assert.deepEqual(G.nodes(), []);
+    assert.deepEqual(G.graph, {});
+    assert.deepEqual(G.node, new jsnx.Map());
+    assert.deepEqual(G.edge, new jsnx.Map());
 
     G = jsnx.create_empty_copy(this.G);
-    expect(G.nodes()).toEqual(this.G.nodes());
-    expect(G.graph).toEqual({});
-    expect(G.node).toEqual(jsnx.helper.fromkeys(this.G.nodes(), {}));
-    expect(G.edge).toEqual(jsnx.helper.fromkeys(this.G.nodes(), {}));
-};
+    assert.deepEqual(G.nodes(), this.G.nodes());
+    assert.deepEqual(G.graph, {});
+    assert.deepEqual(G.node, new jsnx.Map(jsnx.helper.fromkeys(this.G.nodes(), {})));
+    assert.deepEqual(
+      G.edge,
+      new jsnx.Map(jsnx.helper.fromkeys(this.G.nodes(), new jsnx.Map()))
+    );
+  },
 
-TestFunction.prototype.test_degree_histogram = function() {
-    expect(jsnx.degree_histogram(this.G)).toEqual([1,1,1,1,1]);
-};
+  test_degree_histogram: function() {
+    assert.deepEqual(jsnx.degree_histogram(this.G), [1,1,1,1,1]);
+  },
 
-TestFunction.prototype.test_density = function() {
-    expect(jsnx.density(this.G)).toEqual(0.5);
-    expect(jsnx.density(this.DG)).toEqual(0.3);
+  test_density: function() {
+    assert.equal(jsnx.density(this.G), 0.5);
+    assert.equal(jsnx.density(this.DG), 0.3);
     var G = jsnx.Graph();
     G.add_node(1);
-    expect(jsnx.density(G)).toEqual(0.0);
-};
+    assert.equal(jsnx.density(G), 0.0);
+  },
 
-TestFunction.prototype.test_freeze = function() {
+  test_freeze: function() {
     var G = jsnx.freeze(this.G);
-    expect(G.frozen).toBeTruthy();
-    expect(function(){ G.add_node(1);}).toThrow('JSNetworkXError');
-    expect(function(){ G.add_nodes_from([1]);}).toThrow('JSNetworkXError');
-    expect(function(){ G.remove_node(1);}).toThrow('JSNetworkXError');
-    expect(function(){ G.remove_nodes_from([1]);}).toThrow('JSNetworkXError');
-    expect(function(){ G.add_edge([1,2]);}).toThrow('JSNetworkXError');
-    expect(function(){ G.add_edges_from([[1,2]]);}).toThrow('JSNetworkXError');
-    expect(function(){ G.remove_edge([1,2]);}).toThrow('JSNetworkXError');
-    expect(function(){ G.remove_edges_from([[1,2]]);}).toThrow('JSNetworkXError');
-    expect(function(){ G.clear();}).toThrow('JSNetworkXError');
-};
+    assert.equal(G.frozen, true);
+    assert.throws(function(){ G.add_node(1);}, jsnx.JSNetworkXError);
+    assert.throws(function(){ G.add_nodes_from([1]);}, jsnx.JSNetworkXError);
+    assert.throws(function(){ G.remove_node(1);}, jsnx.JSNetworkXError);
+    assert.throws(function(){ G.remove_nodes_from([1]);}, jsnx.JSNetworkXError);
+    assert.throws(function(){ G.add_edge([1,2]);}, jsnx.JSNetworkXError);
+    assert.throws(function(){ G.add_edges_from([[1,2]]);}, jsnx.JSNetworkXError);
+    assert.throws(function(){ G.remove_edge([1,2]);}, jsnx.JSNetworkXError);
+    assert.throws(function(){ G.remove_edges_from([[1,2]]);}, jsnx.JSNetworkXError);
+    assert.throws(function(){ G.clear();}, jsnx.JSNetworkXError);
+  },
 
-TestFunction.prototype.test_is_frozen = function() {
-    expect(jsnx.is_frozen(this.G)).toBeFalsy();
+  test_is_frozen: function() {
+    assert.equal(jsnx.is_frozen(this.G), false);
     var G = jsnx.freeze(this.G);
-    expect(G.frozen).toEqual(jsnx.is_frozen(G));
-    expect(jsnx.is_frozen(this.G)).toBeTruthy();
-};
+    assert.equal(G.frozen, jsnx.is_frozen(G));
+    assert.equal(jsnx.is_frozen(this.G), true);
+  },
 
-TestFunction.prototype.test_info = function() {
+  test_info: function() {
     var G = jsnx.path_graph(5);
     var info = jsnx.info(G);
     var expected_graph_info = [
@@ -139,10 +154,10 @@ TestFunction.prototype.test_info = function() {
         'Average degree: 1.6000'
     ].join('\n');
 
-    expect(info).toEqual(expected_graph_info);
-};
+    assert.equal(info, expected_graph_info);
+  },
 
-TestFunction.prototype.test_info_digraph = function() {
+  test_info_digraph: function() {
     var G = jsnx.DiGraph(null, {name: 'path_graph(5)'});
     G.add_path([0,1,2,3,4]);
     var info = jsnx.info(G);
@@ -154,7 +169,7 @@ TestFunction.prototype.test_info_digraph = function() {
         'Average in degree: 0.8000',
         'Average out degree: 0.8000'
     ].join('\n');
-    expect(info).toEqual(expected_graph_info);
+    assert.equal(info, expected_graph_info);
 
     info = jsnx.info(G, 1);
     var expected_node_info = [
@@ -162,9 +177,8 @@ TestFunction.prototype.test_info_digraph = function() {
         'Degree: 2',
         'Neighbors: 2'
     ].join('\n');
-    expect(info).toEqual(expected_node_info);
+    assert.equal(info, expected_node_info);
 
-    expect(function(){ jsnx.info(G, -1);}).toThrow('JSNetworkXError');
+    assert.throws(function(){ jsnx.info(G, -1);}, jsnx.JSNetworkXError);
+  }
 };
-
-(new TestFunction()).run();

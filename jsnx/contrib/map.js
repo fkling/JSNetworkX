@@ -37,21 +37,12 @@ jsnx.contrib.Map = function(opt_data) {
     }
     else if (goog.isObject(opt_data)) {
       for (var k in opt_data) {
-        this.set(k, opt_data[k]);
+        this.set(isNaN(+k) ? k : +k, opt_data[k]);
       }
     }
   }
 };
 goog.exportSymbol('jsnx.Map', jsnx.contrib.Map);
-
-
-/**
- * The number of elements.
- *
- * @type {number}
- * @private
- */
-jsnx.contrib.Map.prototype.length_ = 0;
 
 
 /**
@@ -127,6 +118,8 @@ jsnx.contrib.Map.prototype.set = function(key, value) {
   if (values === this.values_) {
     this.keys_[key] = key;
   }
+
+  return value;
 };
 
 
@@ -165,7 +158,7 @@ jsnx.contrib.Map.prototype.items = function() {
     items.push([+key, this.number_values_[key]]);
   }
   for (key in this.string_values_) {
-    items.push([key, this.values_[key]]);
+    items.push([key, this.string_values_[key]]);
   }
   for (key in this.values_) {
     items.push([this.keys_[key], this.values_[key]]);
@@ -276,7 +269,6 @@ jsnx.contrib.Map.prototype.clear = function() {
   goog.object.clear(this.number_values_);
   goog.object.clear(this.values_);
   goog.object.clear(this.keys_);
-  this.length_ = 0;
 };
 
 
@@ -287,10 +279,11 @@ jsnx.contrib.Map.prototype.clear = function() {
  *
  * @param {function(*,*)} callback A function which gets the key as first 
  *  argument and value as second argument.
+ * @param {*=} opt_this Object/value to set this to inside the callback
  * @export
 */
-jsnx.contrib.Map.prototype.forEach = function(callback) {
+jsnx.contrib.Map.prototype.forEach = function(callback, opt_this) {
   goog.iter.forEach(this, function(kv) {
-    callback.apply(null, kv);
+    callback.apply(opt_this, kv);
   });
 };

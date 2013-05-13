@@ -5,6 +5,7 @@ goog.require('goog.array');
 goog.require('goog.math');
 goog.require('goog.object');
 goog.require('jsnx.exception');
+goog.require('jsnx.contrib.Map');
 
 /**
  * Return a copy of the graph nodes in a list.
@@ -62,6 +63,7 @@ goog.exportSymbol('jsnx.edges', jsnx.classes.func.edges);
  * @param {jsnx.NodeContainer=} opt_nbunch Nodes
  *
  * @return {goog.iter.Iterator} Iterator over edges
+ * @export
  */
 jsnx.classes.func.edges_iter = function(G, opt_nbunch) {
     return G.edges_iter(opt_nbunch);
@@ -77,7 +79,8 @@ goog.exportSymbol('jsnx.edges_iter', jsnx.classes.func.edges_iter);
  * @param {jsnx.NodeContainer=} opt_nbunch Nodes
  * @param {string=} opt_weight Weight attribute name
  *
- * @return {(number|Object)} Degree of node(s)
+ * @return {(number|jsnx.contrib.Map)} Degree of node(s)
+ * export
  */
 jsnx.classes.func.degree = function(G, opt_nbunch, opt_weight) {
     return G.degree(opt_nbunch, opt_weight);
@@ -106,6 +109,7 @@ goog.exportSymbol('jsnx.neighbors', jsnx.classes.func.neighbors);
  * @param {jsnx.classes.Graph} G Graph
  *
  * @return {number} Number of nodes
+ * @export
  */
 jsnx.classes.func.number_of_nodes = function(G) {
     return G.number_of_nodes();
@@ -183,9 +187,9 @@ goog.exportSymbol('jsnx.density', jsnx.classes.func.density);
  *  @export
  */
 jsnx.classes.func.degree_histogram = function(G) {
-    var degseq = goog.object.getValues(/** @type {Object} */ (G.degree())),
-        dmax = Math.max.apply(Math, degseq) + 1,
-        freq = goog.array.repeat(0, dmax);
+    var degseq = G.degree().values();
+    var dmax = Math.max.apply(Math, degseq) + 1;
+    var freq = goog.array.repeat(0, dmax);
 
     goog.array.forEach(degseq, function(d) {
         freq[d] += 1;
@@ -332,14 +336,14 @@ jsnx.classes.func.info = function(G, opt_n) {
         if(nnodes > 0) {
             if(G.is_directed()) {
                 info += 'Average in degree: ' + (goog.math.sum.apply(null,
-                           goog.object.getValues(G.in_degree())) / nnodes).toFixed(4) + '\n';
+                          G.in_degree().values()) / nnodes).toFixed(4) + '\n';
                 info += 'Average out degree: ' + (goog.math.sum.apply(null,
-                           goog.object.getValues(G.out_degree())) / nnodes).toFixed(4);
+                           G.out_degree().values()) / nnodes).toFixed(4);
             }
             else {
                 var s = goog.math.sum.apply(
                     null,
-                     goog.object.getValues(/** @type {Object} */ (G.degree()))
+                    G.degree().values()
                 );
                 info += 'Average degree: ' + (s/nnodes).toFixed(4);
             }
@@ -370,8 +374,7 @@ goog.exportSymbol('jsnx.info', jsnx.classes.func.info);
  */
 jsnx.classes.func.set_node_attributes = function(G, name, attributes) {
     goog.object.forEach(attributes, function(value, node) {
-        G['node'][node][name] = value;
-
+        G['node'].get(node)[name] = value;
     });
 };
 goog.exportSymbol('jsnx.set_node_attributes', jsnx.classes.func.set_node_attributes);
@@ -383,14 +386,14 @@ goog.exportSymbol('jsnx.set_node_attributes', jsnx.classes.func.set_node_attribu
  * @param {jsnx.classes.Graph} G Graph
  * @param {string} name Attribute name
  *
- * @return {!Object} Dictionary of attributes keyed by node.
+ * @return {!jsnx.contrib.Map} Dictionary of attributes keyed by node.
  * @export
  */
 jsnx.classes.func.get_node_attributes = function(G, name) {
-    var dict = {};
-    goog.object.forEach(G.node, function(d, n) {
+    var dict = new jsnx.contrib.Map();
+    G['node'].forEach(function(n, d) {
         if(goog.object.containsKey(d, name)) {
-            dict[n] = d[name];
+            dict.set(n, d[name]);
         }
     });
     return dict;
@@ -401,20 +404,15 @@ goog.exportSymbol('jsnx.get_node_attributes', jsnx.classes.func.get_node_attribu
 /**
  * Set edge attributes from dictionary of edge tuples and values
  *
- * Since keys can only be strings in JavaScript, it is assumed 
- * that the key is the the string representation of the edge tuple
- * I.e. {@code [1,2]} becomes {@code "1,2"}. This onlt works properly if
- * the node does not contain a comma itself.
- *
  * @param {jsnx.classes.Graph} G Graph
  * @param {string} name Attribute name
- * @param {Object} attributes Dictionary of attributes keyed by edge (tuple).
+ * @param {jsnx.contrib.Map} attributes 
+ *    Dictionary of attributes keyed by edge (tuple).
  * @export
  */
 jsnx.classes.func.set_edge_attributes = function(G, name, attributes) {
-    goog.object.forEach(attributes, function(value, edge) {
-        edge = edge.split(',');
-        G.get_node(edge[0])[edge[1]] = value;
+    attributes.forEach(function(edge, value) {
+        G.get(edge[0]).get(edge[1])[name] = value;
     });
 };
 goog.exportSymbol('jsnx.set_edge_attributes', jsnx.classes.func.set_edge_attributes);
@@ -430,14 +428,16 @@ goog.exportSymbol('jsnx.set_edge_attributes', jsnx.classes.func.set_edge_attribu
  * @param {jsnx.classes.Graph} G Graph
  * @param {string} name Attribute name
  *
- * @return {!Object} Dictionary of attributes keyed by edge.
+ * @return {!jsnx.contrib.Map} Dictionary of attributes keyed by edge.
  * @export
  */
 jsnx.classes.func.get_edge_attributes = function(G, name) {
-    var dict = {};
+    var dict = new jsnx.contrib.Map();
     goog.object.forEach(G.edges(null, true), function(edged) {
         if(goog.object.containsKey(edged[2], name)) {
-            dict[[edged[0], edged[1]]] = edged[2][name];
+            var value = edged[2][name];
+            edged.length = 2; // cut of data
+            dict.set(edged, value);
         }
     });
     return dict;

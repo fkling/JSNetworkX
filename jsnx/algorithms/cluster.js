@@ -1,12 +1,14 @@
 "use strict";
 goog.provide('jsnx.algorithms.cluster');
 
+goog.require('goog.array');
+goog.require('goog.iter');
+goog.require('goog.math');
+goog.require('goog.object');
+goog.require('jsnx.contrib.Map');
+goog.require('jsnx.contrib.Set');
 goog.require('jsnx.exception');
 goog.require('jsnx.helper');
-goog.require('goog.structs.Set');
-goog.require('goog.object');
-goog.require('goog.array');
-goog.require('goog.math');
 
 /**
  * Compute the number of triangles.
@@ -21,26 +23,31 @@ goog.require('goog.math');
  * @param {jsnx.NodeContainer=} opt_nodes (default: all nodes)
  *      Compute triangles for nodes in this container.
  *
- * @return {!(Object|number)} Number of triangles keyed by node label.
+ * @return {!(jsnx.contrib.Map|number)} Number of triangles keyed by node label.
  * @export
  */
 jsnx.algorithms.cluster.triangles = function(G, opt_nodes) {
-    if (G.is_directed()) {
-        throw new jsnx.exception.JSNetworkXError(
-                'triangles() is not defined for directed graphs.'
-        );
-    }
+  if (G.is_directed()) {
+    throw new jsnx.exception.JSNetworkXError(
+      'triangles() is not defined for directed graphs.'
+    );
+  }
 
-    if (goog.isDefAndNotNull(opt_nodes) && G.has_node(opt_nodes)) {
-        // return single value
-        return Math.floor(jsnx.algorithms.cluster.triangles_and_degree_iter_(G, opt_nodes).next()[2] / 2);
+  if (goog.isDefAndNotNull(opt_nodes) && G.has_node(opt_nodes)) {
+    // return single value
+    return Math.floor(
+      jsnx.algorithms.cluster.triangles_and_degree_iter_(G, opt_nodes).next()[2] / 2
+    );
+  }
+
+  var result = new jsnx.contrib.Map();
+  goog.iter.forEach(
+    jsnx.algorithms.cluster.triangles_and_degree_iter_(G, opt_nodes),
+    function(val) {
+      result.set(val[0], Math.floor(val[2]/2));
     }
-    
-    var result = {};
-    goog.iter.forEach(jsnx.algorithms.cluster.triangles_and_degree_iter_(G, opt_nodes), function(val) {
-        result[val[0]] = Math.floor(val[2]/2);
-    });
-    return result;
+  );
+  return result;
 };
 goog.exportSymbol('jsnx.triangles', jsnx.algorithms.cluster.triangles);
 
@@ -59,35 +66,35 @@ goog.exportSymbol('jsnx.triangles', jsnx.algorithms.cluster.triangles);
  * @return {!goog.iter.Iterator}
  */
 jsnx.algorithms.cluster.triangles_and_degree_iter_ = function(G, opt_nodes) {
-    if (G.is_multigraph()) {
-        throw new jsnx.exception.JSNetworkXError(
-                'Not defined for multigraphs.'
-        );
-    }
+  if (G.is_multigraph()) {
+    throw new jsnx.exception.JSNetworkXError(
+      'Not defined for multigraphs.'
+    );
+  }
 
-    var nodes_nbrs;
+  var nodes_nbrs;
 
-    if(!goog.isDefAndNotNull(opt_nodes)) {
-        nodes_nbrs = jsnx.helper.iteritems(G['adj']);
-    }
-    else {
-        nodes_nbrs = jsnx.helper.nested_chain(G.nbunch_iter(opt_nodes), function(n) {
-            return [n, G.get_node(n)];
-        });
-    }
-
-    return goog.iter.map(nodes_nbrs, function(d) {
-        var vs = new goog.structs.Set(goog.object.getKeys(d[1])),
-            ntriangles = 0;
-
-        vs.remove(d[0]);
-        goog.iter.forEach(vs, function(w) {
-            var ws = new goog.structs.Set(goog.object.getKeys(G.get_node(w)));
-            ws.remove(w);
-            ntriangles += vs.intersection(ws).getCount();
-        });
-        return [d[0], vs.getCount(), ntriangles];
+  if(!goog.isDefAndNotNull(opt_nodes)) {
+    nodes_nbrs = goog.iter.toIterator(G['adj']);
+  }
+  else {
+    nodes_nbrs = jsnx.helper.nested_chain(G.nbunch_iter(opt_nodes), function(n) {
+      return [n, G.get(n)];
     });
+  }
+
+  return goog.iter.map(nodes_nbrs, function(d) {
+    var vs = new jsnx.contrib.Set(d[1].keys());
+    var ntriangles = 0;
+
+    vs.remove(d[0]);
+    goog.iter.forEach(vs, function(w) {
+      var ws = new jsnx.contrib.Set(G.get(w).keys());
+      ws.remove(w);
+      ntriangles += vs.intersection(ws).count();
+    });
+    return [d[0], vs.count(), ntriangles];
+  });
 };
 
 
@@ -106,70 +113,73 @@ jsnx.algorithms.cluster.triangles_and_degree_iter_ = function(G, opt_nodes) {
  *
  * @suppress {checkTypes}
  */
-jsnx.algorithms.cluster.weighted_triangles_and_degree_iter_ = function(G, opt_nodes,
-                                                                       opt_weight) {
-    if (G.is_multigraph()) {
-        throw new jsnx.exception.JSNetworkXError(
-                'Not defined for multigraphs.'
-        );
-    }
-    
-    if(!goog.isString(opt_weight)) {
-        opt_weight = 'weight';
-    }
+jsnx.algorithms.cluster.weighted_triangles_and_degree_iter_ = function(
+  G,
+  opt_nodes,
+  opt_weight
+) {
+  if (G.is_multigraph()) {
+    throw new jsnx.exception.JSNetworkXError(
+      'Not defined for multigraphs.'
+    );
+  }
 
-    var max_weight, nodes_nbrs;
-    if(G.edges().length === 0) {
-        max_weight = 1;
-    }
-    else {
-        max_weight = jsnx.helper.max(G.edges(true), function(ed) {
-            return goog.object.get(ed[2], /** @type {string} */ (opt_weight), 1);
-        });
-    }
+  if(!goog.isString(opt_weight)) {
+    opt_weight = 'weight';
+  }
 
-    if(!goog.isDefAndNotNull(opt_nodes)) {
-        nodes_nbrs = jsnx.helper.iteritems(G['adj']);
-    }
-    else {
-        nodes_nbrs = jsnx.helper.nested_chain(G.nbunch_iter(opt_nodes), function(n) {
-            return [n, G.get_node(n)];
-        });
-    }
-
-    return goog.iter.map(nodes_nbrs, function(d) {
-        var i = d[0],
-            inbrs = new goog.structs.Set(goog.object.getKeys(d[1]));
-        inbrs.remove(i);
-        var weighted_triangles = 0,
-            seen = new goog.structs.Set();
-
-        goog.iter.forEach(inbrs, function(j) {
-            var wij = goog.object.get(
-                G.get_node(i)[j],
-                /** @type {string} */ (opt_weight),
-                1
-            ) / max_weight;
-            seen.add(j);
-            var jnbrs = (new goog.structs.Set(goog.object.getKeys(G.get_node(j))))
-                        .difference(seen); // this keeps from double counting
-
-            goog.iter.forEach(inbrs.intersection(jnbrs), function(k) {
-                var wjk = goog.object.get(
-                    G.get_node(j)[k],
-                    /** @type {string} */ (opt_weight),
-                    1
-                ) / max_weight;
-                var wki = goog.object.get(
-                    G.get_node(i)[k],
-                    /** @type {string} */ (opt_weight),
-                    1
-                ) / max_weight;
-                weighted_triangles += Math.pow(wij * wjk * wki, 1/3);
-            });
-        });
-        return [i, inbrs.getCount(), weighted_triangles * 2];
+  var max_weight, nodes_nbrs;
+  if(G.number_of_edges() === 0) {
+    max_weight = 1;
+  }
+  else {
+    max_weight = jsnx.helper.max(G.edges(true), function(ed) {
+      return goog.object.get(ed[2], /** @type {string} */ (opt_weight), 1);
     });
+  }
+
+  if(!goog.isDefAndNotNull(opt_nodes)) {
+    nodes_nbrs = goog.iter.toIterator(G['adj']);
+  }
+  else {
+    nodes_nbrs = jsnx.helper.nested_chain(G.nbunch_iter(opt_nodes), function(n) {
+      return [n, G.get(n)];
+    });
+  }
+
+  return goog.iter.map(nodes_nbrs, function(d) {
+    var i = d[0];
+    var inbrs = new jsnx.contrib.Set(d[1].keys());
+    inbrs.remove(i);
+    var weighted_triangles = 0;
+    var seen = new jsnx.contrib.Set();
+
+    goog.iter.forEach(inbrs, function(j) {
+      var wij = goog.object.get(
+        G.get(i).get(j),
+        /** @type {string} */ (opt_weight),
+        1
+      ) / max_weight;
+      seen.add(j);
+      // this keeps from double counting
+      var jnbrs = (new jsnx.contrib.Set(G.get(j).keys())).difference(seen);
+
+      goog.iter.forEach(inbrs.intersection(jnbrs), function(k) {
+        var wjk = goog.object.get(
+          G.get(j).get(k),
+          /** @type {string} */ (opt_weight),
+          1
+        ) / max_weight;
+        var wki = goog.object.get(
+          G.get(i).get(k),
+          /** @type {string} */ (opt_weight),
+          1
+        ) / max_weight;
+        weighted_triangles += Math.pow(wij * wjk * wki, 1/3);
+      });
+    });
+    return [i, inbrs.count(), weighted_triangles * 2];
+  });
 };
 
 
@@ -187,9 +197,9 @@ jsnx.algorithms.cluster.weighted_triangles_and_degree_iter_ = function(G, opt_no
  *
  *
  * @param {jsnx.classes.Graph} G graph
- * @param {?jsnx.NodeContainer=} opt_nodes (default: all nodes)
+ * @param {?(jsnx.NodeContainer|string|boolean)=} opt_nodes (default: all nodes)
  *      Compute average clustering for nodes in this container.
- * @param {?string=} opt_weight (default: null)
+ * @param {?(string|boolean)=} opt_weight (default: null)
  *      The edge attribute that holds the numerical value used as a weight.
  *      If None, then each edge has weight 1.
  * @param {?boolean=} opt_count_zeros (default: true)
@@ -198,43 +208,45 @@ jsnx.algorithms.cluster.weighted_triangles_and_degree_iter_ = function(G, opt_no
  * @return {number}
  * @export
  */
-jsnx.algorithms.cluster.average_clustering = function(G, opt_nodes, opt_weight, 
-                                                      opt_count_zeros) {
-    if(arguments.length === 2) {
-        if(goog.isString(opt_nodes)) {
-            opt_weight = /** @type {string} */ (opt_nodes);
-            opt_nodes = null;
-        }
-        else if(goog.isBoolean(opt_nodes)) {
-            opt_count_zeros = /** @type {boolean} */ (opt_nodes);
-            opt_nodes = null;
-        }
+jsnx.algorithms.cluster.average_clustering = function(
+  G,
+  opt_nodes,
+  opt_weight, 
+  opt_count_zeros
+) {
+  if(arguments.length === 2) {
+    if(goog.isString(opt_nodes)) {
+      opt_weight = /** @type {string} */ (opt_nodes);
+      opt_nodes = null;
     }
-    else if(arguments.length === 3) {
-        if(goog.isBoolean(opt_weight)) {
-            opt_count_zeros = /** @type {boolean} */ (opt_weight);
-            opt_weight = null;
-        }
+    else if(goog.isBoolean(opt_nodes)) {
+      opt_count_zeros = /** @type {boolean} */ (opt_nodes);
+      opt_nodes = null;
     }
+  }
+  else if(arguments.length === 3) {
+    if(goog.isBoolean(opt_weight)) {
+      opt_count_zeros = /** @type {boolean} */ (opt_weight);
+      opt_weight = null;
+    }
+  }
 
-    if(!goog.isDefAndNotNull(opt_count_zeros)) {
-        opt_count_zeros = true;
-    }
+  if(!goog.isDefAndNotNull(opt_count_zeros)) {
+    opt_count_zeros = true;
+  }
 
-    var c = goog.object.getValues(
-        /** @type {Object} */ (jsnx.algorithms.cluster.clustering(
-            G,
-            opt_nodes,
-            opt_weight
-        ))
-    );
+  var c = /** @type {jsnx.contrib.Map} */ (jsnx.algorithms.cluster.clustering(
+      G,
+      /** @type {jsnx.NodeContainer}*/(opt_nodes),
+      /** @type {string}*/ (opt_weight)
+  )).values();
 
-    if(!opt_count_zeros) {
-        c = goog.array.filter(c, function(v) {
-            return v > 0;
-        });
-    }
-    return goog.math.sum.apply(goog.math, c) / c.length;
+  if(!opt_count_zeros) {
+    c = goog.array.filter(c, function(v) {
+      return v > 0;
+    });
+  }
+  return goog.math.sum.apply(goog.math, c) / c.length;
 };
 goog.exportSymbol('jsnx.average_clustering', jsnx.algorithms.cluster.average_clustering);
 
@@ -256,39 +268,37 @@ goog.exportSymbol('jsnx.average_clustering', jsnx.algorithms.cluster.average_clu
  *      Compute average clustering for nodes in this container.
  * @param {?string=} opt_weight (default: null)
  *
- * @return {!(number|Object)} Clustering coefficient at specified nodes
+ * @return {!(number|jsnx.contrib.Map)} Clustering coefficient at specified nodes
  * @export
  */
 jsnx.algorithms.cluster.clustering = function(G, opt_nodes, opt_weight) {
-    if (G.is_directed()) {
-        throw new jsnx.exception.JSNetworkXError(
-                'Clustering algorithms are not defined for directed graphs.'
-        );
-    }
+  if (G.is_directed()) {
+    throw new jsnx.exception.JSNetworkXError(
+      'Clustering algorithms are not defined for directed graphs.'
+    );
+  }
 
-    var td_iter;
-    if(goog.isDefAndNotNull(opt_weight)) {
-        td_iter = jsnx.algorithms.cluster.weighted_triangles_and_degree_iter_(G, opt_nodes, opt_weight);
-    }
-    else {
-        td_iter = jsnx.algorithms.cluster.triangles_and_degree_iter_(G, opt_nodes);
-    }
+  var td_iter;
+  if(goog.isDefAndNotNull(opt_weight)) {
+    td_iter = jsnx.algorithms.cluster.weighted_triangles_and_degree_iter_(
+      G,
+      opt_nodes,
+      opt_weight
+    );
+  }
+  else {
+    td_iter = jsnx.algorithms.cluster.triangles_and_degree_iter_(G, opt_nodes);
+  }
 
-    var clusterc = {};
+  var clusterc = new jsnx.contrib.Map();
+  goog.iter.forEach(td_iter, function(d) {
+    clusterc.set(d[0], d[2] === 0 ? 0 : (d[2] / (d[1] * (d[1] - 1))));
+  });
 
-    goog.iter.forEach(td_iter, function(d) {
-        if(d[2] === 0) {
-            clusterc[d[0]] = 0;
-        }
-        else {
-            clusterc[d[0]] = d[2] / (d[1] * (d[1] - 1));
-        }
-    });
-
-    if (goog.isDefAndNotNull(opt_nodes) && G.has_node(opt_nodes)) {
-        return /** @type {number} */ (goog.object.getValues(clusterc)[0]);
-    }
-    return clusterc;
+  if (goog.isDefAndNotNull(opt_nodes) && G.has_node(opt_nodes)) {
+    return /** @type {number} */ (clusterc.values()[0]);
+  }
+  return clusterc;
 };
 goog.exportSymbol('jsnx.clustering', jsnx.algorithms.cluster.clustering);
 
@@ -310,13 +320,16 @@ goog.exportSymbol('jsnx.clustering', jsnx.algorithms.cluster.clustering);
  * @export
  */
 jsnx.algorithms.cluster.transitivity = function(G) {
-    var triangles = 0, // 6 times number of triangles
-        contri = 0;  // 2 times number of connected triples
-    goog.iter.forEach(jsnx.algorithms.cluster.triangles_and_degree_iter_(G), function(d) {
-        contri += d[1] * (d[1] - 1);
-        triangles += d[2];
-    });
-    return triangles === 0 ? 0 : triangles/contri;
+  var triangles = 0; // 6 times number of triangles
+  var contri = 0;  // 2 times number of connected triples
+  goog.iter.forEach(
+    jsnx.algorithms.cluster.triangles_and_degree_iter_(G),
+    function(d) {
+      contri += d[1] * (d[1] - 1);
+      triangles += d[2];
+    }
+  );
+  return triangles === 0 ? 0 : triangles/contri;
 };
 goog.exportSymbol('jsnx.transitivity', jsnx.algorithms.cluster.transitivity);
 
@@ -328,43 +341,44 @@ goog.exportSymbol('jsnx.transitivity', jsnx.algorithms.cluster.transitivity);
  * @param {jsnx.NodeContainer} opt_nodes (default: all)
  *      Compute clustering for nodes in this container.
  *
- * @return {!Object} 
+ * @return {!jsnx.contrib.Map} 
  *      A dictionary keyed by node with the square clustering coefficient value.
  * @export
  */
 jsnx.algorithms.cluster.square_clustering = function(G, opt_nodes) {
-    var nodes_iter = !goog.isDefAndNotNull(opt_nodes) ? 
-              jsnx.helper.iter(G) : G.nbunch_iter(opt_nodes),
-        clustering = {};
+  var nodes_iter = !goog.isDefAndNotNull(opt_nodes) ? 
+    jsnx.helper.iter(G) : G.nbunch_iter(opt_nodes);
+  var clustering = new jsnx.contrib.Map();
 
-    goog.iter.forEach(nodes_iter, function(v) {
-        clustering[v] = 0;
-        var potential = 0;
+  goog.iter.forEach(nodes_iter, function(v) {
+    clustering.set(v, 0);
+    var potential = 0;
 
-        goog.iter.forEach(
-            jsnx.helper.combinations(goog.object.getKeys(G.get_node(v)), 2), 
-            function(d) {
-                var u = d[0], w = d[1];
-                var squares = (new goog.structs.Set(goog.object.getKeys(G.get_node(u)))).intersection(goog.object.getKeys(G.get_node(w)));
-                squares.remove(v);
-                squares = squares.getCount();
-                
-                clustering[v] += squares;
-                var degm = squares + 1;
-                if(goog.object.containsKey(G.get_node(u), w)) {
-                    degm += 1;
-                }
-                potential += (goog.object.getCount(G.get_node(u)) - degm) *
-                             (goog.object.getCount(G.get_node(w)) - degm) +
-                             squares;
-        });
-        if(potential > 0) {
-            clustering[v] /= potential;
+    goog.iter.forEach(
+      jsnx.helper.combinations(G.get(v).keys(), 2), 
+      function(d) {
+        var u = d[0], w = d[1];
+        var squares = (new jsnx.contrib.Set(G.get(u).keys()))
+          .intersection(G.get(w).keys());
+        squares.remove(v);
+        squares = squares.count();
+
+        clustering.set(v, clustering.get(v) + squares);
+        var degm = squares + 1;
+        if(G.get(u).has(w)) {
+          degm += 1;
         }
-    });
-    if (goog.isDefAndNotNull(opt_nodes) && G.has_node(opt_nodes)) {
-        return goog.object.getValues(clustering)[0]; // return single value
-    }
-    return clustering;
+        potential += (G.get(u).count() - degm) *
+          (G.get(w).count() - degm) +
+            squares;
+      });
+      if(potential > 0) {
+        clustering.set(v, /**@type {number}*/(clustering.get(v)) / potential);
+      }
+  });
+  if (goog.isDefAndNotNull(opt_nodes) && G.has_node(opt_nodes)) {
+    return clustering.values()[0]; // return single value
+  }
+  return clustering;
 }; 
 goog.exportSymbol('jsnx.square_clustering', jsnx.algorithms.cluster.square_clustering);

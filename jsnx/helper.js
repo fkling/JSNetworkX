@@ -3,8 +3,10 @@
 goog.provide('jsnx.helper');
 
 goog.require('goog.array');
-goog.require('goog.object');
 goog.require('goog.iter');
+goog.require('goog.object');
+goog.require('jsnx');
+goog.require('jsnx.contrib');
 
 /*jshint expr:true*/
 
@@ -60,6 +62,30 @@ jsnx.helper.fromkeys = function(keys, opt_value) {
 if(jsnx.TESTING) {
     goog.exportSymbol('jsnx.helper.fromkeys', jsnx.helper.fromkeys);
 }
+
+
+/**
+ * Same as 'jsnx.helper.fromkeys' but returns a Map instead of an object.
+ * 
+ * @param {jsnx.helper.Iterable} keys Container of keys
+ * @param {*} opt_value the value, default is null
+ *
+ * @return {!jsnx.contrib.Map}
+ */
+ jsnx.helper.mapfromkeys = function(keys, opt_value) {
+   if (!goog.isDef(opt_value)) {
+     opt_value = null;
+   }
+   var result = new jsnx.contrib.Map();
+   jsnx.helper.forEach(keys, function(key) {
+     result.set(key, opt_value);
+   });
+   return result;
+ };
+if(jsnx.TESTING) {
+    goog.exportSymbol('jsnx.helper.mapfromkeys', jsnx.helper.mapfromkeys);
+}
+
 
 /**
  * Returns true if object is an iterator 
@@ -616,7 +642,7 @@ if(jsnx.TESTING) {
  */
 jsnx.helper.iter = function(seq) {
     if (seq instanceof jsnx.classes.Graph) {
-        return jsnx.helper.iter(seq['adj']);
+        return jsnx.helper.iter(seq['adj'].keys());
     }
     else if (goog.typeOf(seq) === 'object' && 
         !goog.isArrayLike(seq) && 
@@ -804,37 +830,39 @@ if(jsnx.TESTING) {
  * might be slow for large, nested objects. 
  *
  * @param {T} obj The value to copy.
- * @param {!Array=} memo_ Only used internally
+ * @param {Array=} opt_memo Only used internally
  *
  * @return {T} A copy of the value
  * @template T
  */
-jsnx.helper.deepcopy = function(obj, memo_) {
-    memo_ = memo_ || [];
+jsnx.helper.deepcopy = function(obj, opt_memo) {
+    opt_memo = opt_memo || [];
 
     var type = goog.typeOf(obj);
-    if (type == 'object' && jsnx.helper.isPlainObject(obj) || type == 'array') {
-        // search whether we alrady cloned the object/array
-        var c_ = goog.array.find(memo_, function(clone) {
-            return obj === clone[0];
-        });
-
-        if(c_ !== null) { // found copy
-            return c_[1];
+    if (
+      type == 'object' && 
+      (goog.isFunction(obj.copy) || jsnx.helper.isPlainObject(obj)) || 
+      type == 'array'
+    ) {
+        // search whether we already cloned the object/array
+        var copy;
+        for (var i = 0, l = opt_memo.length; i < l; i += 2) {
+          if (obj === opt_memo[i]) { // found copy
+            return opt_memo[i+1];
+          }
         }
 
-        if (obj.clone) {
-            c_ = [obj, obj.clone()];
-            memo_.push(c_);
-            return c_[1];
+        if (goog.isFunction(obj.copy)) {
+            copy = obj.copy(opt_memo);
+            opt_memo.push(obj, copy);
+            return copy;
         }
-        var clone = type == 'array' ? [] : {};
-        c_ = [obj, clone];
-        memo_.push(c_);
+        copy = type == 'array' ? [] : {};
+        opt_memo.push(obj, copy);
         for (var key in obj) {
-            clone[key] = jsnx.helper.deepcopy(obj[key], memo_);
+          copy[key] = jsnx.helper.deepcopy(obj[key], opt_memo);
         }
-        return clone;
+        return copy;
     }
 
     return obj;
@@ -851,12 +879,13 @@ if(jsnx.TESTING) {
  * @see #deepcopy
  *
  * @param {T} obj The value to copy.
+ * @param {Array=} opt_memo A list of already cloned objects
  *
  * @return {T} A copy of the value
  * @template T
  */
-jsnx.helper.deepcopy_instance = function(obj) {
-    // temprory constructor, we don't know if the original expects
+jsnx.helper.deepcopy_instance = function(obj, opt_memo) {
+    // temporary constructor, we don't know if the original expects
     // parameter
     /**
      * @constructor
@@ -876,9 +905,9 @@ jsnx.helper.deepcopy_instance = function(obj) {
     }
 
     // deepcopy them
-    props = jsnx.helper.deepcopy(props);
+    props = jsnx.helper.deepcopy(props, opt_memo);
 
-    // create a new instance and assigne properties
+    // create a new instance and assign properties
     inst = new T_();
     for(prop in props) {
         inst[prop] = props[prop];

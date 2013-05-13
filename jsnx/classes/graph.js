@@ -2,19 +2,22 @@
 
 goog.provide('jsnx.classes.Graph');
 
+goog.require('goog.asserts');
 goog.require('goog.iter');
 goog.require('goog.math');
 goog.require('goog.json');
+goog.require('goog.string');
 goog.require('goog.object');
 goog.require('jsnx.convert');
 goog.require('jsnx.exception');
 goog.require('jsnx.helper');
+goog.require('jsnx.contrib.Map');
 
 
 
 /*jshint expr:true*/
 
-/** @typedef {(string|number)} */
+/** @typedef {*} */
 jsnx.Node;
 
 /** @typedef {jsnx.helper.Iterable} */
@@ -58,8 +61,8 @@ jsnx.classes.Graph = function(opt_data, opt_attr) {
     }
 
     this['graph'] = {}; // dictionary for graph attributes
-    this['node'] = {};  // empty node dict (created before convert)
-    this['adj'] = {};   // empty adjacency dict
+    this['node'] = new jsnx.contrib.Map(); // empty node dict (created before convert)
+    this['adj'] = new jsnx.contrib.Map(); // empty adjacency dict
 
     // attempt to load grpah with data
     if (goog.isDefAndNotNull(opt_data)) {
@@ -93,7 +96,7 @@ jsnx.classes.Graph.prototype.graph = null;
 /**
  * Node dict
  *
- * @dict
+ * @type {jsnx.contrib.Map}
  * @export
  */
 jsnx.classes.Graph.prototype.node = null;
@@ -102,7 +105,7 @@ jsnx.classes.Graph.prototype.node = null;
 /**
  * Adjacency dict
  *
- * @dict
+ * @type {jsnx.contrib.Map}
  * @export
  */
 jsnx.classes.Graph.prototype.adj = null;
@@ -111,7 +114,7 @@ jsnx.classes.Graph.prototype.adj = null;
 /**
  * Edge dict
  *
- * @dict
+ * @type {jsnx.contrib.Map}
  * @export
  */
 jsnx.classes.Graph.prototype.edge = null;
@@ -142,7 +145,7 @@ jsnx.classes.Graph.prototype.name = function(opt_name) {
 
 // Implements __str__
 /**
- * Return the graph namme
+ * Return the graph name
  *
  * @return {string} Graph name.
  * @export
@@ -168,17 +171,21 @@ jsnx.classes.Graph.prototype.toString = function() {
  *
  * @param {jsnx.Node} n  A node in the graph.
  *
- * @return {!Object} The adjacency dictionary for nodes connected to n.
+ * @return {!jsnx.contrib.Map} The adjacency dictionary for nodes connected to n.
  * @export
  */
-jsnx.classes.Graph.prototype.get_node = function(n) {
-    if (!goog.object.containsKey(this['adj'], n)) {
-        throw {
-            name: 'KeyError',
-            message: 'Graph does not contain node ' + n + '.'
-        };
+jsnx.classes.Graph.prototype.get = function(n) {
+  try {
+    return this['adj'].get(n);
+  }
+  catch(ex) {
+    if (!(ex instanceof jsnx.exception.KeyError)) {
+      throw ex;
     }
-    return this['adj'][n];
+    throw new jsnx.exception.KeyError(
+      'Graph does not contain node ' + n + '.'
+    );
+  }
 };
 
 
@@ -186,7 +193,7 @@ jsnx.classes.Graph.prototype.get_node = function(n) {
  * Add a single node n and update node attributes.
  *
  * Since JavaScript does not provide keyword arguments,
- * all attribtues must be passed in an object as second
+ * all attributes must be passed in an object as second
  * argument.
  *
  * @param {!jsnx.Node} n A node.
@@ -204,12 +211,12 @@ jsnx.classes.Graph.prototype.add_node = function(n, opt_attr_dict) {
             'The attr_dict argument must be an object.');
     }
 
-    if (!goog.object.containsKey(this['adj'], n)) {
-        this['adj'][n] = {};
-        this['node'][n] = opt_attr_dict || {};
+    if (!this['adj'].has(n)) {
+        this['adj'].set(n, new jsnx.contrib.Map());
+        this['node'].set(n, opt_attr_dict);
     }
     else { // update attr even if node already exists
-        goog.object.extend(this['node'][n], opt_attr_dict || {});
+        goog.object.extend(this['node'].get(n), opt_attr_dict);
     }
 };
 
@@ -218,7 +225,7 @@ jsnx.classes.Graph.prototype.add_node = function(n, opt_attr_dict) {
  * Add multiple nodes.
  *
  * Since JavaScript does not provide keyword arguments,
- * all attribtues must be passed in an object as second
+ * all attributes must be passed in an object as second
  * argument.
  *
  * @param {!jsnx.NodeContainer} nodes
@@ -232,38 +239,35 @@ jsnx.classes.Graph.prototype.add_node = function(n, opt_attr_dict) {
  * @export
  */
 jsnx.classes.Graph.prototype.add_nodes_from = function(nodes, opt_attr) {
-    var newnode, nn, ndict, newdict, olddict;
-
     if (!goog.isDefAndNotNull(opt_attr)) {
       opt_attr = {};
     }
 
     jsnx.helper.forEach(nodes, function(n) {
-        newnode = !goog.object.containsKey(this['adj'], n);
 
-        // test whether n is a (node, attr) tuple
-        if (goog.isArray(n)) {
-            nn = n[0];
-            ndict = n[1];
+        if (goog.isArray(n) && n.length === 2 && goog.isObject(n[1])) {
+          var nn = n[0];
+          var ndict = n[1];
 
-            if (!goog.object.containsKey(this['adj'], nn)) {
-                this['adj'][nn] = {};
-                newdict = goog.object.clone(/** @type {Object} **/ (opt_attr));
-                goog.object.extend(newdict, ndict);
-                this['node'][nn] = newdict;
-            }
-            else {
-                olddict = this['node'][nn];
-                goog.object.extend(olddict, opt_attr, ndict);
-            }
-            return; // continue next iteration
+          if (!this['adj'].has(nn)) {
+              this['adj'].set(nn, new jsnx.contrib.Map());
+              var newdict = goog.object.clone(/** @type {Object} **/ (opt_attr));
+              goog.object.extend(newdict, ndict);
+              this['node'].set(nn, newdict);
+          }
+          else {
+              var olddict = this['node'].get(nn);
+              goog.object.extend(olddict, opt_attr, ndict);
+          }
+          return; // continue next iteration
         }
+        var newnode = !this['adj'].has(n);
         if (newnode) {
-            this['adj'][n] = {};
-            this['node'][n] = goog.object.clone(/** @type {Object} **/ (opt_attr));
+            this['adj'].set(n, new jsnx.contrib.Map());
+            this['node'].set(n, goog.object.clone(/** @type {Object} **/ (opt_attr)));
         }
         else {
-            goog.object.extend(this['node'][n], opt_attr);
+            goog.object.extend(this['node'].get(n), opt_attr);
         }
     }, this);
 };
@@ -279,24 +283,27 @@ jsnx.classes.Graph.prototype.add_nodes_from = function(nodes, opt_attr) {
  * @export
  */
 jsnx.classes.Graph.prototype.remove_node = function(n) {
-    var adj = this['adj'],
-        nbrs;
+    var adj = this['adj'];
 
-    if (!goog.object.containsKey(this['node'], n)) {
-        throw new jsnx.exception.JSNetworkXError(
-            'The node ' + n + ' is not in the graph'
-        );
+    try {
+      var nbrs = this['adj'].get(n).keys();
+      this['node'].remove(n);
+      goog.array.forEach(nbrs, function(u) {
+        adj.get(u).remove(n); // remove all edges n-u in graph
+      });
+      adj.remove(n); // now remove node
     }
-
-    //  keys handles self-loops (allow mutation later)
-    nbrs = goog.object.getKeys(adj[n]);
-
-    goog.object.remove(this['node'], n);
-
-    goog.array.forEach(nbrs, function(u) {
-        goog.object.remove(adj[u], n); // remove all edges n-u in graph
-    });
-    goog.object.remove(adj, n); // now remove node
+    catch(ex) {
+      if (!(ex instanceof jsnx.exception.KeyError)) {
+        throw ex;
+      }
+      throw new jsnx.exception.JSNetworkXError(
+          goog.string.subs(
+            'The node %s is not in the graph',
+            goog.json.serialize(n)
+          )
+      );
+    }
 };
 
 
@@ -313,13 +320,17 @@ jsnx.classes.Graph.prototype.remove_nodes_from = function(nodes) {
 
     jsnx.helper.forEach(nodes, function(n) {
         try {
-            goog.object.remove(this['node'], n);
-            goog.object.forEach(adj[n], function(_, u) {
-                goog.object.remove(adj[u], n);
+            this['node'].remove(n);
+            adj.get(n).forEach(function(u) {
+              adj.get(u).remove(n);
             });
-            goog.object.remove(adj, n);
+            adj.remove(n);
         }
-        catch (e) {}
+        catch(ex) {
+          if (!(ex instanceof jsnx.exception.KeyError)) {
+            throw ex;
+          }
+        }
     }, this);
 };
 
@@ -327,33 +338,36 @@ jsnx.classes.Graph.prototype.remove_nodes_from = function(nodes) {
 /**
  * Return an iterator over the nodes.
  *
- * @param {boolean=} data (default false) If false the iterator returns nodes.
+ * @param {boolean=} opt_data (default false) If false the iterator returns nodes.
  *      If true return a two-tuple of node and node data dictionary.
  *
  * @return {goog.iter.Iterator} of nodes If data=true the iterator gives
  *           two-tuples containing (node, node data, dictionary).
  * @export
  */
-jsnx.classes.Graph.prototype.nodes_iter = function(data) {
-    if (data) {
-        return jsnx.helper.iteritems(this['node']);
+jsnx.classes.Graph.prototype.nodes_iter = function(opt_data) {
+    if (opt_data) {
+        return goog.iter.toIterator(this['node']);
     }
-    return jsnx.helper.iter(goog.object.getKeys(this['adj']));
+    return goog.iter.toIterator(this['adj'].keys());
 };
 
 
 /**
  * Return a list of the nodes in the graph.
  *
- * @param {boolean=} data (default false) If false the iterator returns nodes.
+ * @param {boolean=} opt_data (default false) If false the iterator returns nodes.
  *      If true return a two-tuple of node and node data dictionary.
  *
  * @return {!Array} of nodes If data=true a list of two-tuples containing
  *           (node, node data dictionary).
  * @export
  */
-jsnx.classes.Graph.prototype.nodes = function(data) {
-    return goog.iter.toArray(this.nodes_iter(data));
+jsnx.classes.Graph.prototype.nodes = function(opt_data) {
+    if (opt_data) {
+        return this['node'].items();
+    }
+    return this['node'].keys();
 };
 
 
@@ -364,7 +378,7 @@ jsnx.classes.Graph.prototype.nodes = function(data) {
  * @export
  */
 jsnx.classes.Graph.prototype.number_of_nodes = function() {
-    return goog.object.getCount(this['adj']);
+    return this['adj'].count();
 };
 
 
@@ -375,7 +389,7 @@ jsnx.classes.Graph.prototype.number_of_nodes = function() {
  * @export
  */
 jsnx.classes.Graph.prototype.order = function() {
-    return goog.object.getCount(this['adj']);
+    return this['adj'].count();
 };
 
 
@@ -388,7 +402,15 @@ jsnx.classes.Graph.prototype.order = function() {
  * @export
  */
 jsnx.classes.Graph.prototype.has_node = function(n) {
-    return !goog.isArray(n) && goog.object.containsKey(this['adj'], n);
+  try {
+    return this['adj'].has(n);
+  }
+  catch(ex) {
+    if (ex instanceof TypeError) {
+      return false;
+    }
+    throw ex;
+  }
 };
 
 
@@ -421,21 +443,20 @@ jsnx.classes.Graph.prototype.add_edge = function(u, v, opt_attr_dict) {
     }
 
     // add nodes
-    if (!goog.object.containsKey(this['adj'], u)) {
-        this['adj'][u] = {};
-        this['node'][u] = {};
+    if (!this['adj'].has(u)) {
+        this['adj'].set(u, new jsnx.contrib.Map());
+        this['node'].set(u, {});
     }
-
-    if (!goog.object.containsKey(this['adj'], v)) {
-        this['adj'][v] = {};
-        this['node'][v] = {};
+    if (!this['adj'].has(v)) {
+        this['adj'].set(v, new jsnx.contrib.Map());
+        this['node'].set(v, {});
     }
 
     // add the edge
-    var datadict = goog.object.get(this['adj'][u], v+'', {});
+    var datadict = this['adj'].get(u).get(v, {});
     goog.object.extend(datadict, opt_attr_dict);
-    this['adj'][u][v] = datadict;
-    this['adj'][v][u] = datadict;
+    this['adj'].get(u).set(v, datadict);
+    this['adj'].get(v).set(u, datadict);
 };
 
 
@@ -480,23 +501,27 @@ jsnx.classes.Graph.prototype.add_edges_from = function(ebunch, opt_attr_dict) {
         }
         else {
             throw new jsnx.exception.JSNetworkXError(
-                'Edge tuple ' + e.toString() + ' must be a 2-tuple or 3-tuple.'
+              goog.string.subs(
+                'Edge tuple %s must be a 2-tuple or 3-tuple.',
+                goog.json.serialize(e)
+              )
             );
         }
 
-        if (!goog.object.containsKey(this['adj'], u)) {
-            this['adj'][u] = {};
-            this['node'][u] = {};
+        if (!this['adj'].has(u)) {
+            this['adj'].set(u, new jsnx.contrib.Map());
+            this['node'].set(u, {});
         }
-        if (!goog.object.containsKey(this['adj'], v)) {
-            this['adj'][v] = {};
-            this['node'][v] = {};
+        if (!this['adj'].has(v)) {
+            this['adj'].set(v, new jsnx.contrib.Map());
+            this['node'].set(v, {});
         }
 
-        var datadict = goog.object.get(this['adj'][u], v, {});
+        // add the edge
+        var datadict = this['adj'].get(u).get(v, {});
         goog.object.extend(datadict, opt_attr_dict, dd);
-        this['adj'][u][v] = datadict;
-        this['adj'][v][u] = datadict;
+        this['adj'].get(u).set(v, datadict);
+        this['adj'].get(v).set(u, datadict);
     }, this);
 };
 
@@ -535,7 +560,9 @@ jsnx.classes.Graph.prototype.add_weighted_edges_from = function(ebunch, opt_weig
         var attr = {};
         attr[opt_weight] = e[2];
         if(!goog.isDef(attr[opt_weight])) { // simulate too few value to unpack error
-            throw new TypeError('Values must consist of three elements: ' + goog.json.serialize(e));
+            throw new TypeError(
+              'Values must consist of three elements: ' + goog.json.serialize(e)
+            );
         }
         return [e[0], e[1], attr];
     }), opt_attr);
@@ -553,15 +580,20 @@ jsnx.classes.Graph.prototype.add_weighted_edges_from = function(ebunch, opt_weig
 jsnx.classes.Graph.prototype.remove_edge = function(u, v) {
 
     try {
-        goog.object.remove(this['adj'][u], v);
-        if (u != v) {
-            goog.object.remove(this['adj'][v], u);
+        this['adj'].get(u).remove(v);
+        // self-loop needs only one entry removed
+        if (jsnx.contrib.misc.get_hash(u) !== jsnx.contrib.misc.get_hash(v)) {
+          this['adj'].get(v).remove(u);
         }
     }
     catch (e) {
-        if (e instanceof TypeError) {
+        if (e instanceof jsnx.exception.KeyError) {
             throw new jsnx.exception.JSNetworkXError(
-                'The edge ' + u + '-' + v + ' is not in the graph'
+              goog.string.subs(
+                'The edge %s-%s is not in the graph',
+                goog.json.serialize(u),
+                goog.json.serialize(v)
+              )
             );
         }
         throw e;
@@ -582,19 +614,17 @@ jsnx.classes.Graph.prototype.remove_edge = function(u, v) {
  * @export
  */
 jsnx.classes.Graph.prototype.remove_edges_from = function(ebunch) {
-    jsnx.helper.forEach(ebunch, function(e) {
-        var u = e[0], // ignore edge data if present
-            v = e[1];
+  jsnx.helper.forEach(ebunch, function(e) {
+    var u = e[0]; // ignore edge data if present
+    var v = e[1];
 
-        if (goog.object.containsKey(this['adj'], u) &&
-            goog.object.containsKey(this['adj'][u], v)) {
-
-            goog.object.remove(this['adj'][u], v);
-            if (u != v) { // self loop needs only one entry removed
-                goog.object.remove(this['adj'][v], u);
-            }
-        }
-    }, this);
+    if (this['adj'].has(u) && this['adj'].get(u).has(v)) {
+      this['adj'].get(u).remove(v);
+      if (jsnx.contrib.misc.get_hash(u) !== jsnx.contrib.misc.get_hash(v)) {
+        this['adj'].get(v).remove(u);
+      }
+    }
+  }, this);
 };
 
 
@@ -608,8 +638,7 @@ jsnx.classes.Graph.prototype.remove_edges_from = function(ebunch) {
  * @export
  */
 jsnx.classes.Graph.prototype.has_edge = function(u, v) {
-    return goog.object.containsKey(this['adj'], u) &&
-        goog.object.containsKey(this['adj'][u], v);
+  return this['adj'].has(u) && this['adj'].get(u).has(v);
 };
 
 
@@ -622,12 +651,20 @@ jsnx.classes.Graph.prototype.has_edge = function(u, v) {
  * @export
  */
 jsnx.classes.Graph.prototype.neighbors = function(n) {
-    if (!goog.object.containsKey(this['adj'], n)) {
-        throw new jsnx.exception.JSNetworkXError(
-            'The node ' + n + ' is not in the graph.'
-        );
+  try {
+    return this['adj'].get(n).keys();
+  }
+  catch(ex) {
+    if (ex instanceof jsnx.exception.KeyError) {
+      throw new jsnx.exception.JSNetworkXError(
+        goog.string.subs(
+          'The node %s is not in the graph.',
+          goog.json.serialize(n)
+        )
+      );
     }
-    return jsnx.helper.toArray(this['adj'][n]);
+    throw ex;
+  }
 };
 
 
@@ -640,12 +677,20 @@ jsnx.classes.Graph.prototype.neighbors = function(n) {
  * @export
  */
 jsnx.classes.Graph.prototype.neighbors_iter = function(n) {
-    if (!goog.object.containsKey(this['adj'], n)) {
-        throw new jsnx.exception.JSNetworkXError(
-            'The node ' + n + ' is not in the graph.'
-        );
+  try {
+    return goog.iter.toIterator(this['adj'].get(n).keys());
+  }
+  catch(ex) {
+    if (ex instanceof jsnx.exception.KeyError) {
+      throw new jsnx.exception.JSNetworkXError(
+        goog.string.subs(
+          'The node %s is not in the graph.',
+          goog.json.serialize(n)
+        )
+      );
     }
-    return jsnx.helper.iter(this['adj'][n]);
+    throw ex;
+  }
 };
 
 
@@ -680,7 +725,7 @@ jsnx.classes.Graph.prototype.edges = function(opt_nbunch, opt_data) {
  *
  * Note: Nodes in nbunch that are not in the graph will be (quietly) ignored.
  *
- * @param {?jsnx.NodeContainer=} opt_nbunch A container of nodes.
+ * @param {?(jsnx.NodeContainer|boolean)=} opt_nbunch A container of nodes.
  *      The container will be iterated through once.
  * @param {?boolean=} opt_data Return two tuples (u,v) (False)
  *      or three-tuples (u,v,data) (True).
@@ -692,84 +737,86 @@ jsnx.classes.Graph.prototype.edges = function(opt_nbunch, opt_data) {
  */
 jsnx.classes.Graph.prototype.edges_iter = function(opt_nbunch, opt_data) {
 
-    // handle calls with data being the only argument
-    if (goog.isBoolean(opt_nbunch)) {
-        opt_data = /** @type {boolean}*/ (opt_nbunch);
-        opt_nbunch = null;
-    }
+  // handle calls with data being the only argument
+  if (goog.isBoolean(opt_nbunch)) {
+    opt_data = /** @type {boolean} */(opt_nbunch);
+    opt_nbunch = null;
+  }
 
-    var seen = {}, // helper dict to keep track of multiply stored edges
-        iterator,
-        nodes_nbrs, n;
+  // helper dict to keep track of multiply stored edges
+  var seen = new jsnx.contrib.Map();
+  var iterator;
+  var nodes_nbrs;
+  var n;
 
-    if (!goog.isDefAndNotNull(opt_nbunch)) {
-        nodes_nbrs = jsnx.helper.iteritems(this['adj']);
-    }
-    else {
-        nodes_nbrs = /** @type goog.iter.Iterator */ (jsnx.helper.map(
-          this.nbunch_iter(opt_nbunch),
-          function(n) {
-            return [n, this['adj'][n]];
-          },
-          this
-        ));
-    }
+  if (!goog.isDefAndNotNull(opt_nbunch)) {
+    nodes_nbrs = goog.iter.toIterator(this['adj']);
+  }
+  else {
+    nodes_nbrs = goog.iter.map(
+      this.nbunch_iter(opt_nbunch),
+      function(n) {
+        return [n, this['adj'].get(n)];
+      },
+      this
+    );
+  }
 
-    if (opt_data) {
-        iterator = jsnx.helper.nested_chain(nodes_nbrs, function(nd) {
-            n = nd[0];
+  if (opt_data) {
+    iterator = jsnx.helper.nested_chain(nodes_nbrs, function(nd) {
+      n = nd[0];
 
-            var iterator = new goog.iter.Iterator(),
-                iterable = jsnx.helper.iteritems(nd[1]);
+      var iterator = new goog.iter.Iterator();
+      var iterable = goog.iter.toIterator(nd[1]);
 
-            iterator.next = function() {
-                try {
-                    return iterable.next();
-                }
-                catch (e) {
-                    if (e === goog.iter.StopIteration) {
-                        // mark n as seen after iterating over all neighbors
-                        seen[n] = 1;
-                    }
-                    throw e;
-                }
-            };
+      iterator.next = function() {
+        try {
+          return iterable.next();
+        }
+        catch (e) {
+          if (e === goog.iter.StopIteration) {
+            // mark n as seen after iterating over all neighbors
+            seen.set(n, 1);
+          }
+          throw e;
+        }
+      };
 
-            return iterator;
-        }, function(nbrd) {
-            if (!goog.object.containsKey(seen, nbrd[0])) {
-                return [n, nbrd[0], nbrd[1]];
-            }
-        });
-    }
-    else {
-        iterator = jsnx.helper.nested_chain(nodes_nbrs, function(nd) {
-            n = nd[0];
-            var iterator = new goog.iter.Iterator(),
-                iterable = jsnx.helper.iter(nd[1]);
+      return iterator;
+    }, function(nbrd) {
+      if (!seen.has(nbrd[0])) {
+        return [n, nbrd[0], nbrd[1]];
+      }
+    });
+  }
+  else {
+    iterator = jsnx.helper.nested_chain(nodes_nbrs, function(nd) {
+      n = nd[0];
+      var iterator = new goog.iter.Iterator();
+      var iterable = goog.iter.toIterator(nd[1]);
 
-            iterator.next = function() {
-                try {
-                    return iterable.next();
-                }
-                catch (e) {
-                    if (e === goog.iter.StopIteration) {
-                        // mark n as seen after iterating over all neighbors
-                        seen[n] = 1;
-                    }
-                    throw e;
-                }
-            };
+      iterator.next = function() {
+        try {
+          return iterable.next();
+        }
+        catch (e) {
+          if (e === goog.iter.StopIteration) {
+            // mark n as seen after iterating over all neighbors
+            seen.set(n, 1);
+          }
+          throw e;
+        }
+      };
 
-            return iterator;
-        }, function(nbr) {
-            if (!goog.object.containsKey(seen, nbr)) {
-                return [n, nbr];
-            }
-        });
-    }
+      return iterator;
+    }, function(nbrd) {
+      if (!seen.has(nbrd[0])) {
+        return [n, nbrd[0]];
+      }
+    });
+  }
 
-    return iterator;
+  return iterator;
 };
 
 
@@ -787,15 +834,15 @@ jsnx.classes.Graph.prototype.edges_iter = function(opt_nbunch, opt_data) {
  * @export
  */
 jsnx.classes.Graph.prototype.get_edge_data = function(u, v, opt_default) {
-    if (!goog.isDef(opt_default)) {
-        opt_default = null;
+  try {
+    return this['adj'].get(u).get(v);
+  }
+  catch(ex) {
+    if (ex instanceof jsnx.exception.KeyError) {
+      return opt_default;
     }
-
-    if (goog.object.containsKey(this['adj'], u)) {
-        return goog.object.get(this['adj'][u], v.toString(), opt_default);
-    }
-
-    return opt_default;
+    throw ex;
+  }
 };
 
 
@@ -810,9 +857,9 @@ jsnx.classes.Graph.prototype.get_edge_data = function(u, v, opt_default) {
  * @export
  */
 jsnx.classes.Graph.prototype.adjacency_list = function() {
-    return jsnx.helper.toArray(jsnx.helper.map(this.adjacency_iter(), function(nd) {
-        return goog.object.getKeys(nd[1]);
-    }));
+  return goog.iter.toArray(goog.iter.map(this.adjacency_iter(), function(nd) {
+    return nd[1].keys();
+  }));
 };
 
 
@@ -825,7 +872,7 @@ jsnx.classes.Graph.prototype.adjacency_list = function() {
  * @export
  */
 jsnx.classes.Graph.prototype.adjacency_iter = function() {
-    return jsnx.helper.iteritems(this['adj']);
+    return goog.iter.toIterator(this['adj']);
 };
 
 
@@ -847,8 +894,8 @@ jsnx.classes.Graph.prototype.adjacency_iter = function() {
  *      as a weight.  If null or not defined, then each edge has weight 1.
  *      The degree is the sum of the edge weights adjacent to the node.
  *
- * @return {!(number|Object)} A dictionary with nodes as keys and degree as
- * values or a number if a single node is specified.
+ * @return {!(number|jsnx.contrib.Map)} A dictionary with nodes as keys and 
+ * degree as values or a number if a single node is specified.
  * @export
  */
 jsnx.classes.Graph.prototype.degree = function(opt_nbunch, opt_weight) {
@@ -860,9 +907,7 @@ jsnx.classes.Graph.prototype.degree = function(opt_nbunch, opt_weight) {
         ).next()[1]);
     }
     else {
-        return jsnx.helper.objectFromKV(
-            goog.iter.toArray(this.degree_iter(opt_nbunch, opt_weight))
-        );
+      return new jsnx.contrib.Map(this.degree_iter(opt_nbunch, opt_weight));
     }
 };
 
@@ -888,52 +933,55 @@ jsnx.classes.Graph.prototype.degree = function(opt_nbunch, opt_weight) {
  * @export
  */
 jsnx.classes.Graph.prototype.degree_iter = function(opt_nbunch, opt_weight) {
-    var nodes_nbrs,
-        iterator;
+  var nodes_nbrs;
+  var iterator;
 
-    if (!goog.isDefAndNotNull(opt_nbunch)) {
-        nodes_nbrs = jsnx.helper.iteritems(this['adj']);
-    }
-    else {
-        nodes_nbrs = /** @type {goog.iter.Iterator} */ (jsnx.helper.map(
-          this.nbunch_iter(opt_nbunch),
-          function(n) {
-              return [n, this['adj'][n]];
-          },
-          this
-        ));
-    }
+  if (!goog.isDefAndNotNull(opt_nbunch)) {
+    nodes_nbrs = goog.iter.toIterator(this['adj']);
+  }
+  else {
+    nodes_nbrs = goog.iter.map(
+      this.nbunch_iter(opt_nbunch),
+      function(n) {
+        return [n, this['adj'].get(n)];
+      },
+      this
+    );
+  }
 
-    if (!opt_weight) {
-        iterator = /** @type {!goog.iter.Iterator} */ (jsnx.helper.map(
-          nodes_nbrs,
-          function(nd) {
-              return [nd[0], goog.object.getCount(nd[1]) +
-                  (+goog.object.containsKey(nd[1], nd[0]))];
-          }
-        ));
-    }
-    else {
-        iterator = /** @type {!goog.iter.Iterator} */ (jsnx.helper.map(
-          nodes_nbrs,
-          function(nd) {
-            var n = nd[0],
-                nbrs = nd[1],
-                sum = 0, nbr;
+  if (!opt_weight) {
+    iterator = goog.iter.map(
+      nodes_nbrs,
+      function(nd) {
+        // save memory, don't create new array
+        nd[1] = nd[1].count() + (+nd[1].has(nd[0]));
+        return nd;
+      }
+    );
+  }
+  else {
+    iterator = goog.iter.map(
+      nodes_nbrs,
+      function(nd) {
+        var n = nd[0];
+        var nbrs = nd[1];
+        var sum = 0;
 
-            for(nbr in nbrs) {
-                sum += +goog.object.get(nbrs[nbr], goog.asserts.assert(opt_weight), 1);
-            }
+        nbrs.forEach(function(_, data) {
+          sum += +goog.object.get(data, goog.asserts.assert(opt_weight), 1);
+        });
 
-            sum += +(goog.object.containsKey(nbrs, n) &&
-                     goog.object.get(nbrs[n], goog.asserts.assert(opt_weight), 1));
+        sum += +(nbrs.has(n) &&
+         goog.object.get(nbrs.get(n), goog.asserts.assert(opt_weight), 1));
 
-            return [n, sum];
-          }
-        ));
-    }
+        // save memory
+        nd[1] = sum;
+        return nd;
+      }
+    );
+  }
 
-    return iterator;
+  return iterator;
 };
 
 
@@ -946,8 +994,8 @@ jsnx.classes.Graph.prototype.degree_iter = function(opt_nbunch, opt_weight) {
  */
 jsnx.classes.Graph.prototype.clear = function() {
     this.name('');
-    goog.object.clear(this['adj']);
-    goog.object.clear(this['node']);
+    this['adj'].clear();
+    this['node'].clear();
     goog.object.clear(this['graph']);
 };
 
@@ -1002,22 +1050,30 @@ jsnx.classes.Graph.prototype.is_directed = function() {
  * @export
  */
 jsnx.classes.Graph.prototype.to_directed = function() {
-    var G = new jsnx.classes.DiGraph();
-    G['name'](this.name());
-    G.add_nodes_from(this);
-    G.add_edges_from((function() {
-        var u;
-        return jsnx.helper.nested_chain(this.adjacency_iter(), function(nd) {
-            u = nd[0];
-            return jsnx.helper.iteritems(nd[1]);
-        }, function(nbr) {
-            return [u, nbr[0], jsnx.helper.deepcopy(nbr[1])];
-        });
-    }.call(this)));
-    G['graph'] = jsnx.helper.deepcopy(this['graph']);
-    G['node'] = jsnx.helper.deepcopy(this['node']);
+  var G = new jsnx.classes.DiGraph();
+  G['name'](this.name());
+  G.add_nodes_from(this);
+  G.add_edges_from((function() {
+    var u;
+    return jsnx.helper.nested_chain(
+      this.adjacency_iter(),
+      function(nd) {
+        u = nd[0];
+        return goog.iter.toIterator(nd[1]);
+      },
+      function(nbr) {
+        // save memory
+        nbr[2] = jsnx.helper.deepcopy(nbr[1]);
+        nbr[1] = nbr[0];
+        nbr[0] = u;
+        return nbr;
+      }
+    );
+  }.call(this)));
+  G['graph'] = jsnx.helper.deepcopy(this['graph']);
+  G['node'] = jsnx.helper.deepcopy(this['node']);
 
-    return G;
+  return G;
 };
 
 
@@ -1067,35 +1123,35 @@ jsnx.classes.Graph.prototype.to_undirected = function() {
  * @export
  */
 jsnx.classes.Graph.prototype.subgraph = function(nbunch) {
-    var bunch = this.nbunch_iter(nbunch);
+  var bunch = this.nbunch_iter(nbunch);
 
-    // create new graph and copy subgraph into it
-    var H = new this.constructor();
-    // namespace shortcuts for speed
-    var H_adj = H['adj'];
-    var this_adj = this['adj'];
+  // create new graph and copy subgraph into it
+  var H = new this.constructor();
+  // namespace shortcuts for speed
+  var H_adj = H['adj'];
+  var this_adj = this['adj'];
 
-    // add nodes and edges (undirected method)
-    jsnx.helper.forEach(bunch, function(n) {
-        var Hnbrs = {};
-        H_adj[n] = Hnbrs;
+  // add nodes and edges (undirected method)
+  goog.iter.forEach(bunch, function(n) {
+    var Hnbrs = new jsnx.contrib.Map();
+    H_adj.set(n, Hnbrs);
 
-        goog.object.forEach(this_adj[n], function(d, nbr) {
-            if (goog.object.containsKey(H_adj, nbr)) {
-                // add both representations of edge: n-br and nbr-n
-                Hnbrs[nbr] = d;
-                H_adj[nbr][n] = d;
-            }
-        });
+    this_adj.get(n).forEach(function(nbr, d) {
+      if (H_adj.has(nbr)) {
+        // add both representations of edge: n-br and nbr-n
+        Hnbrs.set(nbr, d);
+        H_adj.get(nbr).set(n, d);
+      }
     });
+  });
 
-    // copy node and attribute dictionaries
-    jsnx.helper.forEach(H, function(n) {
-        H['node'][n] = this['node'][n];
-    }, this);
-    H['graph'] = this['graph'];
+  // copy node and attribute dictionaries
+  jsnx.helper.forEach(H, function(n) {
+    H['node'].set(n, this['node'].get(n));
+  }, this);
+  H['graph'] = this['graph'];
 
-    return H;
+  return H;
 };
 
 /**
@@ -1108,12 +1164,14 @@ jsnx.classes.Graph.prototype.subgraph = function(nbunch) {
  * @export
  */
 jsnx.classes.Graph.prototype.nodes_with_selfloops = function() {
-    return goog.array.map(
-        goog.array.filter(jsnx.helper.items(this['adj']), function(nd) {
-            return goog.object.containsKey(nd[1], nd[0]);
-        }), function(nd) {
-            return nd[0];
-        });
+  return goog.array.map(
+    goog.array.filter(this['adj'].items(), function(nd) {
+      return nd[1].has(nd[0]);
+    }),
+    function(nd) {
+      return nd[0];
+    }
+  );
 };
 
 
@@ -1130,23 +1188,31 @@ jsnx.classes.Graph.prototype.nodes_with_selfloops = function() {
  * @export
  */
 jsnx.classes.Graph.prototype.selfloop_edges = function(opt_data) {
-    if (opt_data) {
-        return goog.array.map(
-            goog.array.filter(jsnx.helper.items(this['adj']), function(nd) {
-                return goog.object.containsKey(nd[1], nd[0]);
-            }), function(nd) {
-                var n = nd[0], nbrs = nd[1];
-                return [n, n, nbrs[n]];
-            });
-    }
-    else {
-        return goog.array.map(goog.array.filter(
-            jsnx.helper.items(this['adj']), function(nd) {
-                return goog.object.containsKey(nd[1], nd[0]);
-            }), function(nd) {
-                return [nd[0], nd[0]];
-            });
-    }
+  if (opt_data) {
+    return goog.array.map(
+      goog.array.filter(this['adj'].items(), function(nd) {
+      return nd[1].has(nd[0]);
+    }), function(nd) {
+      // save memory
+      nd[2] = nd[1].get(nd[0]);
+      nd[1] = nd[0];
+      return nd;
+    });
+  }
+  else {
+    return goog.array.map(
+      goog.array.filter(
+        this['adj'].items(),
+        function(nd) {
+          return nd[1].has(nd[0]);
+        }
+      ),
+      function(nd) {
+        nd[1] = nd[0];
+        return nd;
+      }
+    );
+  }
 };
 
 
@@ -1173,19 +1239,19 @@ jsnx.classes.Graph.prototype.number_of_selfloops = function() {
  * @export
  */
 jsnx.classes.Graph.prototype.size = function(opt_weight) {
-    var s = goog.math.sum.apply(
-      null, 
-      goog.object.getValues(goog.asserts.assertObject(
-        this.degree(null, opt_weight)
-      ))
-    ) / 2;
+  var s = goog.math.sum.apply(
+    null, 
+    goog.asserts.assertObject(
+      this.degree(null, opt_weight)
+    ).values()
+  ) / 2;
 
-    if (!goog.isDefAndNotNull(opt_weight)) {
-        return Math.floor(s); // int(s)
-    }
-    else {
-        return s; // no need to cast to float
-    }
+  if (!goog.isDefAndNotNull(opt_weight)) {
+    return Math.floor(s); // int(s)
+  }
+  else {
+    return s; // no need to cast to float
+  }
 };
 
 
@@ -1203,15 +1269,15 @@ jsnx.classes.Graph.prototype.size = function(opt_weight) {
  * @export
  */
 jsnx.classes.Graph.prototype.number_of_edges = function(u, v) {
-    if (!goog.isDefAndNotNull(u)) {
-        return Math.floor(this.size());
-    }
-    if (goog.object.containsKey(this['adj'][u], v)) {
-        return 1;
-    }
-    else {
-        return 0;
-    }
+  if (!goog.isDefAndNotNull(u)) {
+    return Math.floor(this.size());
+  }
+  if (this['adj'].get(u).has(v)) {
+    return 1;
+  }
+  else {
+    return 0;
+  }
 };
 
 
@@ -1226,12 +1292,12 @@ jsnx.classes.Graph.prototype.number_of_edges = function(u, v) {
  * @export
  */
 jsnx.classes.Graph.prototype.add_star = function(nodes, opt_attr) {
-    var nlist = jsnx.helper.toArray(nodes),
-        v = nlist[0],
-        edges = jsnx.helper.map(goog.array.slice(nlist, 1), function(n) {
-           return [v, n];
-        });
-    this.add_edges_from(edges, opt_attr);
+  var nlist = jsnx.helper.toArray(nodes);
+  var v = nlist[0];
+  var edges = goog.iter.map(goog.array.slice(nlist, 1), function(n) {
+    return [v, n];
+  });
+  this.add_edges_from(edges, opt_attr);
 };
 
 
@@ -1245,10 +1311,12 @@ jsnx.classes.Graph.prototype.add_star = function(nodes, opt_attr) {
  * @export
  */
 jsnx.classes.Graph.prototype.add_path = function(nodes, opt_attr) {
-    var nlist = jsnx.helper.toArray(nodes),
-        edges = goog.array.zip(goog.array.slice(nlist, 0, nlist.length - 1),
-                               goog.array.slice(nlist, 1));
-    this.add_edges_from(edges, opt_attr);
+  var nlist = jsnx.helper.toArray(nodes);
+  var edges = goog.array.zip(
+    goog.array.slice(nlist, 0, nlist.length - 1),
+    goog.array.slice(nlist, 1)
+  );
+  this.add_edges_from(edges, opt_attr);
 };
 
 
@@ -1262,12 +1330,12 @@ jsnx.classes.Graph.prototype.add_path = function(nodes, opt_attr) {
  * @export
  */
 jsnx.classes.Graph.prototype.add_cycle = function(nodes, opt_attr) {
-    var nlist = jsnx.helper.toArray(nodes);
-    var edges = goog.array.zip(
-      nlist,
-      goog.array.concat(goog.array.slice(nlist, 1),[nlist[0]])
-    );
-    this.add_edges_from(edges, opt_attr);
+  var nlist = jsnx.helper.toArray(nodes);
+  var edges = goog.array.zip(
+    nlist,
+    goog.array.concat(goog.array.slice(nlist, 1),[nlist[0]])
+  );
+  this.add_edges_from(edges, opt_attr);
 };
 
 
@@ -1299,41 +1367,41 @@ jsnx.classes.Graph.prototype.add_cycle = function(nodes, opt_attr) {
  * @export
  */
 jsnx.classes.Graph.prototype.nbunch_iter = function(opt_nbunch) {
-    var bunch;
+  var bunch;
 
-    if (!goog.isDefAndNotNull(opt_nbunch)) { // include all nodes via iterator
-        bunch = jsnx.helper.iter(this['adj']);
-    }
-    else if (this.has_node(opt_nbunch)) { // if nbunch is a single node
-        bunch = jsnx.helper.iter([opt_nbunch.toString()]);
-    }
-    else { // if nbunch is a sequence of nodes
-        var bunch_iter = function(nlist, adj) {
-            var iterator = new goog.iter.Iterator(),
-                iterable = jsnx.helper.nested_chain(nlist, function(n) {
-                    if (goog.object.containsKey(adj, n)) {
-                        return n.toString(); // fix mismatch of numbers and strings
-                    }
-                });
+  if (!goog.isDefAndNotNull(opt_nbunch)) { // include all nodes via iterator
+    bunch = goog.iter.toIterator(this['adj'].keys());
+  }
+  else if (this.has_node(opt_nbunch)) { // if nbunch is a single node
+    bunch = goog.iter.toIterator([opt_nbunch]);
+  }
+  else { // if nbunch is a sequence of nodes
+    var bunch_iter = function(nlist, adj) {
+      var iterator = new goog.iter.Iterator();
+      var iterable = jsnx.helper.nested_chain(nlist, function(n) {
+        if (adj.has(n)) {
+          return n; // fix mismatch of numbers and strings
+        }
+      });
 
-            iterator.next = function() {
-                try {
-                    return iterable.next();
-                }
-                catch (e) {
-                    // capture error for non-sequence/iterator nbunch.
-                    if (e instanceof TypeError) {
-                        throw new jsnx.exception.JSNetworkXError(
-                            'nbunch is not a node or a sequence of nodes'
-                        );
-                    }
-                    throw e;
-                }
-            };
-            return iterator;
-        };
+      iterator.next = function() {
+        try {
+          return iterable.next();
+        }
+        catch (e) {
+          // capture error for non-sequence/iterator nbunch.
+          if (e instanceof TypeError) {
+            throw new jsnx.exception.JSNetworkXError(
+              'nbunch is not a node or a sequence of nodes'
+            );
+          }
+          throw e;
+        }
+      };
+      return iterator;
+    };
 
-        bunch = bunch_iter(opt_nbunch, this['adj']);
-    }
-    return bunch;
+    bunch = bunch_iter(opt_nbunch, this['adj']);
+  }
+  return bunch;
 };

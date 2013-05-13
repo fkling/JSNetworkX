@@ -1,50 +1,45 @@
-/*jshint strict:false, sub:true*/
-/*global expect:true, goog: true, jsnx:true, BaseTestClass:true*/
+/*jshint strict:false, node:true*/
 
-function TestGraphical(name) {
-    goog.base(this, name || "TestGraphical");
-}
+var assert = require('../../../mocha/assert');
+var jsnx = require('../../../jsnetworkx-test');
 
-goog.inherits(TestGraphical, BaseTestClass);
+exports.TestGraphical = {
 
-
-TestGraphical.prototype.test_valid_degree_sequence1 = function() {
-    var n = 100,
-        p = 0.3;
+  test_valid_degree_sequence1:  function() {
+    var n = 100;
+    var p = 0.3;
     for(var i = 0; i < 10; i++) {
-        var G = jsnx.erdos_renyi_graph(n, p),
-            deg = goog.object.getValues(G.degree());
-        expect(jsnx.is_valid_degree_sequence(deg, /*method=*/'eg')).toBe(true);
-        expect(jsnx.is_valid_degree_sequence(deg, /*method=*/'hh')).toBe(true);
+      var G = jsnx.erdos_renyi_graph(n, p);
+      var deg = G.degree().values();
+      assert(jsnx.is_valid_degree_sequence(deg, /*method=*/'eg'));
+      assert(jsnx.is_valid_degree_sequence(deg, /*method=*/'hh'));
     }
-};
+  },
 
 //TODO: test_valid_degree_sequence2
 //TODO: test_atlas
 
-TestGraphical.prototype.test_small_graph_true = function() {
+  test_small_graph_true: function() {
     var z = [5,3,3,3,3,2,2,2,1,1,1];
-    expect(jsnx.is_valid_degree_sequence(z, 'hh')).toBe(true);
-    expect(jsnx.is_valid_degree_sequence(z, 'eg')).toBe(true);
+    assert(jsnx.is_valid_degree_sequence(z, 'hh'));
+    assert(jsnx.is_valid_degree_sequence(z, 'eg'));
     z = [10,3,3,3,3,2,2,2,2,2,2];
-    expect(jsnx.is_valid_degree_sequence(z, 'hh')).toBe(true);
-    expect(jsnx.is_valid_degree_sequence(z, 'eg')).toBe(true);
+    assert(jsnx.is_valid_degree_sequence(z, 'hh'));
+    assert(jsnx.is_valid_degree_sequence(z, 'eg'));
     z = [1, 1, 1, 1, 1, 2, 2, 2, 3, 4];
-    expect(jsnx.is_valid_degree_sequence(z, 'hh')).toBe(true);
-    expect(jsnx.is_valid_degree_sequence(z, 'eg')).toBe(true);
-};
+    assert(jsnx.is_valid_degree_sequence(z, 'hh'));
+    assert(jsnx.is_valid_degree_sequence(z, 'eg'));
+  },
 
-TestGraphical.prototype.test_small_graph_false = function() {
+  test_small_graph_false: function() {
     var z = [1000,3,3,3,3,2,2,2,1,1,1];
-    expect(jsnx.is_valid_degree_sequence(z, 'hh')).toBe(false);
-    expect(jsnx.is_valid_degree_sequence(z, 'eg')).toBe(false);
+    assert(!jsnx.is_valid_degree_sequence(z, 'hh'));
+    assert(!jsnx.is_valid_degree_sequence(z, 'eg'));
     z = [6,5,4,4,2,1,1,1];
-    expect(jsnx.is_valid_degree_sequence(z, 'hh')).toBe(false);
-    expect(jsnx.is_valid_degree_sequence(z, 'eg')).toBe(false);
+    assert(!jsnx.is_valid_degree_sequence(z, 'hh'));
+    assert(!jsnx.is_valid_degree_sequence(z, 'eg'));
     z = [1, 1, 1, 1, 1, 1, 2, 2, 2, 3, 4];
-    expect(jsnx.is_valid_degree_sequence(z, 'hh')).toBe(false);
-    expect(jsnx.is_valid_degree_sequence(z, 'eg')).toBe(false);
+    assert(!jsnx.is_valid_degree_sequence(z, 'hh'));
+    assert(!jsnx.is_valid_degree_sequence(z, 'eg'));
+  }
 };
-
-
-(new TestGraphical()).run();

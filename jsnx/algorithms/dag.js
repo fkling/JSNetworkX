@@ -2,10 +2,11 @@
 "use strict";
 goog.provide('jsnx.algorithms.dag');
 
-goog.require('jsnx.exception');
-goog.require('goog.object');
 goog.require('goog.array');
-goog.require('goog.structs.Set');
+goog.require('goog.object');
+goog.require('jsnx.contrib.Map');
+goog.require('jsnx.contrib.Set');
+goog.require('jsnx.exception');
 
 /**
  * Return true if the graph G is a directed acyclic graph (DAG) or false if not.
@@ -57,32 +58,33 @@ jsnx.algorithms.dag.topological_sort = function(G, opt_nbunch) {
   }
 
   // nonrecursive version
-  var seen = {};
+  var seen = new jsnx.contrib.Set();
   var order_explored = []; // provide order and
-  var explored = {};       // fast search without more general priorityDictionary
+  // fast search without more general priorityDictionary
+  var explored = new jsnx.contrib.Set(); 
 
   if (!goog.isDefAndNotNull(opt_nbunch)) {
     opt_nbunch = G.nodes_iter();
   }
 
-  jsnx.helper.forEach(opt_nbunch, function(/**string*/v) { // process all vertices in G
-    if (goog.object.containsKey(explored, v)) {
+  jsnx.helper.forEach(opt_nbunch, function(v) { // process all vertices in G
+    if (explored.has(v)) {
       return; // continue
     }
 
     var fringe = [v]; // nodes yet to look at
     while (fringe.length > 0) {
       var w = fringe[fringe.length - 1]; // depth first search
-      if (goog.object.containsKey(explored, w)) { // already looked down this branch
+      if (explored.has(w)) { // already looked down this branch
         fringe.pop();
         continue;
       }
-      seen[w] = true; // mark as seen
+      seen.add(w); // mark as seen
       // Check successors for cycles for new nodes
       var new_nodes = [];
-      goog.object.forEach(G.get_node(w), function(_, n) {
-        if (!goog.object.containsKey(explored, n)) {
-          if (goog.object.containsKey(seen, n)) { // CYCLE !!
+      G.get(w).forEach(function(n) {
+        if (!explored.has(n)) {
+          if (seen.has(n)) { // CYCLE !!
             throw new jsnx.exception.JSNetworkXUnfeasible('Graph contains a cycle');
           }
           new_nodes.push(n);
@@ -92,8 +94,8 @@ jsnx.algorithms.dag.topological_sort = function(G, opt_nbunch) {
         fringe.push.apply(fringe, new_nodes);
       }
       else {
-        explored[w] = true;
-        goog.array.insertAt(order_explored, w.toString());
+        explored.add(w);
+        goog.array.insertAt(order_explored, w);
       }
     }
   });
@@ -133,7 +135,7 @@ jsnx.algorithms.dag.topological_sort_recursive = function(G, opt_nbunch) {
   // function for recursive dfs
   /**
    * @param {jsnx.classes.Graph} G graph
-   * @param {goog.structs.Set} seen
+   * @param {jsnx.contrib.Set} seen
    * @param {Array} explored
    * @param {string} v
    *
@@ -141,21 +143,21 @@ jsnx.algorithms.dag.topological_sort_recursive = function(G, opt_nbunch) {
    */
   function _dfs(G, seen, explored, v) {
     seen.add(v);
-    goog.object.forEach(G.get_node(v), function(_, w) {
-      if (!seen.contains(w)) {
+    G.get(v).forEach(function(w) {
+      if (!seen.has(w)) {
         if (!_dfs(G, seen, explored, w)) {
           return false;
         }
       }
-      else if (seen.contains(w) && !goog.array.contains(explored, w)) {
+      else if (seen.has(w) && !goog.array.contains(explored, w)) {
         throw new jsnx.exception.JSNetworkXUnfeasible('Graph contains a cycle');
       }
     });
-    goog.array.insertAt(explored, v.toString());
+    goog.array.insertAt(explored, v);
     return true;
   }
 
-  var seen = new goog.structs.Set();
+  var seen = new jsnx.contrib.Set();
   var explored = [];
 
   if (!goog.isDefAndNotNull(opt_nbunch)) {
@@ -197,8 +199,8 @@ jsnx.algorithms.dag.is_aperiodic = function is_aperiodic(G) {
   }
 
   var s = G.nodes_iter().next();
-  var levels = {};
-  levels[s] = 0;
+  var levels = new jsnx.contrib.Map();
+  levels.set(s, 0);
   var this_level = [s];
   var g = 0;
   var l = 1;
@@ -206,13 +208,17 @@ jsnx.algorithms.dag.is_aperiodic = function is_aperiodic(G) {
   while (this_level.length > 0) {
     var next_level = [];
     goog.array.forEach(this_level, function(u) {
-      goog.object.forEach(G.get_node(u), function(_, v) {
-        if (goog.object.containsKey(levels, v)) { // non-tree edge
-          g = jsnx.helper.gcd(g, levels[u] - levels[v] + 1);
+      G.get(u).forEach(function(v) {
+        if (levels.has(v)) { // non-tree edge
+          g = jsnx.helper.gcd(
+            g,
+            /**@type {number}*/(levels.get(u)) -
+              /**@type {number}*/(levels.get(v)) + 1
+          );
         }
         else { // tree edge
           next_level.push(v);
-          levels[v] = l;
+          levels.set(v, l);
         }
       });
     });
@@ -220,12 +226,12 @@ jsnx.algorithms.dag.is_aperiodic = function is_aperiodic(G) {
     l += 1;
   }
 
-  if (jsnx.helper.len(levels) === jsnx.helper.len(G)) {
+  if (levels.count() === jsnx.helper.len(G)) {
     return g === 1;
   }
   return g === 1 && is_aperiodic(
     G.subgraph(
-      (new goog.structs.Set(G.nodes())).difference(goog.object.getKeys(levels))
+      (new jsnx.contrib.Set(G.nodes())).difference(levels.keys())
     )
   );
 };

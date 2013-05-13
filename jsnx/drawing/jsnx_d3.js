@@ -540,7 +540,7 @@ jsnx.drawing.jsnx_d3.add_nodes_ = function(G, nodes, force, selection,
     var data = /** @type {Array} */ (force.nodes());
     // add new data
     jsnx.helper.forEach(nodes, function(n) {
-        var d = G['node'][n],
+        var d = G['node'].get(n),
         nobj = {'node': n, 'data': d, 'G': G};
         data.push(nobj);
         d[jsnx.drawing.jsnx_d3.D3_DATA_NAME_] = nobj;
@@ -591,8 +591,8 @@ jsnx.drawing.jsnx_d3.add_edges_ = function(G, edges, force, selection,
         eobj = {
             'edge': [u,v],
             'redge': [v, u],
-            'source': G['node'][u][jsnx.drawing.jsnx_d3.D3_DATA_NAME_], 
-            'target': G['node'][v][jsnx.drawing.jsnx_d3.D3_DATA_NAME_], 
+            'source': G['node'].get(u)[jsnx.drawing.jsnx_d3.D3_DATA_NAME_], 
+            'target': G['node'].get(v)[jsnx.drawing.jsnx_d3.D3_DATA_NAME_], 
             'data': d,
             'G': G
         };
@@ -770,7 +770,7 @@ jsnx.drawing.jsnx_d3.remove_nodes_ = function(G, nodes, force, selection) {
     var data = /** @type {Array} */ (force.nodes());
     // remove items from data
     jsnx.helper.forEach(G.nbunch_iter(nodes), function(n) {
-        goog.array.remove(data, G['node'][n][jsnx.drawing.jsnx_d3.D3_DATA_NAME_]);
+        goog.array.remove(data, G['node'].get(n)[jsnx.drawing.jsnx_d3.D3_DATA_NAME_]);
     });
     // rebind data
     selection = /** @type {d3.selection} */ (selection.data(

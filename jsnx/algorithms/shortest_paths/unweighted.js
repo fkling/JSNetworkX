@@ -8,6 +8,7 @@ goog.require('goog.array');
 goog.require('goog.iter');
 goog.require('goog.object');
 goog.require('jsnx.helper');
+goog.require('jsnx.contrib.Map');
 
 /**
  * Compute the shortest path lengths from source to all reachable nodes.
@@ -19,24 +20,27 @@ goog.require('jsnx.helper');
  * @param {number=} opt_cutoff 
  *    Depth to stop the search. Only paths of length <= cutoff are returned.
  *
- * @return {!Object} Dictionary of shortest path lengths keyed by target.
+ * @return {!jsnx.contrib.Map} 
+ *    Dictionary of shortest path lengths keyed by target.
  * @export
  */
 jsnx.algorithms.shortest_paths.unweighted.single_source_shortest_path_length =
   function(G, source, opt_cutoff) {
-    var seen = {}; // level (number of hops) when seen n BFS
+    var seen = new jsnx.contrib.Map(); // level (number of hops) when seen n BFS
     var level = 0; // the current level
-    var nextlevel = {}; // dict of nodes to check at next level
-    nextlevel[source] = 1;
+    var nextlevel = new jsnx.contrib.Map(); // dict of nodes to check at next level
+    nextlevel.set(source, 1);
 
-    while (goog.object.getCount(nextlevel) > 0) {
+    while (nextlevel.count() > 0) {
       var thislevel = nextlevel;
-      nextlevel = {};
+      nextlevel = new jsnx.contrib.Map();
       /*jshint loopfunc:true*/
-      goog.object.forEach(thislevel, function(_, v) {
-        if (!goog.object.containsKey(seen, v)) {
-          seen[v] = level;
-          goog.object.extend(nextlevel, G.get_node(v));
+      thislevel.forEach(function(v) {
+        if (!seen.has(v)) {
+          seen.set(v, level);
+          G.get(v).forEach(function(n) {
+            nextlevel.set(n, 1);
+          });
         }
       });
       if (goog.isNumber(opt_cutoff) && opt_cutoff <= level) {
@@ -58,19 +62,21 @@ goog.exportSymbol(
  * @param {number=} opt_cutoff  depth to stop the search. 
  *    Only paths of length <= cutoff are returned.
  *
- * @return {!Object}
+ * @return {!jsnx.contrib.Map}
  * @export
  */
 jsnx.algorithms.shortest_paths.unweighted.all_pairs_shortest_path_length = 
   function(G, opt_cutoff) {
-    var paths = {};
+    var paths = new jsnx.contrib.Map();
     jsnx.helper.forEach(G, function(n) {
-      paths[n] = 
+      paths.set(
+        n,
         jsnx.algorithms.shortest_paths.unweighted.single_source_shortest_path_length(
           G,
           n,
           opt_cutoff
-        );
+        )
+      );
     });
     return paths;
 };
@@ -92,8 +98,6 @@ goog.exportSymbol(
  */
 jsnx.algorithms.shortest_paths.unweighted.bidirectional_shortest_path = 
   function(G, source, target) {
-    source = source.toString();
-    target = target.toString();
     // call helper to do the real work
     var results = 
       jsnx.algorithms.shortest_paths.unweighted.bidirectional_pred_succ_(
@@ -110,13 +114,13 @@ jsnx.algorithms.shortest_paths.unweighted.bidirectional_shortest_path =
     // from w to target
     while (goog.isDefAndNotNull(w)) {
       path.push(w);
-      w = succ[w];
+      w = succ.get(w);
     }
     // from source to w
-    w = pred[path[0]];
+    w = pred.get(path[0]);
     while (goog.isDefAndNotNull(w)) {
       path.unshift(w);
-      w = pred[w];
+      w = pred.get(w);
     }
     return path;
 };
@@ -145,11 +149,11 @@ jsnx.algorithms.shortest_paths.unweighted.bidirectional_pred_succ_ =
       );
     }
 
-    var pred = {};
-    var succ = {};
+    var pred = new jsnx.contrib.Map();
+    var succ = new jsnx.contrib.Map();
     if (target === source) {
-      pred[target] = null;
-      succ[source] = null;
+      pred.set(target, null);
+      succ.set(source, null);
       return [pred, succ, source];
     }
 
@@ -165,8 +169,8 @@ jsnx.algorithms.shortest_paths.unweighted.bidirectional_pred_succ_ =
     }
 
     // predecesssor and successors in search
-    pred[source] = null;
-    succ[target] = null;
+    pred.set(source, null);
+    succ.set(target, null);
     // initialize fringes, start with forward
     var forward_fringe = [source];
     var reverse_fringe = [target];
@@ -186,11 +190,11 @@ jsnx.algorithms.shortest_paths.unweighted.bidirectional_pred_succ_ =
             if (result) {
               return;
             }
-            if (!goog.object.containsKey(pred, w)) {
+            if (!pred.has(w)) {
               forward_fringe.push(w);
-              pred[w] = v;
+              pred.set(w, v);
             }
-            if (goog.object.containsKey(succ, w)) {
+            if (succ.has(w)) {
               result = [pred, succ, w]; // found path
             }
           });
@@ -207,11 +211,11 @@ jsnx.algorithms.shortest_paths.unweighted.bidirectional_pred_succ_ =
             if (result) {
               return;
             }
-            if (!goog.object.containsKey(succ, w)) {
-              succ[w] = v;
+            if (!succ.has(w)) {
+              succ.set(w, v);
               reverse_fringe.push(w);
             }
-            if (goog.object.containsKey(pred, w)) {
+            if (pred.has(w)) {
               result = [pred, succ, w];
             }
           });
@@ -245,29 +249,26 @@ jsnx.algorithms.shortest_paths.unweighted.bidirectional_pred_succ_ =
  * @param {number=} opt_cutoff Depth to stop the search.
  *    Only paths of length <= cutoff are returned.
  *
- * @return {!Object} Dictionary, keyed by target, of shortest paths.
+ * @return {!jsnx.contrib.Map} Dictionary, keyed by target, of shortest paths.
  * @export
  */
 jsnx.algorithms.shortest_paths.unweighted.single_source_shortest_path =
   function(G, source, opt_cutoff) {
-    source = source.toString();
     var level = 0;
-    var nextlevel = {};
-    nextlevel[source] = 1;
-    var paths = {};
-    paths[source] = [source];
+    var nextlevel = new jsnx.contrib.Map([[source, 1]]);
+    var paths = new jsnx.contrib.Map([[source, [source]]]);
     if (opt_cutoff === 0) {
       return paths;
     }
     /*jshint loopfunc:true*/
-    while (goog.object.getCount(nextlevel) > 0) {
+    while (nextlevel.count() > 0) {
       var thislevel = nextlevel;
-      nextlevel = {};
-      goog.object.forEach(thislevel, function(_, v) {
-        goog.object.forEach(G.get_node(v), function(_, w) {
-          if (!goog.object.containsKey(paths, w)) {
-            paths[w] = paths[v].concat([w]);
-            nextlevel[w] = 1;
+      nextlevel = new jsnx.contrib.Map();
+      thislevel.forEach(function(v) {
+        G.get(v).forEach(function(w) {
+          if (!paths.has(w)) {
+            paths.set(w, paths.get(v).concat([w]));
+            nextlevel.set(w, 1);
           }
         });
       });
@@ -291,19 +292,22 @@ goog.exportSymbol(
  * @param {number=} opt_cutoff Depth to stop the search.
  *    Only paths of length <= cutoff are returned.
  * 
- * @return {!Object} Dictionary, keyed by source and target, of shortest paths.
+ * @return {!jsnx.contrib.Map} 
+ *    Dictionary, keyed by source and target, of shortest paths.
  * @export
  */
 jsnx.algorithms.shortest_paths.unweighted.all_pairs_shortest_path = 
   function(G, opt_cutoff) {
-    var paths = {};
+    var paths = new jsnx.contrib.Map();
     jsnx.helper.forEach(G, function(n) {
-      paths[n] = 
+      paths.set(
+        n,
         jsnx.algorithms.shortest_paths.unweighted.single_source_shortest_path(
           G,
           n,
           opt_cutoff
-        );
+        )
+      );
     });
     return paths;
 };
@@ -325,19 +329,16 @@ goog.exportSymbol(
  *    Only paths of length <= cutoff are returned.
  *  @param {boolean=} opt_return_seen
  *
- *  @return {!Object} Dictionary, keyed by node, 
+ *  @return {!(jsnx.contrib.Map|Array)} Dictionary, keyed by node, 
  *    of predecessors in the shortest path.
  *  @export
  */
 jsnx.algorithms.shortest_paths.unweighted.predecessor = 
   function(G, source, opt_target, opt_cutoff, opt_return_seen) {
-    source = source.toString();
     var level = 0;
     var nextlevel = [source];
-    var seen = {};
-    seen[source] = level;
-    var pred = {};
-    pred[source] = [];
+    var seen = new jsnx.contrib.Map([[source, level]]);
+    var pred = new jsnx.contrib.Map([[source, []]]);
 
     /*jshint loopfunc:true*/
     while (nextlevel.length > 0) {
@@ -345,14 +346,14 @@ jsnx.algorithms.shortest_paths.unweighted.predecessor =
       var thislevel = nextlevel;
       nextlevel = [];
       goog.array.forEach(thislevel, function(v) {
-        goog.object.forEach(G.get_node(v), function(_, w) {
-          if (!goog.object.containsKey(seen, w)) {
-            pred[w] = [v];
-            seen[w] = level;
+        G.get(v).forEach(function(w) {
+          if (!seen.has(w)) {
+            pred.set(w, [v]);
+            seen.set(w, level);
             nextlevel.push(w);
           }
-          else if (seen[w] === level) { // add v to predecesssor list if it
-            pred[w].push(v);            // is at the correct level
+          else if (seen.get(w) === level) { // add v to predecesssor list if it
+            pred.get(w).push(v);            // is at the correct level
           }
         });
       });
@@ -362,18 +363,17 @@ jsnx.algorithms.shortest_paths.unweighted.predecessor =
     }
 
     if (goog.isDefAndNotNull(opt_target)) {
-      opt_target = opt_target.toString();
       if (opt_return_seen) {
-        if (!goog.object.containsKey(pred, opt_target)) {
+        if (!pred.has(opt_target)) {
           return [[], -1];
         }
-        return [pred[opt_target], seen[opt_target]];
+        return [pred.get(opt_target), seen.get(opt_target)];
       }
       else {
-        if (!goog.object.containsKey(pred, opt_target)) {
+        if (!pred.has(opt_target)) {
           return [];
         }
-        return pred[opt_target];
+        return /** @type {!Array} */ (pred.get(opt_target));
       }
     }
     else {

@@ -1,26 +1,25 @@
-/*jshint strict:false, sub:true*/
+/*jshint strict:false, node:true*/
 
-function TestMisc() {
-    goog.base(this, 'TestMisc');
-}
+var assert = require('../../../mocha/assert');
+var jsnx = require('../../../jsnetworkx-test');
 
-goog.inherits(TestMisc, BaseTestClass);
+exports.TestMisc = {
 
 //TODO: test_is_string_like ?
 //TODO: test_iterable ?
 //TODO: test_graph_iterable ?
 
-TestMisc.prototype.test_is_list_of_ints = function() {
-    expect(jsnx.utils.is_list_of_ints([1,2,3,42])).toEqual(true);
-    expect(jsnx.utils.is_list_of_ints([1,2,3,'kermit'])).toEqual(false);
+  test_is_list_of_ints: function() {
+    assert(jsnx.utils.is_list_of_ints([1,2,3,42]));
+    assert(!jsnx.utils.is_list_of_ints([1,2,3,'kermit']));
+  },
+
+  // Not in original tests
+  test_cumulative_sum:  function() {
+    assert(
+      jsnx.toArray(jsnx.utils.cumulative_sum([1,2,3,4])),
+      [1,3,6,10]
+    );
+  }
+  //TODO: test_random_number_distribution
 };
-
-// Not in original tests
-TestMisc.prototype.test_cumulative_sum = function() {
-    expect(jsnx.toArray(jsnx.utils.cumulative_sum([1,2,3,4])))
-          .toEqual([1,3,6,10]);
-};
-
-//TODO: test_random_number_distribution
-
-(new TestMisc()).run();

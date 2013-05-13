@@ -70,7 +70,7 @@ jsnx.contrib.Set.prototype.remove = function(value) {
     this.map_.remove(value);
   }
   catch(ex) {
-    if (!ex instanceof jsnx.exception.KeyError) {
+    if (!(ex instanceof jsnx.exception.KeyError)) {
       throw ex;
     }
   }
@@ -115,7 +115,7 @@ jsnx.contrib.Set.prototype.__iterator__ = function() {
 /**
  * Returns a new set without the values found in other sets.
  *
- * @param {...jsnx.contrib.Set} var_args
+ * @param {...(jsnx.contrib.Set|Array)} var_args
  * @export
  */
 jsnx.contrib.Set.prototype.difference = function(var_args) {
@@ -136,7 +136,7 @@ jsnx.contrib.Set.prototype.difference = function(var_args) {
 /**
  * Returns a new set containing only elements found in every set.
  *
- * @param {...jsnx.contrib.Set} var_args
+ * @param {...(jsnx.contrib.Set|Array)} var_args
  * @export
  */
 jsnx.contrib.Set.prototype.intersection = function(var_args) {

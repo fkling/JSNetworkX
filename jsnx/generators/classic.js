@@ -261,28 +261,28 @@ jsnx.generators.classic.grid_2d_graph = function(m, n, opt_periodic, opt_create_
   var columns = goog.iter.toArray(jsnx.helper.range(n));
   goog.array.forEach(rows, function(i) {
     goog.array.forEach(columns, function(j) {
-      G.add_node([i,j].toString());
+      G.add_node([i,j]);
     });
   });
   goog.iter.forEach(jsnx.helper.range(1,m), function(i) {
     goog.array.forEach(columns, function(j) {
-      G.add_edge([i,j].toString(), [i-1,j].toString());
+      G.add_edge([i,j], [i-1,j]);
     });
   });
   goog.array.forEach(rows, function(i) {
     goog.iter.forEach(jsnx.helper.range(1,n), function(j) {
-      G.add_edge([i,j].toString(), [i,j-1].toString());
+      G.add_edge([i,j], [i,j-1]);
     });
   });
   if (G.is_directed()) {
     goog.iter.forEach(jsnx.helper.range(0, m - 1), function(i) {
       goog.array.forEach(columns, function(j) {
-        G.add_edge([i,j].toString(), [i+1,j].toString());
+        G.add_edge([i,j], [i+1,j]);
       });
     });
     goog.array.forEach(rows, function(i) {
       goog.iter.forEach(jsnx.helper.range(0, n - 1), function(j) {
-        G.add_edge([i,j].toString(), [i,j+1].toString());
+        G.add_edge([i,j], [i,j+1]);
       });
     });
   }
@@ -290,21 +290,21 @@ jsnx.generators.classic.grid_2d_graph = function(m, n, opt_periodic, opt_create_
   if (opt_periodic) {
     if (n > 2) {
       goog.array.forEach(rows, function(i) {
-        G.add_edge([i,0].toString(), [i,n-1].toString());
+        G.add_edge([i,0], [i,n-1]);
       });
       if (G.is_directed()) {
         goog.array.forEach(rows, function(i) {
-          G.add_edge([i,n-1].toString(), [i,0].toString());
+          G.add_edge([i,n-1], [i,0]);
         });
       }
     }
     if (m > 2) {
       goog.array.forEach(columns, function(j) {
-        G.add_edge([0,j].toString(), [m-1,j].toString());
+        G.add_edge([0,j], [m-1,j]);
       });
       if (G.is_directed()) {
         goog.array.forEach(columns, function(j) {
-          G.add_edge([m-1,j].toString(), [0,j].toString());
+          G.add_edge([m-1,j], [0,j]);
         });
       }
     }

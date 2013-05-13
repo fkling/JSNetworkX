@@ -30,7 +30,7 @@ jsnx.utils.misc.is_list_of_ints = function(intlist) {
         return false;
     }
     for(var i = 0, l = intlist.length; i < l; i++) {
-        if(window['isNaN'](intlist[i])) {
+        if(isNaN(intlist[i])) {
             return false;
         }
     }

@@ -1,435 +1,306 @@
-/*global describe:true, it:true, expect:true, goog: true, jsnx:true*/
-"use strict";
+/*jshint strict:false, node:true*/
 
-describe('Helper', function() {
+var assert = require('../../mocha/assert');
+var jsnx = require('../../jsnetworkx-test');
+  var helper = jsnx.helper;
 
-    var helper = jsnx.helper;
+exports.TestHelper = {
 
-    it('Creates object from key value pairs', function() {
-        var obj = helper.objectFromKV([['foo', 5], [10, [1,2]]]);
+  test_objectFromKV: function() {
+    var obj = helper.objectFromKV([['foo', 5], [10, [1,2]]]);
+    assert.deepEqual(obj, {foo: 5, 10: [1,2]});
+  },
 
-        expect(obj).toEqual({foo: 5, 10: [1,2]});
+  test_items: function() {
+    var obj = {foo: 5, bar: [1,2]};
+    var kv = helper.items(obj);
+
+    assert(kv.length === 2);
+    assert.deepEqual(kv.sort(), [['bar', [1,2]], ['foo', 5]]);
+  },
+
+  test_range: function() {
+    var range = jsnx.helper.range(5);
+    assert(jsnx.helper.isIterator(range));
+    assert.deepEqual(jsnx.toArray(range), [0,1,2,3,4]);
+
+    range = jsnx.helper.range(5,10);
+    assert.deepEqual(jsnx.toArray(range), [5,6,7,8,9]);
+
+    range = jsnx.helper.range(0,10,2);
+    assert.deepEqual(jsnx.toArray(range), [0,2,4,6,8]);
+
+    range = jsnx.helper.range();
+    assert.deepEqual(jsnx.toArray(range), []);
+
+    // negative step size
+    range = jsnx.helper.range(10,5, -1);
+    assert.deepEqual(jsnx.toArray(range), [10,9,8,7,6]);
+  },
+
+  test_combinations: function() {
+    var comb = jsnx.helper.combinations([0,1,2,3], 3);
+    assert(jsnx.helper.isIterator(comb));
+    assert.deepEqual(jsnx.toArray(comb), [[0,1,2], [0,1,3], [0,2,3], [1,2,3]]);
+  },
+
+  test_permuatations: function() {
+    var perm = jsnx.helper.permutations([0,1,2]);
+    assert(jsnx.helper.isIterator(perm));
+    assert.deepEqual(
+      jsnx.toArray(perm),
+      [[0,1,2], [0,2,1], [1,0,2], [1,2,0], [2,0,1], [2,1,0]]
+    );
+  },
+
+  test_iteritems: function() {
+    var obj = {foo: 5, bar: [1,2], 5: 42};
+    var iter = helper.iteritems(obj);
+
+    assert(helper.isIterator(iter));
+
+    var kv = helper.toArray(iter);
+    assert.deepEqual(kv.sort(), [['5', 42], ['bar', [1,2]], ['foo', 5]]);
+  },
+
+  test_nested_chain: function() {
+
+    var iters = [
+      [[1,2,3], [4,5,6] ],
+      [helper.iter(['a', 'b'])]
+    ];
+    var iter = helper.nested_chain(iters, function(val) {
+      return helper.iter(val);
+    }, function(val) {
+      return helper.iter(val);
+    }, function(val) {
+      return val;
     });
 
-    it('Maps objects to (key,value) pairs (like Python\'s items)', function() {
-        var obj = {foo: 5, bar: [1,2], 5: 42},
-            kv = helper.items(obj);
+    var kv = helper.toArray(iter);
+    assert.deepEqual(kv, [1,2,3,4,5,6, 'a', 'b']);
+  },
 
-        expect(kv.length === 3).toBeTruthy();
-        expect(kv).toContain(['foo', 5]);
-        expect(kv).toContain(['bar', [1,2]]);
-        expect(kv).toContain(['5', 42]);
+  test_nested_chain_skip_empty: function() {
+    var iters = [
+      [[1,2,3], [4,5,6]],
+      [helper.iter(['a', 'b'])]
+    ];
+    var iter = helper.nested_chain(iters, function(val) {
+      return helper.iter(val);
+    },function(val) {
+      return helper.iter(val);
+    }, function(val) {
+      if(val % 2 === 0) {
+        return val;
+      }
     });
 
-    it('Creates proper ranges', function() {
-        var range = jsnx.helper.range(5);
-        expect(jsnx.helper.isIterator(range)).toBeTruthy();
-        expect(jsnx.toArray(range)).toEqual([0,1,2,3,4]);
+    var kv = helper.toArray(iter);
+    assert.deepEqual(kv, [2,4,6]);
+  },
 
-        range = jsnx.helper.range(5,10);
-        expect(jsnx.toArray(range)).toEqual([5,6,7,8,9]);
+  test_sentinelIterator: function() {
+    var iter = helper.sentinelIterator(new helper.iter([]), null);
+    assert.equal(iter.next(), null);
+  },
 
-        range = jsnx.helper.range(0,10,2);
-        expect(jsnx.toArray(range)).toEqual([0,2,4,6,8]);
+  test_deepcopy: function() {
+    var Constr = function() {};
+    var foo = [1,2];
+    var obj = {
+      foo: foo,
+      bar: ['bar', foo],
+      inst: new Constr()
+    };
 
-        range = jsnx.helper.range();
-        expect(jsnx.toArray(range)).toEqual([]);
+    var copy = helper.deepcopy(obj);
+    assert.deepEqual(copy, obj);
+    assert.notEqual(copy, obj);
+    assert.notEqual(copy.foo, obj.foo);
+    assert.equal(copy.foo, copy.bar[1]);
+    assert.equal(copy.inst, obj.inst);
 
-        // negative step size
-        range = jsnx.helper.range(10,5, -1);
-        expect(jsnx.toArray(range)).toEqual([10,9,8,7,6]);
-    });
+    // does not get stuck for self references
+    foo.push(foo);
+    copy = helper.deepcopy(foo);
+    assert.notEqual(copy, foo);
+    assert.equal(copy[2], copy);
+  },
 
-    it('Creates proper combinations', function() {
-        var comb = jsnx.helper.combinations([0,1,2,3], 3);
-        expect(jsnx.helper.isIterator(comb)).toBeTruthy();
-        expect(jsnx.toArray(comb)).toEqual([[0,1,2], [0,1,3], [0,2,3], [1,2,3]]);
-    });
+  test_deepcopy_constructor: function() {
+    var Constr = function() {
+      this.foo = [1,2];
+      this.bar = ['bar', this.foo];
+    };
+    Constr.prototype.baz = [1,2];
 
-    it('Creates proper permutations', function() {
-        var comb = jsnx.helper.permutations([0,1,2]);
-        expect(jsnx.helper.isIterator(comb)).toBeTruthy();
-        expect(jsnx.toArray(comb)).toEqual([[0,1,2], [0,2,1], [1,0,2], [1,2,0], [2,0,1], [2,1,0]]);
-    });
+    var inst = new Constr();
+    var copy = helper.deepcopy_instance(inst);
 
-    it('Maps objects to an iterator of (key,value) pairs (like Python\'s iteritems)', function() {
-        var obj = {foo: 5, bar: [1,2], 5: 42},
-            iter = helper.iteritems(obj);
+    assert.deepEqual(copy, inst);
+    assert.notEqual(copy, inst);
+    assert.notEqual(copy.foo, inst.foo);
+    assert.equal(copy.foo, copy.bar[1]);
+    assert.equal(copy.baz, inst.baz);
+    assert.equal(copy.constructor, inst.constructor);
+  },
 
-        expect(helper.isIterator(iter)).toBeTruthy();
+  test_extend: function() {
+    var obj1 = {
+      foo: {
+        bar: 5
+      }
+    };
+    var obj2 = {
+      baz: 42,
+      foo: {
+        baz: 6
+      }
+    };
 
-        var kv = helper.toArray(iter);
+    helper.extend(obj1, obj2);
 
-        expect(kv.length === 3).toBeTruthy();
-        expect(kv).toContain(['foo', 5]);
-        expect(kv).toContain(['bar', [1,2]]);
-        expect(kv).toContain(['5', 42]);
-    });
+    assert.notEqual(obj1.foo, obj2.foo);
+    assert.deepEqual(obj1.baz, obj2.baz);
+    assert.deepEqual(obj1.foo.baz, 6);
+    assert.deepEqual(obj1.foo.bar, 5);
+  },
 
-    it('Chains nested iterators', function() {
-        var iters = [
-                [
-                    [1,2,3],
-                    [4,5,6]
-                ],
-                [
-                    helper.iter(['a', 'b'])
-                ]
-            ],
-            iter = helper.nested_chain(iters, function(val) {
-                return helper.iter(val);
-            }, function(val) {
-                 return helper.iter(val);
-            }, function(val) {
-                return val;
-            });
-
-        var kv = helper.toArray(iter);
-
-        expect(kv).toEqual([1,2,3,4,5,6, 'a', 'b']);
-    });
-
-    it('Chains nested iterators, skips empty values', function() {
-        var iters = [
-                [
-                    [1,2,3],
-                    [4,5,6]
-                ],
-                [
-                    helper.iter(['a', 'b'])
-                ]
-            ],
-            iter = helper.nested_chain(iters, function(val) {
-                return helper.iter(val);
-            },function(val) {
-                return helper.iter(val);
-            }, function(val) {
-                if(goog.isNumber(val) && val % 2 === 0) {
-                    return val;
-                }
-            });
-
-        var kv = helper.toArray(iter);
-
-        expect(kv).toEqual([2,4,6]);
-    });
-
-
-    it('Prevents iterator from throwing an execption when reaching the end', function() {
-        var iter = helper.sentinelIterator(new helper.iter([]), null);
-
-        expect(iter.next()).toEqual(null);
-    });
-
-
-    it('Deepcopy copies same object only once', function() {
-        var foo = [1,2],
-            obj = {foo: foo,
-                   bar: ['bar', foo]
-            },
-            Constr = function() {};
-
-        obj.inst = new Constr();
-
-        var copy = helper.deepcopy(obj);
-        expect(copy).toEqual(obj);
-        expect(copy).not.toBe(obj);
-        expect(copy.foo).not.toBe(obj.foo);
-        expect(copy.foo).toBe(copy.bar[1]);
-        expect(copy.inst).toBe(obj.inst);
-
-        // does not get stuck for self references
-        foo.push(foo);
-        copy = helper.deepcopy(foo);
-        expect(copy).not.toBe(foo);
-        expect(copy[2]).toBe(copy);
-    });
-
-    it('Deepcopy an instance of a constructor function', function() {
-        var Constr = function() {
-            this.foo = [1,2];
-            this.bar = ['bar', this.foo];
-        };
-
-        Constr.prototype.baz = [1,2];
-
-        var inst = new Constr();
-
-        var copy = helper.deepcopy_instance(inst);
-
-        expect(copy).toEqual(inst);
-        expect(copy).not.toBe(inst);
-        expect(copy.foo).not.toBe(inst.foo);
-        expect(copy.foo).toBe(copy.bar[1]);
-        expect(copy.baz).toBe(inst.baz);
-        expect(copy.constructor).toBe(inst.constructor);
-    });
-
-    it('Extends nested objects', function() {
-        var obj1 = {
-                foo: {
-                   bar: 5
-                }
-            },
-            obj2 = {
-                baz: 42,
-                foo: {
-                   baz: 6
-                }
-            };
-
-        helper.extend(obj1, obj2);
-
-        expect(obj1.foo).not.toBe(obj2.foo);
-        expect(obj1.baz).toEqual(obj2.baz);
-        expect(obj1.foo).toBe(obj1.foo);
-        expect(obj1.foo.baz).toEqual(6);
-        expect(obj1.foo.bar).toEqual(5);
-
-    });
-
-
-    //TODO: write tests for isIterable and len
+  //TODO: write tests for isIterable and len
     
-    describe('forEach', function() {
 
-        it('Iterates over arrays', function() {
-            var arr = [1,2,3],
-                result = [];
-
-            helper.forEach(arr, function(val) {
-                result.push(val);
-            });
-
-            expect(result).toEqual(arr);
-        });
-
-        it('Iterates over array like objects', function() {
-            var arr = {0: 1, 1: 10, length: 2},
-                result = [];
-
-            helper.forEach(arr, function(val, i) {
-                result.push(val);
-            });
-
-            expect(result).toEqual(arr);
-        });
-
-        it('Iterates over iterators', function() {
-            var arr = [10, 15, 20],
-                iter = helper.iter(arr),
-                result = [];
-
-            helper.forEach(iter, function(val) {
-                result.push(val);    
-            });
-
-            expect(result).toEqual(arr);
-        });
-
-        it('Iterates over object keys', function() {
-            var obj = {foo: 5, bar: 10},
-                result = [];
-
-            helper.forEach(obj, function(val) {
-                result.push(val);    
-            });
-
-            expect(result).toEqual(goog.object.getKeys(obj));
-        });
-
-        
-        it('Iterats over arrays 2', function() {
-            var arr = [[1,2], [3,4]],
-                result = [];
-
-            helper.forEach(arr, function(val) {
-                result.push(val);
-            });
-
-            expect(result).toEqual(arr);
-        });
-
-
-        it('Expands elements that are arrays', function() {
-            var arr = [[1,2], [3,4]],
-                result = [];
-
-            helper.forEach(arr, function(a, b) {
-                result.push(a, b);
-            }, true);
-
-            expect(result).toEqual([1,2,3,4]);
-        });
-
+  test_forEach: function() {
+    var value = [1,2,[3,4]];
+    var result = [];
+    helper.forEach(value, function(val) {
+      result.push(val);
     });
 
-    describe('map', function() {
+    assert.deepEqual(result, value, 'array');
 
-        it('Maps array', function() {
-            var arr = [1,2,3];
+    value = {0: 1, 1: 10, length: 2};
+    result = [];
 
-            var result = helper.map(arr, function(val) {
-                return val * 2;
-            });
-
-            expect(result).toEqual([2, 4, 6]);
-        });
-
-        it('Maps array like objects', function() {
-            var arr = {0: 1, 1: 10, length: 2};
-
-            var result = helper.map(arr, function(val, i) {
-                return val * 2;                
-            });
-
-            expect(result).toEqual([2,20]);
-        });
-
-        it('Maps objects', function() {
-            var obj = {foo: 5, bar: 10};
-
-            var result = helper.map(obj, function(val) {
-                return val * 2;
-            });
-
-            expect(result).toEqual({foo: 10, bar: 20});
-        });
-
-        
-        it('Maps iterators', function() {
-            var arr = [1, 2, 3],
-                iter = helper.iter(arr);
-
-
-            var result = helper.map(iter, function(val) {
-                return val * 2;    
-            });
-
-            expect(helper.isIterator(result)).toBeTruthy();
-            expect(helper.toArray(result)).toEqual([2, 4, 6]);
-        });
+    helper.forEach(value, function(val, i) {
+      result.push(val);
     });
 
+    assert.deepEqual(result, [1, 10], 'array-like object');
 
-    describe('zip', function() {
+    value = [10, 15, 20];
+    result = [];
 
-        it('Zip arrays', function() {
-            var arr1 = [1,2,3],
-                arr2 = [4,5,6];
-
-            var result = helper.zip (arr1, arr2);
-            expect(result).toEqual([[1,4], [2,5], [3,6]]);
-        });
-
-        it('Zips array like objects', function() {
-            var arr1 = {0: 1, 1: 10, length: 2},
-                arr2 = {0: 2, 1: 20, length: 2};
-
-            var result = helper.zip (arr1, arr2);
-            expect(result).toEqual([[1,2], [10,20]]);
-        });
-
-        it('Zips objects', function() {
-            var obj1 = {foo: 5, bar: 10},
-                obj2 = {baz: 10, faz: 20};
-
-            var result = helper.zip(obj1, obj2);
-            expect(result).toEqual([['foo', 'baz'], ['bar', 'faz']]);
-        });
-
-        
-        it('Zips iterators', function() {
-            var arr = [1, 2, 3],
-                iter1 = helper.iter(arr),
-                iter2 = helper.iter(arr);
-
-
-            var result = helper.zip(iter1, iter2);
-
-            expect(helper.isIterator(result)).toBeTruthy();
-            expect(helper.toArray(result)).toEqual([[1,1], [2,2], [3,3]]);
-        });
-
-        it('Zip shorter sequence', function() {
-            var arr1 = [1,2,3],
-                arr2 = [4,5];
-
-            var result = helper.zip(arr1, arr2);
-            expect(result).toEqual([[1,4], [2,5]]);
-        });
-
+    helper.forEach(helper.iter(value), function(val) {
+      result.push(val);
     });
 
-    it('Max with custom mapping', function() {
-        var seq = [1,2,3];
-        expect(jsnx.helper.max(seq)).toEqual(3);
-        expect(jsnx.helper.max(seq, function(v) {
-            return 2*v;
-        })).toEqual(6);
+    assert.deepEqual(result, value, 'iterators');
+
+    value = {foo: 5, bar: 10};
+    result = [];
+
+    helper.forEach(value, function(val) {
+      result.push(val);
     });
 
+    assert.deepEqual(result, Object.keys(value), 'object keys');
 
-    describe('toArray', function() {
+    value = [[1,2], [3,4]];
+    result = [];
 
-        it('Does convert array to new array', function() {
-            var arr = [1,2,3];
+    helper.forEach(value, function(a, b) {
+      result.push(a, b);
+    }, true);
 
-            expect(helper.toArray(arr)).toEqual([1,2,3]);
-            expect(helper.toArray(arr)).not.toBe(arr);
-        });
+    assert.deepEqual(result, [1,2,3,4], 'expand array');
+  },
 
-        it('Converst array like objects to array', function() {
-            var arr = {0: 1, 1: 10, length: 2};
-
-            expect(helper.toArray(arr)).toEqual([1,10]);
-        });
-
-        it('Maps objects to aray keys', function() {
-            var obj = {foo: 5, bar: 10};
-
-            expect(helper.toArray(obj)).toEqual(['foo', 'bar']);
-        });
-
-        
-        it('Maps iterators', function() {
-            var arr = [1, 2, 3],
-                iter = helper.iter(arr);
-
-
-            expect(helper.toArray(iter)).toEqual([1, 2, 3]);
-        });
+  test_map: function() {
+    var value = [1,2,3];
+    var result = helper.map(value, function(val) {
+      return val * 2;
     });
 
-    describe('iter', function() {
+    assert.deepEqual(result, [2, 4, 6], 'array');
 
-        it('Generates iterators for arrays and array-like objects', function() {
-            var arr = [1,2,3],
-                arr_like = {0: 1, 1: 2, length: 2};
-
-            var arr_iter = helper.iter(arr),
-                arr_like_iter = helper.iter(arr_like);
-
-            expect(helper.isIterator(arr_iter)).toBeTruthy();    
-            expect(helper.isIterator(arr_like_iter)).toBeTruthy();    
-
-            expect(helper.toArray(arr_iter)).toEqual([1, 2, 3]);
-            expect(helper.toArray(arr_like_iter)).toEqual([1, 2]);
-        });
-
-        it('Generates an iterator over keys when given an object', function() {
-            var obj = {foo: 5, 0: 'bar'};
-
-            var iter = helper.iter(obj);
-
-            expect(helper.isIterator(iter)).toBeTruthy();
-
-            var kv = helper.toArray(iter); 
-
-            expect(kv).toContain('foo');
-            expect(kv).toContain('0');
-        });
-
+    value = {0: 1, 1: 10, length: 2};
+    result = helper.map(value, function(val, i) {
+      return val * 2;
     });
 
-});
+    assert.deepEqual(result, [2,20], 'array-like object');
+
+    value = {foo: 5, bar: 10};
+    result = helper.map(value, function(val) {
+      return val * 2;
+    });
+
+    assert.deepEqual(result, {foo: 10, bar: 20}, 'object');
+
+    value = [1, 2, 3];
+    result = helper.map(helper.iter(value), function(val) {
+      return val * 2;
+    });
+
+    assert(helper.isIterator(result));
+    assert.deepEqual(helper.toArray(result), [2, 4, 6]);
+  },
+
+  test_zip: function() {
+    var result = helper.zip([1,2,3], [4,5,6]);
+    assert.deepEqual(result, [[1,4], [2,5], [3,6]], 'arrays');
+
+    result = helper.zip ({0: 1, 1: 10, length: 2}, {0: 2, 1: 20, length: 2});
+    assert.deepEqual(result, [[1,2], [10,20]], 'array-like objects');
+
+    result = helper.zip({foo: 5, bar: 10}, {baz: 10, faz: 20});
+    assert.deepEqual(result, [['foo', 'baz'], ['bar', 'faz']], 'objects');
+
+    var arr = [1, 2, 3];
+    result = helper.zip(helper.iter(arr), helper.iter(arr));
+
+    assert(helper.isIterator(result));
+    assert.deepEqual(helper.toArray(result), [[1,1], [2,2], [3,3]], 'iterators');
+
+    result = helper.zip([1,2,3], [4,5]);
+    assert.deepEqual(result, [[1,4], [2,5]]);
+
+  },
+
+  test_max: function() {
+    var seq = [1,2,3];
+    assert.equal(jsnx.helper.max(seq), 3);
+    assert.equal(jsnx.helper.max(seq, function(v) { return 2*v; }), 6);
+  },
+
+  test_toArray: function() {
+    var value = [1,2,3];
+    assert.deepEqual(helper.toArray(value), [1,2,3], 'array');
+    assert.notEqual(helper.toArray(value), value);
+
+     value = {0: 1, 1: 10, length: 2};
+     assert.deepEqual(helper.toArray(value), [1,10], 'array-like object');
+
+     value = {foo: 5, bar: 10};
+     assert.deepEqual(helper.toArray(value), ['foo', 'bar'], 'object (keys)');
+
+     value = helper.iter([1,2,3]);
+     assert.deepEqual(helper.toArray(value), [1, 2, 3], 'iterators');
+  },
+
+  test_iter: function() {
+
+    var value = [1,2,3];
+    assert(helper.isIterator(helper.iter(value)));
+    assert.deepEqual(helper.toArray(helper.iter(value)), [1,2,3]);
+
+    value = {0: 1, 1: 2, length: 2};
+    assert(helper.isIterator(helper.iter(value)));
+    assert.deepEqual(helper.toArray(helper.iter(value)), [1,2]);
+
+    value = {foo: 5, 0: 'bar'};
+    assert(helper.isIterator(helper.iter(value)));
+    assert.deepEqual(helper.toArray(helper.iter(value)).sort(), ['0','foo']);
+  }
+};
