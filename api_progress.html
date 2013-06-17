@@ -52,12 +52,15 @@ css: [api]
 
 <script>
   var jsnx_latest;
-  function define(factory) {
+  window.define = function(factory) {
     jsnx_latest = factory();
   }
   define.amd = {};
 </script>
-<script src="https://raw.github.com/fkling/JSNetworkX/master/jsnetworkx.js"></script>
+<script src="javascripts/jsnetworkx-latest.js"></script>
+<script>
+  delete window.define;
+</script>
 <script src="javascripts/wont_implement.js"></script>
 <script src="javascripts/gradients.js"></script>
 <script>
