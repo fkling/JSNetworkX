@@ -4,6 +4,7 @@ var wont_implement = [
   'jsnx.convert.to_numpy_matrix',
   'jsnx.convert.from_scipy_sparse_matrix',
   'jsnx.convert.from_numpy_matrix',
+  'jsnx.algorithms.centrality.betweenness.edge_betweenness',
   'jsnx.drawing',
   'jsnx.external',
   'jsnx.linalg',
