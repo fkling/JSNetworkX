@@ -23,22 +23,21 @@ css: [prettify]
         compatible implementation of 
         <a href="http://wiki.ecmascript.org/doku.php?id=harmony:simple_maps_and_sets">ES6 maps</a>.
         This implementation will differ from Python in that it will treat objects
-        as generally hashable (by assigning a unique identifier). Arrays will be considered
-        as unhashable. JSNetworkX will provide a Python <em>tuple</em> 
+        as generally hashable (by assigning a unique identifier). <del>Arrays will be considered
+          as unhashable</del>. JSNetworkX will provide a Python <em>tuple</em> 
         compatible type for convenience.
         </p>
       </li>
       <li>
       <div><strong>Better and more flexible drawing API</strong> <em>(in progress)</em> </div>
       <p>JSNetworkX currently only supports drawing graphs as SVG with <a href="http://d3js.org/">D3.js</a>.
-      While changes to the graph update the visualization, it is not possible
+      While the visualization can be set up to update if the graph is modified, it is not possible
       to bind the same graph to multiple visualizations or change options (such
-      as the layout or node/edge styles) afterwards. The whole code is more or
-      less sticked together.</p>
+      as the layout or node/edge styles) afterwards.</p>
       <p>The new drawing API will introduce a proper inheritance model which
-      will simplify the extension to support different visualization methods, such
+      will simplify extension to support different visualization methods, such
       as WebGL (which is being worked upon as well, with <a href="http://mrdoob.github.com/three.js/">three.js</a>).
-      It also allows to changes to visualization after it was created.
+      It also allows to changes to to visualization (layout, style) after it was created.
       Important design goals for the new API and implementations are:
       </p>
       <ul>
