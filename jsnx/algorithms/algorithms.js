@@ -7,3 +7,4 @@ goog.require('jsnx.algorithms.dag');
 goog.require('jsnx.algorithms.graphical');
 goog.require('jsnx.algorithms.isomorphism');
 goog.require('jsnx.algorithms.shortest_paths');
+goog.require('jsnx.algorithms.components');
