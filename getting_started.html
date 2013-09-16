@@ -128,28 +128,33 @@ var G = jsnx.Graph();
 G.add_node(1);
 G.add_nodes_from([3, 5, 7, 11]);
 console.log(G.nodes());
-// shows ["1", "3", "5", "7", "11"]
+// shows [1, 3, 5, 7, 11] -- v0.2.0
+// shows ["1", "3", "5", "7", "11"] -- v0.1.1 and below
 </pre>
 <p><code>G.nodes</code> returns an array nodes, which shows us that the graph 
 now has four nodes, namely 1, 3, 5 and 7.
 </p>
-<div class="alert alert-block alert-warning">
-  <h4>Node data type: String</h4>
-  <p>
-  You will notice that the array of nodes consists of <em>strings</em> although we 
-  added <em>numbers</em>. This is a limitation the library currently has. Any value you 
-  pass as node will be converted to a string. This should generally not be a
-  problem if you know what data you are working with, but nevertheless, 
-  we are working on <strong>support for generic node values</strong>
-  </p>
+<div class="alert alert-info">
+  <span class="label label-info">v0.2.2</span> 
+  As of version 0.2.0, JSNetworkX supports multiple data types as node values.
+  See <a href="documentation.html#node_values">Concepts: Node values</a>.
 </div>
+<div class="alert alert-info">
+  <span class="label label-info">v0.1.1</span> 
+  You will notice that the array of nodes consists of <em>strings</em> although we 
+  added <em>numbers</em>. This is a limitation the library had. Any value you 
+  pass as node will be converted to a string. This should generally not be a
+  problem if you know what data you are working with.
+</div>
+
 <p>Removing nodes is as simple as adding them. You can use either <code>G.remove_node</code>
 or <code>G.remove_nodes_from </code>. 
 
 <pre class="prettyprint linenums" data-example="run" data-draw="update" data-depends="0">
 G.remove_node(11); // same as G.remove_node("5");
 console.log(G.nodes());
-// shows ["1", "3", "5", "7"]
+// shows [1, 3, 5, 7] -- v0.2.0
+// shows ["1", "3", "5", "7"] -- v0.1.1 and below
 </pre>
 <div class="alert alert-info">
 <strong>Info:</strong> Removing a node will also remove all connected edges.
@@ -165,12 +170,14 @@ console.log(G.nodes());
 </div>
 <pre class="prettyprint linenums" data-example="run" data-draw="update" data-depends="1">
 G.add_edge(1,3);
-G.add_edge(3, 1); // does not do anything in undirected graphs
+G.add_edge(3,1); // does not do anything in undirected graphs
 G.add_edges_from([[1,5], [1,7], [7,3], [7,9]]); // node 9 does not exist!
 console.log(G.nodes());
-// shows ["1", "3", "5", "7", "9"]
+// shows [1, 3, 5, 7, 9] -- v0.2.0
+// shows ["1", "3", "5", "7", "9"] -- v0.1.1 and below
 console.log(G.edges());
-// shows [["1", "3"], ["1", "5"], ["1", "7"], ["7", "3"], ["7", "9"]]
+// shows [[1, 3], [1, 5], [1, 7], [7, 3], [7, 9]] -- v0.2.0
+// shows [["1", "3"], ["1", "5"], ["1", "7"], ["7", "3"], ["7", "9"]] -- v0.1.1 and below
 </pre>
 <p>
 Edges are removed with <code>G.remove_edge</code> and <code>G.remove_edges_from</code>.
@@ -181,7 +188,8 @@ G.remove_edges_from([[9,7], [7,1]]);
 // Removing a node removes its connected edges as well
 G.remove_node(3);
 console.log(G.nodes());
-// shows ["1", "5", "7", "9"]
+// shows [1, 5, 7, 9] -- v0.2.0
+// shows ["1", "5", "7", "9"] -- v0.1.1 and below
 console.log(G.edges());
 // shows []
 </pre>
@@ -212,7 +220,7 @@ G.add_nodes_from([['foo', {size: 5}], ['bar', {size: 10}]], {color: 'blue'});
 console.log(G.nodes(true));
 // shows
 // [
-//    ["10",{"some_data":42}],
+//    [10,{"some_data":42}],
 //    ["foo",{"color":"blue","size":5}],
 //    ["bar",{"color":"blue","size":10}]
 // ]
@@ -232,26 +240,26 @@ var G = jsnx.Graph();
 G.add_nodes_from([0,1]);
 G.add_edge(0,1);
 
-G.node[0].foo = 'bar';
-G.adj[0][1].color = 'blue'; // or G.adj[1][0].color =  ...
+G.node.get(0).foo = 'bar';
+// G.node[0].foo = 'bar';  // v0.1.1 and below
+G.adj.get(0).get(1).color = 'blue';
+// G.adj[0][1].color = 'blue'; // v0.1.1 and below
 
 console.log(G.nodes(true));
-// shows [["0",{"foo":"bar"}],["1",{}]]
+// shows [[0,{"foo":"bar"}],[1,{}]]
 console.log(G.edges(true));
-// shows [["0","1",{"color":"blue"}]]
+// shows [[0,1,{"color":"blue"}]]
 </pre>
 
 <div class="alert"><strong>Warning</strong> 
   You should <strong>not</strong> directly modify the <code>G.nodes</code> or <code>G.adj</code> 
   properties, since this can lead to inconsistency within the graph.
 </div>
-<div class="alert alert-error">
-  <h4>Upcoming API changes</h4>
+<div class="alert alert-warning">
+  <h4><span class="label label-warning">v0.2.0</span> API changes</h4>
   <p>In order to support generic node values, the <code>G.nodes</code>, 
-  <code>G.adj</code> and other related properties won't stay simple objects. 
-  You should not rely on them too much or at least be prepared that they will change.
-  They will be changed to some kind of maps, like
-  <a href="http://people.mozilla.org/~jorendorff/es6-draft.html#sec-15.14">ES6's Map objects</a>.
+  <code>G.adj</code> and other related properties are not  simple objects anymore.
+  They are instances of <code>jsnx.contrib.Map</code>.
   </p>
 </div>
 
@@ -310,8 +318,8 @@ var path = jsnx.bidirectional_shortest_path(G, 0, 4);
 // A simple way to color all nodes in the path:
 G.add_nodes_from(path, {color: '#FFF'});
 // Color the start and end differently
-G.node[0].color = '#0F0'; // start is green
-G.node[4].color = '#F00'; // end is red
+G.node.get(0).color = '#0F0'; // start is green
+G.node.get(4).color = '#F00'; // end is red
 
 jsnx.draw(G, {
   element: '#demo-canvas',

@@ -6,6 +6,12 @@ body {
   background-color: #fbfbfb !important;
 }
 
+.nav-heading {
+  font-weight: 600;
+  font-size: 105%;
+  margin-bottom: 10px;
+}
+
 #wrap {
   min-height: 100%;
   height: auto !important;
