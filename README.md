@@ -152,18 +152,11 @@ Some general remarks:
 
 ### How to run tests and other things
 
-You should first make sure that all test cases are successful before you test
-the compiled code. To only test the "uncompiled" code, run `grunt
-jasmine:normal`. If you add new modules, you first have to updated the
-dependency file by running `grunt deps`.  
-To test both, compiled and uncompiled code, run `grunt test`.  Both test runs 
-have to pass and compiler warnings have to be resolved as well.
+To test both, compiled and uncompiled code, run `grunt test`.  It will first build
+an uncompiled verison of JSNetworkX and test it. If that test is successful, a compiled
+version is created and also tested. If you add new modules, you have to updated the
+dependency file first by running `grunt deps`. 
 
-If the tests fails and you want to debug the code, run `grunt testdebug`. This
-will build the test runner and start a local server in the current directory.
-You can then open `http://localhost:8000/_SpecRunner.html` or
-`http://localhost:8000/_SpecRunner_compiled.html` and run the tests in the
-browser.
 
 To ensure generally good style, run `grunt jshint`. Sometimes it is necessary to
 disable certain warnings, such as creating functions in a loop, but you should
