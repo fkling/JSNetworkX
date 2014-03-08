@@ -60,7 +60,7 @@ The `package.json` file contains a set of node packages which JSNetworkX needs i
 addition to grunt. You can install those locally by executing the following 
 command in your JSNetworkX clone:
 
-    npm install ./ --dev
+    npm install
 
 Last but not least, since JSNetworkX uses the [Google closure
 library](https://developers.google.com/closure/library/) and the
