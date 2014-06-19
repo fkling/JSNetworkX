@@ -3,15 +3,11 @@
 
 goog.provide('jsnx.algorithms.centrality.eigenvector');
 
-
-goog.require('jsnx.contrib.Map');
 goog.require('jsnx.exception');
 goog.require('jsnx.helper');
 
 goog.require('goog.array');
-goog.require('goog.asserts');
-goog.require('goog.iter');
-goog.require('goog.structs.PriorityQueue');
+goog.require('goog.math');
 goog.require('goog.object');
 
 /*jshint expr:true*/
@@ -95,27 +91,29 @@ jsnx.algorithms.centrality.eigenvector.eigenvector_centrality = function(
     x = opt_arg_dict['nstart'];
   }
   // Normalize starting vector
-  var sum = goog.math.sum.apply(null, goog.object.getValues(x));
-  var s = 1.0 / sum;
+  var sum_x = goog.math.sum.apply(null, x.values());
+  var s = 1.0 / sum_x;
   x.forEach(function(k, v) {
     x.set(k, v * s);
   });
-
   var nnodes = G.number_of_nodes();
   var xlast;
+  var weights = jsnx.classes.func.get_edge_attributes(G, 'weight');
   // Make up to max_iter iterations
   for(var i = 0; i < max_iter; i++) {
     xlast = jsnx.helper.deepcopy(x);
-    x = jsnx.helper.mapfromkeys(xlast, 0);
+    x.forEach(function(k, v) {
+      x.set(k, 0);
+    });
     //Do the multiplication y=Ax
-    jsnx.helper.forEach(x, function(n) {
-      jsnx.helper.forEach(G.nodes(), function(nbr) {
-        x[n] += xlast[nbr]*G[n][nbr].get('weight', 1);
-      })
+    x.forEach(function(n, v) {
+      jsnx.helper.forEach(G.neighbors_iter(n), function(nbr) {
+        x.set(n, x.get(n) + xlast.get(nbr)*weights.get([n, nbr], 1));
+      });
     });
     // Normalize vector
     try {
-      s = 1.0 / Math.sqrt(goog.math.sum.apply(null, goog.array.map(goog.object.getValues(x), function(v) { return Math.pow(v, 2) })));
+      s = 1.0 / Math.sqrt(goog.math.sum.apply(null, goog.array.map(x.values(), function(v) { return Math.pow(v, 2) })));
     } catch (e) {
       s = 1.0;
     }
@@ -123,7 +121,7 @@ jsnx.algorithms.centrality.eigenvector.eigenvector_centrality = function(
       x.set(n, v * s);
     });
     // Check convergence
-    var err = goog.math.sum.apply(null, goog.array.map(goog.object.getKeys(x), function(n) { return Math.abs(x[n] - xlast[n]) }));
+    var err = goog.math.sum.apply(null, goog.array.map(x.keys(), function(n) { return Math.abs(x.get(n) - xlast.get(n)) }));
     if (err < nnodes*tol) {
       return x
     }
