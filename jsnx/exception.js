@@ -16,8 +16,6 @@ jsnx.exception.JSNetworkXException = function(message) {
 };
 // goog.inherits does not work properly with built in Error function
 // (message is ignored)
-jsnx.exception.JSNetworkXException.prototype = new Error();
-jsnx.exception.JSNetworkXException.prototype.constructor = jsnx.exception.JSNetworkXException;
 goog.exportSymbol('jsnx.JSNetworkXException', jsnx.exception.JSNetworkXException);
 
 

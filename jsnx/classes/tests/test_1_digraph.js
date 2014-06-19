@@ -54,15 +54,15 @@ exports.TestDiGraph = h.extend({}, TestGraph, BaseDiGraphTester, {
     var G = this.Graph(new jsnx.Map([[1,[2]], [2, [1]]]), {name: 'test'});
     assert.equal(G.name(), 'test');
     assert.deepEqual(
-      h.sorted(G.adj.items()),
+      h.sorted(G.adj.entries()),
       [[1, new jsnx.Map([[2,{}]])], [2, new jsnx.Map([[1,{}]])]]
     );
     assert.deepEqual(
-      h.sorted(G.succ.items()),
+      h.sorted(G.succ.entries()),
       [[1, new jsnx.Map([[2,{}]])], [2, new jsnx.Map([[1,{}]])]]
     );
     assert.deepEqual(
-      h.sorted(G.pred.items()),
+      h.sorted(G.pred.entries()),
       [[1, new jsnx.Map([[2,{}]])], [2, new jsnx.Map([[1,{}]])]]
     );
   },
@@ -156,7 +156,10 @@ exports.TestDiGraph = h.extend({}, TestGraph, BaseDiGraphTester, {
         2: new jsnx.Map({0:{}, 1:{}})
       })
     );
-    assert.throws(function(){G.remove_edge(-1, 0);}, jsnx.KeyError);
+    assert.throws(
+      function(){G.remove_edge(-1, 0);},
+      jsnx.exception.JSNetworkXError
+    );
   },
 
   test_remove_edges_from: function() {

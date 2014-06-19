@@ -1,7 +1,6 @@
 "use strict";
 goog.provide('jsnx.generators.random_graphs');
 
-goog.require('goog.iter');
 goog.require('jsnx.generators.classic');
 goog.require('jsnx.classes.Graph');
 goog.require('jsnx.classes.DiGraph');
@@ -24,7 +23,7 @@ goog.require('jsnx.helper');
  *
  * This algorithm is O(n+m) where m is the expected number of
  * edges m=p*n*(n-1)/2.
- *   
+ *
  * It should be faster than gnp_random_graph when p is small and
  * the expected number of edges is small (sparse graph).
  *
@@ -138,11 +137,11 @@ jsnx.generators.random_graphs.gnp_random_graph = function(n, p, opt_directed) {
     edges = jsnx.helper.combinations(jsnx.helper.range(n), 2);
   }
 
-  goog.iter.forEach(edges, function(e) {
+  for (var e of edges) {
     if(Math.random() < p) {
       G.add_edge(e[0], e[1]);
     }
-  });
+  }
   return G;
 };
 goog.exportSymbol(

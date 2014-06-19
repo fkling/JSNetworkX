@@ -61,7 +61,7 @@ jsnx.generators.social.karate_club_graph = function() {
   var row = 0;
   goog.array.forEach(zacharydat, function(line) {
     var thisrow = line.split(' ');
-    jsnx.helper.forEach(thisrow, function(val, col) {
+    goog.array.forEach(thisrow, function(val, col) {
       if (val === '1') {
         G.add_edge(row, col);
       }

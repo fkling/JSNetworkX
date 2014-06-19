@@ -95,7 +95,7 @@ var BaseGraphTester = {
   test_degree: function() {
     var G = this.K3;
 
-    assert.deepEqual(G.degree().values(), [2,2,2]);
+    assert.deepEqual(jsnx.toArray(G.degree().values()), [2,2,2]);
     assert.deepEqual(G.degree(), new jsnx.Map([[0,2],[1,2],[2,2]]));
     assert.equal(G.degree(0), 2);
     assert.deepEqual(G.degree([0]), new jsnx.Map([[0,2]]));
@@ -110,7 +110,7 @@ var BaseGraphTester = {
     G.add_edge(1,2,{weight: 2});
     G.add_edge(2,3,{weight: 3});
 
-    assert.deepEqual(G.degree(null, 'weight').values(), [2,5,3]);
+    assert.deepEqual(jsnx.toArray(G.degree(null, 'weight').values()), [2,5,3]);
     assert.deepEqual(G.degree(null, 'weight'), new jsnx.Map([[1,2],[2,5],[3,3]]));
     assert.equal(G.degree(1, 'weight'), 2);
     assert.deepEqual(G.degree([1], 'weight'), new jsnx.Map([[1,2]]));
@@ -211,7 +211,7 @@ var BaseGraphTester = {
   test_selfloop_degree: function() {
     var G = new this.Graph();
     G.add_edge(1,1);
-    assert.deepEqual(G.degree().values(), [2]);
+    assert.deepEqual(jsnx.toArray(G.degree().values()), [2]);
     assert.deepEqual(G.degree(), new jsnx.Map([[1,2]]));
     assert.equal(G.degree(1), 2);
     assert.deepEqual(G.degree([1]), new jsnx.Map([[1,2]]));

@@ -152,23 +152,23 @@ goog.exportSymbol('jsnx.number_of_edges', jsnx.classes.func.number_of_edges);
  * @export
  */
 jsnx.classes.func.density = function(G) {
-    var n = G.number_of_nodes(),
-        m = G.number_of_edges(),
-        d;
+  var n = G.number_of_nodes(),
+      m = G.number_of_edges(),
+      d;
 
-    if(m === 0) { // includes cases n === 0 and n === 1
-        d = 0.0;
+  if(m === 0) { // includes cases n === 0 and n === 1
+    d = 0.0;
+  }
+  else {
+    if(G.is_directed()) {
+      d = m / (n * (n-1));
     }
     else {
-        if(G.is_directed()) {
-            d = m / (n * (n-1));
-        }
-        else {
-            d = (m * 2) / (n * (n-1));
-        }
+      d = (m * 2) / (n * (n-1));
     }
+  }
 
-    return d;
+  return d;
 };
 goog.exportSymbol('jsnx.density', jsnx.classes.func.density);
 
@@ -187,15 +187,21 @@ goog.exportSymbol('jsnx.density', jsnx.classes.func.density);
  *  @export
  */
 jsnx.classes.func.degree_histogram = function(G) {
-    var degseq = G.degree().values();
-    var dmax = Math.max.apply(Math, degseq) + 1;
-    var freq = goog.array.repeat(0, dmax);
+  var degree = G.degree();
+  var dmax = 0;
+  for (var v of degree.values()) {
+    if (v > dmax) {
+      dmax = v;
+    }
+  }
+  dmax += 1;
+  var freq = goog.array.repeat(0, dmax);
 
-    goog.array.forEach(degseq, function(d) {
-        freq[d] += 1;
-    });
+  for (var d of degree.values()) {
+    freq[d] += 1;
+  }
 
-    return freq;
+  return freq;
 };
 goog.exportSymbol('jsnx.degree_histogram', jsnx.classes.func.degree_histogram);
 
@@ -228,24 +234,24 @@ goog.exportSymbol('jsnx.is_directed', jsnx.classes.func.is_directed);
  * @export
  */
 jsnx.classes.func.freeze = function(G) {
-    function frozen() {
-        throw new jsnx.exception.JSNetworkXError(
-            'Frozen graph can\'t be modified'
+  function frozen() {
+    throw new jsnx.exception.JSNetworkXError(
+        'Frozen graph can\'t be modified'
         );
-    }
+  }
 
-    // This double assignment is necessary for the closure compiler
-    G['add_node'] = G.add_node = frozen;
-    G['add_nodes_from'] = G.add_nodes_from = frozen;
-    G['remove_node'] = G.remove_node = frozen;
-    G['remove_nodes_from'] = G.remove_nodes_from = frozen;
-    G['add_edge'] = G.add_edge = frozen;
-    G['add_edges_from'] = G.add_edges_from = frozen;
-    G['remove_edge'] = G.remove_edge = frozen;
-    G['remove_edges_from'] = G.remove_edges_from = frozen;
-    G['clear'] = G.clear = frozen;
-    G['frozen'] = G.frozen = true;
-    return G;
+  // This double assignment is necessary for the closure compiler
+  G['add_node'] = G.add_node = frozen;
+  G['add_nodes_from'] = G.add_nodes_from = frozen;
+  G['remove_node'] = G.remove_node = frozen;
+  G['remove_nodes_from'] = G.remove_nodes_from = frozen;
+  G['add_edge'] = G.add_edge = frozen;
+  G['add_edges_from'] = G.add_edges_from = frozen;
+  G['remove_edge'] = G.remove_edge = frozen;
+  G['remove_edges_from'] = G.remove_edges_from = frozen;
+  G['clear'] = G.clear = frozen;
+  G['frozen'] = G.frozen = true;
+  return G;
 };
 goog.exportSymbol('jsnx.freeze', jsnx.classes.func.freeze);
 
@@ -261,7 +267,7 @@ goog.exportSymbol('jsnx.freeze', jsnx.classes.func.freeze);
  * @export
  */
 jsnx.classes.func.is_frozen = function(G) {
-    return !!G.frozen;
+  return !!G.frozen;
 };
 goog.exportSymbol('jsnx.is_frozen', jsnx.classes.func.is_frozen);
 
@@ -284,7 +290,7 @@ goog.exportSymbol('jsnx.is_frozen', jsnx.classes.func.is_frozen);
  * @export
  */
 jsnx.classes.func.subgraph = function(G, nbunch) {
-    return G.subgraph(nbunch);
+  return G.subgraph(nbunch);
 };
 goog.exportSymbol('jsnx.subgraph', jsnx.classes.func.subgraph);
 
@@ -302,15 +308,15 @@ goog.exportSymbol('jsnx.subgraph', jsnx.classes.func.subgraph);
  * @export
  */
 jsnx.classes.func.create_empty_copy = function(G, opt_with_nodes) {
-    if(!goog.isDef(opt_with_nodes)) {
-        opt_with_nodes = true;
-    }
+  if(!goog.isDef(opt_with_nodes)) {
+    opt_with_nodes = true;
+  }
 
-    var H = new G.constructor();
-    if(opt_with_nodes) {
-        H.add_nodes_from(G);
-    }
-    return H;
+  var H = new G.constructor();
+  if(opt_with_nodes) {
+    H.add_nodes_from(G);
+  }
+  return H;
 };
 goog.exportSymbol('jsnx.create_empty_copy', jsnx.classes.func.create_empty_copy);
 
@@ -325,41 +331,47 @@ goog.exportSymbol('jsnx.create_empty_copy', jsnx.classes.func.create_empty_copy)
  * @export
  */
 jsnx.classes.func.info = function(G, opt_n) {
-    var info = '';
-    if(!goog.isDefAndNotNull(opt_n)) {
-        info += 'Name: ' + G.name() + '\n';
-        var type_name = [G.constructor['__name__']];
-        info += 'Type: ' + type_name.join(',') + '\n';
-        info += 'Number of nodes: ' + G.number_of_nodes() + '\n';
-        info += 'Number of edges: ' + G.number_of_edges() + '\n';
-        var nnodes = G.number_of_nodes();
-        if(nnodes > 0) {
-            if(G.is_directed()) {
-                info += 'Average in degree: ' + (goog.math.sum.apply(null,
-                          G.in_degree().values()) / nnodes).toFixed(4) + '\n';
-                info += 'Average out degree: ' + (goog.math.sum.apply(null,
-                           G.out_degree().values()) / nnodes).toFixed(4);
-            }
-            else {
-                var s = goog.math.sum.apply(
-                    null,
-                    G.degree().values()
-                );
-                info += 'Average degree: ' + (s/nnodes).toFixed(4);
-            }
-        }
+  var info = '';
+  if(!goog.isDefAndNotNull(opt_n)) {
+    info += 'Name: ' + G.name() + '\n';
+    var type_name = [G.constructor['__name__']];
+    info += 'Type: ' + type_name.join(',') + '\n';
+    info += 'Number of nodes: ' + G.number_of_nodes() + '\n';
+    info += 'Number of edges: ' + G.number_of_edges() + '\n';
+    var nnodes = G.number_of_nodes();
+    if(nnodes > 0) {
+      if(G.is_directed()) {
+        info += 'Average in degree: ' + (
+          goog.math.sum.apply(
+            null,
+            jsnx.contrib.iter.toArray(G.in_degree().values())
+          ) / nnodes).toFixed(4) + '\n';
+        info += 'Average out degree: ' + (
+          goog.math.sum.apply(
+            null,
+            jsnx.contrib.iter.toArray(G.out_degree().values())
+          ) / nnodes).toFixed(4);
+      }
+      else {
+        var s = goog.math.sum.apply(
+          null,
+          jsnx.contrib.iter.toArray(G.degree().values())
+        );
+        info += 'Average degree: ' + (s/nnodes).toFixed(4);
+      }
     }
-    else {
-        if(!G.has_node(opt_n)) {
-            throw new jsnx.exception.JSNetworkXError(
-                'node ' + opt_n + ' not in graph'
-            );
-        }
-        info += 'Node ' + opt_n + ' has the following properties:\n';
-        info += 'Degree: ' + G.degree(opt_n) + '\n';
-        info += 'Neighbors: ' + G.neighbors(opt_n).join(' ');
+  }
+  else {
+    if(!G.has_node(opt_n)) {
+      throw new jsnx.exception.JSNetworkXError(
+        'node ' + opt_n + ' not in graph'
+      );
     }
-    return info;
+    info += 'Node ' + opt_n + ' has the following properties:\n';
+    info += 'Degree: ' + G.degree(opt_n) + '\n';
+    info += 'Neighbors: ' + G.neighbors(opt_n).join(' ');
+  }
+  return info;
 };
 goog.exportSymbol('jsnx.info', jsnx.classes.func.info);
 
@@ -373,9 +385,9 @@ goog.exportSymbol('jsnx.info', jsnx.classes.func.info);
  * @export
  */
 jsnx.classes.func.set_node_attributes = function(G, name, attributes) {
-    goog.object.forEach(attributes, function(value, node) {
-        G['node'].get(node)[name] = value;
-    });
+  goog.object.forEach(attributes, function(value, node) {
+      G['node'].get(node)[name] = value;
+  });
 };
 goog.exportSymbol('jsnx.set_node_attributes', jsnx.classes.func.set_node_attributes);
 
@@ -390,13 +402,13 @@ goog.exportSymbol('jsnx.set_node_attributes', jsnx.classes.func.set_node_attribu
  * @export
  */
 jsnx.classes.func.get_node_attributes = function(G, name) {
-    var dict = new jsnx.contrib.Map();
-    G['node'].forEach(function(n, d) {
-        if(goog.object.containsKey(d, name)) {
-            dict.set(n, d[name]);
-        }
-    });
-    return dict;
+  var dict = new jsnx.contrib.Map();
+  G['node'].forEach(function(d, n) {
+    if(goog.object.containsKey(d, name)) {
+      dict.set(n, d[name]);
+    }
+  });
+  return dict;
 };
 goog.exportSymbol('jsnx.get_node_attributes', jsnx.classes.func.get_node_attributes);
 
@@ -411,9 +423,9 @@ goog.exportSymbol('jsnx.get_node_attributes', jsnx.classes.func.get_node_attribu
  * @export
  */
 jsnx.classes.func.set_edge_attributes = function(G, name, attributes) {
-    attributes.forEach(function(edge, value) {
-        G.get(edge[0]).get(edge[1])[name] = value;
-    });
+  attributes.forEach(function(value, edge) {
+      G.get(edge[0]).get(edge[1])[name] = value;
+  });
 };
 goog.exportSymbol('jsnx.set_edge_attributes', jsnx.classes.func.set_edge_attributes);
 
@@ -432,15 +444,15 @@ goog.exportSymbol('jsnx.set_edge_attributes', jsnx.classes.func.set_edge_attribu
  * @export
  */
 jsnx.classes.func.get_edge_attributes = function(G, name) {
-    var dict = new jsnx.contrib.Map();
-    goog.object.forEach(G.edges(null, true), function(edged) {
-        if(goog.object.containsKey(edged[2], name)) {
-            var value = edged[2][name];
-            edged.length = 2; // cut of data
-            dict.set(edged, value);
-        }
-    });
-    return dict;
+  var dict = new jsnx.contrib.Map();
+  for (var edged of G.edges_iter(null, true)) {
+    if(goog.object.containsKey(edged[2], name)) {
+      var value = edged[2][name];
+      edged.length = 2; // cut of data
+      dict.set(edged, value);
+    }
+  }
+  return dict;
 };
 goog.exportSymbol('jsnx.get_edge_attributes', jsnx.classes.func.get_edge_attributes);
 

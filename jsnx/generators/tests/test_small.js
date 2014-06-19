@@ -4,6 +4,7 @@
 var assert = require('assert');
 var jsnx = require('../../../jsnetworkx-test');
 var is_isomorphic = jsnx.could_be_isomorphic;
+var sorted = require('../../../mocha/helper').sorted;
 
 exports.TestGeneratorSmall = {
   test_make_small_graph: function() {
@@ -21,7 +22,7 @@ exports.TestGeneratorSmall = {
     var G = jsnx.bull_graph();
     assert.equal(G.number_of_nodes(), 5);
     assert.equal(G.number_of_edges(), 5);
-    var d = G.degree().values().sort();
+    var d = sorted(G.degree().values());
     assert.deepEqual(d, [1, 1, 2, 3, 3]);
 
     // TODO: expect(diameter(G)).toBe(3)
@@ -43,7 +44,7 @@ exports.TestGeneratorSmall = {
     G = jsnx.krackhardt_kite_graph();
     assert.equal(G.number_of_nodes(), 10);
     assert.equal(G.number_of_edges(), 18);
-    d = G.degree().values().sort();
+    d = sorted(G.degree().values());
     assert.deepEqual(d, [1, 2, 3, 3, 3, 4, 4, 5, 5, 6]);
 
     // TODO: pappus_graph

@@ -75,88 +75,90 @@ jsnx.convert.prep_create_using_ = function(opt_create_using) {
  * @export
  */
 jsnx.convert.to_networkx_graph = function(data, opt_create_using, opt_multigraph_input) {
-    var result = null;
+  var result = null;
 
-    // jsnx graph
-    if (data.hasOwnProperty('adj')) {
-      /** @preserveTry */
-       try {
-            result = jsnx.contrib.convert.from_map_of_maps(
-                data['adj'],
-                opt_create_using,
-                data.is_multigraph()
-            );
-            if (goog.object.containsKey(data, 'graph') &&
-                goog.typeOf(data['graph']) === 'object')
-            {
-                result['graph'] = goog.object.clone(data['graph']);
-            }
-            if (goog.object.containsKey(data, 'node') &&
-                data['node'] instanceof jsnx.contrib.Map)
-            {
-                result['node'] = new jsnx.contrib.Map();
-                data['node'].forEach(function(k, element) {
-                  result['node'].set(k, goog.object.clone(element));
-                });
-            }
-            return result;
-       }
-       catch(ex) {
-           throw ex;
-       }
+  // jsnx graph
+  if (data.hasOwnProperty('adj')) {
+    /** @preserveTry */
+    try {
+      result = jsnx.contrib.convert.from_map_of_maps(
+        data['adj'],
+        opt_create_using,
+        data.is_multigraph()
+      );
+      if (goog.object.containsKey(data, 'graph') &&
+          goog.typeOf(data['graph']) === 'object'
+      ) {
+        result['graph'] = goog.object.clone(data['graph']);
+      }
+      if (goog.object.containsKey(data, 'node') &&
+          data['node'] instanceof jsnx.contrib.Map
+      ) {
+        result['node'] = new jsnx.contrib.Map();
+        data['node'].forEach(function(element, k) {
+          result['node'].set(k, goog.object.clone(element));
+        });
+      }
+      return result;
     }
+    catch(ex) {
+      throw ex;
+    }
+  }
 
-    // map of maps / lists
-    if (data instanceof jsnx.contrib.Map) {
+  // map of maps / lists
+  if (data instanceof jsnx.contrib.Map) {
+    try {
+      return jsnx.contrib.convert.from_map_of_maps(
+        data,
+        opt_create_using,
+        opt_multigraph_input
+      );
+    }
+    catch(e) {
       try {
-        return jsnx.contrib.convert.from_map_of_maps(
-          data,
-          opt_create_using,
-          opt_multigraph_input
+        return jsnx.contrib.convert.from_map_of_lists(data, opt_create_using);
+      }
+      catch(ex) {
+        throw new Error('Map data structure cannot be converted to a graph.');
+      }
+    }
+  }
+
+  // dict of dicts / lists
+  if(goog.typeOf(data) === 'object') {
+    try {
+      return jsnx.convert.from_dict_of_dicts(
+        data,
+        opt_create_using,
+        opt_multigraph_input
+      );
+    }
+    catch(e) {
+      /** @preserveTry */
+      try {
+        return jsnx.convert.from_dict_of_lists(data, opt_create_using);
+      }
+      catch(ex) {
+        throw new Error(
+          'Object data structure cannot be converted to a graph.'
         );
       }
-      catch(e) {
-        try {
-          return jsnx.contrib.convert.from_map_of_lists(data, opt_create_using);
-        }
-        catch(ex) {
-          throw new Error('Input is not known type.');
-        }
-      }
     }
+  }
 
-    // dict of dicts / lists
-    if(goog.typeOf(data) === 'object') {
-        try {
-            return jsnx.convert.from_dict_of_dicts(
-              data,
-              opt_create_using,
-              opt_multigraph_input
-            );
-        }
-        catch(e) {
-            /** @preserveTry */
-            try {
-                return jsnx.convert.from_dict_of_lists(data, opt_create_using);
-            }
-            catch(ex) {
-                throw new Error('Input is not known type.');
-            }
-        }
+  // list of edges
+  if(goog.isArrayLike(data)) {
+    /** @preserveTry */
+    try {
+      return jsnx.convert.from_edgelist(data, opt_create_using);
     }
-
-    // list of edges
-    if(goog.isArrayLike(data)) {
-        /** @preserveTry */
-        try {
-            return jsnx.convert.from_edgelist(data, opt_create_using);
-        }
-        catch(e) {
-            throw new Error('Input is not valid edge list');
-        }
+    catch(e) {
+      throw new Error('Input is not a valid edge list');
     }
+  }
 
-    return result;
+  return result;
 };
 goog.exportSymbol('jsnx.to_networkx_graph', jsnx.convert.to_networkx_graph);
 
@@ -236,46 +238,48 @@ goog.exportSymbol('jsnx.to_dict_of_lists', jsnx.convert.to_dict_of_lists);
  * @export
  */
 jsnx.convert.from_dict_of_lists = function(d, opt_create_using) {
-    var G = jsnx.convert.prep_create_using_(opt_create_using);
-    G.add_nodes_from(goog.iter.map(
-      jsnx.helper.iteritems(d),
-      function(d) {
-        return isNaN(d[0]) ? d[0] : +d[0];
-      }
-    ));
+  var G = jsnx.convert.prep_create_using_(opt_create_using);
 
-    if(G.is_multigraph() && !G.is_directed()) {
-        // a dict_of_lists can't show multiedges.  BUT for undirected graphs,
-        // each edge shows up twice in the dict_of_lists.
-        // So we need to treat this case separately.
-        var seen = {};
-
-        goog.object.forEach(d, function(nbrlist, node) {
-            // treat numeric keys like numbers
-            node = isNaN(node) ? node : +node;
-            goog.array.forEach(nbrlist, function(nbr) {
-                if (!goog.object.containsKey(seen, nbr)) {
-                    G.add_edge(node, nbr);
-                }
-            });
-            seen[node] = 1; // don't allow reverse edge to show up
-        });
-
+  // Convert numeric property names to numbers
+  G.add_nodes_from(jsnx.contrib.iter.map(
+    jsnx.helper.iter(d),
+    function(d) {
+      return isNaN(d) ? d : +d;
     }
-    else {
-        var edge_list = [];
-        goog.object.forEach(d, function(nbrlist, node) {
-            // treat numeric keys like numbers
-            node = isNaN(node) ? node : +node;
-            goog.array.forEach(nbrlist, function(nbr) {
-                edge_list.push([node, nbr]);
-            });
-        });
+  ));
 
-        G.add_edges_from(edge_list);
-    }
+  if(G.is_multigraph() && !G.is_directed()) {
+    // a dict_of_lists can't show multiedges.  BUT for undirected graphs,
+    // each edge shows up twice in the dict_of_lists.
+    // So we need to treat this case separately.
+    var seen = new jsnx.contrib.Map();
 
-    return G;
+    goog.object.forEach(d, function(nbrlist, node) {
+      // treat numeric keys like numbers
+      node = isNaN(node) ? node : +node;
+      goog.array.forEach(nbrlist, function(nbr) {
+        if (!seen.has(nbr)) {
+          G.add_edge(node, nbr);
+        }
+      });
+      seen.set(node, true); // don't allow reverse edge to show up
+    });
+
+  }
+  else {
+    var edge_list = [];
+    goog.object.forEach(d, function(nbrlist, node) {
+      // treat numeric keys like numbers
+      node = isNaN(node) ? node : +node;
+      goog.array.forEach(nbrlist, function(nbr) {
+        edge_list.push([node, nbr]);
+      });
+    });
+
+    G.add_edges_from(edge_list);
+  }
+
+  return G;
 };
 
 
@@ -357,158 +361,142 @@ jsnx.convert.from_dict_of_lists = function(d, opt_create_using) {
  * @export
  */
 jsnx.convert.from_dict_of_dicts = function(d, opt_create_using, opt_multigraph_input) {
-    var G = jsnx.convert.prep_create_using_(opt_create_using), edgelist, seen;
-    G.add_nodes_from(goog.iter.map(
-      jsnx.helper.iteritems(d),
-      function(d) {
-        return isNaN(d[0]) ? d[0] : +d[0];
+  var G = jsnx.convert.prep_create_using_(opt_create_using), edgelist, seen;
+  G.add_nodes_from(jsnx.contrib.iter.map(
+    jsnx.helper.iter(d),
+    function(d) {
+      return isNaN(d) ? d : +d;
+    }
+  ));
+
+  // is dict a MultiGraph or MultiDiGraph?
+  if (opt_multigraph_input) {
+    // make a copy  of the list of edge data (but not the edge data)
+    if (G.is_directed()) {
+      if (G.is_multigraph()) {
+        edgelist = [];
+        goog.object.forEach(d, function(nbrs, u) {
+          if(goog.isArrayLike(nbrs)) { // throw exception of not dict (object)
+            throw new Error('Inner object seems to be an array');
+          }
+          // treat numeric keys like numbers
+          u = isNaN(u) ? u : +u;
+          goog.object.forEach(nbrs, function(datadict, v) {
+            // treat numeric keys like numbers
+            v = isNaN(v) ? v : +v;
+            goog.object.forEach(datadict, function(data, key) {
+              edgelist.push([u, v, key, data]);
+            });
+          });
+        });
+        G.add_edges_from(edgelist);
       }
-    ));
-
-    // is dict a MultiGraph or MultiDiGraph?
-    if (opt_multigraph_input) {
-        // make a copy  of the list of edge data (but not the edge data)
-        if (G.is_directed()) {
-            if (G.is_multigraph()) {
-                edgelist = [];
-                goog.object.forEach(d, function(nbrs, u) {
-                    if(goog.isArrayLike(nbrs)) { // throw expectio of not dict (object)
-                        throw new Error();
-                    }
-                    // treat numeric keys like numbers
-                    u = isNaN(u) ? u : +u;
-                    goog.object.forEach(nbrs, function(datadict, v) {
-                        // treat numeric keys like numbers
-                        v = isNaN(v) ? v : +v;
-                        goog.object.forEach(datadict, function(data, key) {
-                            edgelist.push([u, v, key, data]);
-                        });
-                    });
-                });
-                G.add_edges_from(edgelist);
-            }
-            else {
-                edgelist = [];
-                goog.object.forEach(d, function(nbrs, u) {
-                    if(goog.isArrayLike(nbrs)) { // throw expectio of not dict (object)
-                        throw new Error();
-                    }
-                    // treat numeric keys like numbers
-                    u = isNaN(u) ? u : +u;
-                    goog.object.forEach(nbrs, function(datadict, v) {
-                        // treat numeric keys like numbers
-                        v = isNaN(v) ? v : +v;
-                        goog.object.forEach(datadict, function(data, key) {
-                            edgelist.push([u, v, data]);
-                        });
-                    });
-                });
-                G.add_edges_from(edgelist);
-            }
-        }
-        else { // undirected
-            if(G.is_multigraph()) {
-                seen = new goog.structs.Set(); // don't add both directions of undirected graph
-                goog.object.forEach(d, function(nbrs, u) {
-                    if(goog.isArrayLike(nbrs)) { // throw expectio of not dict (object)
-                        throw new Error();
-                    }
-                    // treat numeric keys like numbers
-                    u = isNaN(u) ? u : +u;
-                    goog.object.forEach(nbrs, function(datadict, v) {
-                        // the original implementation uses tuples here
-                        // but since only primitive types are supported by
-                        // goog.structs.Set and nodes can only be numbers or strings,
-                        // we concatenate both nodes here
-
-                        // treat numeric keys like numbers
-                        v = isNaN(v) ? v : +v;
-                        if(!seen.contains([u, v].toString())) {
-                            edgelist = [];
-                            goog.object.forEach(datadict, function(data, key) {
-                                edgelist.push([u, v, key, data]);
-                            });
-                            G.add_edges_from(edgelist);
-                            seen.add([v, u].toString());
-                        }
-                    });
-                });
-            }
-            else {
-                seen = new goog.structs.Set(); // don't add both directions of undirected graph
-                goog.object.forEach(d, function(nbrs, u) {
-                    if(goog.isArrayLike(nbrs)) { // throw expectio of not dict (object)
-                        throw new Error();
-                    }
-                    // treat numeric keys like numbers
-                    u = isNaN(u) ? u : +u;
-                    goog.object.forEach(nbrs, function(datadict, v) {
-                        // the original implementation uses tuples here
-                        // but since only primitive types are supported by
-                        // goog.structs.Set and nodes can only be numbers or strings,
-                        // we concatenate both nodes here
-
-                        // treat numeric keys like numbers
-                        v = isNaN(v) ? v : +v;
-                        if(!seen.contains([u, v].toString())) {
-                            edgelist = [];
-                            goog.object.forEach(datadict, function(data, key) {
-                                edgelist.push([u, v, data]);
-                            });
-                            G.add_edges_from(edgelist);
-                            seen.add([v, u].toString());
-                        }
-                    });
-                });
-            }
-        }
-    }
-    else { // not a multigraph to multigraph transfer
-        if(G.is_multigraph() && !G.is_directed()) {
-            // d can have both representations u-v, v-u in dict.  Only add one.
-            // We don't need this check for digraphs since we add both directions,
-            // or for Graph() since it is done implicitly (parallel edges not allowed)
-            seen = new goog.structs.Set();
-            goog.object.forEach(d, function(nbrs, u) {
-                if(goog.isArrayLike(nbrs)) { // throw expectio of not dict (object)
-                    throw new Error();
-                }
-                // treat numeric keys like numbers
-                u = isNaN(u) ? u : +u;
-                goog.object.forEach(nbrs, function(data, v) {
-                    // the original implementation uses tuples here
-                    // but since only primitive types are supported by
-                    // goog.structs.Set and nodes can only be numbers or strings,
-                    // we concatenate both nodes here
-
-                    // treat numeric keys like numbers
-                    v = isNaN(v) ? v : +v;
-                    if(!seen.contains([u, v].toString())) {
-                        G.add_edge(u, v, data);
-                        seen.add([v, u].toString());
-                    }
-                });
+      else {
+        edgelist = [];
+        goog.object.forEach(d, function(nbrs, u) {
+          if(goog.isArrayLike(nbrs)) { // throw exception of not dict (object)
+            throw new Error('Inner object seems to be an array');
+          }
+          // treat numeric keys like numbers
+          u = isNaN(u) ? u : +u;
+          goog.object.forEach(nbrs, function(datadict, v) {
+            // treat numeric keys like numbers
+            v = isNaN(v) ? v : +v;
+            goog.object.forEach(datadict, function(data, key) {
+              edgelist.push([u, v, data]);
             });
-        }
-        else {
-            edgelist = [];
-            goog.object.forEach(d, function(nbrs, u) {
-                if(goog.isArrayLike(nbrs)) { // throw expectio of not dict (object)
-                    throw new Error();
-                }
-                // treat numeric keys like numbers
-                u = isNaN(u) ? u : +u;
-                goog.object.forEach(nbrs, function(data, v) {
-                    // treat numeric keys like numbers
-                    v = isNaN(v) ? v : +v;
-                    edgelist.push([u, v, data]);
-                });
-            });
-            G.add_edges_from(edgelist);
-        }
+          });
+        });
+        G.add_edges_from(edgelist);
+      }
     }
+    else { // undirected
+      if(G.is_multigraph()) {
+        // don't add both directions of undirected graph
+        seen = new jsnx.contrib.Map();
+        goog.object.forEach(d, function(nbrs, u) {
+          if(goog.isArrayLike(nbrs)) { // throw exception of not dict (object)
+            throw new Error('Inner object seems to be an array');
+          }
+          // treat numeric keys like numbers
+          u = isNaN(u) ? u : +u;
+          goog.object.forEach(nbrs, function(datadict, v) {
+            v = isNaN(v) ? v : +v;
+            if(!seen.has([u, v])) {
+              edgelist = [];
+              goog.object.forEach(datadict, function(data, key) {
+                edgelist.push([u, v, key, data]);
+              });
+              G.add_edges_from(edgelist);
+              seen.set([v, u], true);
+            }
+          });
+        });
+      }
+      else {
+        seen = new jsnx.contrib.Map(); // don't add both directions of undirected graph
+        goog.object.forEach(d, function(nbrs, u) {
+          if(goog.isArrayLike(nbrs)) { // throw exception of not dict (object)
+            throw new Error('Inner object seems to be an array');
+          }
+          // treat numeric keys like numbers
+          u = isNaN(u) ? u : +u;
+          goog.object.forEach(nbrs, function(datadict, v) {
+            v = isNaN(v) ? v : +v;
+            if (!seen.has([u, v])) {
+              edgelist = [];
+              goog.object.forEach(datadict, function(data, key) {
+                edgelist.push([u, v, data]);
+              });
+              G.add_edges_from(edgelist);
+              seen.set([v, u], true);
+            }
+          });
+        });
+      }
+    }
+  }
+  else { // not a multigraph to multigraph transfer
+    if(G.is_multigraph() && !G.is_directed()) {
+      // d can have both representations u-v, v-u in dict.  Only add one.
+      // We don't need this check for digraphs since we add both directions,
+      // or for Graph() since it is done implicitly (parallel edges not allowed)
+      seen = new jsnx.contrib.Map();
+      goog.object.forEach(d, function(nbrs, u) {
+        if(goog.isArrayLike(nbrs)) { // throw exception of not dict (object)
+          throw new Error('Inner object seems to be an array');
+        }
+        // treat numeric keys like numbers
+        u = isNaN(u) ? u : +u;
+        goog.object.forEach(nbrs, function(data, v) {
+          v = isNaN(v) ? v : +v;
+          // TODO: Use a proper tuple implementation
+          if (!seen.has([u, v])) {
+            G.add_edge(u, v, data);
+            seen.set([v, u], true);
+          }
+        });
+      });
+    }
+    else {
+      edgelist = [];
+      goog.object.forEach(d, function(nbrs, u) {
+        if(goog.isArrayLike(nbrs)) { // throw expectio of not dict (object)
+          throw new Error();
+        }
+        // treat numeric keys like numbers
+        u = isNaN(u) ? u : +u;
+        goog.object.forEach(nbrs, function(data, v) {
+          // treat numeric keys like numbers
+          v = isNaN(v) ? v : +v;
+          edgelist.push([u, v, data]);
+        });
+      });
+      G.add_edges_from(edgelist);
+    }
+  }
 
-    return G;
+  return G;
 };
 
 
@@ -522,12 +510,12 @@ jsnx.convert.from_dict_of_dicts = function(d, opt_create_using, opt_multigraph_i
  * @export
  */
 jsnx.convert.to_edgelist = function(G, opt_nodelist) {
-    if(goog.isDefAndNotNull(opt_nodelist)) {
-        return G.edges(opt_nodelist, true);
-    }
-    else {
-        return G.edges(null, true);
-    }
+  if (goog.isDefAndNotNull(opt_nodelist)) {
+    return G.edges(opt_nodelist, true);
+  }
+  else {
+    return G.edges(null, true);
+  }
 };
 
 
@@ -542,9 +530,9 @@ jsnx.convert.to_edgelist = function(G, opt_nodelist) {
  * @export
  */
 jsnx.convert.from_edgelist = function(edgelist, opt_create_using) {
-    var G = jsnx.convert.prep_create_using_(opt_create_using);
-    G.add_edges_from(edgelist);
-    return G;
+  var G = jsnx.convert.prep_create_using_(opt_create_using);
+  G.add_edges_from(edgelist);
+  return G;
 };
 
 

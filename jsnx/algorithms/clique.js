@@ -2,10 +2,9 @@
 goog.provide('jsnx.algorithms.clique');
 
 
-goog.require('goog.iter');
-goog.require('goog.iter.Iterator');
 goog.require('goog.object');
 goog.require('goog.array');
+goog.require('jsnx.contrib.iter');
 goog.require('jsnx.contrib.Map');
 goog.require('jsnx.contrib.Set');
 
@@ -64,19 +63,20 @@ goog.require('jsnx.contrib.Set');
  *
  * @param {jsnx.classes.Graph} G
  *
- * @return {!goog.iter.Iterator}
+ * @return {!Iterator}
  * @export
  */
-jsnx.algorithms.clique.find_cliques = function(G) {
+jsnx.algorithms.clique.find_cliques = function*(G) {
   // Cache nbrs and find first pivot (highest degree)
   var maxconn = -1;
   var nnbrs = new jsnx.contrib.Map();
   var pivotnbrs = new jsnx.contrib.Set(); // handle empty graph
+  var conn;
 
-  goog.iter.forEach(G.adjacency_iter(), function(d) {
+  for (var d of G.adjacency_iter()) {
     var nbrs = new jsnx.contrib.Set(d[1].keys());
     nbrs.remove(d[0]);
-    var conn = nbrs.count();
+    conn = nbrs.size();
     if(conn > maxconn) {
       nnbrs.set(d[0],  nbrs);
       pivotnbrs = nbrs;
@@ -85,7 +85,7 @@ jsnx.algorithms.clique.find_cliques = function(G) {
     else {
       nnbrs.set(d[0], nbrs);
     }
-  });
+  }
 
   // Initial setup
   var cand = new jsnx.contrib.Set(nnbrs.keys());
@@ -95,93 +95,81 @@ jsnx.algorithms.clique.find_cliques = function(G) {
   var clique_so_far = [];
 
   // start main loop
-  var iterator = new goog.iter.Iterator();
-  /**
-     * @this goog.iter.Iterator
-*/
-  iterator.next = function() {
-    if(smallcand.count() === 0 && stack.length === 0) {
-      throw goog.iter.StopIteration;
-    }
-    var n, result, iterable;
-    if(smallcand.count() > 0) {
+  while (smallcand.size() > 0 && stack.size() > 0) {
+    var n;
+    if (smallcand.size() > 0) {
       // any nodes left to check?
-      n = goog.iter.toIterator(smallcand).next();
+      n = smallcand.values().next().value;
       smallcand.remove(n);
     }
     else {
-      // back out clique_so_far
-      var v = stack.pop();
+      var v = stack.ptop();
       cand = v[0];
       done = v[1];
       smallcand = v[2];
       clique_so_far.pop();
-      return this.next(); // continue
+      continue;
     }
-    // add next node to clique
-    clique_so_far.push(n);
+    // Add next node to clique
+    clique_so_far.append(n);
     cand.remove(n);
     done.add(n);
     var nn = nnbrs.get(n);
     var new_cand = cand.intersection(nn);
     var new_done = done.intersection(nn);
     // check if we have more to search
-    if(new_cand.count() === 0) {
-      if(new_done.count() === 0) {
-        // Found a clique!
-        result = goog.array.clone(clique_so_far);
+    if (new_cand.size() === 0) {
+      if (new_done.size() === 0) {
+        // found a clique
+        yield goog.array.clone(clique_so_far);
       }
       clique_so_far.pop();
-      if(result) {
-        return result;
-      }
+      continue;
     }
-    // Shortcut -- only one node left!
-    if(new_done.count() === 0 && new_cand.count() === 1) {
-      result = goog.array.concat(clique_so_far, new_cand.values());
+    // shortcut -- only one node left!
+    if (new_done.size() === 0 && new_cand.size() === 1) {
+      yield clique_so_far.concat(jsnx.contrib.iter.toArray(new_cand.values()));
       clique_so_far.pop();
-      return result; // continue
+      continue;
     }
-
-    // find pivot node (max connected in cand)
-    var numb_cand = new_cand.count();
+    // find pivot node (max connected in can)
+    // look in done nodes first
+    var numb_cand = new_cand.size();
     var maxconndone = -1;
-    var pivotdonenbrs, cn, conn;
-    iterable = goog.iter.toIterator(new_done);
-    while((n = goog.iter.nextOrValue(iterable, null)) !== null) {
+    var pivotdonenbrs;
+    var cn;
+    for (n of new_cand.values()) {
       cn = new_cand.intersection(nnbrs.get(n));
-      conn = cn.count();
-      if(conn > maxconndone) {
+      conn = cn.size();
+      if (conn > maxconndone) {
         pivotdonenbrs = cn;
         maxconndone = conn;
-        if(maxconndone === numb_cand) {
-          break; 
-        }
-      }
-
-    }
-    // Shortcut--this part of tree already searched
-    if(maxconndone === numb_cand) {
-      clique_so_far.pop();
-      return this.next();
-    }
-    // still finding pivot node
-    // look in cand nodes second
-    maxconn = -1;
-    iterable = goog.iter.toIterator(new_cand);
-    while((n = goog.iter.nextOrValue(iterable, null)) !== null) {
-      cn = new_cand.intersection(nnbrs.get(n));
-      conn = cn.count();
-      if(conn > maxconn) {
-        pivotnbrs = cn;
-        maxconn = conn;
-        if(maxconn === numb_cand - 1) {
+        if (maxconndone === numb_cand) {
           break;
         }
       }
     }
-    // pivot node is max connected in cand form done or cand
-    if(maxconndone > maxconn) {
+    // shortcut -- this part of the tree is already searched
+    if (maxconndone === numb_cand) {
+      clique_so_far.prop();
+      continue;
+    }
+    // still finding pivot node
+    // look in cand nodes second
+    maxconn = -1;
+    for (n of new_cand.values()) {
+      cn = new_cand.intersection(nnbrs.get(n));
+      conn = cn.size();
+      if (conn > maxconn) {
+        pivotnbrs = cn;
+        maxconn = conn;
+        if (maxconn === numb_cand - 1) {
+          break;
+        }
+      }
+    }
+    // pivot node is max connected in cand from done or cand
+    if (maxconndone > maxconn) {
       pivotnbrs = pivotdonenbrs;
     }
     // save search status for later backout
@@ -189,9 +177,7 @@ jsnx.algorithms.clique.find_cliques = function(G) {
     cand = new_cand;
     done = new_done;
     smallcand = cand.difference(pivotnbrs);
-    return this.next();
-  };
-  return iterator;
+  }
 };
 goog.exportSymbol('jsnx.find_cliques', jsnx.algorithms.clique.find_cliques);
 
@@ -249,11 +235,11 @@ goog.exportSymbol('jsnx.find_cliques', jsnx.algorithms.clique.find_cliques);
  */
 jsnx.algorithms.clique.find_cliques_recursive = function(G) {
   var nnbrs = new jsnx.contrib.Map();
-  goog.iter.forEach(G.adjacency_iter(), function(nd) {
+  for (var nd of G.adjacency_iter) {
     var nbrs = new jsnx.contrib.Set(nd[1].keys());
     nbrs.remove(nd[0]);
     nnbrs.set(nd[0], nbrs);
-  });
+  }
   if(nnbrs.count() === 0) {
     return [];
   }
@@ -273,8 +259,7 @@ jsnx.algorithms.clique.extend_ = function(nnbrs, cand, done, so_far, cliques) {
   var numb_cand = cand.count();
   var pivotnbrs, iterable, n, cn, conn;
 
-  iterable = goog.iter.toIterator(done);
-  while((n = goog.iter.nextOrValue(iterable, null)) !== null) { 
+  for (n of done.values()) {
     cn = cand.intersection(nnbrs.get(n));
     conn = cn.count();
     if(conn > maxconn) {
@@ -287,18 +272,18 @@ jsnx.algorithms.clique.extend_ = function(nnbrs, cand, done, so_far, cliques) {
     }
   }
 
-  goog.iter.forEach(cand, function(n) {
-    var cn = cand.intersection(nnbrs.get(n));
-    var conn = cn.count();
+  for (n of cand.values()) {
+    cn = cand.intersection(nnbrs.get(n));
+    conn = cn.count();
     if(conn > maxconn) {
       pivotnbrs = cn;
       maxconn = conn;
     }
-  });
+  }
 
   // Use pivot to reduce number of nodes to examine
   var smallercand = cand.difference(pivotnbrs);
-  goog.iter.forEach(smallercand, function(n) {
+  for (n of smallercand.values()) {
     cand.remove(n);
     so_far.push(n);
     var nn = nnbrs.get(n);
@@ -317,7 +302,7 @@ jsnx.algorithms.clique.extend_ = function(nnbrs, cand, done, so_far, cliques) {
       jsnx.algorithms.clique.extend_(nnbrs, new_cand, new_done, so_far, cliques);
     }
     done.add(so_far.pop());
-  });
+  }
 
 };
 
@@ -344,9 +329,9 @@ jsnx.algorithms.clique.graph_clique_number = function(G, opt_cliques) {
     opt_cliques = jsnx.algorithms.clique.find_cliques(G);
   }
   var max = 0;
-  jsnx.helper.forEach(opt_cliques, function(c) {
+  for (var c of jsnx.helper.iter(opt_cliques)) {
     max = c.length > max ? c.length : max;
-  });
+  }
   return max;
 };
 goog.exportSymbol('jsnx.graph_clique_number', jsnx.algorithms.clique.graph_clique_number );
@@ -364,10 +349,10 @@ goog.exportSymbol('jsnx.graph_clique_number', jsnx.algorithms.clique.graph_cliqu
  * @export
  */
 jsnx.algorithms.clique.graph_number_of_cliques = function(G, opt_cliques) {
-    if(!goog.isDefAndNotNull(opt_cliques)) {
-        opt_cliques = jsnx.algorithms.clique.find_cliques(G);
-    }
-    return jsnx.helper.toArray(opt_cliques).length; 
+  if(!goog.isDefAndNotNull(opt_cliques)) {
+      opt_cliques = jsnx.algorithms.clique.find_cliques(G);
+  }
+  return jsnx.helper.toArray(opt_cliques).length; 
 };
 goog.exportSymbol('jsnx.graph_number_of_cliques', jsnx.algorithms.clique.graph_number_of_cliques );
 
@@ -383,17 +368,19 @@ goog.exportSymbol('jsnx.graph_number_of_cliques', jsnx.algorithms.clique.graph_n
  *
  * @param {jsnx.classes.Graph} G graph
  * @param {jsnx.NodeContainer=} opt_nodes List of nodes
- * @param {(Array|goog.iter.Iterable)=} opt_cliques List of cliques
+ * @param {(Array|Iterable)=} opt_cliques List of cliques
  *
  * @return {!(jsnx.contrib.Map|number)}
  * @export
  */
 jsnx.algorithms.clique.number_of_cliques = function(G, opt_nodes, opt_cliques) {
   if(!goog.isDefAndNotNull(opt_cliques)) {
-    opt_cliques = goog.iter.toArray(jsnx.algorithms.clique.find_cliques(G));
+    opt_cliques = jsnx.contrib.iter.toArray(
+        jsnx.algorithms.clique.find_cliques(G)
+    );
   }
   else {
-    opt_cliques = goog.iter.toArray(opt_cliques);
+    opt_cliques = jsnx.helper.toArray(opt_cliques);
   }
 
   if(!goog.isDefAndNotNull(opt_nodes)) {

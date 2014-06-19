@@ -10,7 +10,7 @@ goog.require('jsnx.contrib');
 
 /*jshint expr:true*/
 
-/** @typedef {(goog.iter.Iterable|Array|Object)} */
+/** @typedef {(Array|Object)} */
 jsnx.helper.Iterable;
 
 /** @typedef {(Array|{length:number})} */
@@ -31,10 +31,11 @@ goog.exportSymbol('jsnx.filter', goog.iter.filter);
  * @return {!Object}
  */
 jsnx.helper.objectFromKV = function(kvs) {
-    return goog.iter.reduce(jsnx.helper.iter(kvs), function(obj, kv) {
-        obj[kv[0]] = kv[1];
-        return obj;
-    }, {});
+  var obj = {};
+  jsnx.helper.forEach(kvs, function(kv) {
+    obj[kv[0]] = kv[1];
+  });
+  return obj;
 };
 if(jsnx.TESTING) {
     goog.exportSymbol('jsnx.helper.objectFromKV', jsnx.helper.objectFromKV);
@@ -95,28 +96,26 @@ if(jsnx.TESTING) {
  * @return {boolean}
  */
 jsnx.helper.isIterator = function(obj) {
-    return goog.isDefAndNotNull(obj) && (obj instanceof goog.iter.Iterator || goog.isFunction(obj.__iterator__));
+  return goog.isFunction(obj['next']);
 };
 if(jsnx.TESTING) {
-    goog.exportSymbol('jsnx.helper.isIterator', jsnx.helper.isIterator);
+  goog.exportSymbol('jsnx.helper.isIterator', jsnx.helper.isIterator);
 }
 
 
 /**
  * Returns true if object is an container which can be iterated over,
  * i.e. if it is an object, array, array-like object or an iterator.
- * 
+ *
  * @param {*} obj
- *  
+ 
  * @return {boolean}
  */
 jsnx.helper.isIterable = function(obj) {
-    return goog.typeOf(obj) === 'object' || 
-      goog.isArrayLike(obj) || 
-      jsnx.helper.isIterator(obj);
+  return wrapGenerator.isGeneratorFunction(obj['@@iterator']);
 };
 if(jsnx.TESTING) {
-    goog.exportSymbol('jsnx.helper.isIterable', jsnx.helper.isIterable);
+  goog.exportSymbol('jsnx.helper.isIterable', jsnx.helper.isIterable);
 }
 
 
@@ -124,35 +123,36 @@ if(jsnx.TESTING) {
  * Returns the number of elements in the container. That is 
  * the number of elements in the array or object or the length
  * of a string.
- * 
+ *
  * @param {(string|Object|goog.array.ArrayLike|jsnx.classes.Graph)} obj
  *    Object to determine the length of
- *  
+ *
  * @return {number} The number of elements
  * @throws {TypeError} When length cannot be determined
  */
 jsnx.helper.len = function(obj) {
-    if (obj instanceof jsnx.classes.Graph) {
-      return obj.number_of_nodes();
-    }
-    else if(goog.isString(obj) || 
-       goog.isArrayLike(obj)) {
-        return obj.length;
-    }
-    else if(jsnx.helper.isPlainObject(obj)) {
-        return goog.object.getCount(obj);
-    }
-    else {
-        throw new TypeError();
-    }
+  if (obj instanceof jsnx.classes.Graph) {
+    return obj.number_of_nodes();
+  }
+  else if(goog.isString(obj) || 
+    goog.isArrayLike(obj)) {
+    return obj.length;
+  }
+  else if(jsnx.helper.isPlainObject(obj)) {
+    return goog.object.getCount(obj);
+  }
+  else {
+    throw new TypeError();
+  }
 };
 if(jsnx.TESTING) {
-    goog.exportSymbol('jsnx.helper.len', jsnx.helper.len);
+  goog.exportSymbol('jsnx.helper.len', jsnx.helper.len);
 }
 
 
 /**
- * Helper to iterate over sequence types (arrays, array-like objects, objects, etc)
+ * Helper to iterate over sequence types (arrays, array-like objects,
+ * objects, etc)
  *
  * @param {jsnx.helper.Iterable} seq
  * @param {function(this:T, ...)} callback
@@ -164,40 +164,46 @@ if(jsnx.TESTING) {
  */
 jsnx.helper.forEach = function(seq, callback, opt_this_obj, opt_expand) {
 
-    // opt_this_obj can be omitted
-    if(goog.isBoolean(opt_this_obj)) { 
-        opt_expand = opt_this_obj;
-        opt_this_obj = null;
-    }
+  // opt_this_obj can be omitted
+  if(goog.isBoolean(opt_this_obj)) { 
+    opt_expand = opt_this_obj;
+    opt_this_obj = null;
+  }
 
-    if(opt_expand) {
-        var orig_callback = callback;
-        /** @this {*} */
-        callback = function(val) {
-            orig_callback.apply(this, val);
-        };
-    }
+  if(opt_expand) {
+    var orig_callback = callback;
+    /** @this {*} */
+    callback = function(val) {
+      orig_callback.apply(this, val);
+    };
+  }
 
-    if (seq instanceof jsnx.classes.Graph) {
-        goog.iter.forEach(jsnx.helper.iter(seq), callback, opt_this_obj);
+  if (seq instanceof jsnx.contrib.Map) {
+    seq.forEach(callback, opt_this_obj);
+    return;
+  }
+  else if(seq instanceof jsnx.classes.Graph) {
+    seq = jsnx.helper.iter(seq);
+  }
+
+  if (jsnx.helper.isIterable(seq)) {
+    seq = seq['@@iterator']();
+  }
+  if(jsnx.helper.isIterator(seq)) {
+    for (var v of seq) {
+      callback.call(opt_this_obj, v);
     }
-    else if(jsnx.helper.isIterator(seq)) {
-        goog.iter.forEach(
-          /** @type {goog.iter.Iterable} */ (seq),
-          callback,
-          opt_this_obj
-        );
-    }
-    else if(goog.isArrayLike(seq) || goog.isString(seq)) {
-        goog.array.forEach(
-          /** @type {jsnx.helper.ArrayLike} */ (seq),
-          callback,
-          opt_this_obj
-        );
-    }
-    else if(goog.isObject(seq)) {
-        jsnx.helper.forEach(goog.object.getKeys(seq), callback, opt_this_obj);
-    }
+  }
+  else if(goog.isArrayLike(seq) || goog.isString(seq)) {
+    goog.array.forEach(
+      /** @type {jsnx.helper.ArrayLike} */ (seq),
+      callback,
+      opt_this_obj
+    );
+  }
+  else if(goog.isObject(seq)) {
+    jsnx.helper.forEach(goog.object.getKeys(seq), callback, opt_this_obj);
+  }
 };
 goog.exportSymbol('jsnx.forEach', jsnx.helper.forEach);
 if(jsnx.TESTING) {
@@ -213,32 +219,28 @@ if(jsnx.TESTING) {
  * @param {T=} this_obj
  * @template T
  *
- * @return {(Array|Object|goog.iter.Iterator)}
+ * @return {(Array|Object|Iterator)}
  */
 jsnx.helper.map = function(sequence, callback, this_obj) {
-    if (sequence instanceof jsnx.classes.Graph) {
-        return jsnx.helper.map(jsnx.helper.iter(sequence), callback, this_obj);
-    }
-    else if(goog.isArrayLike(sequence)) {
-        return goog.array.map(
-          /** @type {jsnx.helper.ArrayLike} */ (sequence),
-          callback,
-          this_obj
-        );
-    }
-    else if(jsnx.helper.isIterator(sequence)) {
-        return goog.iter.map(
-          /** @type {goog.iter.Iterable} */ (sequence),
-          callback,
-          this_obj
-        );
-    }
-    else if(goog.isObject(sequence)) {
-        return goog.object.map(sequence, callback, this_obj);
-    }
-    else {
-        throw new TypeError();
-    }
+  if (jsnx.helper.isIterable(sequence)) {
+    sequence = sequence['@@iterable']();
+  }
+  if (jsnx.helper.isIterator(sequence)) {
+    return jsnx.contrib.iter.map(sequence, callback, this_obj);
+  }
+  else if(goog.isArrayLike(sequence)) {
+    return goog.array.map(
+      /** @type {jsnx.helper.ArrayLike} */ (sequence),
+      callback,
+      this_obj
+    );
+  }
+  else if(goog.isObject(sequence)) {
+    return goog.object.map(sequence, callback, this_obj);
+  }
+  else {
+    throw new TypeError();
+  }
 };
 goog.exportSymbol('jsnx.map', jsnx.helper.map);
 if(jsnx.TESTING) {
@@ -251,34 +253,27 @@ if(jsnx.TESTING) {
  *
  * @param {...(jsnx.helper.Iterable)} var_args
  *
- * @return {!(Array|Object|goog.iter.Iterator)}
+ * @return {!(Array|Object|Iterator)}
  */
 jsnx.helper.zip = function(var_args) {
-    var args = arguments,
-        first = args[0];
-    if(goog.isArrayLike(first)) {
-         return goog.array.zip.apply(null, args);
-    }
-    else if(jsnx.helper.isIterator(first)) {
-        var iterator = new goog.iter.Iterator(),
-            l = args.length;
+  var args = arguments;
+  var first = args[0];
 
-        iterator.next = function() {
-            var next = [];
-            for(var i = 0; i < l; i++) {
-                next.push(args[i].next());
-            }
-            return next;
-        };
-        return iterator;
-    }
-    else if(goog.isObject(first)) {
-        return goog.array.zip.apply(null, 
-                         goog.array.map(args, goog.object.getKeys));
-    }
-    else {
-        throw new TypeError();
-    }
+  if(goog.isArrayLike(first)) {
+    return goog.array.zip.apply(null, args);
+  }
+  else if(jsnx.helper.isIterator(first)) {
+    return jsnx.contrib.iter.zip.apply(null, args);
+  }
+  else if(goog.isObject(first)) {
+    return goog.array.zip.apply(
+      null,
+      goog.array.map(args, goog.object.getKeys)
+    );
+  }
+  else {
+    throw new TypeError();
+  }
 };
 if(jsnx.TESTING) {
     goog.exportSymbol('jsnx.helper.zip', jsnx.helper.zip);
@@ -294,15 +289,15 @@ if(jsnx.TESTING) {
  * @return {number}
  */
 jsnx.helper.max = function(seq, opt_map) {
-    if(!goog.isFunction(opt_map)) {
-        seq = jsnx.helper.toArray(seq);
-    }
-    else {
-        seq = jsnx.helper.toArray(jsnx.helper.map(seq, function() {
-            return opt_map.apply(null, arguments);
-        }));
-    }
-    return Math.max.apply(null, seq);
+  if(!goog.isFunction(opt_map)) {
+    seq = jsnx.helper.toArray(seq);
+  }
+  else {
+    seq = jsnx.helper.toArray(jsnx.helper.map(seq, function() {
+      return opt_map.apply(null, arguments);
+    }));
+  }
+  return Math.max.apply(null, seq);
 };
 if(jsnx.TESTING) {
     goog.exportSymbol('jsnx.helper.max', jsnx.helper.max);
@@ -320,40 +315,32 @@ if(jsnx.TESTING) {
  * @param {?number=} opt_end Number to count to
  * @param {?number=} opt_step Stepsize
  *
- * @return {!goog.iter.Iterator}
+ * @return {!Iterator}
  */
-jsnx.helper.range = function(opt_start, opt_end, opt_step) {
+jsnx.helper.range = function*(opt_start, opt_end, opt_step) {
 
-    if(arguments.length === 0) {
-        return goog.iter.toIterator([]);
-    }
-    else if(arguments.length === 1) {
-        opt_end = opt_start;
-        opt_start = 0;
-        opt_step = 1;
-    }
-    else if(arguments.length === 2) {
-        opt_step = 1;
-    }
-    else if(arguments.length === 3 && arguments[2] === 0) {
-        throw "range() step argument must not be zero";
-    }
+  if(arguments.length === 0) {
+    return;
+  }
+  else if(arguments.length === 1) {
+    opt_end = opt_start;
+    opt_start = 0;
+    opt_step = 1;
+  }
+  else if(arguments.length === 2) {
+    opt_step = 1;
+  }
+  else if(arguments.length === 3 && arguments[2] === 0) {
+    throw "range() step argument must not be zero";
+  }
 
-    var iterator = new goog.iter.Iterator(),
-        negative = opt_step < 0,
-        counter = opt_start,
-        current;
-
-    iterator.next = function() {
-        if(negative && counter <= opt_end || !negative && counter >= opt_end) {
-            throw goog.iter.StopIteration;
-        }
-        current = counter;
-        counter += opt_step;
-        return current;
-    };
-
-    return iterator;
+  var negative = opt_step < 0;
+  for (
+    var i = opt_start;
+    negative && i > opt_end || !negative && i < opt_end;
+    i += opt_step) {
+    yield i;
+  }
 };
 if(jsnx.TESTING) {
     goog.exportSymbol('jsnx.helper.range', jsnx.helper.range);
@@ -370,48 +357,40 @@ if(jsnx.TESTING) {
  *
  * @return {goog.iter.Iterator}
  */
-jsnx.helper.combinations = function(iterable, r) {
-    var pool = jsnx.helper.toArray(iterable),
-        n = pool.length;
+jsnx.helper.combinations = function*(iterable, r) {
+  var pool = jsnx.helper.toArray(iterable);
+  var n = pool.length;
 
-    if(r > n) {
-        return new goog.iter.Iterator();
+  if(r > n) {
+    return;
+  }
+
+  var indices = jsnx.helper.toArray(jsnx.helper.range(r));
+
+  yield goog.array.map(indices, function(i) {
+    return pool[i];
+  });
+
+  while (true) {
+    var cont = false, i;
+    for(i = r; i--;) {
+      if(indices[i] != i + n - r) {
+        cont = true;
+        break;
+      }
     }
-
-    var indices = jsnx.helper.toArray(jsnx.helper.range(r)),
-        iterator = new goog.iter.Iterator();
-
-    /** @this {goog.iter.Iterator} */
-    iterator.next = function() {
-        var result = goog.array.map(indices, function(i) {
-            return pool[i];
-        });
-
-        this.next = function() {
-            var cont = false, i;
-            for(i = r; i--;) {
-                if(indices[i] != i + n - r) {
-                    cont = true;
-                    break;
-                }
-            }
-            if(!cont) {
-                throw goog.iter.StopIteration;
-            }
-            
-            indices[i] += 1;
-            for(var j = i+1; j < r; j++) {
-                indices[j] = indices[j-1] + 1;
-            }
-            return goog.array.map(indices, function(i) {
-                return pool[i];
-            });
-        };
-
-        return result;
-    };
-
-    return iterator;
+    if(!cont) {
+      return;
+    }
+    indices[i] += 1;
+    for(var j = i+1; j < r; j++) {
+      indices[j] = indices[j-1] + 1;
+    }
+    /*jshint loopfunc:true*/
+    yield goog.array.map(indices, function(i) {
+      return pool[i];
+    });
+  }
 };
 if(jsnx.TESTING) {
     goog.exportSymbol('jsnx.helper.combinations', jsnx.helper.combinations);
@@ -428,64 +407,48 @@ if(jsnx.TESTING) {
  *
  * @return {goog.iter.Iterator}
  */
-jsnx.helper.permutations = function(iterable, opt_r) {
-    var pool = jsnx.helper.toArray(iterable),
-        n = pool.length,
-        r = goog.isNumber(opt_r) ? opt_r : n;
+jsnx.helper.permutations = function*(iterable, opt_r) {
+  var pool = jsnx.helper.toArray(iterable);
+  var n = pool.length;
+  var r = goog.isNumber(opt_r) ? opt_r : n;
 
-    if(r > n) {
-        return new goog.iter.Iterator();
-    }
+  if(r > n) {
+    return;
+  }
 
-    var indices = jsnx.helper.toArray(jsnx.helper.range(n)),
-        cycles = jsnx.helper.toArray(jsnx.helper.range(n, n - r, -1)),
-        iterator = new goog.iter.Iterator(),
-        itr = new goog.iter.Iterator(),
-        chain,
-        broke = true;
+  var indices = jsnx.helper.toArray(jsnx.helper.range(n));
+  var cycles = jsnx.helper.toArray(jsnx.helper.range(n, n - r, -1));
 
-    /** @this {goog.iter.Iterator} */
-    iterator.next = function() {
-        this.next = chain.next;
-        return  goog.array.map(indices.slice(0,r), function(i) {
-            return pool[i];
+  yield  goog.array.map(indices.slice(0,r), function(i) {
+    return pool[i];
+  });
+
+  while (n) {
+    for (var i = r - 1; i > -1; i--) {
+      cycles[i] -= 1;
+      if (cycles[i] === 0) {
+        indices.splice.apply(
+          indices,
+          [i, indices.length].concat(indices.slice(i+1).concat([indices[i]]))
+        );
+        cycles[i] = n - i;
+      }
+      else {
+        var j = cycles[i];
+        var tmp = indices[i];
+        indices[i] = indices[indices.length-j];
+        indices[indices.length-j] = tmp;
+        /*jshint loopfunc:true*/
+        yield goog.array.map(indices.slice(0,r), function(i) {
+          return pool[i];
         });
-
-    };
-
-    itr.next = function() {
-         return broke;
-    };
-
-    chain = jsnx.helper.nested_chain(itr, function(br) {
-        if(!br) {
-             throw goog.iter.StopIteration;
-        }
-        broke = false;
-        return jsnx.helper.range(r-1,-1,-1);
-    }, function(i) {
-        if(!broke) {
-            cycles[i] -= 1;
-            if(cycles[i] === 0) {
-                indices.splice.apply(indices, [i, indices.length].concat(indices.slice(i+1).concat([indices[i]])));
-                cycles[i] = n - i;
-            }
-            else {
-                var j = cycles[i],
-                    tmp = indices[i];
-                indices[i] = indices[indices.length-j];
-                indices[indices.length-j] = tmp;
-                broke = true;
-                return jsnx.helper.iter([goog.array.map(indices.slice(0,r), function(i) {
-                    return pool[i];
-                })]);
-            }
-        }
-    }, function(t) {
-        return t;
-    });
-
-    return iterator;
+        break;
+      }
+    }
+    if (i === -1) {
+      return;
+    }
+  }
 };
 if(jsnx.TESTING) {
     goog.exportSymbol('jsnx.helper.permutations', jsnx.helper.permutations);
@@ -531,7 +494,7 @@ jsnx.helper.extend = function(target, var_args) {
   }
 };
 if(jsnx.TESTING) {
-    goog.exportSymbol('jsnx.helper.extend', jsnx.helper.extend);
+  goog.exportSymbol('jsnx.helper.extend', jsnx.helper.extend);
 }
 
 
@@ -542,14 +505,14 @@ if(jsnx.TESTING) {
  * @param {Object} source
  */
 jsnx.helper.mixin = function(target, source) {
-    for(var prop in source) {
-        if(source.hasOwnProperty(prop) && prop !== 'constructor') {
-            target[prop] = source[prop];
-        }
+  for(var prop in source) {
+    if(source.hasOwnProperty(prop) && prop !== 'constructor') {
+      target[prop] = source[prop];
     }
+  }
 };
 if(jsnx.TESTING) {
-    goog.exportSymbol('jsnx.helper.mixin', jsnx.helper.mixin);
+  goog.exportSymbol('jsnx.helper.mixin', jsnx.helper.mixin);
 }
 
 
@@ -562,21 +525,27 @@ if(jsnx.TESTING) {
  * @return {!Array}
  */
 jsnx.helper.toArray = function(sequence) {
-    if (sequence instanceof jsnx.classes.Graph) {
-      return jsnx.helper.toArray(jsnx.helper.iter(sequence));
-    }
-    else if(goog.isArrayLike(sequence)) {
-        return goog.array.toArray(/** @type jsnx.helper.ArrayLike */ (sequence));
-    }
-    else if(jsnx.helper.isIterator(sequence)) {
-        return goog.iter.toArray(/** @type {goog.iter.Iterable} */ (sequence));
-    }
-    else if(goog.isObject(sequence)) {
-        return goog.object.getKeys(sequence);
-    }
-    else {
-        throw new TypeError();
-    }
+  if (sequence instanceof jsnx.classes.Graph) {
+    sequence = jsnx.helper.iter(sequence);
+  }
+  else if (jsnx.helper.isIterable(sequence)) {
+    sequence = jsnx.helper.iter(sequence);
+  }
+
+  if(goog.isArrayLike(sequence)) {
+    return goog.array.toArray(/** @type jsnx.helper.ArrayLike */ (sequence));
+  }
+  else if(jsnx.helper.isIterator(sequence)) {
+    return jsnx.contrib.iter.toArray(sequence);
+  }
+  else if(goog.isObject(sequence)) {
+    return goog.object.getKeys(sequence);
+  }
+  else {
+    throw new TypeError(
+      'Unable to convert value of type ' + typeof sequence + ' to array'
+    );
+  }
 };
 goog.exportSymbol('jsnx.toArray', jsnx.helper.toArray);
 if(jsnx.TESTING) {
@@ -592,16 +561,16 @@ if(jsnx.TESTING) {
  * @return {Array.<Array>}
  */
 jsnx.helper.items = function(obj) {
-    var result = [];
+  var result = [];
 
-    goog.object.forEach(obj, function(value, key) {
-        result.push([key, value]);
-    });
+  goog.object.forEach(obj, function(value, key) {
+    result.push([key, value]);
+  });
 
-    return result;
+  return result;
 };
 if(jsnx.TESTING) {
-    goog.exportSymbol('jsnx.helper.items', jsnx.helper.items);
+  goog.exportSymbol('jsnx.helper.items', jsnx.helper.items);
 }
 
 
@@ -610,18 +579,14 @@ if(jsnx.TESTING) {
  *
  * @param {Object} obj to extract the key-values from
  *
- * @return {!goog.iter.Iterator}
+ * @return {!Iterator}
  */
-jsnx.helper.iteritems = function(obj) {
-    var iterator = new goog.iter.Iterator(),
-        key_iterator = goog.iter.toIterator(goog.object.getKeys(obj));
-
-    iterator.next = function() {
-        var key = key_iterator.next();
-        return [key, obj[key]];
-    };
-
-    return iterator;
+jsnx.helper.iteritems = function*(obj) {
+  for (var prop in obj) {
+    if (obj.hasOwnProperty(prop)) {
+      yield [prop, obj[prop]];
+    }
+  }
 };
 if(jsnx.TESTING) {
     goog.exportSymbol('jsnx.helper.iteritems', jsnx.helper.iteritems);
@@ -638,23 +603,33 @@ if(jsnx.TESTING) {
  *
  * @param {jsnx.helper.Iterable} seq
  *
- * @return {!goog.iter.Iterator}
+ * @return {!Iterator}
  */
-jsnx.helper.iter = function(seq) {
-    if (seq instanceof jsnx.classes.Graph) {
-        return jsnx.helper.iter(seq['adj'].keys());
+jsnx.helper.iter = function*(seq) {
+  /*jshint expr:true*/
+  if (jsnx.helper.isIterator(seq)) {
+    yield* seq;
+  }
+  else if (jsnx.helper.isIterable(seq)) {
+    yield* seq['@@iterator']();
+  }
+  else if (seq instanceof jsnx.classes.Graph) {
+    yield* seq['adj'].keys();
+  }
+  else if (typeof seq === 'object') {
+    if (!goog.isArrayLike(seq)) {
+      seq = goog.object.getKeys(/** @type {Object} */ (seq));
     }
-    else if (goog.typeOf(seq) === 'object' && 
-        !goog.isArrayLike(seq) && 
-        !jsnx.helper.isIterator(seq))
-    {
-        seq = goog.object.getKeys(/** @type {Object} */ (seq));
+    for (var i = 0, l = seq.length; i < l; i++) {
+      yield seq[i];
     }
-
-    return goog.iter.toIterator(/** @type {goog.iter.Iterable} */ (seq));
+  }
+  else {
+    throw new TypeError('Unable to convert ' + seq + ' to an iterator'); 
+  }
 };
 if(jsnx.TESTING) {
-    goog.exportSymbol('jsnx.helper.iter', jsnx.helper.iter);
+  goog.exportSymbol('jsnx.helper.iter', jsnx.helper.iter);
 }
 
 
@@ -743,31 +718,6 @@ if(jsnx.TESTING) {
 
 
 /**
- * Wraps an iterator to return a sentinel value instead of
- * raising an StopIteration exception. Returns undefined
- * if not provided
- *
- * @param {goog.iter.Iterable} iterable
- * @param {*} sentinel
- *
- * @return {goog.iter.Iterator}
- */
-jsnx.helper.sentinelIterator = function(iterable, sentinel) {
-    var iterator = new goog.iter.Iterator();
-
-    iterator.next = function() {
-        return goog.iter.nextOrValue(iterable, sentinel);
-    };
-
-    return iterator;
-};
-goog.exportSymbol('jsnx.sentinelIterator', jsnx.helper.sentinelIterator);
-if(jsnx.TESTING) {
-    goog.exportSymbol('jsnx.helper.sentinelIterator', jsnx.helper.sentinelIterator);
-}
-
-
-/**
  * Returns true if obj is a plain object, i.e.
  * created by an object literal or new Object()
  *
@@ -779,38 +729,38 @@ if(jsnx.TESTING) {
  * @return {boolean} True if plain object, else false
  */
 jsnx.helper.isPlainObject = function(obj) {
-    var hasOwn = Object.prototype.hasOwnProperty;
-    // Must be an Object.
-    // Because of IE, we also have to check the presence of the constructor property.
-    // Make sure that DOM nodes and window objects don't pass through, as well
-    if ( !obj || goog.typeOf(obj) !== "object" || obj.nodeType || obj == obj.window ) {
-        return false;
-    }
+  var hasOwn = Object.prototype.hasOwnProperty;
+  // Must be an Object.
+  // Because of IE, we also have to check the presence of the constructor property.
+  // Make sure that DOM nodes and window objects don't pass through, as well
+  if ( !obj || goog.typeOf(obj) !== "object" || obj.nodeType || obj == obj.window ) {
+    return false;
+  }
 
-    obj = /** @type {Object} */ (obj);
+  obj = /** @type {Object} */ (obj);
 
-    try {
-        // Not own constructor property must be Object
-        if ( obj.constructor &&
-            !hasOwn.call(obj, "constructor") &&
-            !hasOwn.call(obj.constructor.prototype, "isPrototypeOf") ) {
-                return false;
+  try {
+    // Not own constructor property must be Object
+    if ( obj.constructor &&
+        !hasOwn.call(obj, "constructor") &&
+        !hasOwn.call(obj.constructor.prototype, "isPrototypeOf") ) {
+          return false;
         }
-    } catch ( e ) {
-        // IE8,9 Will throw exceptions on certain host objects #9897
-        return false;
-    }
+  } catch ( e ) {
+    // IE8,9 Will throw exceptions on certain host objects #9897
+    return false;
+  }
 
-    // Own properties are enumerated firstly, so to speed up,
-    // if last one is own, then all properties are own.
+  // Own properties are enumerated firstly, so to speed up,
+  // if last one is own, then all properties are own.
 
-    var key;
-    for ( key in obj ) {}
+  var key;
+  for ( key in obj ) {}
 
-    return key === undefined || hasOwn.call(obj, key);
+  return key === undefined || hasOwn.call(obj, key);
 };
 if(jsnx.TESTING) {
-    goog.exportSymbol('jsnx.helper.isPlainObject', jsnx.helper.isPlainObject);
+  goog.exportSymbol('jsnx.helper.isPlainObject', jsnx.helper.isPlainObject);
 }
 
 
@@ -836,36 +786,36 @@ if(jsnx.TESTING) {
  * @template T
  */
 jsnx.helper.deepcopy = function(obj, opt_memo) {
-    opt_memo = opt_memo || [];
+  opt_memo = opt_memo || [];
 
-    var type = goog.typeOf(obj);
-    if (
-      type == 'object' && 
-      (goog.isFunction(obj.copy) || jsnx.helper.isPlainObject(obj)) || 
-      type == 'array'
-    ) {
-        // search whether we already cloned the object/array
-        var copy;
-        for (var i = 0, l = opt_memo.length; i < l; i += 2) {
-          if (obj === opt_memo[i]) { // found copy
-            return opt_memo[i+1];
-          }
-        }
+  var type = goog.typeOf(obj);
+  if (
+    type == 'object' &&
+    (goog.isFunction(obj.copy) || jsnx.helper.isPlainObject(obj)) || 
+    type == 'array'
+   ) {
+     // search whether we already cloned the object/array
+     var copy;
+     for (var i = 0, l = opt_memo.length; i < l; i += 2) {
+       if (obj === opt_memo[i]) { // found copy
+         return opt_memo[i+1];
+       }
+     }
 
-        if (goog.isFunction(obj.copy)) {
-            copy = obj.copy(opt_memo);
-            opt_memo.push(obj, copy);
-            return copy;
-        }
-        copy = type == 'array' ? [] : {};
-        opt_memo.push(obj, copy);
-        for (var key in obj) {
-          copy[key] = jsnx.helper.deepcopy(obj[key], opt_memo);
-        }
-        return copy;
-    }
+     if (goog.isFunction(obj.copy)) {
+       copy = obj.copy(opt_memo);
+       opt_memo.push(obj, copy);
+       return copy;
+     }
+     copy = type == 'array' ? [] : {};
+     opt_memo.push(obj, copy);
+     for (var key in obj) {
+       copy[key] = jsnx.helper.deepcopy(obj[key], opt_memo);
+     }
+     return copy;
+   }
 
-    return obj;
+  return obj;
 };
 if(jsnx.TESTING) {
     goog.exportSymbol('jsnx.helper.deepcopy', jsnx.helper.deepcopy);

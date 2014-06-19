@@ -171,6 +171,7 @@ exports.TestFunction = {
     ].join('\n');
     assert.equal(info, expected_graph_info);
 
+    console.log(G.succ.number_values_);
     info = jsnx.info(G, 1);
     var expected_node_info = [
         'Node 1 has the following properties:',

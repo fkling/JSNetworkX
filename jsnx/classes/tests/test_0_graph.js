@@ -35,7 +35,7 @@ exports.TestGraph = h.extend({}, BaseAttrGraphTester, {
     );
 
     assert.deepEqual(
-      h.sorted(G.adj.items()),
+      h.sorted(G.adj.entries()),
       [[1, new jsnx.Map([[2, {}]])], [2, new jsnx.Map([[1,{}]])]]
     );
   },

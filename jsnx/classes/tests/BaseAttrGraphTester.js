@@ -11,12 +11,12 @@ var BaseAttrGraphTester = h.extend({}, BaseGraphTester, {
     var G = new this.Graph();
     G.add_edge(1,2,{weight:2,other:3});
     G.add_edge(2,3,{weight:3,other:4});
-    assert.deepEqual(G.degree(null, 'weight').values(), [2,5,3]);
+    assert.deepEqual(jsnx.toArray(G.degree(null, 'weight').values()), [2,5,3]);
     assert.deepEqual(G.degree(null, 'weight'), new jsnx.Map([[1,2],[2,5],[3,3]]));
     assert.equal(G.degree(1, 'weight'), 2);
     assert.deepEqual(G.degree([1], 'weight'), new jsnx.Map([[1,2]]));
 
-    assert.deepEqual(G.degree(null, 'other').values(), [3,7,4]);
+    assert.deepEqual(jsnx.toArray(G.degree(null, 'other').values()), [3,7,4]);
     assert.deepEqual(G.degree(null, 'other'), new jsnx.Map([[1,3],[2,7],[3,4]]));
     assert.equal(G.degree(1, 'other'), 3);
     assert.deepEqual(G.degree([1], 'other'), new jsnx.Map([[1,3]]));

@@ -145,7 +145,7 @@ var BaseDiGraphTester = h.extend({}, BaseGraphTester, {
 
   test_degree: function() {
     var G = this.K3;
-    assert.deepEqual(G.degree().values(), [4,4,4]);
+    assert.deepEqual(jsnx.toArray(G.degree().values()), [4,4,4]);
     assert.deepEqual(G.degree(), new jsnx.Map([[0,4], [1,4], [2,4]]));
     assert.strictEqual(G.degree(0), 4);
     assert.deepEqual(G.degree([0]), new jsnx.Map([[0,4]]));
@@ -164,7 +164,7 @@ var BaseDiGraphTester = h.extend({}, BaseGraphTester, {
 
   test_in_degree: function() {
     var G = this.K3;
-    assert.deepEqual(G.in_degree().values(), [2,2,2]);
+    assert.deepEqual(jsnx.toArray(G.in_degree().values()), [2,2,2]);
     assert.deepEqual(G.in_degree(), new jsnx.Map([[0,2], [1,2], [2,2]]));
     assert.strictEqual(G.in_degree(0), 2);
     assert.deepEqual(G.in_degree([0]), new jsnx.Map([[0,2]]));
@@ -212,7 +212,7 @@ var BaseDiGraphTester = h.extend({}, BaseGraphTester, {
 
   test_out_degree: function() {
     var G = this.K3;
-    assert.deepEqual(G.out_degree().values(), [2,2,2]);
+    assert.deepEqual(jsnx.toArray(G.out_degree().values()), [2,2,2]);
     assert.deepEqual(G.out_degree(), new jsnx.Map([[0,2], [1,2], [2,2]]));
     assert.strictEqual(G.out_degree(0), 2);
     assert.deepEqual(G.out_degree([0]), new jsnx.Map([[0,2]]));

@@ -22,6 +22,9 @@
     "grunt-contrib-jshint": "~0.1.1",
     "grunt-closure-tools": "~0.7.3",
     "grunt-contrib-watch": "~0.3.1",
-    "mocha": "~1.9.0"
+    "mocha": "~1.9.0",
+    "grunt-contrib-concat": "^0.3.0",
+    "regenerator": "^0.4.2",
+    "es6forof": "0.0.1"
   }
 }

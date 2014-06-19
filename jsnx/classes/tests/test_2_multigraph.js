@@ -29,7 +29,7 @@ exports.TestMultiGraph = h.extend({}, TestGraph, BaseMultiGraphTester, {
     var G = this.Graph({1: [2], 2: [1]}, {name: 'test'});
     assert.equal(G.name(), 'test');
     assert.deepEqual(
-      h.sorted(G.adj.items()),
+      h.sorted(G.adj.entries()),
       [
         [1, new jsnx.Map({2: {0:{}}})],
         [2, new jsnx.Map({1: {0:{}}})]

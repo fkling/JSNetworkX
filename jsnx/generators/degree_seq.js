@@ -2,7 +2,7 @@
 goog.provide('jsnx.generators.degree_seq');
 
 goog.require('goog.array');
-goog.require('goog.iter');
+goog.require('jsnx.contrib.iter');
 goog.require('jsnx.generators.classic');
 goog.require('jsnx.exception');
 
@@ -50,10 +50,13 @@ jsnx.generators.degree_seq.havel_hakimi_graph = function(deg_sequence, opt_creat
   }
 
   // form list of [stubs,name] for each node.
-  var stublist = goog.iter.toArray(
-    /** @type {goog.iter.Iterator} */ (jsnx.helper.map(G, function(n) {
-    return [deg_sequence[n], n];
-  }))
+  var stublist = jsnx.contrib.iter.toArray(
+    jsnx.helper.map(
+      jsnx.helper.iter(G),
+      function(n) {
+        return [deg_sequence[n], n];
+      }
+    )
   );
   // now connect the stubs
   while(stublist.length > 0) {

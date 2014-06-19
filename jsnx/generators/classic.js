@@ -2,58 +2,36 @@
 goog.provide('jsnx.generators.classic');
 
 goog.require('jsnx.classes.Graph');
+goog.require('jsnx.contrib.iter');
 goog.require('jsnx.helper');
 goog.require('goog.array');
-goog.require('goog.iter');
 
 
 /**
  * @param {number} n nodes
  * @param {number} r bredth
  *
- * @return {goog.iter.Iterator}
+ * @return {Iterator}
  */
-jsnx.generators.classic.tree_edges_ = function(n, r) {
-    // helper function for trees
-    // yields edges in rooted tree at 0 with n nodes and branching ratio r
-    var nodes = jsnx.helper.range(n);
-    var source;
-    var parents;
-    var iterator = new goog.iter.Iterator();
-    try {
-        parents = [nodes.next()];
-    }
-    catch(ex) {
-      if (ex !== goog.iter.StopIteration) {
-        throw ex;
-      }
-      else {
-        return iterator;
-      }
-    }
+jsnx.generators.classic.tree_edges_ = function*(n, r) {
+  // helper function for trees
+  // yields edges in rooted tree at 0 with n nodes and branching ratio r
+  var nodes = jsnx.helper.range(n);
+  var parents = [nodes.next().value];
+  var done = false;
 
-    iterator.next = function() {
-        if(parents.length === 0) {
-            throw goog.iter.StopIteration;
-        }
-        return parents.splice(0,1)[0];
-    };
-
-    return jsnx.helper.nested_chain(iterator, function(n) {
-        source = n;
-        return jsnx.helper.range(r);
-    }, function(i) {
-        try {
-            var target = nodes.next();
-            parents.push(target);
-            return [source, target];
-        }
-        catch(e) {
-            if(e !== goog.iter.StopIteration) {
-                throw e;
-            }
-        }
-    });
+  while (!done && parents.length > 0) {
+    var source = parents.pop();
+    for (var i of jsnx.helper.range(r)) {
+      var target = nodes.next();
+      if (target.done) {
+        done = target.done;
+        break;
+      }
+      parents.push(target.value);
+      yield [source, target.value];
+    }
+  }
 };
 
 
@@ -101,13 +79,7 @@ goog.exportSymbol('jsnx.full_rary_tree', jsnx.generators.classic.full_rary_tree)
  * @export
  */
 jsnx.generators.classic.balanced_tree = function(r, h, opt_create_using) {
-  var n;
-  if (r === 1) {
-    n = 2;
-  }
-  else {
-    n = Math.floor((1 - Math.pow(r, (h+1))) / (1 - r));
-  }
+  var n = r === 1 ? 2 : Math.floor((1 - Math.pow(r, (h+1))) / (1 - r));
   var G = jsnx.generators.classic.empty_graph(n, opt_create_using);
   G.add_edges_from(jsnx.generators.classic.tree_edges_(n,r));
   return G;
@@ -128,15 +100,15 @@ goog.exportSymbol('jsnx.balanced_tree', jsnx.generators.classic.balanced_tree);
  *  @export
  */
 jsnx.generators.classic.complete_graph = function(n, opt_create_using) {
-    var G = jsnx.generators.classic.empty_graph(n, opt_create_using);
-    G.name('complete_graph(' + n + ')');
-    if(n>1) {
-       G.add_edges_from(G.is_directed() ? 
-           jsnx.helper.permutations(jsnx.helper.range(n), 2) :  
-           jsnx.helper.combinations(jsnx.helper.range(n), 2)
-       );
-    }
-    return G;
+  var G = jsnx.generators.classic.empty_graph(n, opt_create_using);
+  G.name('complete_graph(' + n + ')');
+  if (n > 1) {
+    G.add_edges_from(G.is_directed() ?
+      jsnx.helper.permutations(jsnx.helper.range(n), 2) :
+      jsnx.helper.combinations(jsnx.helper.range(n), 2)
+    );
+  }
+  return G;
 };
 goog.exportSymbol('jsnx.complete_graph', jsnx.generators.classic.complete_graph);
 
@@ -159,12 +131,43 @@ goog.exportSymbol('jsnx.complete_graph', jsnx.generators.classic.complete_graph)
  * @export
  */
 jsnx.generators.classic.cycle_graph = function(n, opt_create_using) {
-    var G = jsnx.generators.classic.path_graph(n, opt_create_using);
-    G.name('cycle_graph(' + n + ')');
-    if(n>1) {
-       G.add_edge(n-1,0);
-    }
-    return G;
+  var G = jsnx.generators.classic.path_graph(n, opt_create_using);
+  G.name('cycle_graph(' + n + ')');
+  if (n > 1) {
+    G.add_edges_from(G.is_directed() ?
+      jsnx.helper.permutations(jsnx.helper.range(n), 2) :
+      jsnx.helper.combinations(jsnx.helper.range(n), 2)
+    );
+  }
+  return G;
+};
+goog.exportSymbol('jsnx.complete_graph', jsnx.generators.classic.complete_graph);
+
+//TODO: complete_bipartite_graph
+//TODO: circular_ladder_graph
+
+/**
+ * Return the cycle graph C_n over n nodes.
+ *
+ * C_n is the n-path with two end-nodes connected.
+ *
+ * Node labels are the integers 0 to n-1
+ * If create_using is a DiGraph, the direction is in increasing order.
+ * 
+ * @param{number} n The number of nodes to add to the graph
+ * @param{jsnx.classes.Graph=} opt_create_using Graph instance to empty and
+ *      add nodes to.
+ *  
+ * @return {jsnx.classes.Graph}
+ * @export
+ */
+jsnx.generators.classic.cycle_graph = function(n, opt_create_using) {
+  var G = jsnx.generators.classic.path_graph(n, opt_create_using);
+  G.name('cycle_graph(' + n + ')');
+  if (n > 1) {
+     G.add_edge(n-1, 0);
+  }
+  return G;
 };
 goog.exportSymbol('jsnx.cycle_graph', jsnx.generators.classic.cycle_graph);
 
@@ -215,28 +218,28 @@ goog.exportSymbol('jsnx.cycle_graph', jsnx.generators.classic.cycle_graph);
  *  @suppress {checkTypes} 
  */
 jsnx.generators.classic.empty_graph = function(opt_n, opt_create_using) {
-    if(opt_n instanceof jsnx.classes.Graph) {
-        opt_create_using = opt_n;
-        opt_n = null;
-    }
-    if(!goog.isDefAndNotNull(opt_n)) {
-        opt_n = 0;
-    }
+  if(opt_n instanceof jsnx.classes.Graph) {
+    opt_create_using = opt_n;
+    opt_n = null;
+  }
+  if(!goog.isDefAndNotNull(opt_n)) {
+    opt_n = 0;
+  }
 
-    var G;
+  var G;
 
-    if(!goog.isDefAndNotNull(opt_create_using)) {
-        // default empty graph is a simple graph
-        G = new jsnx.classes.Graph();
-    }
-    else {
-        G = opt_create_using;
-        G.clear();
-    }
+  if(!goog.isDefAndNotNull(opt_create_using)) {
+    // default empty graph is a simple graph
+    G = new jsnx.classes.Graph();
+  }
+  else {
+    G = opt_create_using;
+    G.clear();
+  }
 
-    G.add_nodes_from(jsnx.helper.range(opt_n));
-    G.name('empty_graph(' + opt_n + ')');
-    return G;
+  G.add_nodes_from(jsnx.helper.range(opt_n));
+  G.name('empty_graph(' + opt_n + ')');
+  return G;
 };
 goog.exportSymbol('jsnx.empty_graph', jsnx.generators.classic.empty_graph);
 
@@ -257,31 +260,31 @@ goog.exportSymbol('jsnx.empty_graph', jsnx.generators.classic.empty_graph);
 jsnx.generators.classic.grid_2d_graph = function(m, n, opt_periodic, opt_create_using) {
   var G = jsnx.generators.classic.empty_graph(0, opt_create_using);
   G.name('grid_2d_graph');
-  var rows = goog.iter.toArray(jsnx.helper.range(m));
-  var columns = goog.iter.toArray(jsnx.helper.range(n));
+  var rows = jsnx.contrib.iter.toArray(jsnx.helper.range(m));
+  var columns = jsnx.contrib.iter.toArray(jsnx.helper.range(n));
   goog.array.forEach(rows, function(i) {
     goog.array.forEach(columns, function(j) {
       G.add_node([i,j]);
     });
   });
-  goog.iter.forEach(jsnx.helper.range(1,m), function(i) {
+  jsnx.contrib.iter.forEach(jsnx.helper.range(1,m), function(i) {
     goog.array.forEach(columns, function(j) {
       G.add_edge([i,j], [i-1,j]);
     });
   });
   goog.array.forEach(rows, function(i) {
-    goog.iter.forEach(jsnx.helper.range(1,n), function(j) {
+    jsnx.contrib.iter.forEach(jsnx.helper.range(1,n), function(j) {
       G.add_edge([i,j], [i,j-1]);
     });
   });
   if (G.is_directed()) {
-    goog.iter.forEach(jsnx.helper.range(0, m - 1), function(i) {
+    jsnx.contrib.iter.forEach(jsnx.helper.range(0, m - 1), function(i) {
       goog.array.forEach(columns, function(j) {
         G.add_edge([i,j], [i+1,j]);
       });
     });
     goog.array.forEach(rows, function(i) {
-      goog.iter.forEach(jsnx.helper.range(0, n - 1), function(j) {
+      jsnx.contrib.iter.forEach(jsnx.helper.range(0, n - 1), function(j) {
         G.add_edge([i,j], [i,j+1]);
       });
     });
@@ -331,9 +334,9 @@ goog.exportSymbol('jsnx.grid_2d_graph', jsnx.generators.classic.grid_2d_graph);
  * @export
  */
 jsnx.generators.classic.null_graph = function(opt_create_using) {
-    var G = jsnx.generators.classic.empty_graph(0, opt_create_using);
-    G.name('null_graph()');
-    return G;
+  var G = jsnx.generators.classic.empty_graph(0, opt_create_using);
+  G.name('null_graph()');
+  return G;
 };
 goog.exportSymbol('jsnx.null_graph', jsnx.generators.classic.null_graph);
 
@@ -351,12 +354,15 @@ goog.exportSymbol('jsnx.null_graph', jsnx.generators.classic.null_graph);
  * @export
  */
 jsnx.generators.classic.path_graph = function(n, opt_create_using) {
-    var G = jsnx.generators.classic.empty_graph(n, opt_create_using);
-    G.name('path_graph(' + n + ')');
-    G.add_edges_from(goog.iter.map(jsnx.helper.range(n-1), function(v) {
-        return [v, v+1];
-    }));
-    return G;
+  var G = jsnx.generators.classic.empty_graph(n, opt_create_using);
+  G.name('path_graph(' + n + ')');
+  G.add_edges_from(jsnx.contrib.iter.map(
+    jsnx.helper.range(n-1),
+    function(v) {
+      return [v, v+1];
+    }
+  ));
+  return G;
 };
 goog.exportSymbol('jsnx.path_graph', jsnx.generators.classic.path_graph);
 
@@ -372,9 +378,9 @@ goog.exportSymbol('jsnx.path_graph', jsnx.generators.classic.path_graph);
  * @export
  */
 jsnx.generators.classic.trivial_graph = function(opt_create_using) {
-    var G = jsnx.generators.classic.empty_graph(1, opt_create_using);
-    G.name('null_graph()');
-    return G;
+  var G = jsnx.generators.classic.empty_graph(1, opt_create_using);
+  G.name('null_graph()');
+  return G;
 };
 goog.exportSymbol('jsnx.trivial_graph', jsnx.generators.classic.trivial_graph);
 

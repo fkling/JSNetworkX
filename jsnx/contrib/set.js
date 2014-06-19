@@ -23,10 +23,8 @@ jsnx.contrib.Set = function(opt_data) {
   this.map_ = new jsnx.contrib.Map();
 
   if (goog.isDefAndNotNull(opt_data)) {
-    if (jsnx.helper.isIterator(opt_data) || goog.isArrayLike(opt_data)) {
-      jsnx.helper.forEach(opt_data, function(datum) {
-        this.add(datum);
-      }, this);
+    for (var v of jsnx.helper.iter(opt_data)) {
+        this.add(v);
     }
   }
 };
@@ -66,14 +64,7 @@ jsnx.contrib.Set.prototype.add = function(value) {
  * @export
  */
 jsnx.contrib.Set.prototype.remove = function(value) {
-  try {
-    this.map_.remove(value);
-  }
-  catch(ex) {
-    if (!(ex instanceof jsnx.exception.KeyError)) {
-      throw ex;
-    }
-  }
+  return this.map_.remove(value);
 };
 
 
@@ -92,7 +83,7 @@ jsnx.contrib.Set.prototype.copy = function(opt_memo) {
 /**
  * Returns an array of values.
  *
- * @return {!Array}
+ * @return {!Iterator}
  * @export
 */
 jsnx.contrib.Set.prototype.values = function() {
@@ -101,19 +92,36 @@ jsnx.contrib.Set.prototype.values = function() {
 
 
 /**
- * Iterator for 'goog.iter'.
+ * Returns an array of values.
  *
- * @return {goog.iter.Iterator}
+ * @return {!Iterator}
+ * @export
 */
-jsnx.contrib.Set.prototype.__iterator__ = function() {
-  return goog.iter.map(this.map_, function(kv) {
-    return kv[0];
-  });
+jsnx.contrib.Set.prototype.keys = jsnx.contrib.Set.prototype.values;
+
+/**
+ * Returns an array of values.
+ *
+ * @return {!Iterator}
+ * @export
+*/
+jsnx.contrib.Set.prototype.entries = function*() {
+  for (var v of this.values()) {
+    yield [v, v];
+  }
 };
 
 
 /**
+ * @return {Iterator}
+*/
+jsnx.contrib.Set.prototype['@@iterator'] = jsnx.contrib.Set.prototype.values;
+
+
+/**
  * Returns a new set without the values found in other sets.
+ *
+ * THIS IS A NON-STANDARD METHOD
  *
  * @param {...(jsnx.contrib.Set|Array)} var_args
  * @export
@@ -121,12 +129,8 @@ jsnx.contrib.Set.prototype.__iterator__ = function() {
 jsnx.contrib.Set.prototype.difference = function(var_args) {
   var result = new jsnx.contrib.Set(this.values());
   for (var i = 0, l = arguments.length; i < l; i++) {
-    var values = arguments[i];
-    if (values instanceof jsnx.contrib.Set) {
-      values = values.values();
-    }
-    for (var j = 0, jl = values.length; j < jl; j++) {
-      result.remove(values[j]);
+    for (var v of jsnx.helper.iter(arguments[i])) {
+      result.remove(v);
     }
   }
   return result;
@@ -136,19 +140,17 @@ jsnx.contrib.Set.prototype.difference = function(var_args) {
 /**
  * Returns a new set containing only elements found in every set.
  *
+ * THIS IS A NON-STANDARD METHOD
+ *
  * @param {...(jsnx.contrib.Set|Array)} var_args
  * @export
  */
 jsnx.contrib.Set.prototype.intersection = function(var_args) {
   var result = new jsnx.contrib.Set();
   for (var i = 0, l = arguments.length; i < l; i++) {
-    var values = arguments[i];
-    if (values instanceof jsnx.contrib.Set) {
-      values = values.values();
-    }
-    for (var j = 0, jl = values.length; j < jl; j++) {
-      if (this.has(values[j])) {
-        result.add(values[j]);
+    for (var v of jsnx.helper.iter(arguments[i])) {
+      if (this.has(v)) {
+        result.add(v);
       }
     }
   }
@@ -159,20 +161,17 @@ jsnx.contrib.Set.prototype.intersection = function(var_args) {
 /**
  * Returns the number of element in the set.
  *
- * THIS IS A NON-STANDARD METHOD!
- *
  * @return {number}
  * @export
 */
-jsnx.contrib.Set.prototype.count = function() {
-  return this.map_.count();
+jsnx.contrib.Set.prototype.size = function() {
+  return this.map_.size();
 };
 
 
 /**
  * Empties the set.
  *
- * THIS IS A NON-STANDARD METHOD!
  * @export
 */
 jsnx.contrib.Set.prototype.clear = function() {
@@ -183,13 +182,13 @@ jsnx.contrib.Set.prototype.clear = function() {
 /**
  * Executes the provided callback for each item in the set.
  *
- * THIS IS A NON-STANDARD METHOD!
- *
  * @param {function(*)} callback A function which gets the key as first 
  *  argument and value as second argument.
  * @param {*=} opt_this Object/value to set this to inside the callback
  * @export
 */
 jsnx.contrib.Set.prototype.forEach = function(callback, opt_this) {
-  goog.iter.forEach(this, callback, opt_this);
+  for (var v of this.values()) {
+    callback.call(opt_this, v, v, this);
+  }
 };

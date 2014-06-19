@@ -1,0 +1,1 @@
+(function(global, factory) { function extractNS(){ var g = {}; return factory.call(g, global),g.jsnx;} if(typeof define === 'function' && define.amd){ /*AMD*/ define(extractNS); } else if (typeof module !== 'undefined' && module.exports){ /*node*/ module.exports = extractNS(); } else { factory.call(global, global); } }(this, function(window) {%output%}));

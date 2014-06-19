@@ -68,24 +68,12 @@ jsnx.contrib.Map.prototype.get_storage_ = function(key) {
  * Returns the value for the given key.
  * 
  * @param {*} key
- * @param {*=} opt_default_value
  *
  * @return {*}
  * @export
  */
-jsnx.contrib.Map.prototype.get = function(key, opt_default_value) {
-  var values = this.get_storage_(key);
-
-  if (typeof values[key] !== 'undefined') {
-    return values[key];
-  }
-  else if (goog.isDef(opt_default_value)) {
-    return opt_default_value;
-  }
-
-  throw new jsnx.exception.KeyError(
-    'Map does not contain key ' + goog.json.serialize(key)
-  );
+jsnx.contrib.Map.prototype.get = function(key) {
+  return this.get_storage_(key)[key];
 };
 
 
@@ -98,7 +86,7 @@ jsnx.contrib.Map.prototype.get = function(key, opt_default_value) {
  * @export
  */
 jsnx.contrib.Map.prototype.has = function(key) {
-  return typeof this.get_storage_(key)[key] !== 'undefined';
+  return typeof this.get(key) !== 'undefined';
 };
 
 
@@ -108,6 +96,7 @@ jsnx.contrib.Map.prototype.has = function(key) {
  * @param {*} key
  * @param {*} value
  *
+ * @return {Map} the map object itself
  * @export
  */
 jsnx.contrib.Map.prototype.set = function(key, value) {
@@ -119,7 +108,7 @@ jsnx.contrib.Map.prototype.set = function(key, value) {
     this.keys_[key] = key;
   }
 
-  return value;
+  return this;
 };
 
 
@@ -128,6 +117,7 @@ jsnx.contrib.Map.prototype.set = function(key, value) {
  *
  * @param {*} key
  *
+ * @return {boolean}
  * @export
  */
 jsnx.contrib.Map.prototype.remove = function(key) {
@@ -137,37 +127,35 @@ jsnx.contrib.Map.prototype.remove = function(key) {
     if (values === this.values_) {
       delete this.keys_[key];
     }
-    return;
+    return true;
   }
-  throw new jsnx.exception.KeyError(
-    'Map does not contain key ' + goog.json.serialize(key)
-  );
+  return false;
 };
 
 
 /**
  * Returns an array of (key, value) tuples.
  *
- * @return {!Array}
+ * @return {!Iterator}
  * @export
 */
-jsnx.contrib.Map.prototype.items = function() {
-  var items = [];
+jsnx.contrib.Map.prototype.entries = function*() {
   var key;
   for (key in this.number_values_) {
-    items.push([+key, this.number_values_[key]]);
+    yield [+key, this.number_values_[key]];
   }
   for (key in this.string_values_) {
-    items.push([key, this.string_values_[key]]);
+    yield [key, this.string_values_[key]];
   }
   for (key in this.values_) {
-    items.push([this.keys_[key], this.values_[key]]);
+    yield [this.keys_[key], this.values_[key]];
   }
-  return items;
 };
 
 
 /**
+ * THIS IS NOT A STANDARD METHOD
+ *
  * Creates a deep copy of the map.
  *
  * @param {Array=} opt_memo Array containing already cloned objects.
@@ -180,18 +168,22 @@ jsnx.contrib.Map.prototype.copy = function(opt_memo) {
 
 
 /**
- * Returns an array of keys.
+ * Returns an iterator over keys.
  *
- * @return {!Array}
+ * @return {!Iterator}
  * @export
 */
-jsnx.contrib.Map.prototype.keys = function() {
-  return goog.array.map(
-    goog.object.getKeys(this.number_values_),
-    function(val) { return +val; }
-  )
-  .concat(goog.object.getKeys(this.string_values_))
-  .concat(goog.object.getValues(this.keys_));
+jsnx.contrib.Map.prototype.keys = function*() {
+  var key;
+  for (key in this.number_values_) {
+    yield +key;
+  }
+  for (key in this.string_values_) {
+    yield key;
+  }
+  for (key in this.values_) {
+    yield this.keys_[key];
+  }
 };
 
 
@@ -201,58 +193,36 @@ jsnx.contrib.Map.prototype.keys = function() {
  * @return {!Array}
  * @export
 */
-jsnx.contrib.Map.prototype.values = function() {
-  return goog.object.getValues(this.number_values_)
-  .concat(goog.object.getValues(this.string_values_))
-  .concat(goog.object.getValues(this.values_));
+jsnx.contrib.Map.prototype.values = function*() {
+  var key;
+  for (key in this.number_values_) {
+    yield this.number_values_[key];
+  }
+  for (key in this.string_values_) {
+    yield this.string_values_[key];
+  }
+  for (key in this.values_) {
+    yield this.values_[key];
+  }
 };
 
 
 /**
- * Iterator for 'goog.iter'.
+ * Returns an iterator for the map object.
  *
- * @return {goog.iter.Iterator}
+ * @return {Iterator}
 */
-jsnx.contrib.Map.prototype.__iterator__ = function() {
-  var iter = new goog.iter.Iterator();
-  var string_keys = goog.object.getKeys(this.string_values_);
-  var number_keys = goog.object.getKeys(this.number_values_);
-  var keys = goog.object.getKeys(this.values_);
-  var i = 0;
-  var j = 0;
-  var k = 0;
-
-  iter.next = goog.bind(function() {
-    var key;
-    if (i < number_keys.length) {
-      key = number_keys[i++];
-      return [+key, this.number_values_[key]];
-    }
-    else if (j < string_keys.length) {
-      key = string_keys[j++];
-      return [key, this.string_values_[key]];
-    }
-    else if (k < keys.length) {
-      key = keys[k++];
-      return [this.keys_[key], this.values_[key]];
-    }
-    throw goog.iter.StopIteration;
-  }, this);
-
-  return iter;
-};
+jsnx.contrib.Map.prototype['@@iterator'] = jsnx.contrib.Map.prototype.entries;
 
 
 /**
  * Returns the number of element in the map.
  *
- * THIS IS A NON-STANDARD METHOD!
- *
  * @return {number}
  * @export
 */
-jsnx.contrib.Map.prototype.count = function() {
-  return goog.object.getCount(this.values_) + 
+jsnx.contrib.Map.prototype.size = function() {
+  return goog.object.getCount(this.values_) +
     goog.object.getCount(this.number_values_) +
     goog.object.getCount(this.string_values_);
 };
@@ -261,7 +231,6 @@ jsnx.contrib.Map.prototype.count = function() {
 /**
  * Empties the map.
  *
- * THIS IS A NON-STANDARD METHOD!
  * @export
 */
 jsnx.contrib.Map.prototype.clear = function() {
@@ -275,15 +244,16 @@ jsnx.contrib.Map.prototype.clear = function() {
 /**
  * Executes the provided callback for each item in the map.
  *
- * THIS IS A NON-STANDARD METHOD!
- *
  * @param {function(*,*)} callback A function which gets the key as first 
  *  argument and value as second argument.
  * @param {*=} opt_this Object/value to set this to inside the callback
  * @export
 */
 jsnx.contrib.Map.prototype.forEach = function(callback, opt_this) {
-  goog.iter.forEach(this, function(kv) {
-    callback.apply(opt_this, kv);
-  });
+  if (!goog.isFunction(callback)) {
+    throw new TypeError('callback must be a function');
+  }
+  for (var v of this.entries()) {
+    callback.call(opt_this, v[1], v[0], this);
+  }
 };

@@ -67,7 +67,7 @@ jsnx.contrib.convert.from_map_of_lists = function(map, opt_create_using) {
     // So we need to treat this case separately.
     var seen = new jsnx.contrib.Map();
 
-    map.forEach(function(node, nbrlist) {
+    map.forEach(function(nbrlist, node) {
       goog.array.forEach(/**@type {?}*/(nbrlist), function(nbr) {
         if (!seen.has(nbr)) {
           G.add_edge(node, nbr);
@@ -79,7 +79,7 @@ jsnx.contrib.convert.from_map_of_lists = function(map, opt_create_using) {
   }
   else {
     var edge_list = [];
-    map.forEach(function(node, nbrlist) {
+    map.forEach(function(nbrlist, node) {
       goog.array.forEach(/**@type {?} */(nbrlist), function(nbr) {
         G.add_edge(node, nbr);
       });
@@ -137,7 +137,7 @@ jsnx.contrib.convert.from_map_of_lists = function(map, opt_create_using) {
      if(goog.isDefAndNotNull(opt_edge_data)) {
        goog.iter.forEach(G.adjacency_iter(), function(nbrmap, u) {
          var map_of_u = map_of_maps.set(u, new jsnx.contrib.Map());
-         nbrmap.forEach(function(v, data) {
+         nbrmap.forEach(function(data, v) {
            map_of_u.set(v, opt_edge_data);
          });
        });
@@ -145,7 +145,7 @@ jsnx.contrib.convert.from_map_of_lists = function(map, opt_create_using) {
      else { // edge_data is defined
        goog.iter.forEach(G.adjacency_iter(), function(nbrmap, u) {
          var map_of_u = map_of_maps.set(u, new jsnx.contrib.Map());
-         nbrmap.forEach(function(v, data) {
+         nbrmap.forEach(function(data, v) {
            map_of_u.set(v, data);
          });
        });
@@ -182,11 +182,11 @@ jsnx.contrib.convert.from_map_of_maps = function(map, opt_create_using, opt_mult
     // make a copy  of the list of edge data (but not the edge data)
     if (G.is_directed()) {
       if (G.is_multigraph()) {
-        map.forEach(function(u, nbrs) {
+        map.forEach(function(nbrs, u) {
           if(goog.isArrayLike(nbrs)) { // throw expection of not map (object)
             throw new Error('Value is not a map.');
           }
-          nbrs.forEach(function(v, datadict) {
+          nbrs.forEach(function(datadict, v) {
             goog.object.forEach(datadict, function(data, key) {
               goog.asserts.assertInstanceof(G, jsnx.classes.MultiDiGraph);
               G.add_edge(
@@ -200,11 +200,11 @@ jsnx.contrib.convert.from_map_of_maps = function(map, opt_create_using, opt_mult
         });
       }
       else {
-        map.forEach(function(u, nbrs) {
+        map.forEach(function(nbrs, u) {
           if(goog.isArrayLike(nbrs)) { // throw expection of not map (object)
-            throw new Error();
+            throw new Error('Not a map');
           }
-          nbrs.forEach(function(v, datadict) {
+          nbrs.forEach(function(datadict, v) {
             goog.object.forEach(datadict, function(data, key) {
               G.add_edge(
                 /**@type jsnx.Node**/(u),
@@ -218,11 +218,11 @@ jsnx.contrib.convert.from_map_of_maps = function(map, opt_create_using, opt_mult
     }
     else { // undirected
       if(G.is_multigraph()) {
-        map.forEach(function(u, nbrs) {
+        map.forEach(function(nbrs, u) {
           if (goog.isArrayLike(nbrs)) { // throw expection of not map (object)
-            throw new Error();
+            throw new Error('Not a map');
           }
-          nbrs.forEach(function(v, datadict) {
+          nbrs.forEach(function(datadict, v) {
             t[0] = u, t[1] = v;
             if (!seen.has(t)) {
               goog.object.forEach(datadict, function(data, key) {
@@ -241,11 +241,11 @@ jsnx.contrib.convert.from_map_of_maps = function(map, opt_create_using, opt_mult
         });
       }
       else {
-        map.forEach(function(u, nbrs) {
+        map.forEach(function(nbrs, u) {
           if(goog.isArrayLike(nbrs)) { // throw expection of not map (object)
-            throw new Error();
+            throw new Error('Not a map');
           }
-          nbrs.forEach(function(v, datadict) {
+          nbrs.forEach(function(datadict, v) {
             t[0] = u, t[1] = v;
             if(!seen.has(t)) {
               goog.object.forEach(datadict, function(data, key) {
@@ -268,11 +268,11 @@ jsnx.contrib.convert.from_map_of_maps = function(map, opt_create_using, opt_mult
       // map can have both representations u-v, v-u in dict.  Only add one.
       // We don't need this check for digraphs since we add both directions,
       // or for Graph() since it is done implicitly (parallel edges not allowed)
-      map.forEach(function(u, nbrs) {
+      map.forEach(function(nbrs, u) {
         if(goog.isArrayLike(nbrs)) { // throw exception of not dict (object)
           throw new Error();
         }
-        nbrs.forEach(function(v, data) {
+        nbrs.forEach(function(data, v) {
           t[0] = u, t[1] = v;
           if(!seen.has(t)) {
             G.add_edge(
@@ -287,11 +287,11 @@ jsnx.contrib.convert.from_map_of_maps = function(map, opt_create_using, opt_mult
       });
     }
     else {
-      map.forEach(function(u, nbrs) {
+      map.forEach(function(nbrs, u) {
         if(goog.isArrayLike(nbrs)) { // throw exception of not dict (object)
           throw new Error();
         }
-        nbrs.forEach(function(v, data) {
+        nbrs.forEach(function(data, v) {
           G.add_edge(
             /**@type jsnx.Node**/(u),
             /**@type jsnx.Node**/(v),

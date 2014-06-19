@@ -63,48 +63,6 @@ exports.TestHelper = {
     assert.deepEqual(kv.sort(), [['5', 42], ['bar', [1,2]], ['foo', 5]]);
   },
 
-  test_nested_chain: function() {
-
-    var iters = [
-      [[1,2,3], [4,5,6] ],
-      [helper.iter(['a', 'b'])]
-    ];
-    var iter = helper.nested_chain(iters, function(val) {
-      return helper.iter(val);
-    }, function(val) {
-      return helper.iter(val);
-    }, function(val) {
-      return val;
-    });
-
-    var kv = helper.toArray(iter);
-    assert.deepEqual(kv, [1,2,3,4,5,6, 'a', 'b']);
-  },
-
-  test_nested_chain_skip_empty: function() {
-    var iters = [
-      [[1,2,3], [4,5,6]],
-      [helper.iter(['a', 'b'])]
-    ];
-    var iter = helper.nested_chain(iters, function(val) {
-      return helper.iter(val);
-    },function(val) {
-      return helper.iter(val);
-    }, function(val) {
-      if(val % 2 === 0) {
-        return val;
-      }
-    });
-
-    var kv = helper.toArray(iter);
-    assert.deepEqual(kv, [2,4,6]);
-  },
-
-  test_sentinelIterator: function() {
-    var iter = helper.sentinelIterator(new helper.iter([]), null);
-    assert.equal(iter.next(), null);
-  },
-
   test_deepcopy: function() {
     var Constr = function() {};
     var foo = [1,2];

@@ -1,5 +1,6 @@
 /*jshint node:true*/
 /*global grunt*/
+'use strict';
 
 var path = require('path');
 
@@ -17,15 +18,14 @@ namespaces.node = namespaces.base.concat('jsnx.algorithms', 'jsnx.generators');
 namespaces.all = namespaces.node.concat('jsnx.drawing');
 
 module.exports = function(grunt) {
-  "use strict";
-
   // Project configuration.
   grunt.initConfig({
     pkg: grunt.file.readJSON('package.json'),
     meta: {
+      build: 'build/',
       dist: 'dist/',
-      wrapper: "(function(global, factory) { function extractNS(){ var g = {}; return factory.call(g, global),g.jsnx;} if(typeof define === 'function' && define.amd){ /*AMD*/ define(extractNS); } else if (typeof module !== 'undefined' && module.exports){ /*node*/ module.exports = extractNS(); } else { factory.call(global, global); } }(this, function(window) {%output%}));",
-      roots: ['jsnx/', 'vendor/closure-library/'],
+      wrapper: grunt.file.read('wrapper.js').trim(),
+      roots: ['<%= meta.build %>jsnx/', 'vendor/closure-library/'],
       paths: {
         compiler: 'vendor/closure-compiler/compiler.jar',
         library: 'vendor/closure-library/'
@@ -130,6 +130,21 @@ module.exports = function(grunt) {
         dest: '<%= pkg.name%>-custom.js'
       }
     },
+    concat: {
+      test: {
+        src: ['lib/regenerator/min.js', 'banner.js', '<%= pkg.name%>-test.js'],
+        dest: '<%= pkg.name%>-test.js'
+      }
+    },
+    transpile: {
+      all: {
+        files: [{
+          expand: true,
+          src: ['jsnx/**/*.js', '!jsnx/**/tests/*'],
+          dest: '<%= meta.build %>'
+        }]
+      },
+    },
     deps: {
       options: {
         closureLibraryPath: '<%= meta.paths.library  %>',
@@ -185,6 +200,27 @@ module.exports = function(grunt) {
     });
   });
 
+  // Test task with mocha
+  grunt.registerMultiTask('transpile', 'Transpile to ES5', function() {
+    var regenerator = require('regenerator');
+    var forof = require('es6forof');
+    this.files.forEach(function(fileObj) {
+      var transformed_source = regenerator(
+        forof(grunt.file.read(fileObj.src[0]))
+      );
+      // fix for closure compiler. It doesn't allow reserved keywords as
+      // property names, which regenator does
+      transformed_source = transformed_source.replace(
+        /(\$ctx\d+)\.catch\(/g,
+        "$1['catch']("
+      );
+      grunt.file.write(
+        fileObj.dest,
+        transformed_source
+      );
+    });
+  });
+
   // Check whether compiler and library exist
   grunt.registerTask('check', 'Checks whether dependencies exist', function() {
     var ok = true;
@@ -221,6 +257,7 @@ module.exports = function(grunt) {
   });
 
 
+  grunt.loadNpmTasks('grunt-contrib-concat');
   grunt.loadNpmTasks('grunt-contrib-jshint');
   grunt.loadNpmTasks('grunt-closure-tools');
 
@@ -229,6 +266,7 @@ module.exports = function(grunt) {
   grunt.registerTask('buildall', [
     'check',
     'jshint',
+    'transpile',
     'compile:test_advanced',
     'mocha',
     'compile:base',
@@ -240,10 +278,18 @@ module.exports = function(grunt) {
 
   grunt.registerTask('test', [
     'check',
+    'transpile',
     'compile:test_simple',
     'mocha',
     'compile:test_advanced',
     'mocha',
     'cleanup'
+  ]);
+
+  grunt.registerTask('compile_simple', [
+    'check',
+    'transpile',
+    'compile:test_simple',
+    'concat'
   ]);
 };

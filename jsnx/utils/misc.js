@@ -26,15 +26,15 @@ goog.require('goog.ui.IdGenerator');
  * @export
  */
 jsnx.utils.misc.is_list_of_ints = function(intlist) {
-    if(!goog.isArrayLike(intlist)) {
-        return false;
+  if(!goog.isArrayLike(intlist)) {
+    return false;
+  }
+  for(var i = 0, l = intlist.length; i < l; i++) {
+    if(isNaN(intlist[i])) {
+      return false;
     }
-    for(var i = 0, l = intlist.length; i < l; i++) {
-        if(isNaN(intlist[i])) {
-            return false;
-        }
-    }
-    return true;
+  }
+  return true;
 };
 goog.exportSymbol('jsnx.utils.is_list_of_ints', jsnx.utils.misc.is_list_of_ints);
 
@@ -47,15 +47,15 @@ goog.exportSymbol('jsnx.utils.is_list_of_ints', jsnx.utils.misc.is_list_of_ints)
  *
  * @param {Array} numbers
  *
- * @return {goog.iter.Iterator}
+ * @return {Iterator}
  * @export
  */
-jsnx.utils.misc.cumulative_sum = function(numbers) {
-    var csum = 0;
-    return goog.iter.map(numbers, function(n) {
-        csum += n;
-        return csum;
-    });
+jsnx.utils.misc.cumulative_sum = function*(numbers) {
+  var csum = 0;
+  for (var n of jsnx.helper.iter(numbers)) {
+    csum += n;
+    yield csum;
+  }
 };
 goog.exportSymbol('jsnx.utils.cumulative_sum', jsnx.utils.misc.cumulative_sum);
 
@@ -67,7 +67,7 @@ goog.exportSymbol('jsnx.utils.cumulative_sum', jsnx.utils.misc.cumulative_sum);
  * @export
  */
 jsnx.utils.misc.generate_unique_node = function() {
-    return goog.ui.IdGenerator.getInstance().getNextUniqueId();
+  return goog.ui.IdGenerator.getInstance().getNextUniqueId();
 };
 goog.exportSymbol('jsnx.utils.generate_unique_node', jsnx.utils.misc.generate_unique_node);
 

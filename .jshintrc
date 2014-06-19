@@ -3,7 +3,8 @@
         "jsnx": true,
         "goog": true,
         "BaseTestClass": true,
-        "expect": true
+        "expect": true,
+        "wrapGenerator": true
     },
 
     "curly": true,
@@ -15,5 +16,6 @@
     "globalstrict": true,
     "iterator": true,
     "sub": true,
-    "browser": true
+    "browser": true,
+    "esnext": true
 }

@@ -11,18 +11,29 @@ exports.Map = {
   },
 
   test_constructor: function() {
-    assert.equal((new jsnx.Map()).count(), 0, 'Empty constructor');
+    assert.equal((new jsnx.Map()).size(), 0, 'Empty constructor');
 
     var data = [[1,2], [3,4], [5,6]];
     var map = new jsnx.Map(data);
-    assert.deepEqual(map.items().sort(), data, 'Array');
+    assert.deepEqual(
+      jsnx.helper.toArray(map.entries()).sort(),
+      data
+    );
 
-    data = jsnx.helper.iter(data);
-    map = new jsnx.Map(data);
-    assert.deepEqual(map.items().sort(), [[1,2], [3,4], [5,6]], 'Iteratorj');
+    var iter = jsnx.helper.iter(data);
+    map = new jsnx.Map(iter);
+    assert.deepEqual(
+      jsnx.helper.toArray(map.entries()).sort(),
+      data
+    );
 
     data = {1: 2, 3: 4};
     map = new jsnx.Map(data);
+    assert.deepEqual(
+      jsnx.helper.toArray(map.entries()).sort(),
+      [[1,2], [3,4]],
+      'object'
+    );
   },
 
   test_get_set_item: function() {
@@ -42,18 +53,27 @@ exports.Map = {
     map.set(0,'foo');
     map.set(0, 'bar');
     assert.equal(map.get(0), 'bar');
-    assert.equal(map.count(), 1);
+    assert.equal(map.size(), 1);
   },
 
-  test_items: function() {
-    assert.deepEqual(this.map.items().sort(), [['0', 0], ['1', 1], ['2', 2]]);
+  test_entries: function() {
+    assert.deepEqual(
+      jsnx.helper.toArray(this.map.entries()).sort(),
+      [['0', 0], ['1', 1], ['2', 2]]
+    );
   },
 
   test_keys: function() {
-    assert.deepEqual(this.map.keys().sort(), ['0', '1', '2']);
+    assert.deepEqual(
+      jsnx.helper.toArray(this.map.keys()).sort(),
+      ['0', '1', '2']
+    );
   },
 
   test_values: function() {
-    assert.deepEqual(this.map.keys().sort(), [0, 1, 2]);
+    assert.deepEqual(
+      jsnx.helper.toArray(this.map.values()).sort(),
+      ['0', '1', '2']
+    );
   }
 };

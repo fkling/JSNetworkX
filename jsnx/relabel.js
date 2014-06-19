@@ -2,11 +2,11 @@
 goog.provide('jsnx.relabel');
 
 goog.require('goog.asserts');
-goog.require('goog.iter');
 goog.require('goog.array');
 goog.require('goog.object');
 goog.require('jsnx.contrib.Set');
 goog.require('jsnx.contrib.Map');
+goog.require('jsnx.contrib.iter');
 goog.require('jsnx.classes.DiGraph');
 goog.require('jsnx.helper');
 goog.require('jsnx.exception');
@@ -44,9 +44,9 @@ jsnx.relabel.relabel_nodes = function(G, mapping, opt_copy) {
   }
   if(goog.isFunction(mapping)) {
     m = new jsnx.contrib.Map();
-    goog.iter.forEach(G.nodes_iter(), function(n) {
+    for (var n of G.nodes_iter()) {
       m.set(n, goog.asserts.assertFunction(mapping)(n));
-    });
+    }
   }
 
   if(!goog.isDef(opt_copy) || opt_copy) {
@@ -78,7 +78,10 @@ jsnx.relabel.relabel_inplace_ = function(G, mapping) {
   var old_labels = new jsnx.contrib.Set(mapping.keys());
   var nodes;
 
-  if(old_labels.intersection(mapping.values()).count() > 0) {
+  if(old_labels.intersection(
+      jsnx.contrib.iter.toArray(mapping.values())
+    ).count() > 0
+  ) {
     // labels sets overlap
     // can we topological sort and still do the relabeling?
     var D = new jsnx.classes.DiGraph(mapping);
@@ -90,8 +93,8 @@ jsnx.relabel.relabel_inplace_ = function(G, mapping) {
       if(e instanceof jsnx.exception.JSNetworkXUnfeasible) {
         throw new jsnx.exception.JSNetworkXUnfeasible(
           'The node label sets are overlapping ' +
-            'and no ordering can resolve the ' +
-              'mapping. Use copy=True.'
+          'and no ordering can resolve the ' +
+          'mapping. Use copy=True.'
         );
       }
     }
