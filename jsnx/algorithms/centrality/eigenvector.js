@@ -95,7 +95,7 @@ jsnx.algorithms.centrality.eigenvector.eigenvector_centrality = function(
     x = opt_arg_dict['nstart'];
   }
   // Normalize starting vector
-  var sum = jsnx.utils.misc.cumulative_sum(goog.object.getValues(x));
+  var sum = goog.math.sum.apply(null, goog.object.getValues(x));
   var s = 1.0 / sum;
   x.forEach(function(k, v) {
     x.set(k, v * s);
@@ -115,7 +115,7 @@ jsnx.algorithms.centrality.eigenvector.eigenvector_centrality = function(
     });
     // Normalize vector
     try {
-      s = 1.0 / Math.sqrt(jsnx.utils.misc.cumulative_sum(jsnx.helper.map(goog.object.getValues(x), function(v) { return Math.pow(v, 2) })));
+      s = 1.0 / Math.sqrt(goog.math.sum.apply(null, goog.array.map(goog.object.getValues(x), function(v) { return Math.pow(v, 2) })));
     } catch (e) {
       s = 1.0;
     }
@@ -123,7 +123,7 @@ jsnx.algorithms.centrality.eigenvector.eigenvector_centrality = function(
       x.set(n, v * s);
     });
     // Check convergence
-    var err = jsnx.utils.misc.cumulative_sum(jsnx.helper.map(goog.object.getKeys(x), function(n) { return Math.abs(x[n] - xlast[n]) }));
+    var err = goog.math.sum.apply(null, goog.array.map(goog.object.getKeys(x), function(n) { return Math.abs(x[n] - xlast[n]) }));
     if (err < nnodes*tol) {
       return x
     }
