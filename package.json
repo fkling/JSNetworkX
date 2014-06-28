@@ -17,14 +17,37 @@
     "dist/jsnetworkx-node.js"
   ],
   "main": "dist/jsnetworkx-node.js",
+  "dependencies": {
+    "lodash-node": "^2.4.1"
+  },
   "devDependencies": {
-    "grunt": "~0.4.1",
-    "grunt-contrib-jshint": "~0.1.1",
-    "grunt-closure-tools": "~0.7.3",
-    "grunt-contrib-watch": "~0.3.1",
+    "browser-pack": "^2.0.1",
+    "browser-unpack": "^0.2.3",
+    "browserify": "^4.1.11",
+    "browserify-shim": "^3.5.0",
+    "chai": "^1.9.1",
+    "chai-members-deep": "0.0.1",
+    "envify": "^2.0.0",
+    "es6forof": "0.0.1",
+    "gulp": "^3.8.1",
+    "gulp-mocha": "^0.4.1",
+    "gulp-notify": "^1.3.1",
+    "gulp-watch": "^0.6.8",
+    "intreq": "0.0.0",
+    "jest-cli": "^0.1.16",
+    "jstransform": "^5.0.0",
+    "merge-stream": "^0.1.1",
     "mocha": "~1.9.0",
-    "grunt-contrib-concat": "^0.3.0",
     "regenerator": "^0.4.2",
-    "es6forof": "0.0.1"
+    "through": "^2.3.4",
+    "vinyl-map": "^1.0.1",
+    "vinyl-source-stream": "^0.1.1",
+    "watchify": "^0.10.2"
+  },
+  "jest": {
+    "testPathDirs": ["node/"]
+  },
+  "scripts": {
+    "test": "jest"
   }
 }

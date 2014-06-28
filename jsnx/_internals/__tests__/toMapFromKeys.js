@@ -1,0 +1,23 @@
+/*jshint strict:false, node:true*/
+/*global assert */
+
+var Map = require('../Map');
+var toMapFromKeys = require('../toMapFromKeys');
+
+exports.toMapFromKeys = {
+  'without default value (null)': function() {
+    var keys = ['foo', 'bar', 'baz'];
+    assert.deepEqual(
+      toMapFromKeys(keys),
+      new Map({foo: null, bar: null, baz: null})
+    );
+  },
+
+  'with default value': function() {
+    var keys = ['foo', 'bar', 'baz'];
+    assert.deepEqual(
+      toMapFromKeys(keys, 42),
+      new Map({foo: 42, bar: 42, baz: 42})
+    );
+  },
+};

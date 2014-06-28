@@ -1,25 +1,9 @@
 "use strict";
 /*jshint node:true*/
-var assert = require('assert');
+var chai = require('chai');
+chai.use(require('chai-members-deep'));
 
-assert.isOneOf = function(actual, expected, message) {
-  var matches = 0;
-  expected.forEach(function(expected) {
-    try {
-      assert.deepEqual(actual, expected);
-      matches += 1;
-    }
-    catch(ex) {
-      if ((!ex instanceof assert.AssertionError)) {
-        throw ex;
-      }
-    }
-  });
-  if (matches === 0) {
-    assert.fail(actual, expected, message, 'isContainedIn', assert.isOneOf);
-  }
-};
-
+/*
 assert.almostEqual = function(actual, expected, message) {
   var diff = Math.abs(actual - expected);
   // round to 3th place
@@ -28,5 +12,6 @@ assert.almostEqual = function(actual, expected, message) {
     assert.fail(actual, expected, message, 'almostEqual', assert.almostEqual);
   }
 };
+*/
 
-module.exports = assert;
+module.exports = chai.assert;
