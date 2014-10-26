@@ -1,5 +1,5 @@
 /*jshint strict:false, node:true*/
-/*global utils, assert, wrapGenerator*/
+/*global utils, assert, regeneratorRuntime*/
 var Map = require('../Map');
 
 var itertools = utils.itertools;
@@ -101,7 +101,7 @@ exports.Map = {
 
   '#entries()': function() {
     assert(
-      wrapGenerator.isGeneratorFunction(this.map.entries),
+      regeneratorRuntime.isGeneratorFunction(this.map.entries),
       'is generator'
     );
     assert.deepEqual(
@@ -112,7 +112,7 @@ exports.Map = {
 
   '#keys()': function() {
     assert(
-      wrapGenerator.isGeneratorFunction(this.map.keys),
+      regeneratorRuntime.isGeneratorFunction(this.map.keys),
       'is generator'
     );
     assert.deepEqual(
@@ -123,7 +123,7 @@ exports.Map = {
 
   '#values()': function() {
     assert(
-      wrapGenerator.isGeneratorFunction(this.map.values),
+      regeneratorRuntime.isGeneratorFunction(this.map.values),
       'is generator'
     );
     assert.deepEqual(

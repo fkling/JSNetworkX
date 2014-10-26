@@ -1,7 +1,6 @@
 "use strict";
 
-var wrapGenerator =
-  require('regenerator').wrapGenerator || global.wrapGenerator;
+var iteratorSymbol = require('./iteratorSymbol');
 
 /**
  * Returns true if object implement the @@iterator method.
@@ -11,7 +10,7 @@ var wrapGenerator =
  * @return {boolean}
  */
 function isIterable(obj) {
-  return wrapGenerator.isGeneratorFunction(obj['@@iterator']);
+  return typeof obj[iteratorSymbol] === 'function';
 }
 
 module.exports = isIterable;

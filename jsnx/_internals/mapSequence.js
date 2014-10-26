@@ -4,6 +4,7 @@ var isArrayLike = require('./isArrayLike');
 var isIterable = require('./isIterable');
 var isIterator = require('./isIterator');
 var isPlainObject = require('lodash-node/modern/objects/isPlainObject');
+var iteratorSymbol = require('./iteratorSymbol');
 var mapIterator = require('./itertools/mapIterator.js');
 var mapValues = require('lodash-node/modern/objects/mapValues');
 
@@ -31,7 +32,7 @@ function mapSequence(sequence, callback, this_obj) {
     return nativeMap.call(sequence, callback, this_obj);
   }
   else if (isIterable(sequence)) {
-    sequence = sequence['@@iterable']();
+    sequence = sequence[iteratorSymbol]();
   }
   if (isIterator(sequence)) {
     return mapIterator(sequence, callback, this_obj);

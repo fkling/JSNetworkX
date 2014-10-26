@@ -22,21 +22,7 @@ var toIterator = require('./itertools/toIterator');
  *      argument to the callback
  * @template T
  */
-function forEach(seq, callback, opt_this_obj, opt_expand) {
-  // opt_this_obj can be omitted
-  if(isBoolean(opt_this_obj)) {
-    opt_expand = opt_this_obj;
-    opt_this_obj = null;
-  }
-
-  if(opt_expand) {
-    var orig_callback = callback;
-    /** @this {*} */
-    callback = function(val) {
-      orig_callback.apply(this, val);
-    };
-  }
-
+function forEach(seq, callback, opt_this_obj) {
   if (Array.isArray(seq)) {
     seq.forEach(callback, opt_this_obj);
     return;
@@ -61,7 +47,7 @@ function forEach(seq, callback, opt_this_obj, opt_expand) {
     );
   }
   else if(isObject(seq)) {
-    forEach(Object.keys(seq), callback, opt_this_obj);
+    Object.keys(seq).forEach(callback, opt_this_obj);
   }
 }
 

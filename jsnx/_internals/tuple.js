@@ -1,86 +1,52 @@
 "use strict";
 
+var t2 = new Array(2);
+var t3 = new Array(3);
+
 /**
- * @fileoverview
+ * This function always returns the same instance of an array for a given number
+ * of arguments.
+ * It should be used instead of creating temporary arrays, if the arrays are
+ * consumed immediately anyways.
  *
- * Since JavaScript does not support immutable sequences, such as tuples in
- * Python, this file provides a tuple like "class" which creates immutable
- * sequences. 
- * In browsers which support it, 'Object.freeze' will be used to enforce
- * immutability.
+ * @param {...*} var_args The elemens of the tuple
+ * @return {Array}
  */
+function tuple2(x, y) {
+  t2[0] = x;
+  t2[1] = y;
+  return t2;
+}
 
-goog.provide('jsnx.contrib.Tuple');
-
-goog.require('goog.object');
+function tuple3(x, y, z) {
+  t3[0] = x;
+  t3[1] = y;
+  t3[2] = z;
+  return t3;
+}
 
 /**
- * Creates a tuple (array-like object) which is supposed to be immutable.
+ * Same as tuple2, but sets the values on container instead of the allocated
+ * array here. Useful to reuse an existing array.
  *
- * @param {...*} var_args Elements of the tuple. Can be any type.
- *  If only one argument is passed and it is an array, all elements of the array
- *  will be added to the tuple.
- *
- * @constructor
+ * @param {...*} var_args The elemens of the tuple
+ * @param {Array} opt_container If present, set values there instead
+ * @return {Array}
  */
-jsnx.contrib.Tuple = function(var_args) {
-  var args = arguments;
-  if (arguments.length === 1 && goog.isArrayLike(arguments[0])) {
-    args = arguments[0];
-  }
+function tuple2c(x, y, container) {
+  container[0] = x;
+  container[1] = y;
+  return container;
+}
 
-  this.__hash__ = 't';
-  for (var i = 0, l = args.length; i < l; i++) {
-    this[i] = args[i];
-    this.__hash__ += jsnx.contrib.misc.get_hash(args[i]);
-  }
-  this['length'] = args.length;
+function tuple3c(x, y, z, container) {
+  container[0] = x;
+  container[1] = y;
+  container[2] = z;
+  return container;
+}
 
-  // try to freeze the object
-  return goog.object.createImmutableView(this);
-};
-
-/**
- * The hash of the tuple, used in graph node dictionaries.
- *
- * @type {string}
- * @private
- */
-jsnx.contrib.Tuple.prototype.__hash__ = '';
-
-
-/**
- * Number of elements in the tuple.
- *
- * @type {number}
- * @export
- */
-jsnx.contrib.Tuple.prototype.length = 0;
-
-
-/**
- * Computes and returns the hash of the object if it does not exist yet.
- * 
- * @return {string}
- * @override
- * @export
- */
-jsnx.contrib.Tuple.prototype.toString = function() {
-  return this.__hash__;
-};
-
-
-/**
- * Creates a tuple with the given arguments.
- * 
- * @param {...*} var_args
- * @return {jsnx.contrib.Tuple}
- */
-jsnx.contrib.Tuple.createTuple = function(var_args) {
-  if (goog.isArrayLike(arguments[0])) {
-    return new jsnx.contrib.Tuple(arguments[0]);
-  }
-  return new jsnx.contrib.Tuple(arguments);
-};
-goog.exportSymbol('jsnx.Tuple', jsnx.contrib.Tuple.createTuple);
-goog.exportSymbol('jsnx.t', jsnx.contrib.Tuple.createTuple);
+exports.tuple2 = tuple2;
+exports.tuple3 = tuple3;
+exports.tuple2c = tuple2c;
+exports.tuple3c = tuple3c;
