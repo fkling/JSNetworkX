@@ -4,10 +4,10 @@ var _forEach = require('lodash-node/modern/collections/forEach');
 var isArrayLike = require('./isArrayLike');
 var isBoolean = require('lodash-node/modern/objects/isBoolean');
 var isFunction = require('lodash-node/modern/objects/isFunction');
-var isGraph = require('./isGraph');
 var isIterable = require('./isIterable');
 var isIterator = require('./isIterator');
 var isObject = require('lodash-node/modern/objects/isObject');
+var iteratorSymbol = require('./iteratorSymbol');
 var toIterator = require('./itertools/toIterator');
 
 /**
@@ -27,12 +27,8 @@ function forEach(seq, callback, opt_this_obj) {
     seq.forEach(callback, opt_this_obj);
     return;
   }
-  else if(isGraph(seq)) {
-    seq = toIterator(seq);
-  }
-
   if (isIterable(seq)) {
-    seq = seq['@@iterator']();
+    seq = seq[iteratorSymbol]();
   }
   if(isIterator(seq)) {
     for (var v of seq) {

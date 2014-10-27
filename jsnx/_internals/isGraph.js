@@ -1,5 +1,7 @@
 "use strict";
 
+var hasOwn = Object.prototype.hasOwnProperty;
+
 /**
  * Returns true if value is a Graph
  *
@@ -7,7 +9,8 @@
  * @return {bool}
  */
 function isGraph(value) {
-  return false; // TODO implement
+  // We are not using instanceof to avoid circular dependencies
+  return typeof value.add_node === 'function';
 }
 
 module.exports = isGraph;

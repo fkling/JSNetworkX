@@ -3,11 +3,15 @@
 
 var BaseAttrGraphTester = require('./BaseAttrGraphTester');
 var Graph = require('../graph');
+/*jshint ignore:start*/
 var Map = utils.Map;
+/*jshint ignore:end*/
+var JSNetworkXError = require('../../exceptions/JSNetworkXError');
+var KeyError = require('../../exceptions/KeyError');
 var _ = require('lodash-node');
 
 var sorted = function(iterator) {
-  utils.itertools.toArray(iterator).sort();
+  return utils.itertools.toArray(iterator).sort();
 };
 
 // Tests specific to dict-of-dict-of-dict graph data structure
@@ -173,7 +177,7 @@ exports.TestGraph = _.extend({}, BaseAttrGraphTester, {
       function() { G.add_edges_from([[0,1,2,3]]); },
       JSNetworkXError
     ); // too many in tuple
-    
+
     // not a tuple
     assert.throws(function() { G.add_edges_from([0]); }, TypeError);
   },

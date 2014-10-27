@@ -1,11 +1,12 @@
+/*jshint latedef:false*/
 "use strict";
 
-var cloneDeep = require('lodash-node/modern/objects/cloneDeep');
-var isGraph = require('./isSet');
+var baseClone = require('lodash-node/modern/internals/baseClone');
+var isGraph = require('./isGraph');
 var isMap = require('./isMap');
 var isSet = require('./isSet');
 
-function deepcopyInstance(obj) {
+function deepcopyInstance(obj, stackA, stackB) {
   // temporary constructor, we don't know if the original expects
   // parameter
   /**
@@ -25,7 +26,7 @@ function deepcopyInstance(obj) {
   }
 
   // deepcopy them
-  ownProps = deepcopy(ownProps);
+  ownProps = deepcopy_implementation(ownProps, stackA, stackB);
 
   // create a new instance and assign properties
   instance = new T_();
@@ -36,6 +37,23 @@ function deepcopyInstance(obj) {
   return instance;
 }
 
+function deepcopy_implementation(value, stackA, stackB) {
+  return baseClone(
+    value,
+    true,
+    function(v) {
+      if (isMap(v) || isSet(v) || isGraph(v)) {
+        var copy = deepcopyInstance(v, stackA, stackB);
+        stackA.push(v);
+        stackB.push(copy);
+        return copy;
+      }
+    },
+    stackA,
+    stackB
+  );
+}
+
 /**
  * Creates a deep copy of the value, also of maps and sets.
  *
@@ -43,11 +61,7 @@ function deepcopyInstance(obj) {
  * @return {?} 
  */
 function deepcopy(value) {
-  return cloneDeep(value, function(v) {
-    if (isMap(v) || isSet(v) || isGraph(v)) {
-      return deepcopyInstance(v);
-    }
-  });
+  return deepcopy_implementation(value, [], []);
 }
 
 module.exports = deepcopy;

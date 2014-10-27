@@ -2,6 +2,7 @@
 
 var t2 = new Array(2);
 var t3 = new Array(3);
+var t4 = new Array(4);
 
 /**
  * This function always returns the same instance of an array for a given number
@@ -23,6 +24,14 @@ function tuple3(x, y, z) {
   t3[1] = y;
   t3[2] = z;
   return t3;
+}
+
+function tuple4(a, b, c, d) {
+  t4[0] = a;
+  t4[1] = b;
+  t4[2] = c;
+  t4[3] = d;
+  return t4;
 }
 
 /**
@@ -48,5 +57,6 @@ function tuple3c(x, y, z, container) {
 
 exports.tuple2 = tuple2;
 exports.tuple3 = tuple3;
+exports.tuple4 = tuple4;
 exports.tuple2c = tuple2c;
 exports.tuple3c = tuple3c;

@@ -1,6 +1,11 @@
 /*jshint strict:false, node:true*/
 /*global assert, utils*/
 
+/*jshint ignore:start*/
+var Map = utils.Map;
+/*jshint ignore:end*/
+var JSNetworkXError = require('../../exceptions/JSNetworkXError');
+
 var iteratorToArray = utils.itertools.toArray;
 
 // Tests for data-structure independent graph class features.
@@ -53,38 +58,44 @@ var BaseGraphTester = {
     var G = this.K3;
 
     assert.sameMembers(G.neighbors(0), [1,2]);
-    assert.throws(() => G.neighbors(-1), JSNetworkxError);
+    assert.throws(() => G.neighbors(-1), JSNetworkXError);
   },
 
   test_neighbours_iter: function() {
     var G = this.K3;
 
-    assert.deepEqual(h.sorted(G.neighbors_iter(0)), [1,2]);
+    assert.deepEqual(iteratorToArray(G.neighbors_iter(0)).sort(), [1,2]);
     assert.throws(
       function() { G.neighbors_iter(-1); },
-      jsnx.JSNetworkxError
+      JSNetworkXError
     );
   },
 
   test_edges: function() {
     var G = this.K3;
 
-    assert.deepEqual(h.sorted(G.edges()), [[0,1],[0,2],[1,2]]);
-    assert.deepEqual(h.sorted(G.edges(0)), [[0,1],[0,2]]);
+    assert.deepEqual(G.edges().sort(), [[0,1],[0,2],[1,2]]);
+    assert.deepEqual(G.edges(0).sort(), [[0,1],[0,2]]);
     assert.throws(
       function() { G.edges(-1); },
-      jsnx.JSNetworkxError
+      JSNetworkXError
     );
   },
 
   test_edges_iter: function() {
     var G = this.K3;
 
-    assert.deepEqual(h.sorted(G.edges_iter()), [[0,1],[0,2],[1,2]]);
-    assert.deepEqual(h.sorted(G.edges_iter(0)), [[0,1],[0,2]]);
+    assert.deepEqual(
+      iteratorToArray(G.edges_iter()).sort(),
+      [[0,1],[0,2],[1,2]]
+    );
+    assert.deepEqual(
+      iteratorToArray(G.edges_iter(0)).sort(),
+      [[0,1],[0,2]]
+    );
     assert.throws(
-      function() { h.sorted(G.edges_iter(-1)); },
-      jsnx.JSNetworkxError
+      function() { iteratorToArray(G.edges_iter(-1)); },
+      JSNetworkXError
     );
   },
 
@@ -96,13 +107,13 @@ var BaseGraphTester = {
   test_degree: function() {
     var G = this.K3;
 
-    assert.deepEqual(jsnx.toArray(G.degree().values()), [2,2,2]);
-    assert.deepEqual(G.degree(), new jsnx.Map([[0,2],[1,2],[2,2]]));
+    assert.deepEqual(iteratorToArray(G.degree().values()), [2,2,2]);
+    assert.deepEqual(G.degree(), new Map([[0,2],[1,2],[2,2]]));
     assert.equal(G.degree(0), 2);
-    assert.deepEqual(G.degree([0]), new jsnx.Map([[0,2]]));
+    assert.deepEqual(G.degree([0]), new Map([[0,2]]));
     assert.throws(
       function() { G.degree(-1); },
-      jsnx.JSNetworkxError
+      JSNetworkXError
     );
   },
 
@@ -111,21 +122,21 @@ var BaseGraphTester = {
     G.add_edge(1,2,{weight: 2});
     G.add_edge(2,3,{weight: 3});
 
-    assert.deepEqual(jsnx.toArray(G.degree(null, 'weight').values()), [2,5,3]);
-    assert.deepEqual(G.degree(null, 'weight'), new jsnx.Map([[1,2],[2,5],[3,3]]));
+    assert.deepEqual(iteratorToArray(G.degree(null, 'weight').values()), [2,5,3]);
+    assert.deepEqual(G.degree(null, 'weight'), new Map([[1,2],[2,5],[3,3]]));
     assert.equal(G.degree(1, 'weight'), 2);
-    assert.deepEqual(G.degree([1], 'weight'), new jsnx.Map([[1,2]]));
+    assert.deepEqual(G.degree([1], 'weight'), new Map([[1,2]]));
   },
 
   test_degree_iter: function() {
     var G = this.K3;
 
-    assert.deepEqual(jsnx.toArray(G.degree_iter()), [[0,2],[1,2],[2,2]]);
+    assert.deepEqual(iteratorToArray(G.degree_iter()), [[0,2],[1,2],[2,2]]);
     assert.deepEqual(
-      new jsnx.Map(G.degree_iter()),
-      new jsnx.Map([[0,2],[1,2],[2,2]])
+      new Map(G.degree_iter()),
+      new Map([[0,2],[1,2],[2,2]])
     );
-    assert.deepEqual(jsnx.toArray(G.degree_iter(0)), [[0,2]]);
+    assert.deepEqual(iteratorToArray(G.degree_iter(0)), [[0,2]]);
   },
 
   test_size: function() {
@@ -138,11 +149,11 @@ var BaseGraphTester = {
     var G = this.K3.copy();
     var nlist = [12,13,14,15];
     G.add_star(nlist);
-    assert.deepEqual(h.sorted(G.edges(nlist)), [[12,13], [12,14], [12,15]]);
+    assert.deepEqual(G.edges(nlist), [[12,13], [12,14], [12,15]]);
     G = this.K3.copy();
     G.add_star(nlist, {weight: 2});
     assert.deepEqual(
-      h.sorted(G.edges(nlist, true)),
+      G.edges(nlist, true),
       [[12,13,{weight: 2}],[12,14,{weight:2}],[12,15,{weight:2}]]
     );
   },
@@ -151,11 +162,11 @@ var BaseGraphTester = {
     var G = this.K3.copy();
     var nlist = [12,13,14,15];
     G.add_path(nlist);
-    assert.deepEqual(h.sorted(G.edges(nlist)), [[12,13], [13,14], [14,15]]);
+    assert.deepEqual(iteratorToArray(G.edges(nlist)), [[12,13], [13,14], [14,15]]);
     G = this.K3.copy();
     G.add_path(nlist, {weight: 2});
     assert.deepEqual(
-      h.sorted(G.edges(nlist, true)),
+      G.edges(nlist, true),
       [[12,13,{weight: 2}],[13,14,{weight:2}],[14,15,{weight:2}]]
     );
   },
@@ -168,10 +179,10 @@ var BaseGraphTester = {
         [[12,13], [13,14], [14, 15], [15,12]]
     ];
     G.add_cycle(nlist);
-    assert.isOneOf(h.sorted(G.edges(nlist)), oklists);
+    assert.isOneOf(G.edges(nlist), oklists);
 
     G = this.K3.copy();
-    oklists = [ 
+    oklists = [
       [
         [12,13,{weight:1}],
         [12,15,{weight:1}],
@@ -186,37 +197,37 @@ var BaseGraphTester = {
       ]
     ];
     G.add_cycle(nlist, {weight: 1});
-    assert.isOneOf(h.sorted(G.edges(nlist, true)), oklists);
+    assert.isOneOf(G.edges(nlist, true), oklists);
   },
 
   test_nbunch_iter: function() {
     var G = this.K3;
-    assert.deepEqual(jsnx.toArray(G.nbunch_iter()), this.k3nodes); // all nodes
-    assert.deepEqual(jsnx.toArray(G.nbunch_iter(0)), [0]); // single nodes
-    assert.deepEqual(jsnx.toArray(G.nbunch_iter([0,1])), [0, 1]); // sequence
+    assert.deepEqual(iteratorToArray(G.nbunch_iter()), this.k3nodes); // all nodes
+    assert.deepEqual(iteratorToArray(G.nbunch_iter(0)), [0]); // single nodes
+    assert.deepEqual(iteratorToArray(G.nbunch_iter([0,1])), [0, 1]); // sequence
     // sequence with none in graph
-    assert.deepEqual(jsnx.toArray(G.nbunch_iter([-1])), []);
+    assert.deepEqual(iteratorToArray(G.nbunch_iter([-1])), []);
     // string sequence with none in graph
-    //assert.deepEqual(jsnx.toArray(G.nbunch_iter("foo")), []);
+    //assert.deepEqual(toArray(G.nbunch_iter("foo")), []);
     // node not in graph doesn't get caught upon creation of iterator
     var bunch = G.nbunch_iter(-1);
     // but gets caught when iterator used
-    assert.throws(function() { jsnx.toArray(bunch);}, jsnx.JSNetworkXError);
+    assert.throws(function() { iteratorToArray(bunch);}, JSNetworkXError);
     // unhashable doesn't get caught upon creaton of iterator
     bunch = G.nbunch_iter([0,1,2,[]]);
     // there are no unhashable values
     // but gets caught when iterator hits the unhashable
-    // assert.throws(function() { jsnx.toArray(bunch);}, jsnx.JSNetworkXError);
+    // assert.throws(function() { toArray(bunch);}, JSNetworkXError);
   },
 
   test_selfloop_degree: function() {
     var G = new this.Graph();
     G.add_edge(1,1);
-    assert.deepEqual(jsnx.toArray(G.degree().values()), [2]);
-    assert.deepEqual(G.degree(), new jsnx.Map([[1,2]]));
+    assert.deepEqual(iteratorToArray(G.degree().values()), [2]);
+    assert.deepEqual(G.degree(), new Map([[1,2]]));
     assert.equal(G.degree(1), 2);
-    assert.deepEqual(G.degree([1]), new jsnx.Map([[1,2]]));
-    assert.deepEqual(G.degree([1], 'weight'), new jsnx.Map([[1,2]]));
+    assert.deepEqual(G.degree([1]), new Map([[1,2]]));
+    assert.deepEqual(G.degree([1], 'weight'), new Map([[1,2]]));
   },
 
   test_selfloops: function() {
