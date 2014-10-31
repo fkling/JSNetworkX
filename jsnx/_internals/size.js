@@ -28,7 +28,7 @@ function size(obj) {
   }
   else {
     throw new TypeError(
-      'Expected a graph object, array or object, but got %s instead',
+      'Expected a graph object, array, string or object, but got %s instead',
       typeof obj
     );
   }

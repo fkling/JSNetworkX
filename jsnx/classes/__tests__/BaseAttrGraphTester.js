@@ -2,7 +2,8 @@
 /*global assert, utils*/
 
 var BaseGraphTester = require('./BaseGraphTester');
-var Graph= require('../graph');
+var Graph = require('../graph');
+var DiGraph = require('../digraph');
 /*jshint ignore:start*/
 var Map = utils.Map;
 /*jshint ignore:end*/

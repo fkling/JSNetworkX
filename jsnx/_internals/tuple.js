@@ -55,8 +55,34 @@ function tuple3c(x, y, z, container) {
   return container;
 }
 
-exports.tuple2 = tuple2;
-exports.tuple3 = tuple3;
-exports.tuple4 = tuple4;
-exports.tuple2c = tuple2c;
-exports.tuple3c = tuple3c;
+function createTupleFactory(count) {
+  var t = new Array(count);
+  switch (count) {
+    case 2:
+      return function(a, b) {
+        t[0] = a;
+        t[1] = b;
+        return t;
+      };
+    case 3:
+      return function(a, b, c) {
+        t[0] = a;
+        t[1] = b;
+        t[2] = c;
+        return t;
+      };
+    default:
+      throw new Error('Typle size not supported.');
+  }
+}
+
+/*jshint ignore:start*/
+module.exports = {
+  tuple2,
+  tuple2c,
+  tuple3,
+  tuple3c,
+  tuple4,
+  createTupleFactory
+};
+/*jshint ignore:end*/

@@ -1,7 +1,5 @@
 "use strict";
 
-require('regenerator');
-
 var items = require('../items');
 var toIterator = require('./toIterator');
 

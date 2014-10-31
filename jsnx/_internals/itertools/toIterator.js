@@ -4,6 +4,7 @@ var isGraph = require('../isGraph');
 var isArrayLike = require('../isArrayLike');
 var isIterator = require('../isIterator');
 var isIterable = require('../isIterable');
+var iteratorSymbol = require('../iteratorSymbol');
 
 /**
  * Returns an iterator object for the given array, array-like object
@@ -22,10 +23,7 @@ function toIterator(seq) {
     return seq;
   }
   else if (isIterable(seq)) {
-    return seq['@@iterator']();
-  }
-  else if (isGraph(seq)) {
-    return seq.adj.keys();
+    return seq[iteratorSymbol]();
   }
   else if (typeof seq === 'object') {
     if (!isArrayLike(seq)) {

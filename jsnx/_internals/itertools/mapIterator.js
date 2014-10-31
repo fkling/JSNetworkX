@@ -1,8 +1,5 @@
 "use strict";
 
-// Make sure regenerator runtime is loaded
-require('regenerator');
-
 /**
  * Returns a new iterator which maps every value from the provided iterator via
  * the callback function.

@@ -1,26 +1,28 @@
 "use strict";
-console.log('graph');
-var assign = require('lodash-node/modern/objects/assign');
-var clear = require('../_internals/clear');
-var clone = require('lodash-node/modern/objects/clone');
-var deepcopy = require('../_internals/deepcopy');
-var isArray = require('lodash-node/modern/objects/isArray');
-var isBoolean = require('lodash-node/modern/objects/isBoolean');
-var isPlainObject = require('../_internals/isPlainObject');
-var isString = require('lodash-node/modern/objects/isString');
-var convert = require('../convert');
-var forEach = require('../_internals/forEach');
-var toIterator = require('../_internals/itertools/toIterator');
-var toArray = require('../_internals/itertools/toArray');
-var iteratorToArray = require('../_internals/itertools/toArray');
-var mapIterator = require('../_internals/itertools/mapIterator');
+
+var KeyError = require('../exceptions/KeyError');
 /* jshint ignore:start */
 var Map = require('../_internals/Map');
 var Set = require('../_internals/Set');
 /* jshint ignore:end */
-var mapSequence = require('../_internals/mapSequence');
-var KeyError = require('../exceptions/KeyError');
 var JSNetworkXError = require('../exceptions/JSNetworkXError');
+
+var assign = require('../_internals/assign');
+var clear = require('../_internals/clear');
+var clone = require('lodash-node/modern/objects/clone');
+var convert = require('../convert');
+var deepcopy = require('../_internals/deepcopy');
+var forEach = require('../_internals/forEach');
+var isArray = require('lodash-node/modern/objects/isArray');
+var isBoolean = require('lodash-node/modern/objects/isBoolean');
+var isPlainObject = require('../_internals/isPlainObject');
+var isString = require('lodash-node/modern/objects/isString');
+var iteratorSymbol = require('../_internals/iteratorSymbol');
+var iteratorToArray = require('../_internals/itertools/toArray');
+var mapIterator = require('../_internals/itertools/mapIterator');
+var mapSequence = require('../_internals/mapSequence');
+var toIterator = require('../_internals/itertools/toIterator');
+var toArray = require('../_internals/itertools/toArray');
 var size = require('../_internals/size');
 var {tuple2, tuple2c, tuple3, tuple3c} = require('../_internals/tuple');
 var zipSequence = require('../_internals/zipSequence');
@@ -108,11 +110,18 @@ class Graph {
   }
 
 
-  /* jshint ignore:start */
-  [iteratorSymbol]() {
-    return this.adj.keys();
+
+  /* for convenience */
+  forEach(callback, opt_this_value) {
+    for (var n of this.adj.keys()) {
+      if (opt_this_value) {
+        callback.call(opt_this_value, n);
+      }
+      else {
+        callback(n);
+      }
+    }
   }
-  /* jshint ignore:end */
 
   // __contains__ is not supported, has_node has to be used
 
@@ -150,11 +159,7 @@ class Graph {
    *      Key/value pairs will update existing data associated with the node.
    * @export
    */
-  add_node(n, opt_attr_dict) {
-    if (opt_attr_dict == null) {
-      opt_attr_dict = {};
-    }
-
+  add_node(n, opt_attr_dict={}) {
     if (!isPlainObject(opt_attr_dict)) {
       throw new JSNetworkXError('The attr_dict argument must be an object.');
     }
@@ -186,11 +191,7 @@ class Graph {
    *       take precedence over attributes specified generally.
    * @export
    */
-  add_nodes_from(nodes, opt_attr) {
-    if (opt_attr == null) {
-      opt_attr = {};
-    }
-
+  add_nodes_from(nodes, opt_attr={}) {
     forEach(nodes, function(node) {
       if (isArray(node) && node.length === 2 && isPlainObject(node[1])) {
         var [nn, ndict] = node;
@@ -392,9 +393,7 @@ class Graph {
    *     update existing data associated with each edge.
    * @export
    */
-  add_edges_from(ebunch, opt_attr_dict) {
-    opt_attr_dict = opt_attr_dict || {};
-
+  add_edges_from(ebunch, opt_attr_dict={}) {
     if (!isPlainObject(opt_attr_dict)) {
       throw new JSNetworkXError('The attr_dict argument must be an object.');
     }
@@ -873,8 +872,7 @@ class Graph {
    * @export
    */
   to_directed() {
-    var DiGraph = require('./DiGraph.js');
-    var G = new DiGraph();
+    var G = new require('./digraph')();
     G.name(this.name());
     G.add_nodes_from(this);
     G.add_edges_from((function*() {
@@ -952,20 +950,21 @@ class Graph {
       var Hnbrs = new Map();
       H_adj.set(n, Hnbrs);
 
-      /*jshint loopfunc:true*/
-      this_adj.get(n).forEach(function(data, nbr) {
+      for (var nbrdata of this_adj.get(n)) {
+        var nbr = nbrdata[0];
+        var data = nbrdata[1];
         if (H_adj.has(nbr)) {
           // add both representations of edge: n-nbr and nbr-n
           Hnbrs.set(nbr, data);
           H_adj.get(nbr).set(n, data);
         }
-      });
+      }
     }
 
     // copy node and attribute dictionaries
-    forEach(H, function(n) {
+    for (n of H) {
       H.node.set(n, this.node.get(n));
-    }, this);
+    }
     H.graph = this.graph;
 
     return H;
@@ -1242,5 +1241,9 @@ Graph.prototype.adj = null;
  * @export
  */
 Graph.prototype.edge = null;
+
+Graph.prototype[iteratorSymbol] = function() {
+  return this.adj.keys();
+};
 
 module.exports = Graph;

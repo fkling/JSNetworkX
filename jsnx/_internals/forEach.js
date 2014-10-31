@@ -1,5 +1,9 @@
 "use strict";
 
+/*jshint ignore:start*/
+var undefined;
+/*jshint ignore:end*/
+
 var _forEach = require('lodash-node/modern/collections/forEach');
 var isArrayLike = require('./isArrayLike');
 var isBoolean = require('lodash-node/modern/objects/isBoolean');
@@ -31,8 +35,16 @@ function forEach(seq, callback, opt_this_obj) {
     seq = seq[iteratorSymbol]();
   }
   if(isIterator(seq)) {
-    for (var v of seq) {
-      callback.call(opt_this_obj, v);
+    var v;
+    // Avoiding call if it is not necessary is faster in some browsers
+    if (opt_this_obj !== undefined) {
+      for (v of seq) {
+        callback.call(opt_this_obj, v);
+      }
+    } else {
+      for (v of seq) {
+        callback(v);
+      }
     }
   }
   else if(isArrayLike(seq)) {
