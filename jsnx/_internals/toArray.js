@@ -44,3 +44,5 @@ function toArray(sequence) {
     );
   }
 }
+
+module.exports = toArray;

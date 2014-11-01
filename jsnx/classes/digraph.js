@@ -47,12 +47,12 @@ var zipIterator = require('../_internals/itertools/zipIterator');
  * @see jsnx.classes.MultiGraph
  * @see jsnx.classes.MultiDiGraph
  *
- * @param {?=} opt_data 
+ * @param {?=} opt_data
  *      Data to initialize graph.  If data=None (default) an empty
  *      graph is created.  The data can be an edge list, or any
  *      NetworkX graph object.
  *
- * @param {Object=} opt_attr 
+ * @param {Object=} opt_attr
  *       Attributes to add to graph as key=value pairs.
  *
  * WARNING: If only {@code opt_attr} is provided, it will be interpreted as
@@ -136,10 +136,10 @@ class DiGraph extends Graph {
    *
    * @see #add_node
    *
-   * @param {jsnx.NodeContainer} nodes 
+   * @param {jsnx.NodeContainer} nodes
    *      A container of nodes (list, dict, set, etc.).
    *      OR
-   *      A container of (node, attribute dict) tuples. 
+   *      A container of (node, attribute dict) tuples.
    *
    * @param {Object=} opt_attr  Update attributes for all nodes in nodes.
    *       Node attributes specified in nodes as a tuple
@@ -207,10 +207,7 @@ class DiGraph extends Graph {
     }
     else {
       throw new JSNetworkXError(
-        sprintf(
-          'The node "%s" is not in the graph',
-          JSON.stringify(n)
-        )
+        sprintf('The node "%j" is not in the graph', n)
       );
     }
   }
@@ -252,14 +249,14 @@ class DiGraph extends Graph {
    *
    * The nodes u and v will be automatically added if they are
    * not already in the graph.
-   * 
+   *
    * Edge attributes can be specified with keywords or by providing
    * a dictionary with key/value pairs.
    *
    * @see #add_edges_from
    *
    * Note: Adding an edge that already exists updates the edge data.
-   * 
+   *
    *       Many NetworkX algorithms designed for weighted graphs use as
    *       the edge weight a numerical value assigned to a keyword
    *       which by default is 'weight'.
@@ -303,7 +300,7 @@ class DiGraph extends Graph {
   /**
    * Add all the edges in ebunch.
    *
-   * Notes: 
+   * Notes:
    * Adding the same edge twice has no effect but any edge data
    * will be updated when each duplicate edge is added.
    *
@@ -552,11 +549,11 @@ class DiGraph extends Graph {
    * Note:
    *
    *      Nodes in nbunch that are not in the graph will be (quietly) ignored.
-   * 
+   *
    * @param {?(jsnx.NodeContainer|boolean)=} opt_nbunch A container of nodes.
    *       The container will be iterated through once.
    *
-   * @param {?boolean=} opt_data  
+   * @param {?boolean=} opt_data
    *      If True, return edge attribute dict in 3-tuple (u,v,data).
    *
    * @return {!Iterator} An iterator of (u,v) or (u,v,d) tuples of edges.
@@ -617,14 +614,14 @@ class DiGraph extends Graph {
    *
    * @see #edges_iter
    *
-   * 
+   *
    * @param {(?jsnx.NodeContainer|boolean)=} opt_nbunch A container of nodes.
    *       The container will be iterated through once.
    *
    * @param {?boolean=} opt_data
    *      If True, return edge attribute dict in 3-tuple (u,v,data).
    *
-   * @return {!Iterator} An iterator of (u,v) or (u,v,d) tuples of 
+   * @return {!Iterator} An iterator of (u,v) or (u,v,d) tuples of
    *      incoming edges.
    *
    * @export
@@ -669,7 +666,7 @@ class DiGraph extends Graph {
    * @param {jsnx.NodeContainer} opt_nbunch A container of nodes.
    *       The container will be iterated through once.
    *
-   * @param {boolean} opt_data  
+   * @param {boolean} opt_data
    *      If True, return edge attribute dict in 3-tuple (u,v,data).
    *
    * @return {!Array} A list of incoming edges
@@ -695,8 +692,8 @@ class DiGraph extends Graph {
    * @param {(jsnx.Node|jsnx.NodeContainer)=} opt_nbunch  A container of nodes.
    *       The container will be iterated through once.
    *
-   * @param {string=} opt_weight 
-   *       The edge attribute that holds the numerical value used 
+   * @param {string=} opt_weight
+   *       The edge attribute that holds the numerical value used
    *       as a weight.  If None, then each edge has weight 1.
    *       The degree is the sum of the edge weights adjacent to the node.
    *
@@ -774,8 +771,8 @@ class DiGraph extends Graph {
    * @param {(jsnx.Node|jsnx.NodeContainer)=} opt_nbunch  A container of nodes.
    *       The container will be iterated through once.
    *
-   * @param {string=} opt_weight 
-   *       The edge attribute that holds the numerical value used 
+   * @param {string=} opt_weight
+   *       The edge attribute that holds the numerical value used
    *       as a weight.  If None, then each edge has weight 1.
    *       The degree is the sum of the edge weights adjacent to the node.
    *
@@ -835,8 +832,8 @@ class DiGraph extends Graph {
    * @param {jsnx.NodeContainer=} opt_nbunch  A container of nodes.
    *       The container will be iterated through once.
    *
-   * @param {string=} opt_weight 
-   *       The edge attribute that holds the numerical value used 
+   * @param {string=} opt_weight
+   *       The edge attribute that holds the numerical value used
    *       as a weight.  If None, then each edge has weight 1.
    *       The degree is the sum of the edge weights adjacent to the node.
    *
@@ -895,8 +892,8 @@ class DiGraph extends Graph {
    * @param {jsnx.NodeContainer=} opt_nbunch  A container of nodes.
    *       The container will be iterated through once.
    *
-   * @param {string=} opt_weight 
-   *       The edge attribute that holds the numerical value used 
+   * @param {string=} opt_weight
+   *       The edge attribute that holds the numerical value used
    *       as a weight.  If None, then each edge has weight 1.
    *       The degree is the sum of the edge weights adjacent to the node.
    *
@@ -935,8 +932,8 @@ class DiGraph extends Graph {
    * @param {jsnx.NodeContainer=} opt_nbunch  A container of nodes.
    *       The container will be iterated through once.
    *
-   * @param {string=} opt_weight 
-   *       The edge attribute that holds the numerical value used 
+   * @param {string=} opt_weight
+   *       The edge attribute that holds the numerical value used
    *       as a weight.  If None, then each edge has weight 1.
    *       The degree is the sum of the edge weights adjacent to the node.
    *
@@ -1039,11 +1036,11 @@ class DiGraph extends Graph {
   * This is in contrast to the similar G=DiGraph(D) which returns a
   * shallow copy of the data.
   *
-  * @param {boolean=} opt_reciprocal 
-  *      If True only keep edges that appear in both directions 
-  *      in the original digraph. 
+  * @param {boolean=} opt_reciprocal
+  *      If True only keep edges that appear in both directions
+  *      in the original digraph.
   *
-  * @return {!jsnx.classes.Graph} 
+  * @return {!jsnx.classes.Graph}
   *      An undirected graph with the same name and nodes and
   *      with edge (u,v,data) if either (u,v,data) or (v,u,data)
   *      is in the digraph.  If both edges exist in digraph and
@@ -1149,7 +1146,7 @@ class DiGraph extends Graph {
   * For an inplace reduction of a graph to a subgraph you can remove nodes:
   * G.remove_nodes_from([ n in G if n not in set(nbunch)])
   *
-  * @param {jsnx.NodeContainer} nbunch  
+  * @param {jsnx.NodeContainer} nbunch
   *      A container of nodes which will be iterated through once.
   *
   * @return {jsnx.classes.DiGraph} A subgraph of the graph with the same edge

@@ -6,8 +6,8 @@ sprintf.j = function(value) {
   try {
     return JSON.stringify(value);
   }
-  finally {
-    return;
+  catch(e) {
+    return value;
   }
 };
 
