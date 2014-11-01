@@ -47,7 +47,7 @@ function test() {
   regenerator.runtime();
   global.utils = require('./node/_internals');
   global.assert = require('./mocha/assert');
-  return gulp.src('node/classes/**/__tests__/test_1_digraph.js')
+  return gulp.src('node/**/__tests__/*-test.js')
     .pipe(mocha({
       reporter: 'spec',
       ui: 'exports',
@@ -77,7 +77,7 @@ gulp.task('node', function() {
   return node(gulp.src(['jsnx/**/*.js']));
 });
 
-gulp.task('watch-node', function() {
+gulp.task('watch-node', ['node'], function() {
   return watch('jsnx/**/*.js', function(files) {
       node(files);
     });

@@ -8,7 +8,7 @@ var Map = utils.Map;
 /*jshint ignore:end*/
 var JSNetworkXError = require('../../exceptions/JSNetworkXError');
 var KeyError = require('../../exceptions/KeyError');
-var TestGraph = require('./test_0_graph').TestGraph;
+var TestGraph = require('./0_graph-test').TestGraph;
 
 var _ = require('lodash-node');
 

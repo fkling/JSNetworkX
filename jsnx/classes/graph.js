@@ -873,14 +873,13 @@ class Graph {
    */
   to_directed() {
     var G = new require('./digraph')();
-    G.name(this.name());
+    G.name = this.name;
     G.add_nodes_from(this);
     G.add_edges_from((function*() {
       for (var nd of this.adjacency_iter()) {
-        var [u, nbrs] = nd;
-        for (var nbr of nbrs.entries()) {
-          var [v, data] = nbr;
-          yield tuple3(u, v, deepcopy(data));
+        var u = nd[0];
+        for (var nbr of nd[1]) {
+          yield tuple3(u, nbr[0], deepcopy(nbr[1]));
         }
       }
     }.call(this)));

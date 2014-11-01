@@ -1,22 +1,20 @@
 {
   "name": "jsnetworkx",
-  "version": "0.2.0",
+  "version": "0.3.0-wip",
   "description": "A port of the Python graph library NetworkX. For more info, visit http://networkx.github.com/.",
   "keywords": [
     "graph",
-    "science"
+    "science",
+    "jsnetworkx"
   ],
   "homepage": "http://felix-kling.de/JSNetworkX/",
   "bugs": "https://github.com/fkling/JSNetworkX/issues",
   "author": {
     "name": "Felix Kling",
     "email": "felix.kling@gmx.net",
-    "url": "http://felix-kling.de"
+    "url": "http://jsnetworkx.org/"
   },
-  "files": [
-    "dist/jsnetworkx-node.js"
-  ],
-  "main": "dist/jsnetworkx-node.js",
+  "main": "node/index.js",
   "dependencies": {
     "lodash-node": "^2.4.1",
     "regenerator": "^0.6.8",
