@@ -23,7 +23,6 @@ var mapIterator = require('../_internals/itertools/mapIterator');
 var mapSequence = require('../_internals/mapSequence');
 var toIterator = require('../_internals/itertools/toIterator');
 var toArray = require('../_internals/itertools/toArray');
-var size = require('../_internals/size');
 var {tuple2, tuple2c, tuple3, tuple3c} = require('../_internals/tuple');
 var zipSequence = require('../_internals/zipSequence');
 
@@ -71,7 +70,7 @@ class Graph {
 
     // attempt to load graph with data
     if (opt_data != null) {
-        var result = convert.to_networkx_graph(opt_data, this);
+      convert.to_networkx_graph(opt_data, this);
     }
 
     // load graph attributes (must be after convert)
@@ -135,7 +134,8 @@ class Graph {
    *
    * @param {jsnx.Node} n  A node in the graph.
    *
-   * @return {!jsnx.contrib.Map} The adjacency dictionary for nodes connected to n.
+   * @return {!jsnx.contrib.Map} The adjacency dictionary for nodes
+   *   connected to n.
    * @export
    */
   get(n) {
@@ -246,7 +246,7 @@ class Graph {
   /**
    * Remove multiple nodes.
    *
-   * @param {jsnx.NodeContainer} nodes A container of nodes 
+   * @param {jsnx.NodeContainer} nodes A container of nodes
    *      If a node in the container is not in the graph it is silently ignored.
    *
    * @export
@@ -267,8 +267,8 @@ class Graph {
   /**
    * Return an iterator over the nodes.
    *
-   * @param {boolean=} opt_data (default false) If false the iterator returns nodes.
-   *      If true return a two-tuple of node and node data dictionary.
+   * @param {boolean=} opt_data (default false) If false the iterator returns
+   *   nodes. If true return a two-tuple of node and node data dictionary.
    *
    * @return {Iterator} of nodes If data=true the iterator gives
    *           two-tuples containing (node, node data, dictionary).
@@ -285,8 +285,8 @@ class Graph {
   /**
    * Return a list of the nodes in the graph.
    *
-   * @param {boolean=} opt_data (default false) If false the iterator returns nodes.
-   *      If true return a two-tuple of node and node data dictionary.
+   * @param {boolean=} opt_data (default false) If false the iterator returns
+   *   nodes. If true return a two-tuple of node and node data dictionary.
    *
    * @return {!Array} of nodes If data=true a list of two-tuples containing
    *           (node, node data dictionary).
@@ -662,7 +662,7 @@ class Graph {
    *
    * @return {(Object|T)} The edge attribute dictionary.
    * @template T
-   * 
+   *
    * @export
    */
   get_edge_data(u, v, opt_default) {
@@ -726,7 +726,7 @@ class Graph {
    *      as a weight.  If null or not defined, then each edge has weight 1.
    *      The degree is the sum of the edge weights adjacent to the node.
    *
-   * @return {!(number|jsnx.contrib.Map)} A dictionary with nodes as keys and 
+   * @return {!(number|jsnx.contrib.Map)} A dictionary with nodes as keys and
    * degree as values or a number if a single node is specified.
    * @export
    */

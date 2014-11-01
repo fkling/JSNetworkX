@@ -3,9 +3,16 @@
 var Graph = require('./graph');
 var DiGraph = require('./digraph');
 
-/*jshint ignore:start*/
-module.exports = {
-  Graph,
-  DiGraph
+var assign = require('../_internals/assign');
+var functions = require('./functions');
+
+module.exports = exports = {
+  Graph: Graph,
+  DiGraph: DiGraph,
+  functions: functions,
 };
-/*jshint ignore:end*/
+
+assign(
+  exports,
+  functions
+);
