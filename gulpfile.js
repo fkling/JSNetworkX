@@ -1,15 +1,16 @@
 "use strict";
 
+var argv = require('yargs').argv;
 var browserify = require('browserify');
 var envify = require('envify/custom');
-var gulp = require('gulp');
 var esnext = require('esnext');
+var filter = require('gulp-filter');
+var gulp = require('gulp');
 var map = require('vinyl-map');
 var mocha = require('gulp-mocha');
 var regenerator = require('regenerator');
 var source = require('vinyl-source-stream');
 var watch = require('gulp-watch');
-var fs = require('fs');
 
 function transform(bundler, env) {
   return bundler
@@ -21,7 +22,6 @@ var paths = {
   all: './jsnx/index.js',
   jsnx: 'jsnetworkx.js',
   jsnx_dev: 'jsnetworkx-dev.js',
-  regenerator_runtime: './node_modules/regenerator-runtime.js'
 };
 
 gulp.task('build', function() {
@@ -44,18 +44,23 @@ gulp.task('build-dev', function() {
 });
 
 function test() {
+  var pattern = argv.p;
+
   regenerator.runtime();
   global.utils = require('./node/_internals');
   global.assert = require('./mocha/assert');
   return gulp.src('node/**/__tests__/*-test.js')
+    .pipe(filter(function(file) {
+      return !pattern || new RegExp(pattern).test(file.path);
+    }))
     .pipe(mocha({
       reporter: 'spec',
       ui: 'exports',
       globals: ['utils', 'assert', 'regeneratorRuntime']
     }))
     .on('error', function(err) {
-      if (!/tests? failed/.test(err.stack)) {
-        console.log(err.stack);
+      if (!/tests? failed/.test(err.message)) {
+        console.log(err.message);
       }
     });
 }

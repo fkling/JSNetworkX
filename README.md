@@ -62,35 +62,19 @@ make it easy to use other visualization libraries with JSNetworkX.
 
 - Phase 1: Convert existing stuff
   - [x] Convert helper functions and base (simple) graphs
-  - [] Convert generators
-  - [] Convert algorithms
-  - [] Convert multi graphs
-  - [] Publish version 0.3.0
+  - [ ] Convert generators
+  - [ ] Convert algorithms
+  - [ ] Convert multi graphs
+  - [ ] Publish version 0.3.0
 
 - Phase 2: Become feature complete and other improvements
   - Feature completeness
-    - [] Implement missing algorithms
-    - [] Implement missing generators (are there any?)
-    - [] Implement missing utility functions
+    - [ ] Implement missing algorithms
+    - [ ] Implement missing generators (are there any?)
+    - [ ] Implement missing utility functions
   - Improvements / new features
-    - [] Evaluate how React could simplify the rendering process
-    - [] Async algorithm implementation (e.g. with web workers)
-
-### Open question to the community
-
-Restructuring the code base is also a good opportunity to rethink certain design
-decisions. Here are some questions I would love to get some input on. Feel free
-to create an issue for them if it doesn't exist already:
-
-- Method naming convention: Should we stick with underscores (to be compatible
-with Python) or use the more common camelCase notation?
-
-- Promises and algorithms: We cannot do CPU intensive computations without
-asynchronous processing (e.g. web workers). Should we unify the API and always
-return promises from all algorithm functions, or only do this in an extra build
-which supports async processing?
-
-- More will surely follow...
+    - [ ] Evaluate how React could simplify the rendering process
+    - [ ] Async algorithm implementation (e.g. with web workers)
 
 ## How to contribute
 
@@ -102,7 +86,7 @@ You can contribute by:
 Porting from Python will become easier the more existing was converted. If you
 plan on converting/porting a specific part, please create an issue beforehand.
 
-## Build JSNetworkX
+### Build JSNetworkX
 
 First install all dependencies via
 
@@ -128,7 +112,7 @@ Because the code also has to be transformed to be able to run in Node.js,
 simply transforms all modules and saves them inside the `node/` directory. These
 modules are also used to tun the unit tests.
 
-## Create and run tests
+### Create and run tests
 
 Tests are stored in the respective `__tests__` directories and have to follow
 the naming convention `<testname>-test.js`. The tests can be run with
@@ -136,6 +120,12 @@ the naming convention `<testname>-test.js`. The tests can be run with
     gulp test
     # or
     npm test
+
+This will run all tests by default. To consider only those files whose path
+matches a specific string, pass the `-p` option:
+
+    # Runs all digraph tests but no graph tests
+    gulp test -p digraph
 
 The tests in Node, so you first have to build the Node version with
 
