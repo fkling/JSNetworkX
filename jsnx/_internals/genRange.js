@@ -9,24 +9,23 @@
  *
  * @param {?number=} opt_start Number to start from
  * @param {?number=} opt_end Number to count to
- * @param {?number=} opt_step Stepsize
- *
+ * @param {?number=} opt_step Step size
  * @return {!Iterator}
  */
 function* genRange(opt_start, opt_end, opt_step) {
 
-  if(arguments.length === 0) {
+  if (opt_start == null) {
     return;
   }
-  else if(arguments.length === 1) {
+  else if (opt_end == null) {
     opt_end = opt_start;
     opt_start = 0;
     opt_step = 1;
   }
-  else if(arguments.length === 2) {
+  else if (opt_step == null) {
     opt_step = 1;
   }
-  else if(arguments.length === 3 && arguments[2] === 0) {
+  else if (opt_step === 0) {
     throw new RangeError("opt_step can't be 0");
   }
 

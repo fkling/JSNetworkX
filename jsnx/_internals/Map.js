@@ -14,7 +14,7 @@ var isArrayLike = require('./isArrayLike');
 var size = require('lodash-node/modern/collections/size');
 
 /**
- * @param {Iterable=} opt_data An object, array or iterator to 
+ * @param {Iterable=} opt_data An object, array or iterator to
  *  populate the map with. If 'data' is an array or iterable, each element is
  *  expected to be a 2-tuple. The first element will be the key and second the
  *  value.
@@ -147,7 +147,7 @@ class Map {
       yield [key, this._string_values[key]];
     }
     for (key in this._values) {
-      yield [this.keys_[key], this._values[key]];
+      yield [this._keys[key], this._values[key]];
     }
   }
 
@@ -216,7 +216,7 @@ class Map {
   /**
    * Executes the provided callback for each item in the map.
    *
-   * @param {function(*,*)} callback A function which gets the key as first 
+   * @param {function(*,*)} callback A function which gets the key as first
    *  argument and value as second argument.
    * @param {*=} opt_this Object/value to set this to inside the callback
    * @export
