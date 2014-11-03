@@ -5,5 +5,6 @@ module.exports = {
   Set: require('./Set'),
   isIterator: require('./isIterator'),
   itertools: require('./itertools'),
+  range: require('./range'),
   toArray: require('./toArray')
 };
