@@ -58,6 +58,7 @@ exports.TestDiGraph = _.extend({}, TestGraph, BaseDiGraphTester, {
     ]);
 
     this.K3.node = new Map([[0,{}], [1, {}], [2, {}]]);
+    this.P3.node = new Map([[0,{}], [1, {}], [2, {}]]);
   },
 
   test_data_input: function() {

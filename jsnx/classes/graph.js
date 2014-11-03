@@ -164,7 +164,7 @@ class Graph {
       throw new JSNetworkXError('The attr_dict argument must be an object.');
     }
 
-    if (!this.adj.has(n)) {
+    if (!this.node.has(n)) {
       this.adj.set(n, new Map());
       this.node.set(n, opt_attr_dict);
     }
@@ -207,7 +207,7 @@ class Graph {
         }
         return; // continue next iteration
       }
-      var newnode = !this.adj.has(node);
+      var newnode = !this.node.has(node);
       if (newnode) {
         this.adj.set(node, new Map());
         this.node.set(node, clone(opt_attr));
@@ -278,7 +278,7 @@ class Graph {
     if (opt_data) {
       return toIterator(this.node);
     }
-    return this.adj.keys();
+    return this.node.keys();
   }
 
 
@@ -304,7 +304,7 @@ class Graph {
    * @export
    */
   number_of_nodes() {
-    return this.adj.size;
+    return this.node.size;
   }
 
 
@@ -315,7 +315,7 @@ class Graph {
    * @export
    */
   order() {
-    return this.adj.size;
+    return this.node.size;
   }
 
 
@@ -328,7 +328,7 @@ class Graph {
    * @export
    */
   has_node(n) {
-    return this.adj.has(n);
+    return this.node.has(n);
   }
 
 
@@ -359,11 +359,11 @@ class Graph {
     }
 
     // add nodes
-    if (!this.adj.has(u)) {
+    if (!this.node.has(u)) {
       this.adj.set(u, new Map());
       this.node.set(u, {});
     }
-    if (!this.adj.has(v)) {
+    if (!this.node.has(v)) {
       this.adj.set(v, new Map());
       this.node.set(v, {});
     }
@@ -381,6 +381,9 @@ class Graph {
    *
    * Adding the same edge twice has no effect but any edge data
    * will be updated when each duplicate edge is added.
+   *
+   * Edge attributes specified in edges as a tuple take precedence
+   * over attributes specified generally.
    *
    * @param {Iterable} ebunch container of edges
    *      Each edge given in the container will be added to the
@@ -411,11 +414,11 @@ class Graph {
         );
       }
 
-      if (!this.adj.has(u)) {
+      if (!this.node.has(u)) {
         this.adj.set(u, new Map());
         this.node.set(u, {});
       }
-      if (!this.adj.has(v)) {
+      if (!this.node.has(v)) {
         this.adj.set(v, new Map());
         this.node.set(v, {});
       }
@@ -575,6 +578,7 @@ class Graph {
    * in the order (node, neighbor, data).
    *
    * Note: Nodes in nbunch that are not in the graph will be (quietly) ignored.
+   * For directed graphs this returns the out-edges.
    *
    * @param {?jsnx.NodeContainer=} opt_nbunch A container of nodes.
    *      The container will be iterated through once.
@@ -598,6 +602,7 @@ class Graph {
    * in the order (node, neighbor, data).
    *
    * Note: Nodes in nbunch that are not in the graph will be (quietly) ignored.
+   * For directed graphs this returns the out-edges.
    *
    * @param {?(jsnx.NodeContainer|boolean)=} opt_nbunch A container of nodes.
    *      The container will be iterated through once.
@@ -937,15 +942,20 @@ class Graph {
    */
   subgraph(nbunch) {
     var bunch = this.nbunch_iter(nbunch);
+    var n;
 
     // create new graph and copy subgraph into it
     var H = new this.constructor();
+    // copy node and attribute dictionaries
+    for (n of bunch) {
+      H.node.set(n, this.node.get(n));
+    }
     // namespace shortcuts for speed
     var H_adj = H.adj;
     var this_adj = this.adj;
 
     // add nodes and edges (undirected method)
-    for (var n of bunch) {
+    for (n of H) {
       var Hnbrs = new Map();
       H_adj.set(n, Hnbrs);
 
@@ -958,11 +968,6 @@ class Graph {
           H_adj.get(nbr).set(n, data);
         }
       }
-    }
-
-    // copy node and attribute dictionaries
-    for (n of H) {
-      H.node.set(n, this.node.get(n));
     }
     H.graph = this.graph;
 
@@ -1039,7 +1044,7 @@ class Graph {
    * @param {string=} opt_weight The edge attribute that holds the numerical
    *      value used as a weight.  If not defined, then each edge has weight 1.
    *
-   * @return {number} The number of edges of sum of edge weights in the graph.
+   * @return {number} The number of edges or sum of edge weights in the graph.
    * @export
    */
   size(opt_weight) {
@@ -1242,7 +1247,7 @@ Graph.prototype.adj = null;
 Graph.prototype.edge = null;
 
 Graph.prototype[iteratorSymbol] = function() {
-  return this.adj.keys();
+  return this.node.keys();
 };
 
 module.exports = Graph;

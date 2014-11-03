@@ -639,8 +639,6 @@ class DiGraph extends Graph {
       nodes_nbrs = this.pred;
     }
     else {
-      // reusable tuple
-      var t = [];
       nodes_nbrs = mapIterator(
         this.nbunch_iter(opt_nbunch),
         n => tuple2(n, this.pred.get(n))
@@ -742,7 +740,6 @@ class DiGraph extends Graph {
           var succ = nd[0][1];
           var pred = nd[1][1];
           var sum = 0;
-          var nbr;
 
           function sumData(data) {
             var weight = data[opt_weight];
@@ -1158,14 +1155,19 @@ class DiGraph extends Graph {
   */
   subgraph(nbunch) {
     var bunch = this.nbunch_iter(nbunch);
+    var n;
     // create new graph and copy subgraph into it
     var H = new this.constructor();
+    // copy node and attribute dictionaries
+    for (n of bunch) {
+      H.node.set(n, this.node.get(n));
+    }
     // namespace shortcuts for speed
     var H_succ = H.succ;
     var H_pred = H.pred;
 
     // add nodes
-    for (var n of bunch) {
+    for (n of H) {
       H_succ.set(n, new Map());
       H_pred.set(n, new Map());
     }
@@ -1180,10 +1182,6 @@ class DiGraph extends Graph {
           H_pred.get(v).set(u, datadict);
         }
       }
-    }
-
-    for (n of H) {
-      H.node.set(n, this.node.get(n));
     }
     H.graph = this.graph;
     return H;
