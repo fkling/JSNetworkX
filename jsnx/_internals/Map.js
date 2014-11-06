@@ -11,6 +11,7 @@ var isIterator = require('./isIterator');
 var isFunction = require('lodash-node/modern/objects/isFunction');
 var isObject = require('lodash-node/modern/objects/isObject');
 var isArrayLike = require('./isArrayLike');
+var iteratorSymbol = require('./iteratorSymbol');
 var size = require('lodash-node/modern/collections/size');
 
 /**
@@ -236,6 +237,6 @@ class Map {
 *
 * @return {Iterator}
 */
-Map.prototype['@@iterator'] = Map.prototype.entries;
+Map.prototype[iteratorSymbol] = Map.prototype.entries;
 
 module.exports = Map;

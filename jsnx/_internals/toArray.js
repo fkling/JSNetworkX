@@ -6,6 +6,7 @@ var isIterable = require('./isIterable');
 var iteratorSymbol = require('./iteratorSymbol');
 var iteratorToArray = require('./itertools/toArray');
 var isPlainObject = require('./isPlainObject');
+var sprintf = require('./sprintf');
 var _toArray = require('lodash-node/modern/collections/toArray');
 
 /**
@@ -38,9 +39,11 @@ function toArray(sequence) {
   }
   else {
     throw new TypeError(
-      'Cannot convert value of type "%s" (constructor "%s") to array',
-      typeof sequence,
-      sequence.constructor.nam
+      sprintf(
+        'Cannot convert value of type "%s" (constructor "%s") to array',
+        typeof sequence,
+        sequence.constructor.name
+      )
     );
   }
 }

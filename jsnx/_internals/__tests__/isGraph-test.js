@@ -2,3 +2,4 @@
 /*global assert */
 
 // TODO
+module.exports = {};

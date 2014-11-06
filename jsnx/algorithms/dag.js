@@ -18,7 +18,7 @@ var setDifference = require('../_internals/sets/difference');
  * @return {boolean} true of G is a DAG, false otherwise
  * @export
  */
-function is_directed_acyclic_graph(G) {
+async function is_directed_acyclic_graph(G) {
   try {
     topological_sort(G);
     return true;
@@ -47,7 +47,7 @@ function is_directed_acyclic_graph(G) {
  *
  * @export
  */
-function topological_sort(G, opt_nbunch) {
+async function topological_sort(G, opt_nbunch) {
   if (!G.is_directed()) {
     throw new JSNetworkXError(
       'Topological sort not defined on undirected graphs.'
@@ -117,7 +117,7 @@ function topological_sort(G, opt_nbunch) {
  *
  * @export
  */
-function topological_sort_recursive(G, opt_nbunch) {
+async function topological_sort_recursive(G, opt_nbunch) {
   if (!G.is_directed()) {
     throw new JSNetworkXError(
       'Topological sort not defined on undirected graphs.'
@@ -177,7 +177,7 @@ function topological_sort_recursive(G, opt_nbunch) {
  * @return {boolean} true if the graph is aperiodic false otherwise
  * @export
  */
-function is_aperiodic(G) {
+async function is_aperiodic(G) {
   if (!G.is_directed()) {
     throw new JSNetworkXError(
       'is_aperiodic not defined for undirected graphs.'
@@ -222,8 +222,8 @@ function is_aperiodic(G) {
 }
 
 module.exports = {
-  is_directed_acyclic_graph: is_directed_acyclic_graph,
-  topological_sort: topological_sort,
-  topological_sort_recursive: topological_sort_recursive,
-  is_aperiodic: is_aperiodic
+  is_directed_acyclic_graph,
+  topological_sort,
+  topological_sort_recursive,
+  is_aperiodic,
 };

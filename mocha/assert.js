@@ -1,6 +1,7 @@
 "use strict";
 /*jshint node:true*/
 var chai = require('chai');
+chai.use(require('chai-as-promised'));
 chai.use(require('chai-members-deep'));
 
 /*
@@ -14,7 +15,7 @@ assert.almostEqual = function(actual, expected, message) {
 };
 */
 
-chai.use(function(_chai, utils) {
+chai.use(function(_chai) {
   var Assertion = _chai.Assertion;
 
   Assertion.addMethod('oneOf', function(list) {
