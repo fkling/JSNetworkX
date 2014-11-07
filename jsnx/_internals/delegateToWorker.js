@@ -1,8 +1,10 @@
-/*globals Worker*/
 "use strict";
 
 var Graph = require('../classes/graph');
 var DiGraph = require('../classes/digraph');
+/*jshint ignore:start*/
+var Promise = global.Promise || require('promise');
+/*jshint ignore:end*/
 
 var isGraph = require('./isGraph');
 var convert = require('../convert');
@@ -27,15 +29,21 @@ if (typeof global.Worker === 'function') {
 
     if (!isGraphSupported) {
       console.info(
-        `Only Graphs and DiGraphs can be sent to the worker. We will run
-         ${method} synchronous instead.`
+        `Only Graphs and DiGraphs can be sent to the worker. We will run ` +
+        `${method} synchronously instead.`
       );
       var jsnx = require('../');
-      return Promise.resolve(jsnx[method].apply(null, args));
+      return new Promise(function(resolve, reject) {
+        try {
+          resolve(jsnx[method].apply(null, args));
+        } catch(ex) {
+          reject(ex);
+        }
+      });
     }
 
     return new Promise(function(resolve, reject) {
-      var worker = new Worker('{{BUNDLE_NAME}}');
+      var worker = new global.Worker('{{BUNDLE_NAME}}');
       worker.addEventListener("message", function (oEvent) {
         resolve(oEvent.data);
       }, false);
@@ -46,17 +54,27 @@ if (typeof global.Worker === 'function') {
 }
 else {
   delegateImplementation = function(method, args) {
+    // @ifndef NODE
+    // We don't want to show this in Node.
     console.info(
-      `Workers are not supported in this environment, so "${method}" will be
-      performed synchronously instead. This might block the environment.`
+      `Workers are not supported in this environment, so "${method}" will ` +
+      `be performed synchronously instead. This might block the environment.`
     );
+    // @endif
     var jsnx = require('../');
-    return Promise.resolve(jsnx[method].apply(null, args));
+    return new Promise(function(resolve, reject) {
+      try {
+        resolve(jsnx[method].apply(null, args));
+      } catch(ex) {
+        reject(ex);
+      }
+    });
   };
 }
 
-
 /**
+ * DON'T CALL THIS FUNCTION EXPLICITLY. It's inserted by a transform.
+ *
  * Tries to create a worker and pass the arguments to it. Copying large graphs
  * is not very fast, but still faster than running most algorithms
  * synchronously.
