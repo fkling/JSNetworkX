@@ -7,15 +7,16 @@ var clean = require('gulp-clean');
 var concat = require('gulp-concat');
 var envify = require('envify/custom');
 var esnext = require('esnext');
-var filter = require('gulp-filter');
 var gulp = require('gulp');
 var inlineSMC = require('inline-source-map-comment');
 var vinylMap = require('vinyl-map');
 var vinylTransform = require('vinyl-transform');
 var mocha = require('gulp-mocha');
+var preprocess = require('gulp-preprocess');
 var regenerator = require('regenerator');
-var through = require('through');
 var replace = require('gulp-replace');
+var sourceMapSupport = require('source-map-support');
+var through = require('through');
 var watch = require('gulp-watch');
 
 var paths = {
@@ -49,16 +50,18 @@ function jstransform(file, src, opts) {
   return code;
 }
 
-function transformNode(src) {
-  return src.pipe(vinylMap(function(src, filename) {
-    try {
-      return jstransform(filename, src, {prod: true});
-    } catch(e) {
-      console.error(filename);
-      throw e;
-    }
-  }))
-  .pipe(gulp.dest(paths.node));
+function transformNode(src, prod) {
+  return src
+    .pipe(preprocess({context: {NODE: true}}))
+    .pipe(vinylMap(function(src, filename) {
+      try {
+        return jstransform(filename, src, {prod: prod});
+      } catch(e) {
+        console.error(filename);
+        throw e;
+      }
+    }))
+    .pipe(gulp.dest(paths.node));
 }
 
 function transformBrowser(prod) {
@@ -89,8 +92,12 @@ function transformBrowser(prod) {
     }));
 }
 
-gulp.task('build-node', ['clean-node'], function() {
-  return transformNode(gulp.src('jsnx/**/*.js'));
+gulp.task('build-node-dev', ['clean-node'], function() {
+  return transformNode(gulp.src('jsnx/**/*.js'), false);
+});
+
+gulp.task('build-node-prod', ['clean-node'], function() {
+  return transformNode(gulp.src('jsnx/**/*.js'), true);
 });
 
 gulp.task('clean-node', function() {
@@ -101,13 +108,6 @@ gulp.task('clean-node', function() {
 gulp.task('clean-browser', function() {
   return gulp.src([paths.jsnx, paths.jsnx_dev], {read: false})
     .pipe(clean());
-});
-
-
-gulp.task('watch-node', ['build-node'], function() {
-  return watch('jsnx/**/*.js', function(files) {
-      transformNode(files);
-  });
 });
 
 gulp.task('build-dev', function() {
@@ -124,20 +124,26 @@ gulp.task('build-prod', function() {
     .pipe(gulp.dest('./'));
 });
 
+gulp.task('watch-node', ['build-node-dev'], function() {
+  return watch('jsnx/**/*.js', function(files) {
+      transformNode(files, false);
+  });
+});
+
 gulp.task('test-node', function () {
   var pattern = argv.p;
 
+  sourceMapSupport.install();
   regenerator.runtime();
   global.utils = require('./node_src/_internals');
   global.assert = require('./mocha/assert');
+  global.sinon = require('sinon');
   return gulp.src('node_src/**/__tests__/*-test.js')
-    .pipe(filter(function(file) {
-      return !pattern || new RegExp(pattern).test(file.path);
-    }))
     .pipe(mocha({
       reporter: 'spec',
       ui: 'exports',
-      globals: ['utils', 'assert']
+      globals: ['utils', 'assert', 'sinon'],
+      grep: pattern,
     }))
     .on('error', function(err) {
       if (!/tests? failed/.test(err.message)) {
@@ -147,5 +153,5 @@ gulp.task('test-node', function () {
 });
 
 gulp.task('clean', ['clean-node', 'clean-browser']);
-gulp.task('build', ['build-node', 'build-prod']);
+gulp.task('build', ['build-node-prod', 'build-prod']);
 gulp.task('test', ['test-node']);

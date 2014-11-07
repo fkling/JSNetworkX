@@ -1,11 +1,11 @@
 {
   "name": "jsnetworkx",
   "version": "0.3.0-wip",
-  "description": "A port of the Python graph library NetworkX. For more info, visit http://networkx.github.com/.",
+  "description": "A port of the Python graph library NetworkX to JavaScript",
   "keywords": [
+    "jsnetworkx",
     "graph",
-    "science",
-    "jsnetworkx"
+    "science"
   ],
   "homepage": "http://felix-kling.de/JSNetworkX/",
   "bugs": "https://github.com/fkling/JSNetworkX/issues",
@@ -17,6 +17,7 @@
   "main": "node_src/index.js",
   "dependencies": {
     "lodash-node": "^2.4.1",
+    "promise": "^6.0.1",
     "regenerator": "^0.6.8",
     "tiny-sprintf": "^0.3.0"
   },
@@ -30,13 +31,15 @@
     "gulp": "3.7.0",
     "gulp-clean": "^0.3.1",
     "gulp-concat": "^2.4.1",
-    "gulp-filter": "^1.0.2",
     "gulp-mocha": "^1.0.0",
+    "gulp-preprocess": "^1.1.1",
     "gulp-replace": "^0.5.0",
     "gulp-watch": "^1.0.0",
     "inline-source-map-comment": "^1.0.0",
     "mocha": "^2.0.0",
     "recast": "^0.9.1",
+    "sinon": "^1.11.1",
+    "source-map-support": "^0.2.8",
     "through": "^2.3.6",
     "uglifyify": "^2.6.0",
     "vinyl-map": "^1.0.1",
