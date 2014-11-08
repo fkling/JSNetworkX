@@ -8,6 +8,7 @@ var classes = require('./classes');
 var convert = require('./convert');
 var exceptions = require('./exceptions');
 var generators = require('./generators');
+var relabel = require('./relabel');
 
 module.exports = exports = {
   Map: require('./_internals/Map'),
@@ -17,6 +18,7 @@ module.exports = exports = {
   convert,
   exceptions,
   generators,
+  relabel,
 };
 
 assign(
@@ -25,7 +27,8 @@ assign(
   classes,
   convert,
   exceptions,
-  generators
+  generators,
+  relabel
 );
 
 if (process.env.ENV === 'browser') {

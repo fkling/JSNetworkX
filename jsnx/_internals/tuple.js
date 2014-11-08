@@ -43,15 +43,26 @@ function tuple4(a, b, c, d) {
  * @return {Array}
  */
 function tuple2c(x, y, container) {
+  container.length = 2;
   container[0] = x;
   container[1] = y;
   return container;
 }
 
 function tuple3c(x, y, z, container) {
+  container.length = 3;
   container[0] = x;
   container[1] = y;
   container[2] = z;
+  return container;
+}
+
+function tuple4c(a, b, c, d, container) {
+  container.length = 4;
+  container[0] = a;
+  container[1] = b;
+  container[2] = c;
+  container[3] = d;
   return container;
 }
 
@@ -76,13 +87,12 @@ function createTupleFactory(count) {
   }
 }
 
-/*jshint ignore:start*/
 module.exports = {
   tuple2,
   tuple2c,
   tuple3,
   tuple3c,
   tuple4,
+  tuple4c,
   createTupleFactory
 };
-/*jshint ignore:end*/
