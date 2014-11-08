@@ -139,7 +139,7 @@ gulp.task('clean-browser', function(cb) {
 
 gulp.task('watch-node', ['build-node-dev'], function() {
   return watch('jsnx/**/*.js', function(files) {
-      transformNode(files, false);
+    return transformNode(files, false);
   });
 });
 
