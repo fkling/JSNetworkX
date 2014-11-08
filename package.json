@@ -47,6 +47,6 @@
     "yargs": "^1.3.2"
   },
   "scripts": {
-    "test": "gulp build-node && gulp test-node"
+    "test": "gulp build-node-dev && gulp test-node"
   }
 }

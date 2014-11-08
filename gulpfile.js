@@ -23,7 +23,7 @@ var paths = {
   root: './jsnx/index.js',
   jsnx: './jsnetworkx.js',
   jsnx_dev: './jsnetworkx-dev.js',
-  node: './node_src',
+  node: './node',
 };
 
 function jstransform(file, src, opts) {
@@ -100,16 +100,6 @@ gulp.task('build-node-prod', ['clean-node'], function() {
   return transformNode(gulp.src('jsnx/**/*.js'), true);
 });
 
-gulp.task('clean-node', function() {
-  return gulp.src(paths.node, {read: false})
-    .pipe(clean());
-});
-
-gulp.task('clean-browser', function() {
-  return gulp.src([paths.jsnx, paths.jsnx_dev], {read: false})
-    .pipe(clean());
-});
-
 gulp.task('build-dev', function() {
   return transformBrowser(false)
     .pipe(concat(paths.jsnx_dev))
@@ -124,6 +114,16 @@ gulp.task('build-prod', function() {
     .pipe(gulp.dest('./'));
 });
 
+gulp.task('clean-node', function() {
+  return gulp.src(paths.node, {read: false})
+    .pipe(clean());
+});
+
+gulp.task('clean-browser', function() {
+  return gulp.src([paths.jsnx, paths.jsnx_dev], {read: false})
+    .pipe(clean());
+});
+
 gulp.task('watch-node', ['build-node-dev'], function() {
   return watch('jsnx/**/*.js', function(files) {
       transformNode(files, false);
@@ -135,10 +135,10 @@ gulp.task('test-node', function () {
 
   sourceMapSupport.install();
   regenerator.runtime();
-  global.utils = require('./node_src/_internals');
+  global.utils = require(paths.node + '/_internals');
   global.assert = require('./mocha/assert');
   global.sinon = require('sinon');
-  return gulp.src('node_src/**/__tests__/*-test.js')
+  return gulp.src(paths.node + '/**/__tests__/*-test.js')
     .pipe(mocha({
       reporter: 'spec',
       ui: 'exports',
