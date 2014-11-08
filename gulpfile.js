@@ -3,13 +3,13 @@
 var argv = require('yargs').argv;
 var asyncTransform = require('./transforms/async');
 var browserify = require('browserify');
-var clean = require('gulp-clean');
+var del = require('del');
 var concat = require('gulp-concat');
 var envify = require('envify/custom');
 var esnext = require('esnext');
 var gulp = require('gulp');
 var inlineSMC = require('inline-source-map-comment');
-var vinylMap = require('vinyl-map');
+var mapStream = require('map-stream');
 var vinylTransform = require('vinyl-transform');
 var mocha = require('gulp-mocha');
 var preprocess = require('gulp-preprocess');
@@ -53,6 +53,20 @@ function jstransform(file, src, opts) {
 function transformNode(src, prod) {
   return src
     .pipe(preprocess({context: {NODE: true}}))
+    .pipe(mapStream(function (file, cb) {
+      try {
+        var src = jstransform(
+          file.path,
+          file.contents.toString(),
+          {prod: prod}
+        );
+        file.contents = new Buffer(src);
+        cb(null, file);
+      } catch(ex) {
+        cb(ex);
+      }
+    }))
+    /*
     .pipe(vinylMap(function(src, filename) {
       try {
         return jstransform(filename, src, {prod: prod});
@@ -61,6 +75,7 @@ function transformNode(src, prod) {
         throw e;
       }
     }))
+    */
     .pipe(gulp.dest(paths.node));
 }
 
@@ -93,7 +108,7 @@ function transformBrowser(prod) {
 }
 
 gulp.task('build-node-dev', ['clean-node'], function() {
-  return transformNode(gulp.src('jsnx/**/*.js'), false);
+   return transformNode(gulp.src('jsnx/**/*.js'), false);
 });
 
 gulp.task('build-node-prod', ['clean-node'], function() {
@@ -114,14 +129,12 @@ gulp.task('build-prod', function() {
     .pipe(gulp.dest('./'));
 });
 
-gulp.task('clean-node', function() {
-  return gulp.src(paths.node, {read: false})
-    .pipe(clean());
+gulp.task('clean-node', function(cb) {
+  del(paths.node, cb);
 });
 
-gulp.task('clean-browser', function() {
-  return gulp.src([paths.jsnx, paths.jsnx_dev], {read: false})
-    .pipe(clean());
+gulp.task('clean-browser', function(cb) {
+  del([paths.jsnx, paths.jsnx_dev], cb);
 });
 
 gulp.task('watch-node', ['build-node-dev'], function() {
@@ -144,12 +157,7 @@ gulp.task('test-node', function () {
       ui: 'exports',
       globals: ['utils', 'assert', 'sinon'],
       grep: pattern,
-    }))
-    .on('error', function(err) {
-      if (!/tests? failed/.test(err.message)) {
-        console.log(err.message);
-      }
-    });
+    }));
 });
 
 gulp.task('clean', ['clean-node', 'clean-browser']);
