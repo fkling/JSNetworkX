@@ -9,8 +9,6 @@ menu:
   - name: Development
   - name: API progress
     url: api_progress.html
-  - name: Customize
-    url: download_custom.html
 exclude:
   - test
   - utils
