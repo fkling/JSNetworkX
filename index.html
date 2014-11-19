@@ -31,6 +31,26 @@ browser.
 </div>
 <div class="alert alert-block">
   <h4>Important!</h4>
+  JSNetworkX currently undergoes a major rewrite (v0.3). This will (hopefully)
+  make it easier for others to contribute and to maintain the library. Some of
+  the upcoming features / changes will be:
+  <ul>
+    <li>Node.js first: JSNetworkX will follow CommonJS module syntax and thus
+      make it very easy to be used with Node.js.</li>
+    <li>Web worker support in browsers: Browsers don't allow scripts to run for
+      a long time, however some graph algorithms take some time. To solve this,
+      JSNetworkX will allow to use <a href="http://www.html5rocks.com/en/tutorials/workers/basics/">web workers</a>
+      to do the heavy computations.</li>
+    <li>Changed API conventions: We are changing from <code>this_naming_convention</code> to
+      <code>thisNamingConvention</code>, which is more popular in the JS community.</li>
+    <li>API documentation: We'll finally have automatic code API documentation.</li>
+  </ul>
+  <p>To find out more about the progress, have a look at the <a href="https://github.com/fkling/JSNetworkX/milestones/v0.3:%20Conversion%20to%20ES6%20and%20CSJ%20modules,%20new%20API">issue tracker</a>
+  and the <a href="https://github.com/fkling/JSNetworkX/tree/es6_WIP">development branch</a>. The plan is to publish
+  prerelease versions to npm as soon as the API documentation process works and the methods are renamed.
+</div>
+<div class="alert alert-block">
+  <h4>Note</h4>
   JSNetworkX is still
   in an early stage of development and only part of NetworkX has been fully ported.
   The <a href="api_progress.html">API progress page</a> provides a list of methods and modules which are 
