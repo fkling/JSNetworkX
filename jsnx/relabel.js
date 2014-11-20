@@ -15,7 +15,7 @@ var iteratorToArray = require('./_internals/itertools/toArray');
 var mapIterator = require('./_internals/itertools/mapIterator');
 var someIterator = require('./_internals/itertools/someIterator');
 var sprintf = require('./_internals/sprintf');
-var topological_sort = require('./algorithms/dag').topological_sort;
+var topologicalSort = require('./algorithms/dag').topologicalSort;
 var {tuple2, tuple3c, tuple4c} = require('./_internals/tuple');
 
 /**
@@ -41,7 +41,7 @@ var {tuple2, tuple3c, tuple4c} = require('./_internals/tuple');
  * @return {Graph}
  * @export
  */
-function relabel_nodes(G, mapping, opt_copy=true) {
+function relabelNodes(G, mapping, optCopy=true) {
   // you can pass a function f(old_label)->new_label
   // but we'll just make a dictionary here regardless
   var m = mapping;
@@ -51,10 +51,10 @@ function relabel_nodes(G, mapping, opt_copy=true) {
     }
   }
   else {
-    m = new Map(mapIterator(G.nodes_iter(), n => tuple2(n, mapping(n))));
+    m = new Map(mapIterator(G.nodesIter(), n => tuple2(n, mapping(n))));
   }
 
-  return opt_copy ? relabel_copy(G, m) : relabel_inplace(G, m);
+  return optCopy ? relabelCopy(G, m) : relabelInplace(G, m);
 }
 
 
@@ -67,17 +67,17 @@ function relabel_nodes(G, mapping, opt_copy=true) {
  * @return .Graph}
  * @private
  */
-function relabel_inplace(G, mapping) {
-  var old_labels = new Set(mapping.keys());
+function relabelInplace(G, mapping) {
+  var oldLabels = new Set(mapping.keys());
   var nodes;
 
-  if (someIterator(mapping.values(), v => old_labels.has(v))) {
+  if (someIterator(mapping.values(), v => oldLabels.has(v))) {
     // labels sets overlap
     // can we topological sort and still do the relabeling?
     var D = new DiGraph(mapping);
-    D.remove_edges_from(D.selfloop_edges());
+    D.removeEdgesFrom(D.selfloopEdges());
     try {
-      nodes = topological_sort(D);
+      nodes = topologicalSort(D);
     }
     catch(e) {
       if (e instanceof JSNetworkXUnfeasible) {
@@ -92,11 +92,11 @@ function relabel_inplace(G, mapping) {
   }
   else {
     // non-overlapping label sets
-    nodes = old_labels.values();
+    nodes = oldLabels.values();
   }
-  var multigraph = G.is_multigraph();
-  var directed = G.is_directed();
-  var new_edges;
+  var multigraph = G.isMultigraph();
+  var directed = G.isDirected();
+  var newEdges;
 
   forEach(nodes, function(old) {
     var new_;
@@ -107,34 +107,34 @@ function relabel_inplace(G, mapping) {
       return; // continue
     }
 
-    if (!G.has_node(old)) {
+    if (!G.hasNode(old)) {
       throw new JSNetworkXError(sprintf('Node %j is not in the graph.', old));
     }
-    G.add_node(new_, G.node.get(old));
+    G.addNode(new_, G.node.get(old));
     if (multigraph) {
-      new_edges = G.edges(old, true, true).map(
+      newEdges = G.edges(old, true, true).map(
           d => tuple4c(new_, d[1], d[2], d[3], d)
       );
 
       if (directed) {
-        new_edges = new_edges.concat(
-          G.in_edges(old, true, true).map(
+        newEdges = newEdges.concat(
+          G.inEdges(old, true, true).map(
             d => tuple4c(d[0], new_, d[2], d[3], d)
           )
         );
       }
     }
     else {
-      new_edges = G.edges(old, true).map(d => tuple3c(new_, d[1], d[2], d));
+      newEdges = G.edges(old, true).map(d => tuple3c(new_, d[1], d[2], d));
 
       if (directed) {
-        new_edges = new_edges.concat(
-          G.in_edges(old, true).map(d => tuple3c(d[0], new_, d[2], d))
+        newEdges = newEdges.concat(
+          G.inEdges(old, true).map(d => tuple3c(d[0], new_, d[2], d))
         );
       }
     }
-    G.remove_node(old);
-    G.add_edges_from(new_edges);
+    G.removeNode(old);
+    G.addEdgesFrom(newEdges);
   });
   return G;
 }
@@ -148,12 +148,12 @@ function relabel_inplace(G, mapping) {
  * @return {Graph}
  * @private
  */
-function relabel_copy(G, mapping) {
+function relabelCopy(G, mapping) {
   var H = new G.constructor();
   H.name = '(' + G.name + ')';
-  if (G.is_multigraph()) {
-    H.add_edges_from(mapIterator(
-      G.edges_iter(null, true, true),
+  if (G.isMultigraph()) {
+    H.addEdgesFrom(mapIterator(
+      G.edgesIter(null, true, true),
       d => tuple4c(
         mapping.has(d[0]) ? mapping.get(d[0]) : d[0],
         mapping.has(d[1]) ? mapping.get(d[1]) : d[1],
@@ -164,8 +164,8 @@ function relabel_copy(G, mapping) {
     ));
   }
   else {
-    H.add_edges_from(mapIterator(
-      G.edges_iter(null, true),
+    H.addEdgesFrom(mapIterator(
+      G.edgesIter(null, true),
       d => tuple3c(
         mapping.has(d[0]) ? mapping.get(d[0]) : d[0],
         mapping.has(d[1]) ? mapping.get(d[1]) : d[1],
@@ -175,7 +175,7 @@ function relabel_copy(G, mapping) {
     ));
   }
   G.node.forEach((data, n) =>
-    H.add_node(mapping.has(n) ? mapping.get(n) : n, clone(data))
+    H.addNode(mapping.has(n) ? mapping.get(n) : n, clone(data))
   );
   assign(H.graph, clone(G.graph));
 
@@ -201,11 +201,11 @@ function relabel_copy(G, mapping) {
  * @return {jsnx.classes.Graph}
  * @export
  */
-function convert_node_labels_to_integers(
+function convertNodeLabelsToIntegers(
   G,
-  opt_first_label=0,
-  opt_ordering='default',
-  opt_discard_old_labels=true
+  optFirstLabel=0,
+  optOrdering='default',
+  optDiscardOldLabels=true
 ) {
   //   This function strips information attached to the nodes and/or
   //   edges of a graph, and returns a graph with appropriate integer
@@ -225,72 +225,72 @@ function convert_node_labels_to_integers(
   //   preserve the original labels in separate dicts (these are not
   //   returned but made an attribute of the new graph.
 
-  if (typeof opt_ordering === 'boolean') {
-    opt_discard_old_labels = opt_ordering;
-    opt_ordering = 'default';
+  if (typeof optOrdering === 'boolean') {
+    optDiscardOldLabels = optOrdering;
+    optOrdering = 'default';
   }
 
-  switch (typeof opt_first_label) {
+  switch (typeof optFirstLabel) {
     case 'string':
-      opt_ordering = opt_first_label;
-      opt_first_label = 0;
+      optOrdering = optFirstLabel;
+      optFirstLabel = 0;
       break;
     case 'boolean':
-      opt_discard_old_labels = opt_first_label;
-      opt_first_label = 0;
+      optDiscardOldLabels = optFirstLabel;
+      optFirstLabel = 0;
       break;
   }
 
   var mapping = new Map();
   var nodes;
-  var dv_pairs;
+  var dvPairs;
   var i;
   var j;
   var l;
 
-  switch (opt_ordering) {
+  switch (optOrdering) {
     case 'default':
       nodes = G.nodes();
-      for(i = 0, j = opt_first_label, l = nodes.length; i < l; i++, j++) {
+      for(i = 0, j = optFirstLabel, l = nodes.length; i < l; i++, j++) {
         mapping.set(nodes[i], j);
       }
       break;
     case 'sorted':
       nodes = G.nodes();
       nodes.sort();
-      for(i = 0, j = opt_first_label, l = nodes.length; i < l; i++, j++) {
+      for(i = 0, j = optFirstLabel, l = nodes.length; i < l; i++, j++) {
         mapping.set(nodes[i], j);
       }
       break;
     case 'increasing degree':
-      dv_pairs = iteratorToArray(G.degree_iter());
-      dv_pairs.sort((a, b) => a[1] - b[1]);
-      for(i = 0, j = opt_first_label, l = dv_pairs.length; i < l; i++, j++) {
-        mapping.set(dv_pairs[i][0], j);
+      dvPairs = iteratorToArray(G.degreeIter());
+      dvPairs.sort((a, b) => a[1] - b[1]);
+      for(i = 0, j = optFirstLabel, l = dvPairs.length; i < l; i++, j++) {
+        mapping.set(dvPairs[i][0], j);
       }
       break;
     case 'decreasing degree':
-      dv_pairs = iteratorToArray(G.degree_iter());
-      dv_pairs.sort((a, b) => b[1] - a[1]);
-      for(i = 0, j = opt_first_label, l = dv_pairs.length; i < l; i++, j++) {
-        mapping.set(dv_pairs[i][0], j);
+      dvPairs = iteratorToArray(G.degreeIter());
+      dvPairs.sort((a, b) => b[1] - a[1]);
+      for(i = 0, j = optFirstLabel, l = dvPairs.length; i < l; i++, j++) {
+        mapping.set(dvPairs[i][0], j);
       }
       break;
     default:
       throw new JSNetworkXError(
-        sprintf('Unkown node ordering: "%s"', opt_ordering)
+        sprintf('Unkown node ordering: "%s"', optOrdering)
       );
   }
 
-  var H = relabel_nodes(G, mapping);
+  var H = relabelNodes(G, mapping);
   H.name = '(' + G.name + ')_with_int_labels';
-  if (!opt_discard_old_labels) {
-    H.node_labels = mapping;
+  if (!optDiscardOldLabels) {
+    H.nodeLabels = mapping;
   }
   return H;
 }
 
 module.exports = {
-  relabel_nodes,
-  convert_node_labels_to_integers,
+  relabelNodes,
+  convertNodeLabelsToIntegers,
 };

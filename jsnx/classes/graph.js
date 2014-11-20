@@ -58,10 +58,10 @@ var zipSequence = require('../_internals/zipSequence');
  */
 class Graph {
 
-  constructor(opt_data, opt_attr) {
+  constructor(optData, optAttr) {
     // makes it possible to call jsnx.Graph without new
     if(!(this instanceof Graph)) {
-        return new Graph(opt_data, opt_attr);
+        return new Graph(optData, optAttr);
     }
 
     this.graph = {}; // dictionary for graph attributes
@@ -69,13 +69,13 @@ class Graph {
     this.adj = new Map(); // empty adjacency dict
 
     // attempt to load graph with data
-    if (opt_data != null) {
-      convert.to_networkx_graph(opt_data, this);
+    if (optData != null) {
+      convert.toNetworkxGraph(optData, this);
     }
 
     // load graph attributes (must be after convert)
-    if (opt_attr) {
-      assign(this.graph, opt_attr);
+    if (optAttr) {
+      assign(this.graph, optAttr);
     }
     this.edge = this.adj;
   }
@@ -111,10 +111,10 @@ class Graph {
 
 
   /* for convenience */
-  forEach(callback, opt_this_value) {
+  forEach(callback, optThisValue) {
     for (var n of this.adj.keys()) {
-      if (opt_this_value) {
-        callback.call(opt_this_value, n);
+      if (optThisValue) {
+        callback.call(optThisValue, n);
       }
       else {
         callback(n);
@@ -159,17 +159,17 @@ class Graph {
    *      Key/value pairs will update existing data associated with the node.
    * @export
    */
-  add_node(n, opt_attr_dict={}) {
-    if (!isPlainObject(opt_attr_dict)) {
+  addNode(n, optAttrDict={}) {
+    if (!isPlainObject(optAttrDict)) {
       throw new JSNetworkXError('The attr_dict argument must be an object.');
     }
 
     if (!this.node.has(n)) {
       this.adj.set(n, new Map());
-      this.node.set(n, opt_attr_dict);
+      this.node.set(n, optAttrDict);
     }
     else { // update attr even if node already exists
-      assign(this.node.get(n), opt_attr_dict);
+      assign(this.node.get(n), optAttrDict);
     }
   }
 
@@ -191,29 +191,29 @@ class Graph {
    *       take precedence over attributes specified generally.
    * @export
    */
-  add_nodes_from(nodes, opt_attr={}) {
+  addNodesFrom(nodes, optAttr={}) {
     forEach(nodes, function(node) {
       if (isArray(node) && node.length === 2 && isPlainObject(node[1])) {
         var [nn, ndict] = node;
 
         if (!this.adj.has(nn)) {
           this.adj.set(nn, new Map());
-          var newdict = clone(opt_attr);
+          var newdict = clone(optAttr);
           this.node.set(nn, assign(newdict, ndict));
         }
         else {
           var olddict = this.node.get(nn);
-          assign(olddict, opt_attr, ndict);
+          assign(olddict, optAttr, ndict);
         }
         return; // continue next iteration
       }
       var newnode = !this.node.has(node);
       if (newnode) {
         this.adj.set(node, new Map());
-        this.node.set(node, clone(opt_attr));
+        this.node.set(node, clone(optAttr));
       }
       else {
-        assign(this.node.get(node), opt_attr);
+        assign(this.node.get(node), optAttr);
       }
     }, this);
   }
@@ -228,7 +228,7 @@ class Graph {
    * @param {jsnx.Node} n A node in the graph.
    * @export
    */
-  remove_node(n) {
+  removeNode(n) {
     var adj = this.adj;
 
     if (this.node.delete(n)) {
@@ -251,7 +251,7 @@ class Graph {
    *
    * @export
    */
-  remove_nodes_from(nodes) {
+  removeNodesFrom(nodes) {
     var adj = this.adj;
     var node = this.node;
 
@@ -274,8 +274,8 @@ class Graph {
    *           two-tuples containing (node, node data, dictionary).
    * @export
    */
-  nodes_iter(opt_data) {
-    if (opt_data) {
+  nodesIter(optData) {
+    if (optData) {
       return toIterator(this.node);
     }
     return this.node.keys();
@@ -292,8 +292,8 @@ class Graph {
    *           (node, node data dictionary).
    * @export
    */
-  nodes(opt_data) {
-    return iteratorToArray(opt_data ? this.node.entries() : this.node.keys());
+  nodes(optData) {
+    return iteratorToArray(optData ? this.node.entries() : this.node.keys());
   }
 
 
@@ -303,7 +303,7 @@ class Graph {
    * @return {number} The number of nodes in the graph.
    * @export
    */
-  number_of_nodes() {
+  numberOfNodes() {
     return this.node.size;
   }
 
@@ -327,7 +327,7 @@ class Graph {
    * @return {boolean}
    * @export
    */
-  has_node(n) {
+  hasNode(n) {
     return this.node.has(n);
   }
 
@@ -351,10 +351,10 @@ class Graph {
    *
    * @export
    */
-  add_edge(u, v, opt_attr_dict) {
-    opt_attr_dict = opt_attr_dict || {};
+  addEdge(u, v, optAttrDict) {
+    optAttrDict = optAttrDict || {};
 
-    if (!isPlainObject(opt_attr_dict)) {
+    if (!isPlainObject(optAttrDict)) {
       throw new JSNetworkXError('The attr_dict argument must be an object.');
     }
 
@@ -370,7 +370,7 @@ class Graph {
 
     // add the edge
     var datadict = this.adj.get(u).get(v) || {};
-    assign(datadict, opt_attr_dict);
+    assign(datadict, optAttrDict);
     this.adj.get(u).set(v, datadict);
     this.adj.get(v).set(u, datadict);
   }
@@ -396,8 +396,8 @@ class Graph {
    *     update existing data associated with each edge.
    * @export
    */
-  add_edges_from(ebunch, opt_attr_dict={}) {
-    if (!isPlainObject(opt_attr_dict)) {
+  addEdgesFrom(ebunch, optAttrDict={}) {
+    if (!isPlainObject(optAttrDict)) {
       throw new JSNetworkXError('The attr_dict argument must be an object.');
     }
 
@@ -425,7 +425,7 @@ class Graph {
 
       // add the edge
       var datadict = this.adj.get(u).get(v) || {};
-      assign(datadict, opt_attr_dict, data);
+      assign(datadict, optAttrDict, data);
       this.adj.get(u).set(v, datadict);
       this.adj.get(v).set(u, datadict);
     }, this);
@@ -455,21 +455,21 @@ class Graph {
    *
    * @export
    */
-  add_weighted_edges_from(ebunch, opt_weight, opt_attr) {
-    opt_attr = opt_attr || {};
-    if (!isString(opt_weight)) {
-      opt_attr = opt_weight;
-      opt_weight = 'weight';
+  addWeightedEdgesFrom(ebunch, optWeight, optAttr) {
+    optAttr = optAttr || {};
+    if (!isString(optWeight)) {
+      optAttr = optWeight;
+      optWeight = 'weight';
     }
 
-    this.add_edges_from(mapSequence(ebunch, function(e) {
+    this.addEdgesFrom(mapSequence(ebunch, function(e) {
       var attr = {};
-      attr[opt_weight] = e[2];
-      if (attr[opt_weight] == null) { // simulate too few value to unpack error
+      attr[optWeight] = e[2];
+      if (attr[optWeight] == null) { // simulate too few value to unpack error
         throw new TypeError('Values must consist of three elements: %s.', e);
       }
       return [e[0], e[1], attr];
-    }), opt_attr);
+    }), optAttr);
   }
 
 
@@ -481,7 +481,7 @@ class Graph {
    *
    * @export
    */
-  remove_edge(u, v) {
+  removeEdge(u, v) {
     var node = this.adj.get(u);
     if (node != null) {
       node.delete(v);
@@ -509,7 +509,7 @@ class Graph {
    *          - 3-tuples (u,v,k) where k is ignored.
    * @export
    */
-  remove_edges_from(ebunch) {
+  removeEdgesFrom(ebunch) {
     var adj = this.adj;
     forEach(ebunch, function([u, v]) {
       var unode = adj.get(u);
@@ -533,7 +533,7 @@ class Graph {
    * @return {boolean} True if edge is in the graph, False otherwise.
    * @export
    */
-  has_edge(u, v) {
+  hasEdge(u, v) {
     var unode = this.adj.get(u);
     return unode && unode.has(v);
   }
@@ -548,7 +548,7 @@ class Graph {
    * @export
    */
   neighbors(n) {
-    return iteratorToArray(this.neighbors_iter(n));
+    return iteratorToArray(this.neighborsIter(n));
   }
 
 
@@ -560,7 +560,7 @@ class Graph {
    * @return {!Iterator} A list of nodes that are adjacent to n.
    * @export
    */
-  neighbors_iter(n) {
+  neighborsIter(n) {
     var node = this.adj.get(n);
     if (node != null) {
       return node.keys();
@@ -590,8 +590,8 @@ class Graph {
    *      of all edges if nbunch is not specified.
    * @export
    */
-  edges(opt_nbunch, opt_data) {
-    return iteratorToArray(this.edges_iter(opt_nbunch, opt_data));
+  edges(optNbunch, optData) {
+    return iteratorToArray(this.edgesIter(optNbunch, optData));
   }
 
 
@@ -614,45 +614,45 @@ class Graph {
    *      of all edges if nbunch is not specified.
    * @export
    */
-  *edges_iter(opt_nbunch, opt_data) {
+  *edgesIter(optNbunch, optData) {
 
     // handle calls with data being the only argument
-    if (isBoolean(opt_nbunch)) {
-      opt_data = opt_nbunch;
-      opt_nbunch = null;
+    if (isBoolean(optNbunch)) {
+      optData = optNbunch;
+      optNbunch = null;
     }
 
     // helper dict to keep track of multiply stored edges
     var seen = new Set();
-    var nodes_nbrs;
+    var nodesNbrs;
 
-    if (opt_nbunch == null) {
-      nodes_nbrs = this.adj.entries();
+    if (optNbunch == null) {
+      nodesNbrs = this.adj.entries();
     }
     else {
       var adj = this.adj;
-      nodes_nbrs = mapIterator(
-        this.nbunch_iter(opt_nbunch),
+      nodesNbrs = mapIterator(
+        this.nbunchIter(optNbunch),
         n => tuple2(n, adj.get(n))
       );
     }
 
-    for (var node_data of nodes_nbrs) {
-      var node = node_data[0];
+    for (var nodeData of nodesNbrs) {
+      var node = nodeData[0];
 
-      for (var neighbors_data of node_data[1].entries()) {
-        if (!seen.has(neighbors_data[0])) {
-          if (opt_data) {
-            neighbors_data.unshift(node);
-            yield neighbors_data;
+      for (var neighborsData of nodeData[1].entries()) {
+        if (!seen.has(neighborsData[0])) {
+          if (optData) {
+            neighborsData.unshift(node);
+            yield neighborsData;
           }
           else {
-            yield [node, neighbors_data[0]];
+            yield [node, neighborsData[0]];
           }
         }
       }
       seen.add(node);
-      node_data.length = 0;
+      nodeData.length = 0;
     }
   }
 
@@ -670,7 +670,7 @@ class Graph {
    *
    * @export
    */
-  get_edge_data(u, v, opt_default) {
+  getEdgeData(u, v, optDefault) {
     var nbrs = this.adj.get(u);
     if (nbrs != null) {
       var data = nbrs.get(v);
@@ -678,7 +678,7 @@ class Graph {
         return data;
       }
     }
-    return opt_default;
+    return optDefault;
   }
 
 
@@ -692,9 +692,9 @@ class Graph {
    *      list of lists.
    * @export
    */
-  adjacency_list() {
+  adjacencyList() {
     return iteratorToArray(mapIterator(
-      this.adjacency_iter(),
+      this.adjacencyIter(),
       nd => iteratorToArray(nd[1].keys())
     ));
   }
@@ -708,7 +708,7 @@ class Graph {
    *      for all nodes in the graph.
    * @export
    */
-  adjacency_iter() {
+  adjacencyIter() {
     return this.adj.entries();
   }
 
@@ -735,13 +735,13 @@ class Graph {
    * degree as values or a number if a single node is specified.
    * @export
    */
-  degree(opt_nbunch, opt_weight) {
-    if (opt_nbunch != null && this.has_node(opt_nbunch)) {
+  degree(optNbunch, optWeight) {
+    if (optNbunch != null && this.hasNode(optNbunch)) {
       // return a single node
-      return this.degree_iter(opt_nbunch,opt_weight).next().value[1];
+      return this.degreeIter(optNbunch,optWeight).next().value[1];
     }
     else {
-      return new Map(this.degree_iter(opt_nbunch, opt_weight));
+      return new Map(this.degreeIter(optNbunch, optWeight));
     }
   }
 
@@ -766,40 +766,40 @@ class Graph {
    *
    * @export
    */
-  degree_iter(opt_nbunch, opt_weight) {
-    var nodes_nbrs;
+  degreeIter(optNbunch, optWeight) {
+    var nodesNbrs;
     var iterator;
 
-    if (opt_nbunch == null) {
-      nodes_nbrs = this.adj.entries();
+    if (optNbunch == null) {
+      nodesNbrs = this.adj.entries();
     }
     else {
       var adj = this.adj;
-      nodes_nbrs = mapIterator(
-        this.nbunch_iter(opt_nbunch),
+      nodesNbrs = mapIterator(
+        this.nbunchIter(optNbunch),
         n => tuple2(n, adj.get(n))
       );
     }
 
-    if (!opt_weight) {
-      iterator = mapIterator(nodes_nbrs, function([node, nbrs]) {
+    if (!optWeight) {
+      iterator = mapIterator(nodesNbrs, function([node, nbrs]) {
         return [node, nbrs.size + (+nbrs.has(node))];
       });
     }
     else {
       iterator = mapIterator(
-        nodes_nbrs,
+        nodesNbrs,
         function(nd) {
           var [n, nbrs] = nd;
           var sum = 0;
 
           nbrs.forEach(function(data) {
-            var weight = data[opt_weight];
+            var weight = data[optWeight];
             sum += +(weight != null ? weight : 1);
           });
 
           if (nbrs.has(n)) {
-            var weight = nbrs.get(n)[opt_weight];
+            var weight = nbrs.get(n)[optWeight];
             sum += +(weight != null ? weight : 1);
           }
 
@@ -847,7 +847,7 @@ class Graph {
    * @return {boolean} True if graph is a multigraph, False otherwise.
    * @export
    */
-  is_multigraph() {
+  isMultigraph() {
     return false;
   }
 
@@ -858,7 +858,7 @@ class Graph {
    * @return {boolean}  True if graph is directed, False otherwise.
    * @export
    */
-  is_directed() {
+  isDirected() {
     return false;
   }
 
@@ -876,12 +876,12 @@ class Graph {
    * @return {!DiGraph}
    * @export
    */
-  to_directed() {
+  toDirected() {
     var G = new require('./digraph')();
     G.name = this.name;
-    G.add_nodes_from(this);
-    G.add_edges_from((function*() {
-      for (var nd of this.adjacency_iter()) {
+    G.addNodesFrom(this);
+    G.addEdgesFrom((function*() {
+      for (var nd of this.adjacencyIter()) {
         var u = nd[0];
         for (var nbr of nd[1]) {
           yield tuple3(u, nbr[0], deepcopy(nbr[1]));
@@ -908,7 +908,7 @@ class Graph {
    * @return {!Graph}
    * @export
    */
-  to_undirected() {
+  toUndirected() {
     return deepcopy(this);
   }
 
@@ -941,7 +941,7 @@ class Graph {
    * @export
    */
   subgraph(nbunch) {
-    var bunch = this.nbunch_iter(nbunch);
+    var bunch = this.nbunchIter(nbunch);
     var n;
 
     // create new graph and copy subgraph into it
@@ -951,21 +951,21 @@ class Graph {
       H.node.set(n, this.node.get(n));
     }
     // namespace shortcuts for speed
-    var H_adj = H.adj;
-    var this_adj = this.adj;
+    var HAdj = H.adj;
+    var thisAdj = this.adj;
 
     // add nodes and edges (undirected method)
     for (n of H) {
       var Hnbrs = new Map();
-      H_adj.set(n, Hnbrs);
+      HAdj.set(n, Hnbrs);
 
-      for (var nbrdata of this_adj.get(n)) {
+      for (var nbrdata of thisAdj.get(n)) {
         var nbr = nbrdata[0];
         var data = nbrdata[1];
-        if (H_adj.has(nbr)) {
+        if (HAdj.has(nbr)) {
           // add both representations of edge: n-nbr and nbr-n
           Hnbrs.set(nbr, data);
-          H_adj.get(nbr).set(n, data);
+          HAdj.get(nbr).set(n, data);
         }
       }
     }
@@ -983,7 +983,7 @@ class Graph {
    * @return {Array.<string>} A list of nodes with self loops.
    * @export
    */
-  nodes_with_selfloops() {
+  nodesWithSelfloops() {
     var nodes = [];
     for (var nd of this.adj.entries()) {
       if (nd[1].has(nd[0])) {
@@ -1006,13 +1006,13 @@ class Graph {
    * @return {Array}  A list of all selfloop edges.
    * @export
    */
-  selfloop_edges(opt_data) {
+  selfloopEdges(optData) {
     var edges = [];
 
     for (var nd of this.adj.entries()) {
       var [node, nbrs] = nd;
       if (nbrs.has(node)) {
-        if (opt_data) {
+        if (optData) {
           edges.push(tuple3c(node, node, nbrs.get(node), nd));
         }
         else {
@@ -1033,8 +1033,8 @@ class Graph {
    * @return {number} The number of selfloops.
    * @export
    */
-  number_of_selfloops() {
-    return this.selfloop_edges().length;
+  numberOfSelfloops() {
+    return this.selfloopEdges().length;
   }
 
 
@@ -1047,14 +1047,14 @@ class Graph {
    * @return {number} The number of edges or sum of edge weights in the graph.
    * @export
    */
-  size(opt_weight) {
+  size(optWeight) {
     var s = 0;
-    for (var v of this.degree(null, opt_weight).values()) {
+    for (var v of this.degree(null, optWeight).values()) {
       s += v;
     }
     s = s / 2;
 
-    if (opt_weight == null) {
+    if (optWeight == null) {
       return Math.floor(s); // int(s)
     }
     else {
@@ -1076,7 +1076,7 @@ class Graph {
    *      those nodes.
    * @export
    */
-  number_of_edges(u, v) {
+  numberOfEdges(u, v) {
     if (u == null) {
       return Math.floor(this.size());
     }
@@ -1099,11 +1099,11 @@ class Graph {
    * @param {Object=} opt_attr  Attributes to add to every edge in star.
    * @export
    */
-  add_star(nodes, opt_attr) {
+  addStar(nodes, optAttr) {
     var niter = toIterator(nodes);
     var v = niter.next().value;
     var edges = mapIterator(niter, n => tuple2(v, n));
-    this.add_edges_from(edges, opt_attr);
+    this.addEdgesFrom(edges, optAttr);
   }
 
 
@@ -1116,13 +1116,13 @@ class Graph {
    * @param {Object=} opt_attr Attributes to add to every edge in path.
    * @export
    */
-  add_path(nodes, opt_attr) {
+  addPath(nodes, optAttr) {
     var nlist = toArray(nodes);
     var edges = zipSequence(
       nlist.slice(0, nlist.length - 1),
       nlist.slice(1)
     );
-    this.add_edges_from(edges, opt_attr);
+    this.addEdgesFrom(edges, optAttr);
   }
 
 
@@ -1135,13 +1135,13 @@ class Graph {
    * @param {Object=} opt_attr  Attributes to add to every edge in cycle.
    * @export
    */
-  add_cycle(nodes, opt_attr) {
+  addCycle(nodes, optAttr) {
     var nlist = toArray(nodes);
     var edges = zipSequence(
       nlist,
       nlist.slice(1).concat([nlist[0]])
     );
-    this.add_edges_from(edges, opt_attr);
+    this.addEdgesFrom(edges, optAttr);
   }
 
 
@@ -1172,19 +1172,19 @@ class Graph {
    *      If nbunch is null or not defined, iterate over all nodes in the graph.
    * @export
    */
-  *nbunch_iter(opt_nbunch) {
-    if (opt_nbunch == null) { // include all nodes
+  *nbunchIter(optNbunch) {
+    if (optNbunch == null) { // include all nodes
       /*jshint expr:true*/
       yield* this.adj.keys();
     }
-    else if (this.has_node(opt_nbunch)) { // if nbunch is a single node
-      yield opt_nbunch;
+    else if (this.hasNode(optNbunch)) { // if nbunch is a single node
+      yield optNbunch;
     }
     else { // if nbunch is a sequence of nodes
       var adj = this.adj;
 
       try {
-        for (var n of toIterator(opt_nbunch)) {
+        for (var n of toIterator(optNbunch)) {
           if (adj.has(n)) {
             yield n;
           }

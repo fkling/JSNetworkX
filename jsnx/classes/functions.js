@@ -28,8 +28,8 @@ function nodes(G) {
  * @return {goog.iter.Iterator} Iterator over graph nodes
  * @export
  */
-function nodes_iter(G) {
-  return G.nodes_iter();
+function nodesIter(G) {
+  return G.nodesIter();
 }
 
 /**
@@ -44,8 +44,8 @@ function nodes_iter(G) {
  * @return {Array} List of edges
  * @export
  */
-function edges(G, opt_nbunch) {
-  return G.edges(opt_nbunch);
+function edges(G, optNbunch) {
+  return G.edges(optNbunch);
 }
 
 /**
@@ -60,8 +60,8 @@ function edges(G, opt_nbunch) {
  * @return {Iterator} Iterator over edges
  * @export
  */
-function edges_iter(G, opt_nbunch) {
-  return G.edges_iter(opt_nbunch);
+function edgesIter(G, optNbunch) {
+  return G.edgesIter(optNbunch);
 }
 
 /**
@@ -75,8 +75,8 @@ function edges_iter(G, opt_nbunch) {
  * @return {(number|Map)} Degree of node(s)
  * export
  */
-function degree(G, opt_nbunch, opt_weight) {
-  return G.degree(opt_nbunch, opt_weight);
+function degree(G, optNbunch, optWeight) {
+  return G.degree(optNbunch, optWeight);
 }
 
 /**
@@ -100,8 +100,8 @@ function neighbors(G, n) {
  * @return {number} Number of nodes
  * @export
  */
-function number_of_nodes(G) {
-  return G.number_of_nodes();
+function numberOfNodes(G) {
+  return G.numberOfNodes();
 }
 
 /**
@@ -112,8 +112,8 @@ function number_of_nodes(G) {
  * @return {number} Number of edges
  * @export
  */
-function number_of_edges(G) {
-  return G.number_of_edges();
+function numberOfEdges(G) {
+  return G.numberOfEdges();
 }
 
 /**
@@ -137,15 +137,15 @@ function number_of_edges(G) {
  * @export
  */
 function density(G) {
-  var n = G.number_of_nodes();
-  var m = G.number_of_edges();
+  var n = G.numberOfNodes();
+  var m = G.numberOfEdges();
   var d;
 
   if(m === 0) { // includes cases n === 0 and n === 1
     d = 0.0;
   }
   else {
-    if(G.is_directed()) {
+    if(G.isDirected()) {
       d = m / (n * (n-1));
     }
     else {
@@ -169,7 +169,7 @@ function density(G) {
  *      The degree values are the index in the list.
  *  @export
  */
-function degree_histogram(G) {
+function degreeHistogram(G) {
   var degseq = iteratorToArray(G.degree().values());
   var dmax = Math.max.apply(Math, degseq) + 1;
   var freq = fillArray(dmax, 0);
@@ -189,8 +189,8 @@ function degree_histogram(G) {
  * @return {boolean}  True if graph is directed
  * @export
  */
-function is_directed(G) {
-  return G.is_directed();
+function isDirected(G) {
+  return G.isDirected();
 }
 
 /**
@@ -214,14 +214,14 @@ function freeze(G) {
   }
 
   // This double assignment is necessary for the closure compiler
-  G.add_node = frozen;
-  G.add_nodes_from = frozen;
-  G.remove_node = frozen;
-  G.remove_nodes_from = frozen;
-  G.add_edge = frozen;
-  G.add_edges_from = frozen;
-  G.remove_edge = frozen;
-  G.remove_edges_from = frozen;
+  G.addNode = frozen;
+  G.addNodesFrom = frozen;
+  G.removeNode = frozen;
+  G.removeNodesFrom = frozen;
+  G.addEdge = frozen;
+  G.addEdgesFrom = frozen;
+  G.removeEdge = frozen;
+  G.removeEdgesFrom = frozen;
   G.clear = frozen;
   G.frozen = true;
   return G;
@@ -237,7 +237,7 @@ function freeze(G) {
  * @return {boolean}  True if graph is frozen.
  * @export
  */
-function is_frozen(G) {
+function isFrozen(G) {
   return !!G.frozen;
 }
 
@@ -274,10 +274,10 @@ function subgraph(G, nbunch) {
  * @return {jsnx.classes.Graph} A copy of the graph
  * @export
  */
-function create_empty_copy(G, opt_with_nodes=true) {
+function createEmptyCopy(G, optWithNodes=true) {
   var H = new G.constructor();
-  if(opt_with_nodes) {
-    H.add_nodes_from(G);
+  if(optWithNodes) {
+    H.addNodesFrom(G);
   }
   return H;
 }
@@ -291,37 +291,37 @@ function create_empty_copy(G, opt_with_nodes=true) {
  * @return {string} Info
  * @export
  */
-function info(G, opt_n) {
+function info(G, optN) {
   var result = '';
-  if (opt_n == null) {
+  if (optN == null) {
     var template =
       'Name: %s\n' +
       'Type: %s\n' +
       'Number of nodes: %s\n' +
       'Number of edges: %s\n';
-    var nnodes = G.number_of_nodes();
+    var nnodes = G.numberOfNodes();
     result = sprintf(
       template,
       G.name,
       G.constructor.__name__,
       nnodes,
-      G.number_of_edges()
+      G.numberOfEdges()
     );
     if(nnodes > 0) {
-      if(G.is_directed()) {
-        var in_degree = 0;
-        var out_degree = 0;
-        for (var degree of G.in_degree().values()) {
-          in_degree += degree;
+      if(G.isDirected()) {
+        var inDegree = 0;
+        var outDegree = 0;
+        for (var degree of G.inDegree().values()) {
+          inDegree += degree;
         }
-        for (degree of G.out_degree().values()) {
-          out_degree += degree;
+        for (degree of G.outDegree().values()) {
+          outDegree += degree;
         }
 
         result += sprintf(
           'Average in degree: %s\nAverage out degree: %s',
-          (in_degree / nnodes).toFixed(4),
-          (out_degree / nnodes).toFixed(4)
+          (inDegree / nnodes).toFixed(4),
+          (outDegree / nnodes).toFixed(4)
         );
       }
       else {
@@ -334,16 +334,16 @@ function info(G, opt_n) {
     }
   }
   else {
-    if(!G.has_node(opt_n)) {
+    if(!G.hasNode(optN)) {
       throw new JSNetworkXError(
-        sprintf('Node %j not in graph.', opt_n)
+        sprintf('Node %j not in graph.', optN)
       );
     }
     result = sprintf(
       'Node %j has the following properties:\nDegree: %s\nNeighbors: %s',
-      opt_n,
-      G.degree(opt_n),
-      G.neighbors(opt_n).map(n => JSON.stringify(n)).join(' ')
+      optN,
+      G.degree(optN),
+      G.neighbors(optN).map(n => JSON.stringify(n)).join(' ')
     );
   }
   return result;
@@ -357,7 +357,7 @@ function info(G, opt_n) {
  * @param {(Object|Map)} attributes Dictionary of attributes keyed by node
  * @export
  */
-function set_node_attributes(G, name, attributes) {
+function setNodeAttributes(G, name, attributes) {
   if (isMap(attributes)) {
     attributes.forEach((value, node) => G.node.get(node)[name] = value);
   }
@@ -381,7 +381,7 @@ function set_node_attributes(G, name, attributes) {
  * @return {!Map} Dictionary of attributes keyed by node.
  * @export
  */
-function get_node_attributes(G, name) {
+function getNodeAttributes(G, name) {
   var dict = new Map();
   G.node.forEach(function(node, data) {
     if (data.hasOwnProperty(name)) {
@@ -400,7 +400,7 @@ function get_node_attributes(G, name) {
  *    Dictionary of attributes keyed by edge (tuple).
  * @export
  */
-function set_edge_attributes(G, name, attributes) {
+function setEdgeAttributes(G, name, attributes) {
   attributes.forEach(function(edge, value) {
     G.get(edge[0]).get(edge[1])[name] = value;
   });
@@ -419,7 +419,7 @@ function set_edge_attributes(G, name, attributes) {
  * @return {!Map} Dictionary of attributes keyed by edge.
  * @export
  */
-function get_edge_attributes(G, name) {
+function getEdgeAttributes(G, name) {
   var dict = new Map();
   G.edges(null, true).forEach(function(edged) {
     if (edged[2].hasOwnProperty(name)) {
@@ -433,23 +433,23 @@ function get_edge_attributes(G, name) {
 
 module.exports = {
   nodes: nodes,
-  nodes_iter: nodes_iter,
+  nodesIter: nodesIter,
   edges: edges,
-  edges_iter: edges_iter,
+  edgesIter: edgesIter,
   degree: degree,
   neighbors: neighbors,
-  number_of_nodes: number_of_nodes,
-  number_of_edges: number_of_edges,
+  numberOfNodes: numberOfNodes,
+  numberOfEdges: numberOfEdges,
   density: density,
-  degree_histogram: degree_histogram,
-  is_directed: is_directed,
+  degreeHistogram: degreeHistogram,
+  isDirected: isDirected,
   freeze: freeze,
-  is_frozen: is_frozen,
+  isFrozen: isFrozen,
   subgraph: subgraph,
-  create_empty_copy: create_empty_copy,
+  createEmptyCopy: createEmptyCopy,
   info: info,
-  set_node_attributes: set_node_attributes,
-  get_node_attributes: get_node_attributes,
-  set_edge_attributes: set_edge_attributes,
-  get_edge_attributes: get_edge_attributes,
+  setNodeAttributes: setNodeAttributes,
+  getNodeAttributes: getNodeAttributes,
+  setEdgeAttributes: setEdgeAttributes,
+  getEdgeAttributes: getEdgeAttributes,
 };

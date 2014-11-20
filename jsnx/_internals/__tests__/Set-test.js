@@ -5,12 +5,12 @@ var Set = require('../Set');
 var itertools = utils.itertools;
 
 exports.Set = {
-  test_create: function() {
+  testCreate: function() {
     var set = new Set();
     assert(set);
   },
 
-  test_add_elements: function() {
+  testAddElements: function() {
     var set = new Set([1,2,3]);
     assert.deepEqual(itertools.toArray(set.values()).sort(), [1,2,3]);
 
@@ -21,7 +21,7 @@ exports.Set = {
     assert(set.has("4"));
   },
 
-  test_remove_elements: function() {
+  testRemoveElements: function() {
     var set = new Set([1,2,3]);
     set.delete(2);
     assert(!set.has(2));
@@ -29,7 +29,7 @@ exports.Set = {
     assert(set.has(3));
   },
 
-  test_count: function() {
+  testCount: function() {
     var set = new Set([1,2,3]);
     assert.equal(set.size, 3);
   }

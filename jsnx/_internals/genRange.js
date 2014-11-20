@@ -12,28 +12,28 @@
  * @param {?number=} opt_step Step size
  * @return {!Iterator}
  */
-function* genRange(opt_start, opt_end, opt_step) {
+function* genRange(optStart, optEnd, optStep) {
 
-  if (opt_start == null) {
+  if (optStart == null) {
     return;
   }
-  else if (opt_end == null) {
-    opt_end = opt_start;
-    opt_start = 0;
-    opt_step = 1;
+  else if (optEnd == null) {
+    optEnd = optStart;
+    optStart = 0;
+    optStep = 1;
   }
-  else if (opt_step == null) {
-    opt_step = 1;
+  else if (optStep == null) {
+    optStep = 1;
   }
-  else if (opt_step === 0) {
+  else if (optStep === 0) {
     throw new RangeError("opt_step can't be 0");
   }
 
-  var negative = opt_step < 0;
+  var negative = optStep < 0;
   for (
-    var i = opt_start;
-    negative && i > opt_end || !negative && i < opt_end;
-    i += opt_step) {
+    var i = optStart;
+    negative && i > optEnd || !negative && i < optEnd;
+    i += optStep) {
     yield i;
   }
 }

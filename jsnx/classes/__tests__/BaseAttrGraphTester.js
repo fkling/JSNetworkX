@@ -14,10 +14,10 @@ var toArray = utils.itertools.toArray;
 var _ = require('lodash-node');
 
 var BaseAttrGraphTester = _.extend({}, BaseGraphTester, {
-  test_weighted_degree: function() {
+  testWeightedDegree: function() {
     var G = new this.Graph();
-    G.add_edge(1,2,{weight:2,other:3});
-    G.add_edge(2,3,{weight:3,other:4});
+    G.addEdge(1,2,{weight:2,other:3});
+    G.addEdge(2,3,{weight:3,other:4});
     assert.deepEqual(toArray(G.degree(null, 'weight').values()), [2,5,3]);
     assert.deepEqual(G.degree(null, 'weight'), new Map([[1,2],[2,5],[3,3]]));
     assert.equal(G.degree(1, 'weight'), 2);
@@ -29,7 +29,7 @@ var BaseAttrGraphTester = _.extend({}, BaseGraphTester, {
     assert.deepEqual(G.degree([1], 'other'), new Map([[1,3]]));
   },
 
-  test_name: function() {
+  testName: function() {
     var G = this.Graph(null, {name:''});
     assert.equal(G.name,'');
     G = this.Graph(null, {name: 'test'});
@@ -37,26 +37,26 @@ var BaseAttrGraphTester = _.extend({}, BaseGraphTester, {
     assert.equal(G.name, 'test');
   },
 
-  test_copy: function() {
+  testCopy: function() {
     var G = this.K3;
-    shared.add_attributes(G);
+    shared.addAttributes(G);
     var H = G.copy();
     //shared.is_deepcopy(H, G);
     H = new G.constructor(G);
-    shared.is_shallow_copy(H,G);
+    shared.isShallowCopy(H,G);
   },
 
-  test_copy_attr: function() {
+  testCopyAttr: function() {
     var G = this.Graph(null, {foo: []});
-    G.add_node(0, {foo: []});
-    G.add_edge(1,2, {foo:[]});
+    G.addNode(0, {foo: []});
+    G.addEdge(1,2, {foo:[]});
     var H = G.copy();
-    shared.is_deepcopy(H, G);
+    shared.isDeepcopy(H, G);
     H = new G.constructor(G); // just copy
-    shared.is_shallow_copy(H, G);
+    shared.isShallowCopy(H, G);
   },
 
-  test_graph_attr: function() {
+  testGraphAttr: function() {
     var G = this.K3;
     G.graph['foo'] = 'bar';
     assert.equal(G.graph['foo'], 'bar');
@@ -67,19 +67,19 @@ var BaseAttrGraphTester = _.extend({}, BaseGraphTester, {
 
   },
 
-  test_node_attr: function() {
+  testNodeAttr: function() {
     var G = this.K3;
-    G.add_node(1, {foo:'bar'});
+    G.addNode(1, {foo:'bar'});
     assert.deepEqual(G.nodes(), [0,1,2]);
     assert.deepEqual(G.nodes(true), [[0,{}],[1,{'foo':'bar'}],[2,{}]]);
     G.node.get(1)['foo']='baz';
     assert.deepEqual(G.nodes(true), [[0,{}],[1,{'foo':'baz'}],[2,{}]]);
   },
 
-  test_node_attr2: function() {
+  testNodeAttr2: function() {
     var G = this.K3;
     var a = {'foo':'bar'};
-    G.add_node(3, a);
+    G.addNode(3, a);
     assert.deepEqual(G.nodes(), [0,1,2,3]);
     assert.deepEqual(
       G.nodes(true),
@@ -88,24 +88,24 @@ var BaseAttrGraphTester = _.extend({}, BaseGraphTester, {
 
   },
 
-  test_edge_attr: function() {
+  testEdgeAttr: function() {
     var G = this.Graph();
-    G.add_edge(1,2,{foo:'bar'});
+    G.addEdge(1,2,{foo:'bar'});
     assert.deepEqual(G.edges(true), [[1,2,{'foo':'bar'}]]);
   },
 
-  test_edge_attr2: function() {
+  testEdgeAttr2: function() {
     var G = this.Graph();
-    G.add_edges_from([[1,2],[3,4]],{foo:'foo'});
+    G.addEdgesFrom([[1,2],[3,4]],{foo:'foo'});
     assert.deepEqual(
       G.edges(true).sort(),
       [[1,2,{'foo':'foo'}],[3,4,{'foo':'foo'}]]
     );
   },
 
-  test_edge_attr3: function() {
+  testEdgeAttr3: function() {
     var G = this.Graph();
-    G.add_edges_from([[1,2,{'weight':32}],[3,4,{'weight':64}]],{foo:'foo'});
+    G.addEdgesFrom([[1,2,{'weight':32}],[3,4,{'weight':64}]],{foo:'foo'});
     assert.deepEqual(
       G.edges(true),
       [
@@ -114,17 +114,17 @@ var BaseAttrGraphTester = _.extend({}, BaseGraphTester, {
       ]
     );
 
-    G.remove_edges_from([[1,2],[3,4]]);
-    G.add_edge(1,2,{data:7,spam:'bar',bar:'foo'});
+    G.removeEdgesFrom([[1,2],[3,4]]);
+    G.addEdge(1,2,{data:7,spam:'bar',bar:'foo'});
     assert.deepEqual(
       G.edges(true),
       [[1,2,{'data':7,'spam':'bar','bar':'foo'}]]
     );
   },
 
-  test_edge_attr4: function() {
+  testEdgeAttr4: function() {
     var G = this.Graph();
-    G.add_edge(1,2,{data:7,spam:'bar',bar:'foo'});
+    G.addEdge(1,2,{data:7,spam:'bar',bar:'foo'});
     assert.deepEqual(
       G.edges(true),
       [[1,2,{'data':7,'spam':'bar','bar':'foo'}]]
@@ -149,42 +149,42 @@ var BaseAttrGraphTester = _.extend({}, BaseGraphTester, {
     );
   },
 
-  test_attr_dict_not_dict: function() {
+  testAttrDictNotDict: function() {
     // attr_dict must be dict
     var G = this.Graph();
     var edges = [[1,2]];
     assert.throws(function(){
-      G.add_edges_from(edges,[]);
+      G.addEdgesFrom(edges,[]);
     }, JSNetworkXError);
   },
 
-  test_to_undirected: function() {
+  testToUndirected: function() {
     var G = this.K3;
-    shared.add_attributes(G);
+    shared.addAttributes(G);
     var H = Graph(G);
-    shared.is_shallow_copy(H,G);
-    H = G.to_undirected();
-    shared.is_deepcopy(H,G);
+    shared.isShallowCopy(H,G);
+    H = G.toUndirected();
+    shared.isDeepcopy(H,G);
   },
 
-  test_to_directed: function() {
+  testToDirected: function() {
     var G = this.K3;
-    shared.add_attributes(G);
+    shared.addAttributes(G);
     var H = DiGraph(G);
-    shared.is_shallow_copy(H,G);
-    H = G.to_directed();
-    shared.is_deepcopy(H,G);
+    shared.isShallowCopy(H,G);
+    H = G.toDirected();
+    shared.isDeepcopy(H,G);
   },
 
-  test_subgraph: function() {
+  testSubgraph: function() {
     var G = this.K3;
-    shared.add_attributes(G);
+    shared.addAttributes(G);
     var H = G.subgraph([0,1,2,5]);
     // assert.equal(H.name, 'Subgraph of ('+G.name+')')
     H.name = G.name;
-    shared.graphs_equal(H, G);
-    shared.same_attrdict(H, G);
-    shared.shallow_copy_attrdict(H, G);
+    shared.graphsEqual(H, G);
+    shared.sameAttrdict(H, G);
+    shared.shallowCopyAttrdict(H, G);
 
     H = G.subgraph(0);
     assert.deepEqual(H.adj, new Map([[0, new Map()]]));
@@ -193,12 +193,12 @@ var BaseAttrGraphTester = _.extend({}, BaseGraphTester, {
     assert.notDeepEqual(G.adj, new Map());
   },
 
-  test_selfloops_attr: function() {
+  testSelfloopsAttr: function() {
     var G = this.K3.copy();
-    G.add_edge(0,0);
-    G.add_edge(1,1,{weight: 2});
+    G.addEdge(0,0);
+    G.addEdge(1,1,{weight: 2});
     assert.deepEqual(
-      G.selfloop_edges(true),
+      G.selfloopEdges(true),
       [[0,0,{}],[1,1,{weight:2}]]
     );
   }

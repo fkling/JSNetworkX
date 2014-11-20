@@ -5,7 +5,7 @@ var Set = require('../_internals/Set');
 
 var isMap = require('../_internals/isMap');
 var isArrayLike = require('../_internals/isArrayLike');
-var prep_create_using = require('./prep_create_using');
+var prepCreateUsing = require('./prep_create_using');
 var toArray = require('../_internals/toArray');
 var tuple2 = require('../_internals/tuple').tuple2;
 
@@ -26,13 +26,13 @@ var tuple2 = require('../_internals/tuple').tuple2;
   * @return {!jsnx.contrib.Map}
   * @export
   */
-function to_map_of_lists(G, opt_nodelist) {
+function toMapOfLists(G, optNodelist) {
   var map = new Map();
 
-  if (opt_nodelist != null) {
-    opt_nodelist = toArray(opt_nodelist);
-    opt_nodelist.forEach(
-      n => map.set(n, G.neighbors(n).filter(v => opt_nodelist.index() > -1))
+  if (optNodelist != null) {
+    optNodelist = toArray(optNodelist);
+    optNodelist.forEach(
+      n => map.set(n, G.neighbors(n).filter(v => optNodelist.index() > -1))
     );
   }
   else {
@@ -54,11 +54,11 @@ function to_map_of_lists(G, opt_nodelist) {
  * @return {!jsnx.classes.Graph}
  * @export
  */
-function from_map_of_lists(map, opt_create_using) {
-  var G = prep_create_using(opt_create_using);
-  G.add_nodes_from(map.keys());
+function fromMapOfLists(map, optCreateUsing) {
+  var G = prepCreateUsing(optCreateUsing);
+  G.addNodesFrom(map.keys());
 
-  if(G.is_multigraph() && !G.is_directed()) {
+  if(G.isMultigraph() && !G.isDirected()) {
     // a map_of_lists can't show multiedges.  BUT for undirected graphs,
     // each edge shows up twice in the map_of_lists.
     // So we need to treat this case separately.
@@ -67,7 +67,7 @@ function from_map_of_lists(map, opt_create_using) {
     map.forEach(function(nbrlist, node) {
       nbrlist.forEach(function(nbr) {
         if (!seen.has(nbr)) {
-          G.add_edge(node, nbr);
+          G.addEdge(node, nbr);
         }
       });
       seen.add(node); // don't allow reverse edge to show up
@@ -75,7 +75,7 @@ function from_map_of_lists(map, opt_create_using) {
   }
   else {
     map.forEach(function(nbrlist, node) {
-      nbrlist.forEach(nbr => G.add_edge(node, nbr));
+      nbrlist.forEach(nbr => G.addEdge(node, nbr));
     });
   }
 
@@ -97,33 +97,33 @@ function from_map_of_lists(map, opt_create_using) {
  * @return {!jsnx.contrib.Map}
  * @export
  */
-function to_map_of_maps(G, opt_nodelist, opt_edge_data) {
-   var map_of_maps = new Map();
+function toMapOfMaps(G, optNodelist, optEdgeData) {
+   var mapOfMaps = new Map();
 
-   if (opt_nodelist != null) {
-     opt_nodelist = toArray(opt_nodelist);
-     opt_nodelist.forEach(function(u) {
-       var map_of_u = map_of_maps.set(u, new Map());
+   if (optNodelist != null) {
+     optNodelist = toArray(optNodelist);
+     optNodelist.forEach(function(u) {
+       var mapOfU = mapOfMaps.set(u, new Map());
        G.get(u).forEach(function(v, data) {
-         if (opt_nodelist.indexOf(v) > -1) {
-           map_of_u.set(v, opt_edge_data == null ? data : opt_edge_data);
+         if (optNodelist.indexOf(v) > -1) {
+           mapOfU.set(v, optEdgeData == null ? data : optEdgeData);
          }
        });
      });
    }
    else { // nodelist is undefined
      // mu = [nbrmap, u]
-     for (var mu of G.adjacency_iter()) {
+     for (var mu of G.adjacencyIter()) {
        /*jshint loopfunc:true*/
        var [nbrmap, u] = mu;
-       var map_of_u = map_of_maps.set(mu[1], new Map());
+       var mapOfU = mapOfMaps.set(mu[1], new Map());
        mu[0].forEach(function(data, v) {
-         map_of_u.set(v, opt_edge_data == null ? data : opt_edge_data);
+         mapOfU.set(v, optEdgeData == null ? data : optEdgeData);
        });
      }
    }
 
-   return map_of_maps;
+   return mapOfMaps;
 }
 
 /**
@@ -140,15 +140,15 @@ function to_map_of_maps(G, opt_nodelist, opt_edge_data) {
  * @return {jsnx.classes.Graph}
  * @export
  */
-function from_map_of_maps(map, opt_create_using, opt_multigraph_input) {
-  var G = prep_create_using(opt_create_using);
+function fromMapOfMaps(map, optCreateUsing, optMultigraphInput) {
+  var G = prepCreateUsing(optCreateUsing);
   var seen = new Set(); // don't add both directions of undirected graph
-  G.add_nodes_from(map.keys());
+  G.addNodesFrom(map.keys());
 
   // is map a MultiGraph or MultiDiGraph?
-  if (opt_multigraph_input) {
+  if (optMultigraphInput) {
     // make a copy  of the list of edge data (but not the edge data)
-    if (G.is_directed()) {
+    if (G.isDirected()) {
       map.forEach(function(nbrs, u) {
         if(isArrayLike(nbrs)) { // throw expection of not map (object)
           throw new TypeError('Value is not a map.');
@@ -156,18 +156,18 @@ function from_map_of_maps(map, opt_create_using, opt_multigraph_input) {
         nbrs.forEach(function(datadict, v) {
           for (var key in datadict) {
             var data = datadict[key];
-            if (G.is_multigraph()) {
-              G.add_edge(u, v, key, data);
+            if (G.isMultigraph()) {
+              G.addEdge(u, v, key, data);
             }
             else {
-              G.add_edge(u, v, data);
+              G.addEdge(u, v, data);
             }
           }
         });
       });
     }
     else { // undirected
-      var isMultigraph = G.is_multigraph();
+      var isMultigraph = G.isMultigraph();
       map.forEach(function(nbrs, u) {
         if (isArrayLike(nbrs)) { // throw exception of not map
           throw new TypeError('Not a map');
@@ -179,10 +179,10 @@ function from_map_of_maps(map, opt_create_using, opt_multigraph_input) {
             for (var key in datadict) {
               var data = datadict[key];
               if (isMultigraph) {
-                G.add_edge(u, v, key, data);
+                G.addEdge(u, v, key, data);
               }
               else {
-                G.add_edge(u, v, data);
+                G.addEdge(u, v, data);
               }
             }
             seen.add(tuple2(v, u));
@@ -192,7 +192,7 @@ function from_map_of_maps(map, opt_create_using, opt_multigraph_input) {
     }
   }
   else { // not a multigraph to multigraph transfer
-    if(G.is_multigraph() && !G.is_directed()) {
+    if(G.isMultigraph() && !G.isDirected()) {
       // map can have both representations u-v, v-u in dict.  Only add one.
       // We don't need this check for digraphs since we add both directions,
       // or for Graph() since it is done implicitly (parallel edges not allowed)
@@ -202,7 +202,7 @@ function from_map_of_maps(map, opt_create_using, opt_multigraph_input) {
         }
         nbrs.forEach(function(data, v) {
           if(!seen.has(tuple2(u, v))) {
-            G.add_edge(u, v, data);
+            G.addEdge(u, v, data);
             seen.add(tuple2(v, u));
           }
         });
@@ -214,7 +214,7 @@ function from_map_of_maps(map, opt_create_using, opt_multigraph_input) {
           throw new TypeError('Value is not a map');
         }
         nbrs.forEach(function(data, v) {
-          G.add_edge(u, v, data);
+          G.addEdge(u, v, data);
         });
       });
     }
@@ -224,8 +224,8 @@ function from_map_of_maps(map, opt_create_using, opt_multigraph_input) {
 }
 
 module.exports = {
-  to_map_of_lists,
-  from_map_of_lists,
-  to_map_of_maps,
-  from_map_of_maps
+  toMapOfLists,
+  fromMapOfLists,
+  toMapOfMaps,
+  fromMapOfMaps
 };

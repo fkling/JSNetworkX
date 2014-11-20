@@ -8,7 +8,7 @@
  */
 function isGraph(value) {
   // We are not using instanceof to avoid circular dependencies
-  return value && typeof value.add_node === 'function';
+  return value && typeof value.addNode === 'function';
 }
 
 module.exports = isGraph;

@@ -8,24 +8,24 @@
  * @param {...Iterator} var_args
  * @return {Iterator}
  */
-function* zipIterator(...var_args) {
-  var length = var_args.length;
+function* zipIterator(...varArgs) {
+  var length = varArgs.length;
 
   while (true) {
     var done = false;
-    var next_zip = new Array(length);
+    var nextZip = new Array(length);
     for (var i = 0; i < length; i++) {
-      var next = var_args[i].next();
+      var next = varArgs[i].next();
       if (next.done) {
         done = true;
         break;
       }
-      next_zip[i] = next.value;
+      nextZip[i] = next.value;
     }
     if (done) {
       break;
     }
-    yield next_zip;
+    yield nextZip;
   }
 }
 

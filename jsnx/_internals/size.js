@@ -18,7 +18,7 @@ var objectSize = require('lodash-node/modern/collections/size');
  */
 function size(obj) {
   if (isGraph(obj)) {
-    return obj.number_of_nodes();
+    return obj.numberOfNodes();
   }
   else if(typeof obj === 'string' || isArrayLike(obj)) {
     return obj.length;

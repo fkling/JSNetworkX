@@ -11,10 +11,10 @@ var toIterator = require('../itertools/toIterator');
  * @param {...(Set|Array)} var_args
  * @export
  */
-function difference(source, ...var_args) {
+function difference(source, ...varArgs) {
   var result = new Set(source.values());
-  for (var i = 0, l = var_args.length; i < l; i++) {
-    for (var v of var_args[i].values()) {
+  for (var i = 0, l = varArgs.length; i < l; i++) {
+    for (var v of varArgs[i].values()) {
       result.delete(v);
     }
   }

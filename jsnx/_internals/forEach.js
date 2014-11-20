@@ -26,9 +26,9 @@ var toIterator = require('./itertools/toIterator');
  *      argument to the callback
  * @template T
  */
-function forEach(seq, callback, opt_this_obj) {
+function forEach(seq, callback, optThisObj) {
   if (Array.isArray(seq)) {
-    seq.forEach(callback, opt_this_obj);
+    seq.forEach(callback, optThisObj);
     return;
   }
   if (isIterable(seq)) {
@@ -37,9 +37,9 @@ function forEach(seq, callback, opt_this_obj) {
   if(isIterator(seq)) {
     var v;
     // Avoiding call if it is not necessary is faster in some browsers
-    if (opt_this_obj !== undefined) {
+    if (optThisObj !== undefined) {
       for (v of seq) {
-        callback.call(opt_this_obj, v);
+        callback.call(optThisObj, v);
       }
     } else {
       for (v of seq) {
@@ -51,11 +51,11 @@ function forEach(seq, callback, opt_this_obj) {
     _forEach(
       seq,
       callback,
-      opt_this_obj
+      optThisObj
     );
   }
   else if(isObject(seq)) {
-    Object.keys(seq).forEach(callback, opt_this_obj);
+    Object.keys(seq).forEach(callback, optThisObj);
   }
 }
 

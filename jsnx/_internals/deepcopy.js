@@ -26,7 +26,7 @@ function deepcopyInstance(obj, stackA, stackB) {
   }
 
   // deepcopy them
-  ownProps = deepcopy_implementation(ownProps, stackA, stackB);
+  ownProps = deepcopyImplementation(ownProps, stackA, stackB);
 
   // create a new instance and assign properties
   instance = new T_();
@@ -37,7 +37,7 @@ function deepcopyInstance(obj, stackA, stackB) {
   return instance;
 }
 
-function deepcopy_implementation(value, stackA, stackB) {
+function deepcopyImplementation(value, stackA, stackB) {
   return baseClone(
     value,
     true,
@@ -61,7 +61,7 @@ function deepcopy_implementation(value, stackA, stackB) {
  * @return {?} 
  */
 function deepcopy(value) {
-  return deepcopy_implementation(value, [], []);
+  return deepcopyImplementation(value, [], []);
 }
 
 module.exports = deepcopy;

@@ -16,7 +16,7 @@ var tuple2 = require('../_internals/tuple').tuple2;
  *
  * @return {Iterator}
  */
-function *tree_edges(n, r) {
+function *treeEdges(n, r) {
   // helper function for trees
   // yields edges in rooted tree at 0 with n nodes and branching ratio r
   var nodes = genRange(n);
@@ -55,9 +55,9 @@ function *tree_edges(n, r) {
  * @return {Graph} An r-ary tree with n nodes.
  * @export
  */
-function full_rary_tree(r, n, opt_create_using) {
-  var G = empty_graph(n, opt_create_using);
-  G.add_edges_from(tree_edges(n,r));
+function fullRaryTree(r, n, optCreateUsing) {
+  var G = emptyGraph(n, optCreateUsing);
+  G.addEdgesFrom(treeEdges(n,r));
   return G;
 }
 
@@ -81,10 +81,10 @@ function full_rary_tree(r, n, opt_create_using) {
  * @return {Graph}
  * @export
  */
-function balanced_tree(r, h, opt_create_using) {
+function balancedTree(r, h, optCreateUsing) {
   var n = r === 1 ? 2 : Math.floor((1 - Math.pow(r, (h+1))) / (1 - r));
-  var G = empty_graph(n, opt_create_using);
-  G.add_edges_from(tree_edges(n,r));
+  var G = emptyGraph(n, optCreateUsing);
+  G.addEdgesFrom(treeEdges(n,r));
   return G;
 }
 
@@ -101,11 +101,11 @@ function balanced_tree(r, h, opt_create_using) {
  *  @return {Graph}
  *  @export
  */
-function complete_graph(n, opt_create_using) {
-  var G = empty_graph(n, opt_create_using);
+function completeGraph(n, optCreateUsing) {
+  var G = emptyGraph(n, optCreateUsing);
   G.name = 'complete_graph(' + n + ')';
   if (n > 1) {
-    G.add_edges_from(G.is_directed() ?
+    G.addEdgesFrom(G.isDirected() ?
       genPermutations(range(n), 2) :
       genCombinations(range(n), 2)
     );
@@ -131,11 +131,11 @@ function complete_graph(n, opt_create_using) {
  * @return {Graph}
  * @export
  */
-function cycle_graph(n, opt_create_using) {
-  var G = path_graph(n, opt_create_using);
+function cycleGraph(n, optCreateUsing) {
+  var G = pathGraph(n, optCreateUsing);
   G.name = 'cycle_graph(' + n + ')';
   if (n > 1) {
-    G.add_edge(n-1,0);
+    G.addEdge(n-1,0);
   }
   return G;
 }
@@ -185,28 +185,28 @@ function cycle_graph(n, opt_create_using) {
  *  @return {Graph}
  *  @export
  */
-function empty_graph(opt_n, opt_create_using) {
-  if (isGraph(opt_n)) {
-    opt_create_using = opt_n;
-    opt_n = null;
+function emptyGraph(optN, optCreateUsing) {
+  if (isGraph(optN)) {
+    optCreateUsing = optN;
+    optN = null;
   }
-  if (opt_n == null) {
-    opt_n = 0;
+  if (optN == null) {
+    optN = 0;
   }
 
   var G;
 
-  if (opt_create_using == null) {
+  if (optCreateUsing == null) {
     // default empty graph is a simple graph
     G = new Graph();
   }
   else {
-    G = opt_create_using;
+    G = optCreateUsing;
     G.clear();
   }
 
-  G.add_nodes_from(genRange(opt_n));
-  G.name = 'empty_graph(' + opt_n + ')';
+  G.addNodesFrom(genRange(optN));
+  G.name = 'empty_graph(' + optN + ')';
   return G;
 }
 
@@ -224,8 +224,8 @@ function empty_graph(opt_n, opt_create_using) {
  * @return {Graph}
  * @export
  */
-function grid_2d_graph(m, n, opt_periodic, opt_create_using) {
-  var G = empty_graph(0, opt_create_using);
+function grid2dGraph(m, n, optPeriodic, optCreateUsing) {
+  var G = emptyGraph(0, optCreateUsing);
   G.name = 'grid_2d_graph';
   var rows = range(m);
   var columns = range(n);
@@ -233,50 +233,50 @@ function grid_2d_graph(m, n, opt_periodic, opt_create_using) {
   var j;
   for (i = 0; i < rows.length; i++) {
     for (j = 0; j < columns.length; j++) {
-      G.add_node([i,j]);
+      G.addNode([i,j]);
     }
   }
   for (i of genRange(1, m)) {
     for (j = 0; j < columns.length; j++) {
-      G.add_edge([i,j], [i-1,j]);
+      G.addEdge([i,j], [i-1,j]);
     }
   }
   for (i = 0; i < rows.length; i++) {
     for (j of genRange(1, n)) {
-      G.add_edge([i,j], [i,j-1]);
+      G.addEdge([i,j], [i,j-1]);
     }
   }
-  if (G.is_directed()) {
+  if (G.isDirected()) {
     for (i of genRange(0, m-1)) {
       for (j = 0; j < columns.length; j++) {
-        G.add_edge([i,j], [i+1,j]);
+        G.addEdge([i,j], [i+1,j]);
       }
     }
     for (i = 0; i < rows.length; i++) {
       for (j of genRange(0, n - 1)) {
-        G.add_edge([i,j], [i,j+1]);
+        G.addEdge([i,j], [i,j+1]);
       }
     }
   }
 
-  if (opt_periodic) {
+  if (optPeriodic) {
     if (n > 2) {
       for (i = 0; i < rows.length; i++) {
-        G.add_edge([i,0], [i,n-1]);
+        G.addEdge([i,0], [i,n-1]);
       }
-      if (G.is_directed()) {
+      if (G.isDirected()) {
         for (i = 0; i < rows.length; i++) {
-          G.add_edge([i,n-1], [i,0]);
+          G.addEdge([i,n-1], [i,0]);
         }
       }
     }
     if (m > 2) {
       for (j = 0; j < columns.length; j++) {
-        G.add_edge([0,j], [m-1,j]);
+        G.addEdge([0,j], [m-1,j]);
       }
-      if (G.is_directed()) {
+      if (G.isDirected()) {
         for (j = 0; j < columns.length; j++) {
-          G.add_edge([m-1,j], [0,j]);
+          G.addEdge([m-1,j], [0,j]);
         }
       }
     }
@@ -300,8 +300,8 @@ function grid_2d_graph(m, n, opt_periodic, opt_create_using) {
  * @return {Graph}
  * @export
  */
-function null_graph(opt_create_using) {
-  var G = empty_graph(0, opt_create_using);
+function nullGraph(optCreateUsing) {
+  var G = emptyGraph(0, optCreateUsing);
   G.name = 'null_graph()';
   return G;
 }
@@ -318,10 +318,10 @@ function null_graph(opt_create_using) {
  * @return {Graph}
  * @export
  */
-function path_graph(n, opt_create_using) {
-  var G = empty_graph(n, opt_create_using);
+function pathGraph(n, optCreateUsing) {
+  var G = emptyGraph(n, optCreateUsing);
   G.name = 'path_graph(' + n + ')';
-  G.add_edges_from(mapIterator(
+  G.addEdgesFrom(mapIterator(
     genRange(n-1),
     function(v) {
       return tuple2(v, v+1);
@@ -341,8 +341,8 @@ function path_graph(n, opt_create_using) {
  * @return {Graph}
  * @export
  */
-function trivial_graph(opt_create_using) {
-  var G = empty_graph(1, opt_create_using);
+function trivialGraph(optCreateUsing) {
+  var G = emptyGraph(1, optCreateUsing);
   G.name = 'null_graph()';
   return G;
 }
@@ -350,13 +350,13 @@ function trivial_graph(opt_create_using) {
 //TODO: wheel_graph
 
 module.exports = {
-  full_rary_tree: full_rary_tree,
-  balanced_tree: balanced_tree,
-  complete_graph: complete_graph,
-  cycle_graph: cycle_graph,
-  empty_graph: empty_graph,
-  grid_2d_graph: grid_2d_graph,
-  null_graph: null_graph,
-  path_graph: path_graph,
-  trivial_graph: trivial_graph,
+  fullRaryTree: fullRaryTree,
+  balancedTree: balancedTree,
+  completeGraph: completeGraph,
+  cycleGraph: cycleGraph,
+  emptyGraph: emptyGraph,
+  grid2dGraph: grid2dGraph,
+  nullGraph: nullGraph,
+  pathGraph: pathGraph,
+  trivialGraph: trivialGraph,
 };

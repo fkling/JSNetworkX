@@ -11,66 +11,66 @@ var _ = require('lodash-node');
 
 
 module.exports = {
-  add_attributes: function(G) {
+  addAttributes: function(G) {
     G.graph['foo'] = [];
     G.node.get(0)['foo'] = [];
-    G.remove_edge(1,2);
+    G.removeEdge(1,2);
     var ll = [];
-    G.add_edge(1,2,{foo:ll});
-    G.add_edge(2,1,{foo:ll});
+    G.addEdge(1,2,{foo:ll});
+    G.addEdge(2,1,{foo:ll});
     // must be dict
     assert.throws(
-      function(){G.add_edge(0,1,[]);},
+      function(){G.addEdge(0,1,[]);},
       JSNetworkXError
     );
   },
 
-  is_deepcopy: function(H, G) {
-    this.graphs_equal(H, G);
-    this.different_attrdict(H, G);
-    this.deep_copy_attrdict(H, G);
+  isDeepcopy: function(H, G) {
+    this.graphsEqual(H, G);
+    this.differentAttrdict(H, G);
+    this.deepCopyAttrdict(H, G);
   },
 
-  deep_copy_attrdict: function(H, G) {
-    this.deepcopy_graph_attr(H, G);
-    this.deepcopy_node_attr(H, G);
-    this.deepcopy_edge_attr(H, G);
+  deepCopyAttrdict: function(H, G) {
+    this.deepcopyGraphAttr(H, G);
+    this.deepcopyNodeAttr(H, G);
+    this.deepcopyEdgeAttr(H, G);
   },
 
-  deepcopy_graph_attr: function(H,G) {
+  deepcopyGraphAttr: function(H,G) {
     assert.deepEqual(G.graph['foo'], H.graph['foo']);
     G.graph['foo'].push(1);
     assert.notDeepEqual(G.graph['foo'], H.graph['foo']);
   },
 
-  deepcopy_node_attr: function(H,G) {
+  deepcopyNodeAttr: function(H,G) {
     assert.deepEqual(G.node.get(0)['foo'], H.node.get(0)['foo']);
     G.node.get(0)['foo'].push(1);
     assert.notDeepEqual(G.node.get(0)['foo'], H.node.get(0)['foo']);
   },
 
-  deepcopy_edge_attr: function(H,G) {
+  deepcopyEdgeAttr: function(H,G) {
     assert.deepEqual(G.get(1).get(2)['foo'], H.get(1).get(2)['foo']);
     G.get(1).get(2)['foo'].push(1);
     assert.notDeepEqual(G.get(1).get(2)['foo'], H.get(1).get(2)['foo']);
   },
 
-  graphs_equal: function(H,G) {
+  graphsEqual: function(H,G) {
     assert.deepEqual(G.adj,H.adj);
     assert.deepEqual(G.edge,H.edge);
     assert.deepEqual(G.node,H.node);
     assert.deepEqual(G.graph,H.graph);
     assert.deepEqual(G.name,H.name);
-    if (!G.is_directed() && !H.is_directed()) {
+    if (!G.isDirected() && !H.isDirected()) {
       assert.strictEqual(H.adj.get(1).get(2), H.adj.get(2).get(1));
       assert.strictEqual(G.adj.get(1).get(2), G.adj.get(2).get(1));
     }
     else { // at least one is directed
-      if (!G.is_directed()) {
+      if (!G.isDirected()) {
         G.pred=G.adj;
         G.succ=G.adj;
       }
-      if (!H.is_directed()) {
+      if (!H.isDirected()) {
         H.pred=H.adj;
         H.succ=H.adj;
       }
@@ -81,59 +81,59 @@ module.exports = {
     }
   },
 
-  different_attrdict: function(H, G) {
-    var old_foo = H.get(1).get(2)['foo'];
-    H.add_edge(1,2,{foo:'baz'});
+  differentAttrdict: function(H, G) {
+    var oldFoo = H.get(1).get(2)['foo'];
+    H.addEdge(1,2,{foo:'baz'});
     assert.notDeepEqual(G.edge,H.edge);
-    H.add_edge(1,2,{foo:old_foo});
+    H.addEdge(1,2,{foo:oldFoo});
     assert.deepEqual(G.edge,H.edge);
-    old_foo = H.node.get(0)['foo'];
+    oldFoo = H.node.get(0)['foo'];
     H.node.get(0)['foo'] = 'baz';
     assert.notDeepEqual(G.node, H.node);
-    H.node.get(0)['foo'] = old_foo;
+    H.node.get(0)['foo'] = oldFoo;
     assert.deepEqual(G.node, H.node);
   },
 
-  is_shallow_copy: function(H,G) {
-    this.graphs_equal(H, G);
-    this.different_attrdict(H, G);
-    this.shallow_copy_attrdict(H, G);
+  isShallowCopy: function(H,G) {
+    this.graphsEqual(H, G);
+    this.differentAttrdict(H, G);
+    this.shallowCopyAttrdict(H, G);
   },
 
-  shallow_copy_attrdict: function(H,G) {
-    this.shallow_copy_graph_attr(H, G);
-    this.shallow_copy_node_attr(H, G);
-    this.shallow_copy_edge_attr(H, G);
+  shallowCopyAttrdict: function(H,G) {
+    this.shallowCopyGraphAttr(H, G);
+    this.shallowCopyNodeAttr(H, G);
+    this.shallowCopyEdgeAttr(H, G);
   },
 
-  shallow_copy_graph_attr: function(H,G) {
+  shallowCopyGraphAttr: function(H,G) {
     assert.equal(G.graph['foo'], H.graph['foo']);
     G.graph['foo'].push(1);
     assert.deepEqual(G.graph['foo'],H.graph['foo']);
   },
 
-  shallow_copy_node_attr: function(H,G) {
+  shallowCopyNodeAttr: function(H,G) {
     assert.deepEqual(G.node.get(0)['foo'],H.node.get(0)['foo']);
     G.node.get(0)['foo'].push(1);
     assert.deepEqual(G.node.get(0)['foo'],H.node.get(0)['foo']);
   },
 
-  shallow_copy_edge_attr: function(H,G) {
+  shallowCopyEdgeAttr: function(H,G) {
     assert.deepEqual(G.get(1).get(2)['foo'],H.get(1).get(2)['foo']);
     G.get(1).get(2)['foo'].push(1);
     assert.deepEqual(G.get(1).get(2)['foo'],H.get(1).get(2)['foo']);
   },
 
-  same_attrdict: function(H, G) {
-    var old_foo = H.get(1).get(2)['foo'];
-    H.add_edge(1,2,{foo:'baz'});
+  sameAttrdict: function(H, G) {
+    var oldFoo = H.get(1).get(2)['foo'];
+    H.addEdge(1,2,{foo:'baz'});
     assert.deepEqual(G.edge,H.edge);
-    H.add_edge(1,2,{foo:old_foo});
+    H.addEdge(1,2,{foo:oldFoo});
     assert.deepEqual(G.edge,H.edge);
-    old_foo = H.node.get(0)['foo'];
+    oldFoo = H.node.get(0)['foo'];
     H.node.get(0)['foo'] = 'baz';
     assert.deepEqual(G.node,H.node);
-    H.node.get(0)['foo'] = old_foo;
+    H.node.get(0)['foo'] = oldFoo;
     assert.deepEqual(G.node,H.node);
   }
 };

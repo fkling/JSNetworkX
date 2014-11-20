@@ -15,8 +15,8 @@ var iteratorToArray = require('./itertools/toArray');
  * @param {?number=} opt_step Step size
  * @return {!Array}
  */
-function range(opt_start, opt_end, opt_step) {
-  return iteratorToArray(genRange(opt_start, opt_end, opt_step));
+function range(optStart, optEnd, optStep) {
+  return iteratorToArray(genRange(optStart, optEnd, optStep));
 }
 
 module.exports = range;

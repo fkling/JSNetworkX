@@ -21,7 +21,7 @@ if (typeof global.Worker === 'function') {
           arg :
           {
             __type__: arg.constructor.__name__,
-            data: convert.to_edgelist(arg)
+            data: convert.toEdgelist(arg)
           };
       }
       return arg;

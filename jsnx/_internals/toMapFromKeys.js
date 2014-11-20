@@ -12,13 +12,13 @@ var forEach = require('./forEach');
  *
  * @return {!Map}
  */
-function toMapFromKeys(keys, opt_value) {
-   if (opt_value == null) { // && opt_value == undefined
-     opt_value = null;
+function toMapFromKeys(keys, optValue) {
+   if (optValue == null) { // && opt_value == undefined
+     optValue = null;
    }
    var result = new Map();
    forEach(keys, function(key) {
-     result.set(key, opt_value);
+     result.set(key, optValue);
    });
    return result;
 }

@@ -11,13 +11,13 @@ var forEach = require('./forEach');
  *
  * @return {!Object}
  */
-function toObjectFromKeys(keys, opt_value) {
-    if(opt_value == null) { // && opt_value == undefined
-        opt_value = null;
+function toObjectFromKeys(keys, optValue) {
+    if(optValue == null) { // && opt_value == undefined
+        optValue = null;
     }
     var result = {};
     forEach(keys, function(key) {
-        result[key] = opt_value;
+        result[key] = optValue;
     });
     return result;
 }

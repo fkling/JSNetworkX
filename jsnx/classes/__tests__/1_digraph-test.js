@@ -61,7 +61,7 @@ exports.TestDiGraph = _.extend({}, TestGraph, BaseDiGraphTester, {
     this.P3.node = new Map([[0,{}], [1, {}], [2, {}]]);
   },
 
-  test_data_input: function() {
+  testDataInput: function() {
     var G = this.Graph(new Map([[1,[2]], [2, [1]]]), {name: 'test'});
     assert.equal(G.name, 'test');
     assert.deepEqual(
@@ -78,9 +78,9 @@ exports.TestDiGraph = _.extend({}, TestGraph, BaseDiGraphTester, {
     );
   },
 
-  test_add_edge: function() {
+  testAddEdge: function() {
     var G = this.Graph();
-    G.add_edge(0,1);
+    G.addEdge(0,1);
     assert.deepEqual(
       G.adj,
       new Map({0: new Map({1:{}}), 1: new Map()})
@@ -95,7 +95,7 @@ exports.TestDiGraph = _.extend({}, TestGraph, BaseDiGraphTester, {
     );
 
     G = this.Graph();
-    G.add_edge.apply(G, [0,1]); // tuple unpacking
+    G.addEdge.apply(G, [0,1]); // tuple unpacking
     assert.deepEqual(
       G.adj,
       new Map({0: new Map({1:{}}), 1: new Map()})
@@ -110,9 +110,9 @@ exports.TestDiGraph = _.extend({}, TestGraph, BaseDiGraphTester, {
     );
   },
 
-  test_add_edges_from: function() {
+  testAddEdgesFrom: function() {
     var G = this.Graph();
-    G.add_edges_from([[0,1], [0,2, {data: 3}]], {data: 2});
+    G.addEdgesFrom([[0,1], [0,2, {data: 3}]], {data: 2});
 
     assert.deepEqual(
       G.adj,
@@ -138,19 +138,19 @@ exports.TestDiGraph = _.extend({}, TestGraph, BaseDiGraphTester, {
     );
 
     // too few in tuple
-    assert.throws(function(){G.add_edges_from([[0]]);}, JSNetworkXError);
+    assert.throws(function(){G.addEdgesFrom([[0]]);}, JSNetworkXError);
     // too many in tuple
     assert.throws(
-      function(){G.add_edges_from([[0,1,2,3]]);},
+      function(){G.addEdgesFrom([[0,1,2,3]]);},
       JSNetworkXError
     );
     // not a tuple
-    assert.throws(function(){G.add_edges_from([0]);}, TypeError);
+    assert.throws(function(){G.addEdgesFrom([0]);}, TypeError);
   },
 
-  test_remove_edge: function() {
+  testRemoveEdge: function() {
     var G = this.K3;
-    G.remove_edge(0,1);
+    G.removeEdge(0,1);
     assert.deepEqual(
       G.succ,
       new Map({
@@ -168,14 +168,14 @@ exports.TestDiGraph = _.extend({}, TestGraph, BaseDiGraphTester, {
       })
     );
     assert.throws(
-      function(){G.remove_edge(-1, 0);},
+      function(){G.removeEdge(-1, 0);},
       JSNetworkXError
     );
   },
 
-  test_remove_edges_from: function() {
+  testRemoveEdgesFrom: function() {
     var G = this.K3;
-    G.remove_edges_from([[0,1]]);
+    G.removeEdgesFrom([[0,1]]);
     assert.deepEqual(
       G.succ,
       new Map({
@@ -192,6 +192,6 @@ exports.TestDiGraph = _.extend({}, TestGraph, BaseDiGraphTester, {
         2: new Map({0:{}, 1:{}})
       })
     );
-    assert.doesNotThrow(function(){G.remove_edges_from([[0,0]]);});
+    assert.doesNotThrow(function(){G.removeEdgesFrom([[0,0]]);});
   }
 });

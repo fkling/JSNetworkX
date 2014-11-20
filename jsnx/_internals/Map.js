@@ -6,7 +6,7 @@
  */
 
 var clear = require('./clear');
-var collections_forEach = require('lodash-node/modern/collections/forEach');
+var collectionsForEach = require('lodash-node/modern/collections/forEach');
 var isIterator = require('./isIterator');
 var isFunction = require('lodash-node/modern/objects/isFunction');
 var isObject = require('lodash-node/modern/objects/isObject');
@@ -24,27 +24,27 @@ var size = require('lodash-node/modern/collections/size');
  * @constructor
  */
 class Map {
-  constructor(opt_data) {
+  constructor(optData) {
     // Can't use class syntax because of generator functions
-    this._string_values = Object.create(null); // strings
-    this._number_values = Object.create(null); // numbers
+    this._stringValues = Object.create(null); // strings
+    this._numberValues = Object.create(null); // numbers
     this._values = Object.create(null); // every other value
     this._keys = Object.create(null);
 
-    if (opt_data != null) {
-      if (isIterator(opt_data)) {
-        for (var datum of opt_data) {
+    if (optData != null) {
+      if (isIterator(optData)) {
+        for (var datum of optData) {
           this.set.apply(this, datum);
         }
       }
-      else if(isArrayLike(opt_data)) {
-        collections_forEach(opt_data, function(datum) {
+      else if(isArrayLike(optData)) {
+        collectionsForEach(optData, function(datum) {
           this.set.apply(this, datum);
         }, this);
       }
-      else if (isObject(opt_data)) {
-        for (var k in opt_data) {
-          this.set(isNaN(+k) ? k : +k, opt_data[k]);
+      else if (isObject(optData)) {
+        for (var k in optData) {
+          this.set(isNaN(+k) ? k : +k, optData[k]);
         }
       }
     }
@@ -60,9 +60,9 @@ class Map {
   _getStorage(key) {
     switch (typeof key) {
       case 'number':
-        return this._number_values;
+        return this._numberValues;
       case 'string':
-        return this._string_values;
+        return this._stringValues;
       default:
         return this._values;
       }
@@ -141,11 +141,11 @@ class Map {
   */
   *entries() {
     var key;
-    for (key in this._number_values) {
-      yield [+key, this._number_values[key]];
+    for (key in this._numberValues) {
+      yield [+key, this._numberValues[key]];
     }
-    for (key in this._string_values) {
-      yield [key, this._string_values[key]];
+    for (key in this._stringValues) {
+      yield [key, this._stringValues[key]];
     }
     for (key in this._values) {
       yield [this._keys[key], this._values[key]];
@@ -160,10 +160,10 @@ class Map {
   */
   *keys() {
     var key;
-    for (key in this._number_values) {
+    for (key in this._numberValues) {
       yield +key;
     }
-    for (key in this._string_values) {
+    for (key in this._stringValues) {
       yield key;
     }
     for (key in this._values) {
@@ -179,11 +179,11 @@ class Map {
   */
   *values() {
     var key;
-    for (key in this._number_values) {
-      yield this._number_values[key];
+    for (key in this._numberValues) {
+      yield this._numberValues[key];
     }
-    for (key in this._string_values) {
-      yield this._string_values[key];
+    for (key in this._stringValues) {
+      yield this._stringValues[key];
     }
     for (key in this._values) {
       yield this._values[key];
@@ -198,8 +198,8 @@ class Map {
   */
   get size() {
     return size(this._values) +
-      size(this._number_values) +
-      size(this._string_values);
+      size(this._numberValues) +
+      size(this._stringValues);
   }
 
   /**
@@ -208,8 +208,8 @@ class Map {
    * @export
   */
   clear() {
-    clear(this._string_values);
-    clear(this._number_values);
+    clear(this._stringValues);
+    clear(this._numberValues);
     clear(this._values);
     clear(this._keys);
   }
@@ -222,12 +222,12 @@ class Map {
    * @param {*=} opt_this Object/value to set this to inside the callback
    * @export
   */
-  forEach(callback, opt_this) {
+  forEach(callback, optThis) {
     if (!isFunction(callback)) {
       throw new TypeError('callback must be a function');
     }
     for (var v of this.entries()) {
-      callback.call(opt_this, v[1], v[0], this);
+      callback.call(optThis, v[1], v[0], this);
     }
   }
 }

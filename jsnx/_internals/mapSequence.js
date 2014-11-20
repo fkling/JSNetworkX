@@ -27,18 +27,18 @@ var nativeMap = Array.prototype.map;
  *
  * @return {(Array|Object|Iterator)}
  */
-function mapSequence(sequence, callback, this_obj) {
+function mapSequence(sequence, callback, thisObj) {
   if (isArrayLike(sequence)) {
-    return nativeMap.call(sequence, callback, this_obj);
+    return nativeMap.call(sequence, callback, thisObj);
   }
   else if (isIterable(sequence)) {
     sequence = sequence[iteratorSymbol]();
   }
   if (isIterator(sequence)) {
-    return mapIterator(sequence, callback, this_obj);
+    return mapIterator(sequence, callback, thisObj);
   }
   else if(isPlainObject(sequence)) {
-    return mapValues(sequence, callback, this_obj);
+    return mapValues(sequence, callback, thisObj);
   }
   else {
     throw new TypeError(

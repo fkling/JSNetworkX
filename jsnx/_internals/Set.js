@@ -13,11 +13,11 @@ var toIterator = require('./itertools/toIterator');
  * with.
  * @constructor
  */
-function Set(opt_data) {
+function Set(optData) {
   this.map_ = new Map();
 
-  if (opt_data != null) {
-    for (var v of toIterator(opt_data)) {
+  if (optData != null) {
+    for (var v of toIterator(optData)) {
         this.add(v);
     }
   }
@@ -123,9 +123,9 @@ Set.prototype.clear = function() {
  * @param {*=} opt_this Object/value to set this to inside the callback
  * @export
 */
-Set.prototype.forEach = function(callback, opt_this) {
+Set.prototype.forEach = function(callback, optThis) {
   for (var v of this.values()) {
-    callback.call(opt_this, v, v, this);
+    callback.call(optThis, v, v, this);
   }
 };
 

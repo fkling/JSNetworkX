@@ -9,9 +9,9 @@
  * @param {?=} opt_this_obj
  * @return {Iterator}
  */
-function* mapIterator(iterator, map, opt_this_obj) {
+function* mapIterator(iterator, map, optThisObj) {
   for (var v of iterator) {
-    yield map.call(opt_this_obj, v);
+    yield map.call(optThisObj, v);
   }
 }
 

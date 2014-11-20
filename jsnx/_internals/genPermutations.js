@@ -28,11 +28,11 @@ function *genPermutations(iterable, r) {
   }
   var indicies = range(n);
   var cycles = range(n, n - r, -1);
-  var range_r = range(r-1, -1 , -1);
+  var rangeR = range(r-1, -1 , -1);
   yield indicies.slice(0, r).map(i => pool[i]);
   while (true) {
-    for (var k = 0; k < range_r.length; k++) {
-      var i = range_r[k];
+    for (var k = 0; k < rangeR.length; k++) {
+      var i = rangeR[k];
       cycles[i] -= 1;
       var index = indicies[i];
       if (cycles[i] === 0) {
@@ -48,7 +48,7 @@ function *genPermutations(iterable, r) {
         break;
       }
     }
-    if (range_r.length === k) {
+    if (rangeR.length === k) {
       return;
     }
   }

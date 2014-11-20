@@ -6,36 +6,36 @@ var isPlainObject = require('lodash-node/modern/objects/isPlainObject');
 var mapValues = require('lodash-node/modern/objects/mapValues');
 var zipIterator = require('./itertools/zipIterator.js');
 
-function zipArray(...var_args) {
+function zipArray(...varArgs) {
   // Pre-allocation arrays speeds up assignment drastically, so we want to 
   // optimize for that case
-  var length = var_args.length;
+  var length = varArgs.length;
   var min = Infinity;
   var i;
   var result;
-  var next_zip = new Array(length);
+  var nextZip = new Array(length);
 
   // first pass
   for (i = 0; i < length; i++) {
-    var array = var_args[i];
-    var array_length = array.length;
-    if (array_length < min) {
-      min = array_length;
+    var array = varArgs[i];
+    var arrayLength = array.length;
+    if (arrayLength < min) {
+      min = arrayLength;
       if (min === 0) {
         return []; // backout early
       }
     }
-    next_zip[i] = array[0];
+    nextZip[i] = array[0];
   }
   result = new Array(min);
-  result[0] = next_zip;
+  result[0] = nextZip;
 
   for (i = 1; i < min; i++) {
-    next_zip = new Array(length);
+    nextZip = new Array(length);
     for (var j = 0; j < length; j++) {
-      next_zip[j] = var_args[j][i];
+      nextZip[j] = varArgs[j][i];
     }
-    result[i] = next_zip;
+    result[i] = nextZip;
   }
   return result;
 }
@@ -56,19 +56,19 @@ function zipArray(...var_args) {
  *
  * @return {!(Array|Iterator)}
  */
-function zipSequence(...var_args) {
-  var first = var_args[0];
+function zipSequence(...varArgs) {
+  var first = varArgs[0];
 
   if (isArrayLike(first)) {
-    return zipArray.apply(null, var_args);
+    return zipArray.apply(null, varArgs);
   }
   else if(isIterator(first)) {
-    return zipIterator.apply(null, var_args);
+    return zipIterator.apply(null, varArgs);
   }
   else if(isPlainObject(first)) {
     return zipArray.apply(
       null,
-      var_args.map(Object.keys)
+      varArgs.map(Object.keys)
     );
   }
   else {

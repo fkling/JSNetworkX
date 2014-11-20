@@ -26,17 +26,17 @@ function *genCombinations(iterable, r) {
     return;
   }
   var indicies = range(r);
-  var reversed_indicies = reversed(indicies);
+  var reversedIndicies = reversed(indicies);
   yield indicies.map(i => pool[i]);
   while (true) {
     var i;
-    for (var k = 0; k < reversed_indicies.length; k++) {
-      i = reversed_indicies[k];
+    for (var k = 0; k < reversedIndicies.length; k++) {
+      i = reversedIndicies[k];
       if (indicies[i] !== i + n - r) {
         break;
       }
     }
-    if (reversed_indicies.length === k) {
+    if (reversedIndicies.length === k) {
       return;
     }
     indicies[i] += 1;

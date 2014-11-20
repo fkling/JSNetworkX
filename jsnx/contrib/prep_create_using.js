@@ -11,14 +11,14 @@
  *
  * @return {Graph}
  */
-function prep_create_using(opt_create_using) {
+function prepCreateUsing(optCreateUsing) {
   var G;
 
-  if (opt_create_using == null) {
+  if (optCreateUsing == null) {
     G = new require('../classes/graph')();
   }
   else {
-    G = opt_create_using;
+    G = optCreateUsing;
 
     try {
       G.clear();
@@ -30,4 +30,4 @@ function prep_create_using(opt_create_using) {
   return G;
 }
 
-module.exports = prep_create_using;
+module.exports = prepCreateUsing;

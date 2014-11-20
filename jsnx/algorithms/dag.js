@@ -18,9 +18,9 @@ var setDifference = require('../_internals/sets/difference');
  * @return {boolean} true of G is a DAG, false otherwise
  * @export
  */
-async function is_directed_acyclic_graph(G) {
+async function isDirectedAcyclicGraph(G) {
   try {
-    topological_sort(G);
+    topologicalSort(G);
     return true;
   }
   catch(ex) {
@@ -47,8 +47,8 @@ async function is_directed_acyclic_graph(G) {
  *
  * @export
  */
-async function topological_sort(G, opt_nbunch) {
-  if (!G.is_directed()) {
+async function topologicalSort(G, optNbunch) {
+  if (!G.isDirected()) {
     throw new JSNetworkXError(
       'Topological sort not defined on undirected graphs.'
     );
@@ -56,15 +56,15 @@ async function topological_sort(G, opt_nbunch) {
 
   // nonrecursive version
   var seen = new Set();
-  var order_explored = []; // provide order and
+  var orderExplored = []; // provide order and
   // fast search without more general priorityDictionary
   var explored = new Set();
 
-  if (opt_nbunch == null) {
-    opt_nbunch = G.nodes_iter();
+  if (optNbunch == null) {
+    optNbunch = G.nodesIter();
   }
 
-  forEach(opt_nbunch, function(v) { // process all vertices in G
+  forEach(optNbunch, function(v) { // process all vertices in G
     if (explored.has(v)) {
       return; // continue
     }
@@ -78,27 +78,27 @@ async function topological_sort(G, opt_nbunch) {
       }
       seen.add(w); // mark as seen
       // Check successors for cycles for new nodes
-      var new_nodes = [];
+      var newNodes = [];
       /*jshint loopfunc:true*/
       G.get(w).forEach(function(_, n) {
         if (!explored.has(n)) {
           if (seen.has(n)) { // CYCLE !!
             throw new JSNetworkXUnfeasible('Graph contains a cycle.');
           }
-          new_nodes.push(n);
+          newNodes.push(n);
         }
       });
-      if (new_nodes.length > 0) { // add new nodes to fringe
-        fringe.push.apply(fringe, new_nodes);
+      if (newNodes.length > 0) { // add new nodes to fringe
+        fringe.push.apply(fringe, newNodes);
       }
       else {
         explored.add(w);
-        order_explored.unshift(w);
+        orderExplored.unshift(w);
       }
     }
   });
 
-  return order_explored;
+  return orderExplored;
 }
 
 /**
@@ -117,8 +117,8 @@ async function topological_sort(G, opt_nbunch) {
  *
  * @export
  */
-async function topological_sort_recursive(G, opt_nbunch) {
-  if (!G.is_directed()) {
+async function topologicalSortRecursive(G, optNbunch) {
+  if (!G.isDirected()) {
     throw new JSNetworkXError(
       'Topological sort not defined on undirected graphs.'
     );
@@ -151,11 +151,11 @@ async function topological_sort_recursive(G, opt_nbunch) {
   var seen = new Set();
   var explored = [];
 
-  if (opt_nbunch == null) {
-    opt_nbunch = G.nodes_iter();
+  if (optNbunch == null) {
+    optNbunch = G.nodesIter();
   }
 
-  forEach(opt_nbunch, function(v) {
+  forEach(optNbunch, function(v) {
     if (explored.indexOf(v) === -1) {
       if (!_dfs(G, seen, explored, v)) {
         throw new JSNetworkXUnfeasible('Graph contains a cycle.');
@@ -177,53 +177,53 @@ async function topological_sort_recursive(G, opt_nbunch) {
  * @return {boolean} true if the graph is aperiodic false otherwise
  * @export
  */
-async function is_aperiodic(G) {
-  if (!G.is_directed()) {
+async function isAperiodic(G) {
+  if (!G.isDirected()) {
     throw new JSNetworkXError(
       'is_aperiodic not defined for undirected graphs.'
     );
   }
 
-  var next = G.nodes_iter().next();
+  var next = G.nodesIter().next();
   if (next.done) {
     return true;
   }
   var levels = new Map();
   levels.set(next.value, 0);
-  var this_level = [next.value];
+  var thisLevel = [next.value];
   var g = 0;
   var l = 1;
 
-  while (this_level.length > 0) {
-    var next_level = [];
-    for (var i = 0; i < this_level.length; i++) {
-      var u = this_level[i];
+  while (thisLevel.length > 0) {
+    var nextLevel = [];
+    for (var i = 0; i < thisLevel.length; i++) {
+      var u = thisLevel[i];
       /*jshint loopfunc:true*/
       G.get(u).forEach(function(_, v) {
         if (levels.has(v)) { // non-tree edge
           g = gcd(g, levels.get(u) - levels.get(v) + 1);
         }
         else { // tree edge
-          next_level.push(v);
+          nextLevel.push(v);
           levels.set(v, l);
         }
       });
     }
-    this_level = next_level;
+    thisLevel = nextLevel;
     l += 1;
   }
 
-  if (levels.size === G.number_of_nodes()) {
+  if (levels.size === G.numberOfNodes()) {
     return g === 1;
   }
-  return g === 1 && is_aperiodic(
+  return g === 1 && isAperiodic(
     G.subgraph(setDifference(new Set(G.nodes()), new Set(levels.keys())))
   );
 }
 
 module.exports = {
-  is_directed_acyclic_graph,
-  topological_sort,
-  topological_sort_recursive,
-  is_aperiodic,
+  isDirectedAcyclicGraph,
+  topologicalSort,
+  topologicalSortRecursive,
+  isAperiodic,
 };
