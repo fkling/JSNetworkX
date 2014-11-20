@@ -350,13 +350,13 @@ function trivialGraph(optCreateUsing) {
 //TODO: wheel_graph
 
 module.exports = {
-  fullRaryTree: fullRaryTree,
-  balancedTree: balancedTree,
-  completeGraph: completeGraph,
-  cycleGraph: cycleGraph,
-  emptyGraph: emptyGraph,
-  grid2dGraph: grid2dGraph,
-  nullGraph: nullGraph,
-  pathGraph: pathGraph,
-  trivialGraph: trivialGraph,
+  fullRaryTree,
+  balancedTree,
+  completeGraph,
+  cycleGraph,
+  emptyGraph,
+  grid2dGraph,
+  nullGraph,
+  pathGraph,
+  trivialGraph,
 };

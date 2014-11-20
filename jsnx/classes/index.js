@@ -7,9 +7,9 @@ var assign = require('../_internals/assign');
 var functions = require('./functions');
 
 module.exports = exports = {
-  Graph: Graph,
-  DiGraph: DiGraph,
-  functions: functions,
+  Graph,
+  DiGraph,
+  functions,
 };
 
 assign(
