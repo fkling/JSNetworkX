@@ -66,16 +66,6 @@ function transformNode(src, prod) {
         cb(ex);
       }
     }))
-    /*
-    .pipe(vinylMap(function(src, filename) {
-      try {
-        return jstransform(filename, src, {prod: prod});
-      } catch(e) {
-        console.error(filename);
-        throw e;
-      }
-    }))
-    */
     .pipe(gulp.dest(paths.node));
 }
 

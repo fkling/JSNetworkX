@@ -36,11 +36,11 @@ if (process.env.ENV === 'browser') {
     // inside worker
     global.onmessage = function(event) {
       var args = event.data.args.map(function(arg) {
-        if (typeof arg === 'object' && arg.__type_) {
-          switch (arg.__type_) {
+        if (typeof arg === 'object' && arg.__type__) {
+          switch (arg.__type__) {
             case 'Graph':
             case 'DiGraph':
-              return new exports[arg.__type_](arg.data);
+              return new exports[arg.__type__](arg.data);
           }
         }
         return arg;
