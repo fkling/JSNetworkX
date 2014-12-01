@@ -63,7 +63,7 @@ function transformNode(src, prod) {
         file.contents = new Buffer(src);
         cb(null, file);
       } catch(ex) {
-        cb(ex);
+        cb(file.path + ': ' + ex);
       }
     }))
     .pipe(gulp.dest(paths.node));

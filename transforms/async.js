@@ -112,8 +112,8 @@ function transform(filename, source, opts) {
       removeAwaits: function(path) {
         types.visit(path, {
           visitAwaitExpression: function(path) {
-            path.replace(path.get('argument'));
-            this.visit(path);
+            path.replace(path.value.argument);
+            this.traverse(path);
           }
         });
       },
