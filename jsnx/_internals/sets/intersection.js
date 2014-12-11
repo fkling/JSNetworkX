@@ -13,7 +13,7 @@ var toIterator = require('../itertools/toIterator');
 function intersection(source, ...varArgs) {
   var result = new Set();
   for (var i = 0, l = varArgs.length; i < l; i++) {
-    for (var v of varArgs[i].values()) {
+    for (var v of varArgs[i]) {
       if (source.has(v)) {
         result.add(v);
       }

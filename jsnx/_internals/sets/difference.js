@@ -14,7 +14,7 @@ var toIterator = require('../itertools/toIterator');
 function difference(source, ...varArgs) {
   var result = new Set(source.values());
   for (var i = 0, l = varArgs.length; i < l; i++) {
-    for (var v of varArgs[i].values()) {
+    for (var v of varArgs[i]) {
       result.delete(v);
     }
   }

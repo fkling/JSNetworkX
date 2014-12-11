@@ -5,7 +5,6 @@ var asyncTransform = require('./transforms/async');
 var browserify = require('browserify');
 var del = require('del');
 var concat = require('gulp-concat');
-var envify = require('envify/custom');
 var esnext = require('esnext');
 var gulp = require('gulp');
 var inlineSMC = require('inline-source-map-comment');
@@ -20,7 +19,7 @@ var through = require('through');
 var watch = require('gulp-watch');
 
 var paths = {
-  root: './jsnx/index.js',
+  browser: './jsnx/browser.js',
   jsnx: './jsnetworkx.js',
   jsnx_dev: './jsnetworkx-dev.js',
   node: './node',
@@ -70,7 +69,7 @@ function transformNode(src, prod) {
 }
 
 function transformBrowser(prod) {
-  return gulp.src(paths.root)
+  return gulp.src(paths.browser)
     .pipe(vinylTransform(function(filename) {
        var b = browserify({
         standalone: 'jsnx',
@@ -89,7 +88,6 @@ function transformBrowser(prod) {
           this.queue(null);
         }
       })
-      .transform(envify({ENV: 'browser'}));
       if (prod) {
         b.transform('uglifyify', {global: true});
       }

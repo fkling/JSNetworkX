@@ -6,8 +6,10 @@ var DiGraph = require('../classes/digraph');
 var Promise = global.Promise || require('promise');
 /*jshint ignore:end*/
 
-var isGraph = require('./isGraph');
 var convert = require('../convert');
+var isGraph = require('./isGraph');
+var isIterator = require('./isIterator');
+var iteratorToArray = require('./itertools/toArray');
 
 var delegateImplementation;
 if (typeof global.Worker === 'function') {
@@ -64,7 +66,13 @@ else {
     var jsnx = require('../');
     return new Promise(function(resolve, reject) {
       try {
-        resolve(jsnx[method].apply(null, args));
+        // We have to do the same here as we do in the worker, which is
+        // returning an array if we get back an iterator
+        var result = jsnx[method].apply(null, args);
+        if (isIterator(result)) {
+          result = iteratorToArray(result);
+        }
+        resolve(result);
       } catch(ex) {
         reject(ex);
       }
