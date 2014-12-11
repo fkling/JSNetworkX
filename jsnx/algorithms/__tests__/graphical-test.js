@@ -9,6 +9,7 @@ var erdosRenyiGraph = require('../../generators/randomGraphs').erdosRenyiGraph;
 exports.graphical = {
 
   testValidDegreeSequence1:  function() {
+    this.timeout(3000);
     var n = 100;
     var p = 0.3;
     for(var i = 0; i < 10; i++) {
