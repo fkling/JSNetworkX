@@ -12,6 +12,7 @@ var mapStream = require('map-stream');
 var vinylTransform = require('vinyl-transform');
 var mocha = require('gulp-mocha');
 var preprocess = require('gulp-preprocess');
+var plumber = require('gulp-plumber');
 var regenerator = require('regenerator');
 var replace = require('gulp-replace');
 var sourceMapSupport = require('source-map-support');
@@ -125,10 +126,13 @@ gulp.task('clean-browser', function(cb) {
   del([paths.jsnx, paths.jsnx_dev], cb);
 });
 
-gulp.task('watch-node', ['build-node-dev'], function() {
-  return watch('jsnx/**/*.js', function(files) {
-    return transformNode(files, false);
-  });
+gulp.task('watch-node', function() {
+  return transformNode(
+    gulp.src('jsnx/**/*.js')
+     .pipe(watch('jsnx/**/*.js'))
+     .pipe(plumber()),
+    false
+  );
 });
 
 gulp.task('test-node', function () {
