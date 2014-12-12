@@ -8,7 +8,7 @@ var Map = utils.Map;
 /*jshint ignore:end*/
 var JSNetworkXError = require('../../exceptions/JSNetworkXError');
 
-var toArray = utils.itertools.toArray;
+var toArray = utils.iteratorToArray;
 var _ = require('lodash-node');
 
 // Tests specific to dict-of-dict-of-dict graph data structure

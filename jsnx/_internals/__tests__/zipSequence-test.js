@@ -1,7 +1,6 @@
-/*global assert*/
+/*global assert, utils*/
 "use strict";
 
-var toArray = require('../itertools/toArray');
 var zip = require('../zipSequence');
 
 function* gen(data) {
@@ -27,7 +26,7 @@ exports.zipSequence = {
 
   'zip iterators': function() {
     assert.deepEqual(
-      toArray(zip(gen([1,2,3]), gen([4, 5]))),
+      utils.iteratorToArray(zip(gen([1,2,3]), gen([4, 5]))),
       [[1,4],[2,5]]
     );
   },

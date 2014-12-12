@@ -10,7 +10,7 @@ var Map = utils.Map;
 var JSNetworkXError = require('../../exceptions/JSNetworkXError');
 
 var shared = require('./shared');
-var toArray = utils.itertools.toArray;
+var toArray = utils.iteratorToArray;
 var _ = require('lodash-node');
 
 var BaseAttrGraphTester = _.extend({}, BaseGraphTester, {

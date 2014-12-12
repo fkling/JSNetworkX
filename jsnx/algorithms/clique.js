@@ -1,20 +1,16 @@
 'use strict';
 
-/*jshint ignore:start*/
 var {
+/*jshint ignore:start*/
   Map,
-  Set
-} = require('../_internals');
+  Set,
 /*jshint ignore:end*/
-
-var difference = require('../_internals/sets/difference');
-var intersection = require('../_internals/sets/intersection');
-var isArray = require('../_internals/isArray');
-var mapIterator = require('../_internals/itertools/mapIterator');
-var max = require('../_internals/max');
-var pop = require('../_internals/sets/pop');
-var toArray = require('../_internals/toArray');
-var tuple2 = require('../_internals/tuple').tuple2;
+  isArray,
+  mapIterator,
+  max,
+  toArray,
+  tuple2
+} = require('../_internals');
 
 /**
  * @fileoverview
@@ -96,29 +92,29 @@ async function* findCliques(G) {
   var candidates = new Set(G);
   var Q = [null];
 
-  var u = max(subgraph, u => intersection(candidates, adj.get(u)).size);
-  var ext_u = difference(candidates, adj.get(u));
+  var u = max(subgraph, u => candidates.intersection(adj.get(u)).size);
+  var ext_u = candidates.difference(adj.get(u));
   var stack = [];
 
   while (true) {
     if (ext_u.size > 0) {
-      var q = pop(ext_u);
+      var q = ext_u.pop();
       candidates.delete(q);
       Q[Q.length - 1] = q;
       var adj_q = adj.get(q);
-      var subgraph_q = intersection(subgraph, adj_q);
+      var subgraph_q = subgraph.intersection(adj_q);
       if (subgraph_q.size === 0) {
         yield Q.slice();
       }
       else {
-        var candidates_q = intersection(candidates, adj_q);
+        var candidates_q = candidates.intersection(adj_q);
         if (candidates_q.size > 0) {
           stack.push([subgraph, candidates, ext_u]);
           Q.push(null);
           subgraph = subgraph_q;
           candidates = candidates_q;
-          u = max(subgraph, u => intersection(candidates, adj.get(u)).size);
-          ext_u = difference(candidates, adj.get(u));
+          u = max(subgraph, u => candidates.intersection(adj.get(u)).size);
+          ext_u = candidates.difference(adj.get(u));
         }
       }
     }
@@ -193,17 +189,17 @@ async function* findCliquesRecursive(G) {
   var Q = [];
 
   function* expand(subgraph, candidates) {
-    var u = max(subgraph, u => intersection(candidates, adj.get(u)).size);
-    for (var q of difference(candidates, adj.get(u))) {
+    var u = max(subgraph, u => candidates.intersection(adj.get(u)).size);
+    for (var q of candidates.difference(adj.get(u))) {
       candidates.delete(q);
       Q.push(q);
       var adj_q = adj.get(q);
-      var subgraph_q = intersection(subgraph, adj_q);
+      var subgraph_q = subgraph.intersection(adj_q);
       if (subgraph_q.size === 0) {
         yield Q.slice();
       }
       else {
-        var candidates_q = intersection(candidates, adj_q);
+        var candidates_q = candidates.intersection(adj_q);
         if (candidates_q.size > 0) {
           yield* expand(subgraph_q, candidates_q);
         }

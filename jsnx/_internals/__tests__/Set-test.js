@@ -2,7 +2,6 @@
 /*global utils, assert*/
 
 var Set = require('../Set');
-var itertools = utils.itertools;
 
 exports.Set = {
   testCreate: function() {
@@ -12,7 +11,7 @@ exports.Set = {
 
   testAddElements: function() {
     var set = new Set([1,2,3]);
-    assert.deepEqual(itertools.toArray(set.values()).sort(), [1,2,3]);
+    assert.deepEqual(utils.iteratorToArray(set.values()).sort(), [1,2,3]);
 
     set = new Set();
     set.add(1);
@@ -32,5 +31,44 @@ exports.Set = {
   testCount: function() {
     var set = new Set([1,2,3]);
     assert.equal(set.size, 3);
+  },
+
+  difference: {
+    'single argument - different set, same elements': function() {
+      var set = new Set([1,2,3]);
+      var diff = set.difference();
+
+      assert.notEqual(diff, set);
+      assert.deepEqual(diff, set);
+    },
+
+    'two arguments': function() {
+      var diff = new Set([1,2,3,4]).difference(new Set([2,4]));
+
+      assert.deepEqual(diff, new Set([1,3]));
+    },
+
+    'multiple arguments': function() {
+      var diff = new Set([1,2,3,4]).difference(new Set([2, 6]), new Set([4]));
+
+      assert.deepEqual(diff, new Set([1,3]));
+    }
+
+  },
+
+  intersection: {
+    'two arguments': function() {
+      var diff = new Set([1,2,3,4]).intersection(new Set([2,4]));
+
+      assert.deepEqual(diff, new Set([2,4]));
+    },
+
+    'multiple arguments': function() {
+      var diff = new Set([1,2,3,4])
+        .intersection(new Set([2, 6]), new Set([2, 4]));
+
+      assert.deepEqual(diff, new Set([2]));
+    }
   }
+
 };

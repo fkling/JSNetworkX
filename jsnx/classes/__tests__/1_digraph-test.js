@@ -13,7 +13,7 @@ var TestGraph = require('./0_graph-test').TestGraph;
 var _ = require('lodash-node');
 
 var sorted = function(iterator) {
-  return utils.itertools.toArray(iterator).sort();
+  return utils.iteratorToArray(iterator).sort();
 };
 
 exports.TestDiGraph = _.extend({}, TestGraph, BaseDiGraphTester, {

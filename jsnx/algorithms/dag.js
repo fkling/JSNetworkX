@@ -2,14 +2,14 @@
 
 var JSNetworkXError = require('../exceptions/JSNetworkXError');
 var JSNetworkXUnfeasible = require('../exceptions/JSNetworkXUnfeasible');
+var {
 /*jshint ignore:start*/
-var Map = require('../_internals/Map');
-var Set = require('../_internals/Set');
+  Map,
+  Set,
 /*jshint ignore:end*/
-
-var forEach = require('../_internals/forEach');
-var gcd = require('../_internals/gcd');
-var setDifference = require('../_internals/sets/difference');
+  forEach,
+  gcd
+} = require('../_internals');
 
 /**
  * Return true if the graph G is a directed acyclic graph (DAG) or false if not.
@@ -217,7 +217,7 @@ async function isAperiodic(G) {
     return g === 1;
   }
   return g === 1 && isAperiodic(
-    G.subgraph(setDifference(new Set(G.nodes()), new Set(levels.keys())))
+    G.subgraph(new Set(G.nodes()).difference(levels.keys()))
   );
 }
 

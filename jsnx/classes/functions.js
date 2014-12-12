@@ -2,11 +2,13 @@
 
 var JSNetworkXError = require('../exceptions/JSNetworkXError');
 
-var fillArray = require('../_internals/fillArray');
-var isMap = require('../_internals/isMap');
-var isPlainObject = require('../_internals/isPlainObject');
-var iteratorToArray = require('../_internals/itertools/toArray');
-var sprintf = require('../_internals/sprintf');
+var {
+  fillArray,
+  isMap,
+  isPlainObject,
+  iteratorToArray,
+  sprintf
+} = require('../_internals');
 
 /**
  * Return a copy of the graph nodes in a list.

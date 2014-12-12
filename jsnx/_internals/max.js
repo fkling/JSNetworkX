@@ -1,4 +1,5 @@
 "use strict";
+
 var forEach = require('./forEach');
 
 /**

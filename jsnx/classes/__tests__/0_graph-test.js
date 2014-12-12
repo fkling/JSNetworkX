@@ -11,7 +11,7 @@ var KeyError = require('../../exceptions/KeyError');
 var _ = require('lodash-node');
 
 var sorted = function(iterator) {
-  return utils.itertools.toArray(iterator).sort();
+  return utils.iteratorToArray(iterator).sort();
 };
 
 // Tests specific to dict-of-dict-of-dict graph data structure

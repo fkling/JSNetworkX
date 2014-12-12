@@ -7,16 +7,20 @@ var Set = require('./_internals/Set');
 /*jshint ignore:end*/
 var {JSNetworkXError, JSNetworkXUnfeasible} = require('./exceptions');
 
-var assign = require('./_internals/assign');
-var clone = require('./_internals/clone');
-var forEach = require('./_internals/forEach');
-var isMap = require('./_internals/isMap');
-var iteratorToArray = require('./_internals/itertools/toArray');
-var mapIterator = require('./_internals/itertools/mapIterator');
-var someIterator = require('./_internals/itertools/someIterator');
-var sprintf = require('./_internals/sprintf');
-var topologicalSort = require('./algorithms/dag').topologicalSort;
-var {tuple2, tuple3c, tuple4c} = require('./_internals/tuple');
+var {
+  assign,
+  clone,
+  forEach,
+  isMap,
+  iteratorToArray,
+  mapIterator,
+  someIterator,
+  sprintf,
+  topologicalSort,
+  tuple2,
+  tuple3c,
+  tuple4c
+} = require('./_internals');
 
 /**
  * Relabel the nodes of the graph G.

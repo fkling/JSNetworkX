@@ -3,10 +3,6 @@
 var range = require('./range');
 var toArray = require('./toArray');
 
-function reversed(array) {
-  return array.slice().reverse();
-}
-
 /**
  * Implements Python's itertools.permutations
  *

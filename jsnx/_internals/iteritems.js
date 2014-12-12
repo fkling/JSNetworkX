@@ -1,6 +1,6 @@
 "use strict";
 
-var items = require('../items');
+var items = require('./items');
 var toIterator = require('./toIterator');
 
 /**

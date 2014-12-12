@@ -16,17 +16,18 @@ var Set = require('./_internals/Set');
 /*jshint ignore:end*/
 
 var convertMap = require('./contrib/convert');
-var clone = require('./_internals/clone');
-var forEach = require('./_internals/forEach');
 var hasOwn = Object.prototype.hasOwnProperty;
-var isMap = require('./_internals/isMap');
-var isArrayLike = require('./_internals/isArrayLike');
-var isPlainObject = require('./_internals/isPlainObject');
-var mapIterator = require('./_internals/itertools/mapIterator');
 var prepCreateUsing = require('./contrib/prep_create_using');
-var toArray = require('./_internals/toArray');
-var toIterator = require('./_internals/itertools/toIterator');
 var _mapValues = require('lodash-node/modern/objects/mapValues');
+
+var {
+  clone,
+  forEach,
+  isMap,
+  isArrayLike,
+  isPlainObject,
+  toArray
+} = require('./_internals');
 
 /**
  * Make a jsnx graph from a known data structure.
@@ -310,7 +311,7 @@ function toDictOfDicts(G, optNodelist, optEdgeData) {
 /**
  * Return a graph from a dictionary of dictionaries.
  *
- * @param {!Object.<!Object>} d A dictionary of dictionaries adjacency 
+ * @param {!Object.<!Object>} d A dictionary of dictionaries adjacency
  *      representation.
  * @param {jsnx.classes.Graph=} opt_create_using Use specified graph for result.
  *      Otherwise a new graph is created.
@@ -400,7 +401,7 @@ function fromDictOfDicts(d, optCreateUsing, optMultigraphInput) {
         // treat numeric keys like numbers
         u = isNaN(u) ? u : +u;
         for (var v in nbrs) {
-          var datadict = nbrs[v];
+          var data = nbrs[v];
           v = isNaN(v) ? v : +v;
           if (!seen.has([u, v])) {
             G.addEdge(u, v, data);
@@ -418,7 +419,7 @@ function fromDictOfDicts(d, optCreateUsing, optMultigraphInput) {
         // treat numeric keys like numbers
         u = isNaN(u) ? u : +u;
         for (var v in nbrs) {
-          var datadict = nbrs[v];
+          var data = nbrs[v];
           // treat numeric keys like numbers
           v = isNaN(v) ? v : +v;
           G.addEdge(u, v, data);

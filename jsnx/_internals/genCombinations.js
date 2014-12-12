@@ -40,7 +40,7 @@ function *genCombinations(iterable, r) {
       return;
     }
     indicies[i] += 1;
-    for (var j of range(i+1, r)) {
+    for (var j = i + 1; j < r; j++) {
       indicies[j] = indicies[j-1] + 1;
     }
     yield indicies.map(i => pool[i]);

@@ -6,7 +6,7 @@ var Map = utils.Map;
 /*jshint ignore:end*/
 var JSNetworkXError = require('../../exceptions/JSNetworkXError');
 
-var iteratorToArray = utils.itertools.toArray;
+var iteratorToArray = utils.iteratorToArray;
 
 // Tests for data-structure independent graph class features.
 var BaseGraphTester = {

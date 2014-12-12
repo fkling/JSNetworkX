@@ -1,8 +1,10 @@
 "use strict";
 
-var assign = require('./_internals/assign');
-var isIterator = require('./_internals/isIterator');
-var iteratorToArray = require('./_internals/itertools/toArray');
+var {
+  assign,
+  isIterator,
+  iteratorToArray
+} = require('./_internals');
 
 assign(
   exports,

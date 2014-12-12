@@ -71,13 +71,18 @@ class Map {
   /**
    * Returns the value for the given key.
    *
+   * Unlike native ES6 maps, this also accepts a default value which is returned
+   * if the map does not contain the value.
+   *
    * @param {*} key
+   * @param {*=} optDefaultValue
    *
    * @return {*}
    * @export
    */
-  get(key) {
-    return this._getStorage(key)[key];
+  get(key, optDefaultValue) {
+    var storage = this._getStorage(key);
+    return key in storage ? storage[key] : optDefaultValue;
   }
 
   /**
@@ -89,7 +94,7 @@ class Map {
    * @export
    */
   has(key) {
-    return typeof this.get(key) !== 'undefined';
+    return key in this._getStorage(key);
   }
 
   /**
@@ -123,7 +128,7 @@ class Map {
    */
   delete(key) {
     var values = this._getStorage(key);
-    if (typeof values[key] !== 'undefined') {
+    if (key in values) {
       delete values[key];
       if (values === this._values) {
         delete this._keys[key];

@@ -2,13 +2,15 @@
 
 var Graph = require('../classes/graph');
 
-var genCombinations = require('../_internals/genCombinations');
-var genPermutations = require('../_internals/genPermutations');
-var genRange = require('../_internals/genRange');
-var isGraph = require('../_internals/isGraph');
-var mapIterator = require('../_internals/itertools/mapIterator');
-var range = require('../_internals/range');
-var tuple2 = require('../_internals/tuple').tuple2;
+var {
+  genCombinations,
+  genPermutations,
+  genRange,
+  isGraph,
+  mapIterator,
+  range,
+  tuple2
+} = require('../_internals');
 
 /**
  * @param {number} n nodes

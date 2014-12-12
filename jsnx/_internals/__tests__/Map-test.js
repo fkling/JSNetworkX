@@ -1,8 +1,11 @@
 /*jshint strict:false, node:true*/
 /*global utils, assert, regeneratorRuntime*/
+/*jshint ignore:start*/
 var Map = require('../Map');
+/*jshint ignore:end*/
 
-var itertools = utils.itertools;
+var iteratorToArray = utils.iteratorToArray;
+var toIterator = utils.toIterator;
 
 
 exports.Map = {
@@ -31,7 +34,7 @@ exports.Map = {
 
     'from iterator': function() {
       var data = [[1,2], [3,4], [5,6]];
-      var iter = itertools.toIterator(data);
+      var iter = toIterator(data);
       var map = new Map(iter);
 
       assert.equal(map.size, 3);
@@ -105,7 +108,7 @@ exports.Map = {
       'is generator'
     );
     assert.deepEqual(
-      itertools.toArray(this.map.entries()).sort(),
+      iteratorToArray(this.map.entries()).sort(),
       [['0', 0], ['1', 1], ['2', 2]]
     );
   },
@@ -116,7 +119,7 @@ exports.Map = {
       'is generator'
     );
     assert.deepEqual(
-      itertools.toArray(this.map.keys()).sort(),
+      iteratorToArray(this.map.keys()).sort(),
       ['0', '1', '2']
     );
   },
@@ -127,7 +130,7 @@ exports.Map = {
       'is generator'
     );
     assert.deepEqual(
-      itertools.toArray(this.map.values()).sort(),
+      iteratorToArray(this.map.values()).sort(),
       [0, 1, 2]
     );
   }

@@ -7,8 +7,9 @@
 /*jshint ignore:start */
 var Map = require('./Map');
 /*jshint ignore:end */
+
 var iteratorSymbol = require('./iteratorSymbol');
-var toIterator = require('./itertools/toIterator');
+var toIterator = require('./toIterator');
 
 class Set {
 
@@ -122,6 +123,59 @@ class Set {
     for (var v of this.values()) {
       callback.call(optThis, v, v, this);
     }
+  }
+
+
+  /** EXTENSIONS **/
+  /**
+   * The following methods are not part of the ES6 Set class but are provided
+   * for convenience. Once Sets become more widely available, we could simply
+   * extend the native Set class.
+   */
+
+  /**
+   * Returns a new set with the values of this set, not found in the other
+   * sets.
+   *
+   * @param {...(Set|Array)} others
+   */
+  difference(...others) {
+    var result = new Set(this);
+    for (var i = 0, l = others.length; i < l; i++) {
+      for (var v of others[i]) {
+        result.delete(v);
+      }
+    }
+    return result;
+  }
+
+  /**
+   * Returns a new set containing only elements found in this and every
+   * other set/array.
+   *
+   * @param {...(Set|Array)} others
+   */
+  intersection(...others) {
+    var result = new Set();
+    for (var v of this) {
+      if (others.every(other => other.has(v))) {
+        result.add(v);
+      }
+    }
+    return result;
+  }
+
+  /**
+   * Removes and returns an element from the set.
+   *
+   * @return {?}
+   */
+  pop() {
+    try {
+      var value = this.values().next().value;
+      this.delete(value);
+      return value;
+    } catch (ex) {}
   }
 
 }

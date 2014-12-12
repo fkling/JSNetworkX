@@ -1,10 +1,9 @@
 "use strict";
 
-var isGraph = require('../isGraph');
-var isArrayLike = require('../isArrayLike');
-var isIterator = require('../isIterator');
-var isIterable = require('../isIterable');
-var iteratorSymbol = require('../iteratorSymbol');
+var isArrayLike = require('./isArrayLike');
+var isIterator = require('./isIterator');
+var isIterable = require('./isIterable');
+var iteratorSymbol = require('./iteratorSymbol');
 
 /**
  * Returns an iterator object for the given array, array-like object
@@ -36,7 +35,7 @@ function toIterator(seq) {
     }(seq));
   }
   else {
-    throw new TypeError('Unable to convert ' + seq + ' to an iterator'); 
+    throw new TypeError('Unable to convert ' + seq + ' to an iterator');
   }
 }
 

@@ -7,27 +7,27 @@ var Map = require('../_internals/Map');
 /*jshint ignore:end*/
 var JSNetworkXError = require('../exceptions/JSNetworkXError');
 
-var assign = require('../_internals/assign');
-var clear = require('../_internals/clear');
-var clone = require('../_internals/clone');
 var convert = require('../convert');
-var deepcopy = require('../_internals/deepcopy');
-var forEach = require('../_internals/forEach');
-var isArray = require('../_internals/isArray');
-var isBoolean = require('../_internals/isBoolean');
-var isPlainObject = require('../_internals/isPlainObject');
-var iteratorToArray = require('../_internals/itertools/toArray');
-var mapIterator = require('../_internals/itertools/mapIterator');
-var next = require('../_internals/itertools/next');
-var size = require('../_internals/size');
-var sprintf = require('../_internals/sprintf');
 var {
+  assign,
+  clear,
+  clone,
+  createTupleFactory,
+  deepcopy,
+  forEach,
+  isArray,
+  isBoolean,
+  isPlainObject,
+  iteratorToArray,
+  mapIterator,
+  next,
+  size,
+  sprintf,
   tuple2,
   tuple3,
   tuple3c,
-  createTupleFactory
-} = require('../_internals/tuple');
-var zipIterator = require('../_internals/itertools/zipIterator');
+  zipIterator
+} = require('../_internals');
 
 /**
  * Base class for directed graphs.

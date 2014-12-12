@@ -1,13 +1,13 @@
 "use strict";
 
+var _toArray = require('lodash-node/modern/collections/toArray');
 var isArrayLike = require('./isArrayLike');
 var isIterator = require('./isIterator');
 var isIterable = require('./isIterable');
 var iteratorSymbol = require('./iteratorSymbol');
-var iteratorToArray = require('./itertools/toArray');
+var iteratorToArray = require('./iteratorToArray');
 var isPlainObject = require('./isPlainObject');
 var sprintf = require('./sprintf');
-var _toArray = require('lodash-node/modern/collections/toArray');
 
 /**
  * Converts sequence like data structures to an array. In particular

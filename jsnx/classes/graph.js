@@ -7,24 +7,30 @@ var Set = require('../_internals/Set');
 /* jshint ignore:end */
 var JSNetworkXError = require('../exceptions/JSNetworkXError');
 
-var assign = require('../_internals/assign');
-var clear = require('../_internals/clear');
-var clone = require('lodash-node/modern/objects/clone');
-var convert = require('../convert');
-var deepcopy = require('../_internals/deepcopy');
-var forEach = require('../_internals/forEach');
-var isArray = require('lodash-node/modern/objects/isArray');
 var isBoolean = require('lodash-node/modern/objects/isBoolean');
-var isPlainObject = require('../_internals/isPlainObject');
 var isString = require('lodash-node/modern/objects/isString');
-var iteratorSymbol = require('../_internals/iteratorSymbol');
-var iteratorToArray = require('../_internals/itertools/toArray');
-var mapIterator = require('../_internals/itertools/mapIterator');
-var mapSequence = require('../_internals/mapSequence');
-var toIterator = require('../_internals/itertools/toIterator');
-var toArray = require('../_internals/itertools/toArray');
-var {tuple2, tuple2c, tuple3, tuple3c} = require('../_internals/tuple');
-var zipSequence = require('../_internals/zipSequence');
+
+var convert = require('../convert');
+var {
+  assign,
+  clear,
+  clone,
+  deepcopy,
+  forEach,
+  isArray,
+  isPlainObject,
+  iteratorSymbol,
+  iteratorToArray,
+  mapIterator,
+  mapSequence,
+  toIterator,
+  toArray,
+  tuple2,
+  tuple2c,
+  tuple3,
+  tuple3c,
+  zipSequence
+} = require('../_internals');
 
 
 

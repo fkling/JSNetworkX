@@ -9,7 +9,7 @@ var Promise = global.Promise || require('promise');
 var convert = require('../convert');
 var isGraph = require('./isGraph');
 var isIterator = require('./isIterator');
-var iteratorToArray = require('./itertools/toArray');
+var iteratorToArray = require('./iteratorToArray');
 
 var delegateImplementation;
 if (typeof global.Worker === 'function') {

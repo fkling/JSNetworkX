@@ -3,11 +3,10 @@
 var isArrayLike = require('./isArrayLike');
 var isIterator = require('./isIterator');
 var isPlainObject = require('lodash-node/modern/objects/isPlainObject');
-var mapValues = require('lodash-node/modern/objects/mapValues');
-var zipIterator = require('./itertools/zipIterator.js');
+var zipIterator = require('./zipIterator');
 
 function zipArray(...varArgs) {
-  // Pre-allocation arrays speeds up assignment drastically, so we want to 
+  // Pre-allocation arrays speeds up assignment drastically, so we want to
   // optimize for that case
   var length = varArgs.length;
   var min = Infinity;

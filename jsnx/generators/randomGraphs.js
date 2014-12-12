@@ -7,10 +7,13 @@ var {
   completeGraph,
   emptyGraph
 } = require('./classic');
-var genCombinations = require('../_internals/genCombinations');
-var genPermutations = require('../_internals/genPermutations');
-var range = require('../_internals/range');
-var sprintf = require('../_internals/sprintf');
+
+var {
+  genCombinations,
+  genPermutations,
+  range,
+  sprintf
+} = require('../_internals');
 
 //
 //-------------------------------------------------------------------------
