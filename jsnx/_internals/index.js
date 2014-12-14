@@ -10,6 +10,7 @@ Object.assign(exports, {
   genCombinations: require('./genCombinations'),
   genPermutations: require('./genPermutations'),
   genRange: require('./genRange'),
+  getDefault: require('./getDefault'),
   fillArray: require('./fillArray'),
   forEach: require('./forEach'),
   isArrayLike: require('./isArrayLike'),

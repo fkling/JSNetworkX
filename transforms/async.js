@@ -26,11 +26,22 @@
  */
 
 "use strict";
-var esprima = require('esprima-fb');
+var _ = require('lodash');
+var acorn = require('acorn-6to5');
 var path = require('path');
 var recast = require('recast');
 var types = recast.types;
 var builders = types.builders;
+
+var parseWrapper = {
+  parse: function(source, options) {
+    return acorn.parse(source, _.assign({
+      ecmaVersion: 7,
+      locations: options.loc,
+      ranges: options.range,
+    }, options));
+  }
+};
 
 /**
  * This builds the call to the delegate function, i.e.
@@ -95,8 +106,19 @@ function transform(source, options) {
   if (!/^\s*async function/m.test(source)) {
     return {code: source};
   }
+  // acorn-6to5 isn't able to parse async generators. So we just collect their
+  // names and remove "async"
+  var asyncGeneratorNames = [];
+  source = source.replace(
+    /^(\s*)async function\* ([^(]+)/gm,
+    function(match, ws, name) {
+      asyncGeneratorNames.push(name);
+      return ws + 'function* ' + name;
+    }
+  );
+
   var ast = recast.parse(source, {
-    esprima: esprima,
+    esprima: parseWrapper,
     sourceFileName: options.filename,
   });
   var delegateName = options.delegateName;
@@ -147,7 +169,8 @@ function transform(source, options) {
 
       visitFunctionDeclaration: function(path) {
         var node = path.node;
-        if (node.async && this.isTopLevel(path)) {
+        var name = node.id.name;
+        if ((node.async || asyncGeneratorNames.indexOf(name) > -1) && this.isTopLevel(path)) {
           // If the function is async and at the top level, we make it
           // sync and insert an async version after it.
           this.makeSync(path);
