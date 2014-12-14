@@ -1,13 +1,16 @@
 "use strict";
 
-var Map = require('../_internals/Map');
-var Set = require('../_internals/Set');
+var prepCreateUsing = require('./prepCreateUsing');
 
-var isMap = require('../_internals/isMap');
-var isArrayLike = require('../_internals/isArrayLike');
-var prepCreateUsing = require('./prep_create_using');
-var toArray = require('../_internals/toArray');
-var tuple2 = require('../_internals/tuple').tuple2;
+var {
+  /*jshint ignore:start*/
+  Map,
+  Set,
+  /*jshint ignore:end*/
+
+  isArrayLike,
+  tuple2
+} = require('../_internals');
 
 /**
  * This module provides functions to convert JSNetworkX graphs to and from
@@ -20,19 +23,18 @@ var tuple2 = require('../_internals/tuple').tuple2;
   *
   * Completely ignores edge data for MultiGraph and MultiDiGraph.
   *
-  * @param {jsnx.classes.Graph} G A graph
-  * @param {jsnx.NodeContainer=} opt_nodelist Use only nods specified in nodelist.
+  * @param {Graph} G A graph
+  * @param {NodeContainer=} opt_nodelist Use only nods specified in nodelist.
   *
-  * @return {!jsnx.contrib.Map}
+  * @return {!Map}
   * @export
   */
 function toMapOfLists(G, optNodelist) {
   var map = new Map();
 
   if (optNodelist != null) {
-    optNodelist = toArray(optNodelist);
-    optNodelist.forEach(
-      n => map.set(n, G.neighbors(n).filter(v => optNodelist.index() > -1))
+    Array.from(optNodelist).forEach(
+      n => map.set(n, G.neighbors(n).filter(v => optNodelist.indexOf(v) > -1))
     );
   }
   else {
@@ -47,11 +49,11 @@ function toMapOfLists(G, optNodelist) {
 /**
  * Return a graph from a map of lists.
  * *
- * @param {!jsnx.contrib.Map} map A map of lists adjacency representation.
- * @param {jsnx.classes.Graph=} opt_create_using Use specified graph for result.
+ * @param {!Map} map A map of lists adjacency representation.
+ * @param {Graph=} opt_create_using Use specified graph for result.
  *    Otherwise a new graph is created.
  *
- * @return {!jsnx.classes.Graph}
+ * @return {!Graph}
  * @export
  */
 function fromMapOfLists(map, optCreateUsing) {
@@ -85,23 +87,23 @@ function fromMapOfLists(map, optCreateUsing) {
 /**
  * Return adjacency representation of graph as a map of maps.
  *
- * @param {jsnx.classes.Graph} G A jsnx Graph
- * @param {jsnx.NodeContainer=} opt_nodelist Use only nodes specified in nodelist
+ * @param {Graph} G A jsnx Graph
+ * @param {NodeContainer=} opt_nodelist Use only nodes specified in nodelist
  * @param {Object=} opt_edge_data If provided,  the value of the map will be
  *      set to edge_data for all edges.  This is useful to make
  *      an adjacency matrix type representation with 1 as the edge data.
- *      If opt_edge_data is null or undefined, the edge data in G is used to fill
- *      the values.
+ *      If opt_edge_data is null or undefined, the edge data in G is used to
+ *      fill the values.
  *      If G is a multigraph, the edge data is a dict for each pair (u,v).
  *
- * @return {!jsnx.contrib.Map}
+ * @return {!Map}
  * @export
  */
 function toMapOfMaps(G, optNodelist, optEdgeData) {
    var mapOfMaps = new Map();
 
    if (optNodelist != null) {
-     optNodelist = toArray(optNodelist);
+     optNodelist = Array.from(optNodelist);
      optNodelist.forEach(function(u) {
        var mapOfU = mapOfMaps.set(u, new Map());
        G.get(u).forEach(function(v, data) {
@@ -112,12 +114,10 @@ function toMapOfMaps(G, optNodelist, optEdgeData) {
      });
    }
    else { // nodelist is undefined
-     // mu = [nbrmap, u]
-     for (var mu of G.adjacencyIter()) {
+     for (var [nbrmap, u] of G.adjacencyIter()) {
        /*jshint loopfunc:true*/
-       var [nbrmap, u] = mu;
-       var mapOfU = mapOfMaps.set(mu[1], new Map());
-       mu[0].forEach(function(data, v) {
+       var mapOfU = mapOfMaps.set(u, new Map());
+       nbrmap.forEach(function(data, v) {
          mapOfU.set(v, optEdgeData == null ? data : optEdgeData);
        });
      }
@@ -129,15 +129,15 @@ function toMapOfMaps(G, optNodelist, optEdgeData) {
 /**
  * Return a graph from a map of maps.
  *
- * @param {!jsnx.contrib.Map} map A map of maps adjacency representation.
- * @param {jsnx.classes.Graph=} opt_create_using Use specified graph for result.
+ * @param {!Map} map A map of maps adjacency representation.
+ * @param {Graph=} opt_create_using Use specified graph for result.
  *      Otherwise a new graph is created.
  * @param {boolean=} opt_multigraph_input (default=False)
  *      When True, the values of the inner dict are assumed
  *      to be containers of edge data for multiple edges.
  *      Otherwise this routine assumes the edge data are singletons.
  *
- * @return {jsnx.classes.Graph}
+ * @return {Graph}
  * @export
  */
 function fromMapOfMaps(map, optCreateUsing, optMultigraphInput) {

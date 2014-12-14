@@ -1,7 +1,6 @@
 "use strict";
 
 var range = require('./range');
-var toArray = require('./toArray');
 
 /**
  * Implements Python's itertools.permutations
@@ -16,7 +15,7 @@ var toArray = require('./toArray');
 function *genPermutations(iterable, r) {
   // genPermutations('ABCD', 2) --> AB AC AD BA BC BD CA CB CD DA DB DC
   // genPermutations(range(3)) --> 012 021 102 120 201 210
-  var pool = toArray(iterable);
+  var pool = Array.from(iterable);
   var n = pool.length;
   r = r == null ? n : r;
   if (r > n) {

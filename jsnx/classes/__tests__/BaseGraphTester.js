@@ -1,12 +1,10 @@
 /*jshint strict:false, node:true*/
-/*global assert, utils*/
+/*global assert */
 
 /*jshint ignore:start*/
 var Map = utils.Map;
 /*jshint ignore:end*/
 var JSNetworkXError = require('../../exceptions/JSNetworkXError');
-
-var iteratorToArray = utils.iteratorToArray;
 
 // Tests for data-structure independent graph class features.
 var BaseGraphTester = {
@@ -21,11 +19,11 @@ var BaseGraphTester = {
     var G = this.K3;
 
     assert.sameMembersDeep(
-      iteratorToArray(G.nodesIter()),
+      Array.from(G.nodesIter()),
       this.k3nodes
     );
     assert.sameMembersDeep(
-      iteratorToArray(G.nodesIter(true)),
+      Array.from(G.nodesIter(true)),
       [[0,{}],[1,{}],[2,{}]]
     );
   },
@@ -64,7 +62,7 @@ var BaseGraphTester = {
   testNeighboursIter: function() {
     var G = this.K3;
 
-    assert.deepEqual(iteratorToArray(G.neighborsIter(0)).sort(), [1,2]);
+    assert.deepEqual(Array.from(G.neighborsIter(0)).sort(), [1,2]);
     assert.throws(
       function() { G.neighborsIter(-1); },
       JSNetworkXError
@@ -86,15 +84,15 @@ var BaseGraphTester = {
     var G = this.K3;
 
     assert.deepEqual(
-      iteratorToArray(G.edgesIter()).sort(),
+      Array.from(G.edgesIter()).sort(),
       [[0,1],[0,2],[1,2]]
     );
     assert.deepEqual(
-      iteratorToArray(G.edgesIter(0)).sort(),
+      Array.from(G.edgesIter(0)).sort(),
       [[0,1],[0,2]]
     );
     assert.throws(
-      function() { iteratorToArray(G.edgesIter(-1)); },
+      function() { Array.from(G.edgesIter(-1)); },
       JSNetworkXError
     );
   },
@@ -107,7 +105,7 @@ var BaseGraphTester = {
   testDegree: function() {
     var G = this.K3;
 
-    assert.deepEqual(iteratorToArray(G.degree().values()), [2,2,2]);
+    assert.deepEqual(Array.from(G.degree().values()), [2,2,2]);
     assert.deepEqual(G.degree(), new Map([[0,2],[1,2],[2,2]]));
     assert.equal(G.degree(0), 2);
     assert.deepEqual(G.degree([0]), new Map([[0,2]]));
@@ -122,7 +120,7 @@ var BaseGraphTester = {
     G.addEdge(1,2,{weight: 2});
     G.addEdge(2,3,{weight: 3});
 
-    assert.deepEqual(iteratorToArray(G.degree(null, 'weight').values()), [2,5,3]);
+    assert.deepEqual(Array.from(G.degree(null, 'weight').values()), [2,5,3]);
     assert.deepEqual(G.degree(null, 'weight'), new Map([[1,2],[2,5],[3,3]]));
     assert.equal(G.degree(1, 'weight'), 2);
     assert.deepEqual(G.degree([1], 'weight'), new Map([[1,2]]));
@@ -131,12 +129,12 @@ var BaseGraphTester = {
   testDegreeIter: function() {
     var G = this.K3;
 
-    assert.deepEqual(iteratorToArray(G.degreeIter()), [[0,2],[1,2],[2,2]]);
+    assert.deepEqual(Array.from(G.degreeIter()), [[0,2],[1,2],[2,2]]);
     assert.deepEqual(
       new Map(G.degreeIter()),
       new Map([[0,2],[1,2],[2,2]])
     );
-    assert.deepEqual(iteratorToArray(G.degreeIter(0)), [[0,2]]);
+    assert.deepEqual(Array.from(G.degreeIter(0)), [[0,2]]);
   },
 
   testSize: function() {
@@ -162,7 +160,7 @@ var BaseGraphTester = {
     var G = this.K3.copy();
     var nlist = [12,13,14,15];
     G.addPath(nlist);
-    assert.deepEqual(iteratorToArray(G.edges(nlist)), [[12,13], [13,14], [14,15]]);
+    assert.deepEqual(Array.from(G.edges(nlist)), [[12,13], [13,14], [14,15]]);
     G = this.K3.copy();
     G.addPath(nlist, {weight: 2});
     assert.deepEqual(
@@ -202,28 +200,28 @@ var BaseGraphTester = {
 
   testNbunchIter: function() {
     var G = this.K3;
-    assert.deepEqual(iteratorToArray(G.nbunchIter()), this.k3nodes); // all nodes
-    assert.deepEqual(iteratorToArray(G.nbunchIter(0)), [0]); // single nodes
-    assert.deepEqual(iteratorToArray(G.nbunchIter([0,1])), [0, 1]); // sequence
+    assert.deepEqual(Array.from(G.nbunchIter()), this.k3nodes); // all nodes
+    assert.deepEqual(Array.from(G.nbunchIter(0)), [0]); // single nodes
+    assert.deepEqual(Array.from(G.nbunchIter([0,1])), [0, 1]); // sequence
     // sequence with none in graph
-    assert.deepEqual(iteratorToArray(G.nbunchIter([-1])), []);
+    assert.deepEqual(Array.from(G.nbunchIter([-1])), []);
     // string sequence with none in graph
-    //assert.deepEqual(toArray(G.nbunch_iter("foo")), []);
+    //assert.deepEqual(Array.from(G.nbunch_iter("foo")), []);
     // node not in graph doesn't get caught upon creation of iterator
     var bunch = G.nbunchIter(-1);
     // but gets caught when iterator used
-    assert.throws(function() { iteratorToArray(bunch);}, JSNetworkXError);
+    assert.throws(function() { Array.from(bunch);}, JSNetworkXError);
     // unhashable doesn't get caught upon creaton of iterator
     bunch = G.nbunchIter([0,1,2,[]]);
     // there are no unhashable values
     // but gets caught when iterator hits the unhashable
-    // assert.throws(function() { toArray(bunch);}, JSNetworkXError);
+    // assert.throws(function() { Array.from(bunch);}, JSNetworkXError);
   },
 
   testSelfloopDegree: function() {
     var G = new this.Graph();
     G.addEdge(1,1);
-    assert.deepEqual(iteratorToArray(G.degree().values()), [2]);
+    assert.deepEqual(Array.from(G.degree().values()), [2]);
     assert.deepEqual(G.degree(), new Map([[1,2]]));
     assert.equal(G.degree(1), 2);
     assert.deepEqual(G.degree([1]), new Map([[1,2]]));

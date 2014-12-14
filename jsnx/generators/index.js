@@ -1,6 +1,5 @@
 "use strict";
 
-var assign = require('../_internals/assign');
 var classic = require('./classic');
 var degreeSequence = require('./degreeSequence');
 var randomGraphs = require('./randomGraphs');
@@ -11,7 +10,7 @@ module.exports = exports = {
   randomGraphs,
 };
 
-assign(
+Object.assign(
   exports,
   classic,
   degreeSequence,

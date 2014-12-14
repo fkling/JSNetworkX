@@ -1,5 +1,5 @@
-/*jshint strict:false, node:true, sub: true, newcap: false*/
-/*global assert, utils*/
+/*global assert*/
+"use strict";
 
 var BaseGraphTester = require('./BaseGraphTester');
 var Graph = require('../graph');
@@ -10,7 +10,6 @@ var Map = utils.Map;
 var JSNetworkXError = require('../../exceptions/JSNetworkXError');
 
 var shared = require('./shared');
-var toArray = utils.iteratorToArray;
 var _ = require('lodash-node');
 
 var BaseAttrGraphTester = _.extend({}, BaseGraphTester, {
@@ -18,12 +17,12 @@ var BaseAttrGraphTester = _.extend({}, BaseGraphTester, {
     var G = new this.Graph();
     G.addEdge(1,2,{weight:2,other:3});
     G.addEdge(2,3,{weight:3,other:4});
-    assert.deepEqual(toArray(G.degree(null, 'weight').values()), [2,5,3]);
+    assert.deepEqual(Array.from(G.degree(null, 'weight').values()), [2,5,3]);
     assert.deepEqual(G.degree(null, 'weight'), new Map([[1,2],[2,5],[3,3]]));
     assert.equal(G.degree(1, 'weight'), 2);
     assert.deepEqual(G.degree([1], 'weight'), new Map([[1,2]]));
 
-    assert.deepEqual(toArray(G.degree(null, 'other').values()), [3,7,4]);
+    assert.deepEqual(Array.from(G.degree(null, 'other').values()), [3,7,4]);
     assert.deepEqual(G.degree(null, 'other'), new Map([[1,3],[2,7],[3,4]]));
     assert.equal(G.degree(1, 'other'), 3);
     assert.deepEqual(G.degree([1], 'other'), new Map([[1,3]]));
@@ -161,7 +160,7 @@ var BaseAttrGraphTester = _.extend({}, BaseGraphTester, {
   testToUndirected: function() {
     var G = this.K3;
     shared.addAttributes(G);
-    var H = Graph(G);
+    var H = new Graph(G);
     shared.isShallowCopy(H,G);
     H = G.toUndirected();
     shared.isDeepcopy(H,G);
@@ -170,7 +169,7 @@ var BaseAttrGraphTester = _.extend({}, BaseGraphTester, {
   testToDirected: function() {
     var G = this.K3;
     shared.addAttributes(G);
-    var H = DiGraph(G);
+    var H = new DiGraph(G);
     shared.isShallowCopy(H,G);
     H = G.toDirected();
     shared.isDeepcopy(H,G);

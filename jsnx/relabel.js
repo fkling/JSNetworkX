@@ -8,11 +8,9 @@ var Set = require('./_internals/Set');
 var {JSNetworkXError, JSNetworkXUnfeasible} = require('./exceptions');
 
 var {
-  assign,
   clone,
   forEach,
   isMap,
-  iteratorToArray,
   mapIterator,
   someIterator,
   sprintf,
@@ -181,7 +179,7 @@ function relabelCopy(G, mapping) {
   G.node.forEach((data, n) =>
     H.addNode(mapping.has(n) ? mapping.get(n) : n, clone(data))
   );
-  assign(H.graph, clone(G.graph));
+  Object.assign(H.graph, clone(G.graph));
 
   return H;
 }
@@ -267,14 +265,14 @@ function convertNodeLabelsToIntegers(
       }
       break;
     case 'increasing degree':
-      dvPairs = iteratorToArray(G.degreeIter());
+      dvPairs = Array.from(G.degreeIter());
       dvPairs.sort((a, b) => a[1] - b[1]);
       for(i = 0, j = optFirstLabel, l = dvPairs.length; i < l; i++, j++) {
         mapping.set(dvPairs[i][0], j);
       }
       break;
     case 'decreasing degree':
-      dvPairs = iteratorToArray(G.degreeIter());
+      dvPairs = Array.from(G.degreeIter());
       dvPairs.sort((a, b) => b[1] - a[1]);
       for(i = 0, j = optFirstLabel, l = dvPairs.length; i < l; i++, j++) {
         mapping.set(dvPairs[i][0], j);

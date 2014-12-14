@@ -2,7 +2,6 @@
 
 var isArrayLike = require('./isArrayLike');
 var isIterator = require('./isIterator');
-var isPlainObject = require('lodash-node/modern/objects/isPlainObject');
 var zipIterator = require('./zipIterator');
 
 function zipArray(...varArgs) {
@@ -48,7 +47,6 @@ function zipArray(...varArgs) {
  *
  * Array -> Array
  * Array-like -> Array
- * Object -> Array (of keys)
  * Iterator -> Iterator
  *
  * @param {...(Iterable)} var_args
@@ -63,12 +61,6 @@ function zipSequence(...varArgs) {
   }
   else if(isIterator(first)) {
     return zipIterator.apply(null, varArgs);
-  }
-  else if(isPlainObject(first)) {
-    return zipArray.apply(
-      null,
-      varArgs.map(Object.keys)
-    );
   }
   else {
     throw new TypeError(

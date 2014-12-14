@@ -2,14 +2,10 @@
 
 var Graph = require('../classes/graph');
 var DiGraph = require('../classes/digraph');
-/*jshint ignore:start*/
-var Promise = global.Promise || require('promise');
-/*jshint ignore:end*/
 
 var convert = require('../convert');
 var isGraph = require('./isGraph');
 var isIterator = require('./isIterator');
-var iteratorToArray = require('./iteratorToArray');
 
 var delegateImplementation;
 if (typeof global.Worker === 'function') {
@@ -70,7 +66,7 @@ else {
         // returning an array if we get back an iterator
         var result = jsnx[method].apply(null, args);
         if (isIterator(result)) {
-          result = iteratorToArray(result);
+          result = Array.from(result);
         }
         resolve(result);
       } catch(ex) {

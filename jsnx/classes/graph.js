@@ -12,19 +12,15 @@ var isString = require('lodash-node/modern/objects/isString');
 
 var convert = require('../convert');
 var {
-  assign,
   clear,
   clone,
   deepcopy,
   forEach,
-  isArray,
   isPlainObject,
-  iteratorSymbol,
-  iteratorToArray,
   mapIterator,
   mapSequence,
   toIterator,
-  toArray,
+  sprintf,
   tuple2,
   tuple2c,
   tuple3,
@@ -81,7 +77,7 @@ class Graph {
 
     // load graph attributes (must be after convert)
     if (optAttr) {
-      assign(this.graph, optAttr);
+      Object.assign(this.graph, optAttr);
     }
     this.edge = this.adj;
   }
@@ -175,7 +171,7 @@ class Graph {
       this.node.set(n, optAttrDict);
     }
     else { // update attr even if node already exists
-      assign(this.node.get(n), optAttrDict);
+      Object.assign(this.node.get(n), optAttrDict);
     }
   }
 
@@ -199,17 +195,17 @@ class Graph {
    */
   addNodesFrom(nodes, optAttr={}) {
     forEach(nodes, function(node) {
-      if (isArray(node) && node.length === 2 && isPlainObject(node[1])) {
+      if (Array.isArray(node) && node.length === 2 && isPlainObject(node[1])) {
         var [nn, ndict] = node;
 
         if (!this.adj.has(nn)) {
           this.adj.set(nn, new Map());
           var newdict = clone(optAttr);
-          this.node.set(nn, assign(newdict, ndict));
+          this.node.set(nn, Object.assign(newdict, ndict));
         }
         else {
           var olddict = this.node.get(nn);
-          assign(olddict, optAttr, ndict);
+          Object.assign(olddict, optAttr, ndict);
         }
         return; // continue next iteration
       }
@@ -219,7 +215,7 @@ class Graph {
         this.node.set(node, clone(optAttr));
       }
       else {
-        assign(this.node.get(node), optAttr);
+        Object.assign(this.node.get(node), optAttr);
       }
     }, this);
   }
@@ -299,7 +295,7 @@ class Graph {
    * @export
    */
   nodes(optData) {
-    return iteratorToArray(optData ? this.node.entries() : this.node.keys());
+    return Array.from(optData ? this.node.entries() : this.node.keys());
   }
 
 
@@ -376,7 +372,7 @@ class Graph {
 
     // add the edge
     var datadict = this.adj.get(u).get(v) || {};
-    assign(datadict, optAttrDict);
+    Object.assign(datadict, optAttrDict);
     this.adj.get(u).set(v, datadict);
     this.adj.get(v).set(u, datadict);
   }
@@ -413,11 +409,11 @@ class Graph {
       if (!isPlainObject(data)) {
         data = {};
       }
-      if (v == null || tuple[3] != null) {
-        throw new JSNetworkXError(
-          'Edge tuple %s must be a 2-tuple or 3-tuple.',
+      if (u == null || v == null || tuple[3] != null) {
+        throw new JSNetworkXError(sprintf(
+          'Edge tuple %j must be a 2-tuple or 3-tuple.',
           tuple
-        );
+        ));
       }
 
       if (!this.node.has(u)) {
@@ -431,7 +427,7 @@ class Graph {
 
       // add the edge
       var datadict = this.adj.get(u).get(v) || {};
-      assign(datadict, optAttrDict, data);
+      Object.assign(datadict, optAttrDict, data);
       this.adj.get(u).set(v, datadict);
       this.adj.get(v).set(u, datadict);
     }, this);
@@ -554,7 +550,7 @@ class Graph {
    * @export
    */
   neighbors(n) {
-    return iteratorToArray(this.neighborsIter(n));
+    return Array.from(this.neighborsIter(n));
   }
 
 
@@ -597,7 +593,7 @@ class Graph {
    * @export
    */
   edges(optNbunch, optData) {
-    return iteratorToArray(this.edgesIter(optNbunch, optData));
+    return Array.from(this.edgesIter(optNbunch, optData));
   }
 
 
@@ -699,9 +695,9 @@ class Graph {
    * @export
    */
   adjacencyList() {
-    return iteratorToArray(mapIterator(
+    return Array.from(mapIterator(
       this.adjacencyIter(),
-      nd => iteratorToArray(nd[1].keys())
+      ([_, adj]) => Array.from(adj.keys())
     ));
   }
 
@@ -795,8 +791,7 @@ class Graph {
     else {
       iterator = mapIterator(
         nodesNbrs,
-        function(nd) {
-          var [n, nbrs] = nd;
+        function([n, nbrs]) {
           var sum = 0;
 
           nbrs.forEach(function(data) {
@@ -1123,7 +1118,7 @@ class Graph {
    * @export
    */
   addPath(nodes, optAttr) {
-    var nlist = toArray(nodes);
+    var nlist = Array.from(nodes);
     var edges = zipSequence(
       nlist.slice(0, nlist.length - 1),
       nlist.slice(1)
@@ -1142,7 +1137,7 @@ class Graph {
    * @export
    */
   addCycle(nodes, optAttr) {
-    var nlist = toArray(nodes);
+    var nlist = Array.from(nodes);
     var edges = zipSequence(
       nlist,
       nlist.slice(1).concat([nlist[0]])
@@ -1206,6 +1201,9 @@ class Graph {
     }
   }
 
+  [Symbol.iterator]() {
+    return this.node.keys();
+  }
 }
 
 /**
@@ -1251,9 +1249,5 @@ Graph.prototype.adj = null;
  * @export
  */
 Graph.prototype.edge = null;
-
-Graph.prototype[iteratorSymbol] = function() {
-  return this.node.keys();
-};
 
 module.exports = Graph;

@@ -8,7 +8,6 @@
 var Map = require('./Map');
 /*jshint ignore:end */
 
-var iteratorSymbol = require('./iteratorSymbol');
 var toIterator = require('./toIterator');
 
 class Set {
@@ -178,13 +177,14 @@ class Set {
     } catch (ex) {}
   }
 
+  /**
+   * Returns an iterator for the set object.
+   *
+   * @return {Iterator}
+   */
+  [Symbol.iterator]() {
+    return this.values();
+  }
 }
-
-/**
- * Returns an iterator for the set object.
- *
- * @return {Iterator}
- */
-Set.prototype[iteratorSymbol] = Set.prototype.values;
 
 module.exports = Set;

@@ -1,5 +1,5 @@
-/*jshint strict:false, node:true, sub: true, newcap: false*/
-/*global assert, utils*/
+/*global assert*/
+"use strict";
 
 var BaseGraphTester = require('./BaseGraphTester');
 var DiGraph= require('../digraph');
@@ -8,7 +8,6 @@ var Map = utils.Map;
 /*jshint ignore:end*/
 var JSNetworkXError = require('../../exceptions/JSNetworkXError');
 
-var toArray = utils.iteratorToArray;
 var _ = require('lodash-node');
 
 // Tests specific to dict-of-dict-of-dict graph data structure
@@ -28,7 +27,7 @@ var BaseDiGraphTester = _.extend({}, BaseGraphTester, {
   testSuccessorsIter: function() {
     var G = this.K3;
     assert.deepEqual(
-      toArray(G.successorsIter(0)),
+      Array.from(G.successorsIter(0)),
       [1,2]
     );
     assert.throws(function(){G.successorsIter(-1);}, JSNetworkXError);
@@ -52,7 +51,7 @@ var BaseDiGraphTester = _.extend({}, BaseGraphTester, {
   testPredecessorsIter: function() {
     var G = this.K3;
     assert.deepEqual(
-      toArray(G.predecessorsIter(0)),
+      Array.from(G.predecessorsIter(0)),
       [1,2]
     );
     assert.throws(function(){G.predecessorsIter(-1);}, JSNetworkXError);
@@ -74,11 +73,11 @@ var BaseDiGraphTester = _.extend({}, BaseGraphTester, {
   testEdgesIter: function() {
     var G = this.K3;
     assert.deepEqual(
-      toArray(G.edgesIter()),
+      Array.from(G.edgesIter()),
       [[0,1], [0,2], [1,0], [1,2], [2,0], [2,1]]
     );
     assert.deepEqual(
-      toArray(G.edgesIter(0)),
+      Array.from(G.edgesIter(0)),
       [[0,1], [0,2]]
     );
   },
@@ -112,11 +111,11 @@ var BaseDiGraphTester = _.extend({}, BaseGraphTester, {
   testOutEdgesIter: function() {
     var G = this.K3;
     assert.deepEqual(
-      toArray(G.outEdgesIter()),
+      Array.from(G.outEdgesIter()),
       [[0,1], [0,2], [1,0], [1,2], [2,0], [2,1]]
     );
     assert.deepEqual(
-      toArray(G.outEdgesIter(0)),
+      Array.from(G.outEdgesIter(0)),
       [[0,1], [0,2]]
     );
   },
@@ -130,9 +129,9 @@ var BaseDiGraphTester = _.extend({}, BaseGraphTester, {
 
   testOutEdgesIterDir: function() {
     var G = this.P3;
-    assert.deepEqual(toArray(G.outEdgesIter()), [[0,1], [1,2]]);
-    assert.deepEqual(toArray(G.outEdgesIter(0)), [[0,1]]);
-    assert.deepEqual(toArray(G.outEdgesIter(2)), []);
+    assert.deepEqual(Array.from(G.outEdgesIter()), [[0,1], [1,2]]);
+    assert.deepEqual(Array.from(G.outEdgesIter(0)), [[0,1]]);
+    assert.deepEqual(Array.from(G.outEdgesIter(2)), []);
   },
 
   testInEdgesDir: function() {
@@ -144,14 +143,14 @@ var BaseDiGraphTester = _.extend({}, BaseGraphTester, {
 
   testInEdgesIterDir: function() {
     var G = this.P3;
-    assert.deepEqual(toArray(G.inEdgesIter()), [[0,1], [1,2]]);
-    assert.deepEqual(toArray(G.inEdgesIter(0)), []);
-    assert.deepEqual(toArray(G.inEdgesIter(2)), [[1,2]]);
+    assert.deepEqual(Array.from(G.inEdgesIter()), [[0,1], [1,2]]);
+    assert.deepEqual(Array.from(G.inEdgesIter(0)), []);
+    assert.deepEqual(Array.from(G.inEdgesIter(2)), [[1,2]]);
   },
 
   testDegree: function() {
     var G = this.K3;
-    assert.deepEqual(toArray(G.degree().values()), [4,4,4]);
+    assert.deepEqual(Array.from(G.degree().values()), [4,4,4]);
     assert.deepEqual(G.degree(), new Map([[0,4], [1,4], [2,4]]));
     assert.strictEqual(G.degree(0), 4);
     assert.deepEqual(G.degree([0]), new Map([[0,4]]));
@@ -160,17 +159,17 @@ var BaseDiGraphTester = _.extend({}, BaseGraphTester, {
 
   testDegreeIter: function() {
     var G = this.K3;
-    assert.deepEqual(toArray(G.degreeIter()), [[0,4], [1,4], [2,4]]);
+    assert.deepEqual(Array.from(G.degreeIter()), [[0,4], [1,4], [2,4]]);
     assert.deepEqual(
       new Map(G.degreeIter()),
       new Map([[0,4], [1,4], [2,4]])
     );
-    assert.deepEqual(toArray(G.degreeIter(0)), [[0,4]]);
+    assert.deepEqual(Array.from(G.degreeIter(0)), [[0,4]]);
   },
 
   testInDegree: function() {
     var G = this.K3;
-    assert.deepEqual(toArray(G.inDegree().values()), [2,2,2]);
+    assert.deepEqual(Array.from(G.inDegree().values()), [2,2,2]);
     assert.deepEqual(G.inDegree(), new Map([[0,2], [1,2], [2,2]]));
     assert.strictEqual(G.inDegree(0), 2);
     assert.deepEqual(G.inDegree([0]), new Map([[0,2]]));
@@ -179,19 +178,19 @@ var BaseDiGraphTester = _.extend({}, BaseGraphTester, {
 
   testInDegreeIter: function() {
     var G = this.K3;
-    assert.deepEqual(toArray(G.inDegreeIter()), [[0,2], [1,2], [2,2]]);
+    assert.deepEqual(Array.from(G.inDegreeIter()), [[0,2], [1,2], [2,2]]);
     assert.deepEqual(
       new Map(G.inDegreeIter()),
       new Map([[0,2], [1,2], [2,2]])
     );
-    assert.deepEqual(toArray(G.inDegreeIter(0)), [[0,2]]);
+    assert.deepEqual(Array.from(G.inDegreeIter(0)), [[0,2]]);
   },
 
   testInDegreeIterWeighted: function() {
     var G = this.K3;
     G.addEdge(0,1,{weight: 0.3, other: 1.2});
     assert.deepEqual(
-      toArray(G.inDegreeIter(null, 'weight')),
+      Array.from(G.inDegreeIter(null, 'weight')),
       [[0,2], [1,1.3], [2,2]]
     );
     assert.deepEqual(
@@ -199,11 +198,11 @@ var BaseDiGraphTester = _.extend({}, BaseGraphTester, {
       new Map([[0,2], [1,1.3], [2,2]])
     );
     assert.deepEqual(
-      toArray(G.inDegreeIter(1, 'weight')),
+      Array.from(G.inDegreeIter(1, 'weight')),
       [[1,1.3]]
     );
     assert.deepEqual(
-      toArray(G.inDegreeIter(null, 'other')),
+      Array.from(G.inDegreeIter(null, 'other')),
       [[0,2], [1,2.2], [2,2]]
     );
     assert.deepEqual(
@@ -211,14 +210,14 @@ var BaseDiGraphTester = _.extend({}, BaseGraphTester, {
       new Map([[0,2], [1,2.2], [2,2]])
     );
     assert.deepEqual(
-      toArray(G.inDegreeIter(1, 'other')),
+      Array.from(G.inDegreeIter(1, 'other')),
       [[1,2.2]]
     );
   },
 
   testOutDegree: function() {
     var G = this.K3;
-    assert.deepEqual(toArray(G.outDegree().values()), [2,2,2]);
+    assert.deepEqual(Array.from(G.outDegree().values()), [2,2,2]);
     assert.deepEqual(G.outDegree(), new Map([[0,2], [1,2], [2,2]]));
     assert.strictEqual(G.outDegree(0), 2);
     assert.deepEqual(G.outDegree([0]), new Map([[0,2]]));
@@ -227,19 +226,19 @@ var BaseDiGraphTester = _.extend({}, BaseGraphTester, {
 
   testOutDegreeIter: function() {
     var G = this.K3;
-    assert.deepEqual(toArray(G.outDegreeIter()), [[0,2], [1,2], [2,2]]);
+    assert.deepEqual(Array.from(G.outDegreeIter()), [[0,2], [1,2], [2,2]]);
     assert.deepEqual(
       new Map(G.outDegreeIter()),
       new Map([[0,2], [1,2], [2,2]])
     );
-    assert.deepEqual(toArray(G.outDegreeIter(0)), [[0,2]]);
+    assert.deepEqual(Array.from(G.outDegreeIter(0)), [[0,2]]);
   },
 
   testOutDegreeIterWeighted: function() {
     var G = this.K3;
     G.addEdge(0,1,{weight: 0.3, other: 1.2});
     assert.deepEqual(
-      toArray(G.outDegreeIter(null, 'weight')),
+      Array.from(G.outDegreeIter(null, 'weight')),
       [[0,1.3], [1,2], [2,2]]
     );
     assert.deepEqual(
@@ -247,11 +246,11 @@ var BaseDiGraphTester = _.extend({}, BaseGraphTester, {
       new Map([[0,1.3], [1,2], [2,2]])
     );
     assert.deepEqual(
-      toArray(G.outDegreeIter(0, 'weight')),
+      Array.from(G.outDegreeIter(0, 'weight')),
       [[0,1.3]]
     );
     assert.deepEqual(
-      toArray(G.outDegreeIter(null, 'other')),
+      Array.from(G.outDegreeIter(null, 'other')),
       [[0,2.2], [1,2], [2,2]]
     );
     assert.deepEqual(
@@ -259,7 +258,7 @@ var BaseDiGraphTester = _.extend({}, BaseGraphTester, {
       new Map([[0,2.2], [1,2], [2,2]])
     );
     assert.deepEqual(
-      toArray(G.outDegreeIter(0, 'other')),
+      Array.from(G.outDegreeIter(0, 'other')),
       [[0,2.2]]
     );
   },
@@ -280,7 +279,7 @@ var BaseDiGraphTester = _.extend({}, BaseGraphTester, {
   },
 
   testReverseCopy: function() {
-    var G = DiGraph([[0,1],[1,2]]);
+    var G = new DiGraph([[0,1],[1,2]]);
     var R = G.reverse();
     assert.deepEqual(R.edges(), [[1,0], [2,1]]);
     R.removeEdge(1,0);
@@ -289,7 +288,7 @@ var BaseDiGraphTester = _.extend({}, BaseGraphTester, {
   },
 
   testReverseNocopy: function() {
-    var G = DiGraph([[0,1],[1,2]]);
+    var G = new DiGraph([[0,1],[1,2]]);
     var R = G.reverse(false);
     assert.deepEqual(R.edges(), [[1,0], [2,1]]);
     R.removeEdge(1,0);

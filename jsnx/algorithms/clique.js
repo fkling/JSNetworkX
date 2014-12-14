@@ -5,10 +5,9 @@ var {
   Map,
   Set,
 /*jshint ignore:end*/
-  isArray,
+
   mapIterator,
   max,
-  toArray,
   tuple2
 } = require('../_internals');
 
@@ -123,11 +122,7 @@ async function* findCliques(G) {
         break;
       }
       Q.pop();
-      // TODO: Use destructuring once transform is fixed
-      var next = stack.pop();
-      subgraph = next[0];
-      candidates = next[1];
-      ext_u = next[2];
+      [subgraph, candidates, ext_u] = stack.pop();
     }
   }
 }
@@ -245,7 +240,7 @@ function graphNumberOfCliques(G, optCliques) {
   if (optCliques == null) {
     optCliques = findCliques(G);
   }
-  return toArray(optCliques).length;
+  return Array.from(optCliques).length;
 }
 
 //TODO: node_clique_number
@@ -263,14 +258,14 @@ function graphNumberOfCliques(G, optCliques) {
  * @return {!(Map|number)}
  */
 function numberOfCliques(G, optNodes, optCliques) {
-  optCliques = toArray(optCliques || findCliques(G));
+  optCliques = Array.from(optCliques || findCliques(G));
 
   if (optNodes == null) {
     optNodes = G.nodes(); // none, get entire graph
   }
 
   var numcliq;
-  if (!isArray(optNodes)) {
+  if (!Array.isArray(optNodes)) {
     var v = optNodes;
     numcliq = optCliques.filter(c => (new Set(c)).has(v)).length;
   }

@@ -1,14 +1,11 @@
 "use strict";
+require("6to5/polyfill");
 
-var {
-  assign,
-  isIterator,
-  iteratorToArray
-} = require('./_internals');
+var isIterator = require('./_internals/isIterator');
 
-assign(
+Object.assign(
   exports,
-  require('./index')
+  require('./')
 );
 
 if (!global.document) {
@@ -28,7 +25,7 @@ if (!global.document) {
     // If the function normally returns an iterator, we return an array from
     // the async version
     if (isIterator(result)) {
-      result = iteratorToArray(result);
+      result = Array.from(result);
     }
     global.postMessage(result);
     global.close();

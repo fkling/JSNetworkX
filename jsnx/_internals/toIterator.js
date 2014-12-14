@@ -3,7 +3,6 @@
 var isArrayLike = require('./isArrayLike');
 var isIterator = require('./isIterator');
 var isIterable = require('./isIterable');
-var iteratorSymbol = require('./iteratorSymbol');
 
 /**
  * Returns an iterator object for the given array, array-like object
@@ -22,12 +21,9 @@ function toIterator(seq) {
     return seq;
   }
   else if (isIterable(seq)) {
-    return seq[iteratorSymbol]();
+    return seq[Symbol.iterator]();
   }
-  else if (typeof seq === 'object') {
-    if (!isArrayLike(seq)) {
-      seq = Object.keys(seq);
-    }
+  else if (Array.isArray(seq) || isArrayLike(seq)) {
     return (function*(seq) {
       for (var i = 0, l = seq.length; i < l; i++) {
         yield seq[i];

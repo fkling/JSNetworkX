@@ -1,6 +1,5 @@
 "use strict";
 
-var assign = require('../_internals/assign');
 var clique = require('./clique');
 var dag = require('./dag');
 var graphical = require('./graphical');
@@ -11,7 +10,7 @@ module.exports = exports = {
   graphical,
 };
 
-assign(
+Object.assign(
   exports,
   clique,
   dag,

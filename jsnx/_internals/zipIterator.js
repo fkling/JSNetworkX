@@ -8,7 +8,9 @@
  * @param {...Iterator} var_args
  * @return {Iterator}
  */
-function* zipIterator(...varArgs) {
+function* zipIterator() {
+  // TODO: Use rest parameter once 6to5 is fixed (2.0)
+  var varArgs = arguments;
   var length = varArgs.length;
 
   while (true) {

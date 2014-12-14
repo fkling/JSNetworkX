@@ -1,8 +1,7 @@
 /*jshint strict:false, node:true*/
-/*global assert, utils, wrapGenerator*/
+/*global assert, utils*/
 
 var toIterator = require('../toIterator');
-var toArray = require('../toArray');
 
 function* generator() { yield 0; }
 
@@ -22,7 +21,7 @@ exports.toIterator = {
     var iterator = toIterator(map);
     assert(utils.isIterator(iterator));
 
-    assert.deepEqual(toArray(iterator), data);
+    assert.deepEqual(Array.from(iterator), data);
   },
 
   'from graph': false, // TODO
@@ -32,15 +31,7 @@ exports.toIterator = {
     var iterator = toIterator(data);
 
     assert(utils.isIterator(iterator));
-    assert.deepEqual(toArray(iterator), data);
-  },
-
-  'from object (keys)': function() {
-    var data = {foo: 42, bar: 42};
-    var iterator = toIterator(data);
-
-    assert(utils.isIterator(iterator));
-    assert.sameMembers(toArray(iterator), Object.keys(data));
+    assert.deepEqual(Array.from(iterator), data);
   }
 
 };

@@ -1,4 +1,4 @@
-/*global assert, utils*/
+/*global assert*/
 "use strict";
 
 var zip = require('../zipSequence');
@@ -26,18 +26,9 @@ exports.zipSequence = {
 
   'zip iterators': function() {
     assert.deepEqual(
-      utils.iteratorToArray(zip(gen([1,2,3]), gen([4, 5]))),
+      Array.from(zip(gen([1,2,3]), gen([4, 5]))),
       [[1,4],[2,5]]
     );
-  },
-
-  'zip objects (keys)': function() {
-    var obj1 = {foo: 42, bar: 42};
-    var obj2 = {x: 0, y: 0, z: 0};
-
-    assert.deepEqual(
-      zip(obj1, obj2),
-      [['foo','x'],['bar','y']]
-    );
   }
+
 };

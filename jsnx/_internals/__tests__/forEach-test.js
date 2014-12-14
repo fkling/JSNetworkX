@@ -43,10 +43,14 @@ exports.forEach = {
   'over objects (iterates over keys)': function() {
     var data = {foo: 0, bar: 1};
     var result = [];
-    forEach(data, function(v) {
-      result.push(v);
+    forEach(data, function(v, k) {
+      result.push([k, v]);
     });
-    assert.sameMembers(result, Object.keys(data), 'iterated over all data');
+    assert.deepEqual(
+      result,
+      [['foo', 0], ['bar', 1]],
+      'iterated over all data'
+    );
   },
 
   // TODO

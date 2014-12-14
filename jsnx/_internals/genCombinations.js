@@ -1,7 +1,6 @@
 "use strict";
 
 var range = require('./range');
-var toArray = require('./toArray');
 
 function reversed(array) {
   return array.slice().reverse();
@@ -20,7 +19,7 @@ function reversed(array) {
 function *genCombinations(iterable, r) {
   // genCombinations('ABCD', 2) --> AB AC AD BC BD CD
   // genCombinations(range(4), 3) --> 012 013 023 123
-  var pool = toArray(iterable);
+  var pool = Array.from(iterable);
   var n = pool.length;
   if (r > n) {
     return;

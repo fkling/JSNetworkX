@@ -1,5 +1,5 @@
 /*jshint strict:false, node:true*/
-/*global utils, assert*/
+/*global assert*/
 
 var BaseAttrGraphTester = require('./BaseAttrGraphTester');
 var Graph = require('../graph');
@@ -11,7 +11,7 @@ var KeyError = require('../../exceptions/KeyError');
 var _ = require('lodash-node');
 
 var sorted = function(iterator) {
-  return utils.iteratorToArray(iterator).sort();
+  return Array.from(iterator).sort();
 };
 
 // Tests specific to dict-of-dict-of-dict graph data structure
@@ -179,7 +179,7 @@ exports.TestGraph = _.extend({}, BaseAttrGraphTester, {
     ); // too many in tuple
 
     // not a tuple
-    assert.throws(function() { G.addEdgesFrom([0]); }, TypeError);
+    assert.throws(function() { G.addEdgesFrom([0]); }, JSNetworkXError);
   },
 
   testRemoveEdge: function() {

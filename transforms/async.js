@@ -26,6 +26,7 @@
  */
 
 "use strict";
+var esprima = require('esprima-fb');
 var path = require('path');
 var recast = require('recast');
 var types = recast.types;
@@ -90,14 +91,18 @@ function buildExportStatement(name) {
 /**
  * Makes the actual transformation
  */
-function transform(filename, source, opts) {
+function transform(source, options) {
+  if (!/^\s*async function/m.test(source)) {
+    return {code: source};
+  }
   var ast = recast.parse(source, {
-    sourceFileName: filename,
+    esprima: esprima,
+    sourceFileName: options.filename,
   });
-  var delegateName = opts.delegateName;
+  var delegateName = options.delegateName;
   var asyncFuncs = [];
 
-  if (filename.indexOf(opts.delegateName) === -1) {
+  if (options.filename.indexOf(options.delegateName) === -1) {
     types.visit(ast, {
       /**
        * We only care about functions in the top level of the module.
@@ -124,8 +129,8 @@ function transform(filename, source, opts) {
           // If we found any async functions, we have to require the delegate
           // method.
           var delegatePath = path.join(path.relative(
-            path.dirname(filename),
-            path.resolve(opts.delegatePath)
+            path.dirname(options.filename),
+            path.resolve(options.delegatePath)
           ), delegateName);
 
           var moduleBody = p.get('body');
@@ -174,7 +179,7 @@ function transform(filename, source, opts) {
       }
     });
   }
-  return recast.print(ast, {sourceMapName: filename});
+  return recast.print(ast, {sourceMapName: options.filename});
 }
 
 module.exports = transform;

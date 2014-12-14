@@ -6,7 +6,6 @@ var {
   fillArray,
   isMap,
   isPlainObject,
-  iteratorToArray,
   sprintf
 } = require('../_internals');
 
@@ -172,7 +171,7 @@ function density(G) {
  *  @export
  */
 function degreeHistogram(G) {
-  var degseq = iteratorToArray(G.degree().values());
+  var degseq = Array.from(G.degree().values());
   var dmax = Math.max.apply(Math, degseq) + 1;
   var freq = fillArray(dmax, 0);
 

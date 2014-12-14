@@ -17,7 +17,7 @@ var Set = require('./_internals/Set');
 
 var convertMap = require('./contrib/convert');
 var hasOwn = Object.prototype.hasOwnProperty;
-var prepCreateUsing = require('./contrib/prep_create_using');
+var prepCreateUsing = require('./contrib/prepCreateUsing');
 var _mapValues = require('lodash-node/modern/objects/mapValues');
 
 var {
@@ -25,8 +25,7 @@ var {
   forEach,
   isMap,
   isArrayLike,
-  isPlainObject,
-  toArray
+  isPlainObject
 } = require('./_internals');
 
 /**
@@ -134,9 +133,9 @@ function toNetworkxGraph(data, optCreateUsing, optMultigraphInput) {
 /**
  * Return a new undirected representation of the graph G.
  *
- * @param {jsnx.classes.Graph} G Graph to convert
+ * @param {Graph} G Graph to convert
  *
- * @return {!jsnx.classes.Graph}
+ * @return {!Graph}
  * @export
  */
 function convertToUndirected(G) {
@@ -146,8 +145,8 @@ function convertToUndirected(G) {
 /**
  * Return a new directed representation of the graph G.
  *
- * @param {jsnx.classes.Graph} G Graph to convert
- * @return {!jsnx.classes.Graph}
+ * @param {Graph} G Graph to convert
+ * @return {!Graph}
  * @export
  */
 function convertToDirected(G) {
@@ -159,8 +158,8 @@ function convertToDirected(G) {
  *
  * Completely ignores edge data for MultiGraph and MultiDiGraph.
  *
- * @param {jsnx.classes.Graph} G A jsnx graph
- * @param {jsnx.NodeContainer=} opt_nodelist Use only nodes specified in nodelist
+ * @param {Graph} G A jsnx graph
+ * @param {NodeContainer=} opt_nodelist Use only nodes specified in nodelist
  *
  * @return {!Object.<Array>}
  * @export
@@ -178,7 +177,7 @@ function toDictOfLists(G, optNodelist) {
     };
   }
   else {
-    optNodelist = toArray(optNodelist);
+    optNodelist = Array.from(optNodelist);
   }
 
   for (var n of optNodelist) {
@@ -249,10 +248,10 @@ function fromDictOfLists(d, optCreateUsing) {
 /**
  * Return adjacency representation of graph as a dictionary of dictionaries.
  *
- * @param {jsnx.classes.Graph} G A jsnx Graph
- * @param {jsnx.NodeContainer=} opt_nodelist Use only nodes specified in nodelist
- * @param {Object=} opt_edge_data If provided,  the value of the dictionary will be
- *      set to edge_data for all edges.  This is useful to make
+ * @param {Graph} G A jsnx Graph
+ * @param {NodeContainer=} opt_nodelist Use only nodes specified in nodelist
+ * @param {Object=} opt_edge_data If provided,  the value of the dictionary will
+ *      be set to edge_data for all edges.  This is useful to make
  *      an adjacency matrix type representation with 1 as the edge data.
  *      If edgedata is null or undefined, the edgedata in G is used to fill
  *      the values.
@@ -265,7 +264,7 @@ function toDictOfDicts(G, optNodelist, optEdgeData) {
   var dod = {};
 
   if (optNodelist != null) {
-    optNodelist = toArray(optNodelist);
+    optNodelist = Array.from(optNodelist);
     if(optEdgeData != null) {
       optNodelist.forEach(function(u) {
         dod[u] = {};
@@ -313,14 +312,14 @@ function toDictOfDicts(G, optNodelist, optEdgeData) {
  *
  * @param {!Object.<!Object>} d A dictionary of dictionaries adjacency
  *      representation.
- * @param {jsnx.classes.Graph=} opt_create_using Use specified graph for result.
+ * @param {Graph=} opt_create_using Use specified graph for result.
  *      Otherwise a new graph is created.
  * @param {boolean=} opt_multigraph_input (default=False)
  *      When True, the values of the inner dict are assumed
  *      to be containers of edge data for multiple edges.
  *      Otherwise this routine assumes the edge data are singletons.
  *
- * @return {jsnx.classes.Graph}
+ * @return {Graph}
  * @export
  */
 function fromDictOfDicts(d, optCreateUsing, optMultigraphInput) {
@@ -434,8 +433,8 @@ function fromDictOfDicts(d, optCreateUsing, optMultigraphInput) {
 /**
  * Return a list of edges in the graph.
  *
- * @param {jsnx.classes.Graph} G A jsnx graph
- * @param {jsnx.NodeContainer=} opt_nodelist Use only nodes specified in nodelist
+ * @param {Graph} G A jsnx graph
+ * @param {NodeContainer=} opt_nodelist Use only nodes specified in nodelist
  *
  * @return {!Array}
  * @export
@@ -454,10 +453,10 @@ function toEdgelist(G, optNodelist) {
  * Return a graph from a list of edges.
  *
  * @param {Array.<Array>} edgelist Edge tuples
- * @param {jsnx.classes.Graph=} opt_create_using Use specified graph for result.
+ * @param {Graph=} opt_create_using Use specified graph for result.
  *      Otherwise a new graph is created.
  *
- * @return {!jsnx.classes.Graph}
+ * @return {!Graph}
  * @export
  */
 function fromEdgelist(edgelist, optCreateUsing) {

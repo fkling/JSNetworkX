@@ -6,7 +6,6 @@ var {
 }= require('../exceptions');
 
 var fillArray = require('../_internals/fillArray');
-var toArray = require('../_internals/toArray');
 
 /**
  * Returns `true` if `sequence` is a valid degree sequence.
@@ -31,9 +30,9 @@ var toArray = require('../_internals/toArray');
 async function isGraphical(sequence, optMethod='hh') {
   switch (optMethod) {
     case 'eg':
-      return await isValidDegreeSequenceErdosGallai(toArray(sequence));
+      return await isValidDegreeSequenceErdosGallai(Array.from(sequence));
     case 'hh':
-      return await isValidDegreeSequenceHavelHakimi(toArray(sequence));
+      return await isValidDegreeSequenceHavelHakimi(Array.from(sequence));
     default:
       throw new JSNetworkXException("`opt_method` must be 'eg' or 'hh'");
   }

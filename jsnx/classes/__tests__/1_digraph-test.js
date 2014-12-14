@@ -1,5 +1,5 @@
 /*jshint strict:false, node:true*/
-/*global utils, assert*/
+/*global assert*/
 
 var BaseDiGraphTester = require('./BaseDiGraphTester');
 var DiGraph = require('../digraph');
@@ -7,13 +7,12 @@ var DiGraph = require('../digraph');
 var Map = utils.Map;
 /*jshint ignore:end*/
 var JSNetworkXError = require('../../exceptions/JSNetworkXError');
-var KeyError = require('../../exceptions/KeyError');
 var TestGraph = require('./0_graph-test').TestGraph;
 
 var _ = require('lodash-node');
 
 var sorted = function(iterator) {
-  return utils.iteratorToArray(iterator).sort();
+  return Array.from(iterator).sort();
 };
 
 exports.TestDiGraph = _.extend({}, TestGraph, BaseDiGraphTester, {

@@ -9,7 +9,6 @@ var Map = utils.Map;
 var JSNetworkXError = require('../../exceptions/JSNetworkXError');
 
 var funcs = require('../functions');
-var toArray = utils.toArray;
 
 
 exports.TestFunction = {
@@ -39,31 +38,31 @@ exports.TestFunction = {
 
   testNodesIter: function() {
     assert.deepEqual(
-      toArray(this.G.nodesIter()),
-      toArray(funcs.nodesIter(this.G))
+      Array.from(this.G.nodesIter()),
+      Array.from(funcs.nodesIter(this.G))
     );
     assert.deepEqual(
-      toArray(this.DG.nodesIter()),
-      toArray(funcs.nodesIter(this.DG))
+      Array.from(this.DG.nodesIter()),
+      Array.from(funcs.nodesIter(this.DG))
     );
   },
 
   testEdgesIter: function() {
     assert.deepEqual(
-      toArray(this.G.edgesIter()),
-      toArray(funcs.edgesIter(this.G))
+      Array.from(this.G.edgesIter()),
+      Array.from(funcs.edgesIter(this.G))
     );
     assert.deepEqual(
-      toArray(this.DG.edgesIter()),
-      toArray(funcs.edgesIter(this.DG))
+      Array.from(this.DG.edgesIter()),
+      Array.from(funcs.edgesIter(this.DG))
     );
     assert.deepEqual(
-      toArray(this.G.edgesIter([0,1,3])),
-      toArray(funcs.edgesIter(this.G, [0,1,3]))
+      Array.from(this.G.edgesIter([0,1,3])),
+      Array.from(funcs.edgesIter(this.G, [0,1,3]))
     );
     assert.deepEqual(
-      toArray(this.DG.edgesIter([0,1,3])),
-      toArray(funcs.edgesIter(this.DG, [0,1,3]))
+      Array.from(this.DG.edgesIter([0,1,3])),
+      Array.from(funcs.edgesIter(this.DG, [0,1,3]))
     );
   },
 

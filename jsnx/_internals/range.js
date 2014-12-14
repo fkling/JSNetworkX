@@ -1,7 +1,6 @@
 "use strict";
 
 var genRange = require('./genRange');
-var iteratorToArray = require('./iteratorToArray');
 
 /**
  * Implements Python's range function, returns an array.
@@ -16,7 +15,7 @@ var iteratorToArray = require('./iteratorToArray');
  * @return {!Array}
  */
 function range(optStart, optEnd, optStep) {
-  return iteratorToArray(genRange(optStart, optEnd, optStep));
+  return Array.from(genRange(optStart, optEnd, optStep));
 }
 
 module.exports = range;

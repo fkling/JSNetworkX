@@ -9,16 +9,13 @@ var JSNetworkXError = require('../exceptions/JSNetworkXError');
 
 var convert = require('../convert');
 var {
-  assign,
   clear,
   clone,
   createTupleFactory,
   deepcopy,
   forEach,
-  isArray,
   isBoolean,
   isPlainObject,
-  iteratorToArray,
   mapIterator,
   next,
   size,
@@ -43,9 +40,9 @@ var {
  * Edges are represented as links between nodes with optional
  * key/value attributes.
  *
- * @see jsnx.classes.Graph
- * @see jsnx.classes.MultiGraph
- * @see jsnx.classes.MultiDiGraph
+ * @see Graph
+ * @see MultiGraph
+ * @see MultiDiGraph
  *
  * @param {?=} opt_data
  *      Data to initialize graph.  If data=None (default) an empty
@@ -61,7 +58,7 @@ var {
  *
  * var G = new jsnx.DiGraph(null, {name: 'test'});
  *
- * @extends jsnx.classes.Graph
+ * @extends Graph
  * @constructor
  * @export
  */
@@ -87,7 +84,7 @@ class DiGraph extends Graph {
         convert.toNetworkxGraph(optData, this);
     }
     // load graph attributes (must be afte convert)
-    assign(this.graph, optAttr || {});
+    Object.assign(this.graph, optAttr || {});
     this.edge = this.adj;
   }
 
@@ -126,7 +123,7 @@ class DiGraph extends Graph {
       this.node.set(n, optAttrDict);
     }
     else { // update attr even if node already exists
-      assign(this.node.get(n), optAttrDict);
+      Object.assign(this.node.get(n), optAttrDict);
     }
   }
 
@@ -154,7 +151,7 @@ class DiGraph extends Graph {
       var newnode = !this.succ.has(n);
 
       // test whether n is a (node, attr) tuple
-      if (isArray(n) && n.length === 2 && isPlainObject(n[1])) {
+      if (Array.isArray(n) && n.length === 2 && isPlainObject(n[1])) {
         var nn = n[0];
         var ndict = n[1];
 
@@ -162,12 +159,12 @@ class DiGraph extends Graph {
           this.succ.set(nn, new Map());
           this.pred.set(nn, new Map());
           var newdict = clone(optAttr);
-          assign(newdict, ndict);
+          Object.assign(newdict, ndict);
           this.node.set(nn, newdict);
         }
         else {
           var olddict = this.node.get(nn);
-          assign(olddict, optAttr, ndict);
+          Object.assign(olddict, optAttr, ndict);
         }
       } else if (newnode) {
         this.succ.set(n, new Map());
@@ -175,7 +172,7 @@ class DiGraph extends Graph {
         this.node.set(n, clone(optAttr));
       }
       else {
-        assign(this.node.get(n), optAttr);
+        Object.assign(this.node.get(n), optAttr);
       }
     }, this);
   }
@@ -291,7 +288,7 @@ class DiGraph extends Graph {
 
     // add the edge
     var datadict = this.adj.get(u).get(v) || {};
-    assign(datadict, optAttrDict);
+    Object.assign(datadict, optAttrDict);
     this.succ.get(u).set(v, datadict);
     this.pred.get(v).set(u, datadict);
   }
@@ -358,7 +355,7 @@ class DiGraph extends Graph {
       }
 
       var datadict = this.adj.get(u).get(v) || {};
-      assign(datadict, optAttrDict, edgeData);
+      Object.assign(datadict, optAttrDict, edgeData);
       this.succ.get(u).set(v, datadict);
       this.pred.get(v).set(u, datadict);
     }, this);
@@ -500,7 +497,7 @@ class DiGraph extends Graph {
    * @export
    */
   successors(n) {
-    return iteratorToArray(this.successorsIter(n));
+    return Array.from(this.successorsIter(n));
   }
 
   /**
@@ -513,7 +510,7 @@ class DiGraph extends Graph {
    * @export
    */
   predecessors(n) {
-    return iteratorToArray(this.predecessorsIter(n));
+    return Array.from(this.predecessorsIter(n));
   }
 
 
@@ -672,7 +669,7 @@ class DiGraph extends Graph {
    * @export
    */
   inEdges(optNbunch, optData=false) {
-    return iteratorToArray(this.inEdgesIter(optNbunch, optData));
+    return Array.from(this.inEdgesIter(optNbunch, optData));
   }
 
   /**
@@ -729,16 +726,14 @@ class DiGraph extends Graph {
     if (optWeight == null) {
       return mapIterator(
         nodesNbrs,
-        nd => [nd[0][0], nd[0][1].size + nd[1][1].size]
+        ([[node, succ], [u, pred]]) => [node, pred.size + succ.size]
       );
     }
     else {
       // edge weighted graph - degree is sum of edge weights
       return mapIterator(
         nodesNbrs,
-        function(nd) {
-          var succ = nd[0][1];
-          var pred = nd[1][1];
+        function([[node, succ], [_, pred]]) {
           var sum = 0;
 
           function sumData(data) {
@@ -749,7 +744,7 @@ class DiGraph extends Graph {
           succ.forEach(sumData);
           pred.forEach(sumData);
 
-          return [nd[0][0], sum];
+          return [node, sum];
         }
       );
     }
@@ -798,19 +793,19 @@ class DiGraph extends Graph {
     if (optWeight == null) {
       return mapIterator(
         nodesNbrs,
-        nd => [nd[0], nd[1].size]
+        ([node, pred]) => [node, pred.size]
       );
     }
     else {
       return mapIterator(
         nodesNbrs,
-        function(nd) {
+        function([node, pred]) {
           var sum = 0;
-          nd[1].forEach(function(data) {
+          pred.forEach(function(data) {
             var weight = data[optWeight];
             sum += weight != null ? +weight :  1;
           });
-          return [nd[0], sum];
+          return [node, sum];
         }
       );
     }
@@ -858,19 +853,19 @@ class DiGraph extends Graph {
     if(optWeight == null) {
       return mapIterator(
         nodesNbrs,
-        nd => [nd[0], nd[1].size]
+        ([node, succ]) => [node, succ.size]
       );
     }
     else {
       return mapIterator(
         nodesNbrs,
-        function(nd) {
+        function([node, succ]) {
           var sum = 0;
-          nd[1].forEach(function(data) {
+          succ.forEach(function(data) {
             var weight = data[optWeight];
             sum += weight != null ? +weight :  1;
           });
-          return [nd[0], sum];
+          return [node, sum];
         }
       );
     }

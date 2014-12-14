@@ -6,7 +6,6 @@ var isValidDegreeSequence =
   require('../algorithms/graphical').isValidDegreeSequence;
 var emptyGraph = require('./classic').emptyGraph;
 var sprintf = require('../_internals/sprintf');
-var toArray = require('../_internals/toArray');
 
 
 // TODO: configuration_model
@@ -50,7 +49,7 @@ var toArray = require('../_internals/toArray');
  * @return {Graph}
  */
 async function havelHakimiGraph(degreeSequence, optCreateUsing) {
-  degreeSequence = toArray(degreeSequence);
+  degreeSequence = Array.from(degreeSequence);
   if (!(await isValidDegreeSequence(degreeSequence))) {
     throw new JSNetworkXError('Invalid degree sequence');
   }

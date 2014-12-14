@@ -23,7 +23,7 @@ exports.clique = {
   beforeEach: function() {
     var z = [3,4,3,4,2,4,2,1,1,1,1];
     this.G = convertNodeLabelsToIntegers(havelHakimiGraph(z), 1);
-    this.cl = utils.toArray(findCliques(this.G));
+    this.cl = Array.from(findCliques(this.G));
     var H = completeGraph(6);
     H = relabelNodes(H, {0: 1, 1: 2, 2: 3, 3: 4, 4: 5, 5: 6});
     H.removeEdgesFrom([[2,6], [2,5], [2,4], [1,3], [5,3]]);
@@ -31,8 +31,8 @@ exports.clique = {
   },
 
   testFindCliques1: function() {
-    var cl = utils.toArray(findCliques(this.G));
-    var rcl = utils.toArray(findCliquesRecursive(this.G));
+    var cl = Array.from(findCliques(this.G));
+    var rcl = Array.from(findCliquesRecursive(this.G));
 
     assert.deepEqual(
       cl.map(v => v.sort()).sort(),
@@ -48,8 +48,8 @@ exports.clique = {
 
   testSelfloops: function() {
     this.G.addEdge(1,1);
-    var cl = utils.toArray(findCliques(this.G));
-    var rcl = utils.toArray(findCliquesRecursive(this.G));
+    var cl = Array.from(findCliques(this.G));
+    var rcl = Array.from(findCliquesRecursive(this.G));
 
     assert.deepEqual(
       cl.map(v => v.sort()).sort(),
@@ -64,7 +64,7 @@ exports.clique = {
   },
 
   testFindCliques2: function() {
-    var hcl = utils.toArray(findCliques(this.H));
+    var hcl = Array.from(findCliques(this.H));
 
     assert.deepEqual(
       hcl.map(v => v.sort()).sort(),

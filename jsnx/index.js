@@ -1,7 +1,6 @@
 "use strict";
 
-require('regenerator/runtime');
-var assign = require('./_internals/assign');
+require("6to5/polyfill");
 
 var algorithms = require('./algorithms');
 var classes = require('./classes');
@@ -21,7 +20,7 @@ module.exports = exports = {
   relabel,
 };
 
-assign(
+Object.assign(
   exports,
   algorithms,
   classes,

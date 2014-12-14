@@ -1,14 +1,11 @@
 "use strict";
 
 var argv = require('yargs').argv;
-var asyncTransform = require('./transforms/async');
 var browserify = require('browserify');
-var del = require('del');
 var concat = require('gulp-concat');
-var esnext = require('esnext');
+var del = require('del');
 var gulp = require('gulp');
-var inlineSMC = require('inline-source-map-comment');
-var mapStream = require('map-stream');
+var header = require('gulp-header');
 var vinylTransform = require('vinyl-transform');
 var mocha = require('gulp-mocha');
 var preprocess = require('gulp-preprocess');
@@ -16,7 +13,8 @@ var plumber = require('gulp-plumber');
 var regenerator = require('regenerator');
 var replace = require('gulp-replace');
 var sourceMapSupport = require('source-map-support');
-var through = require('through');
+var transform = require('./transforms/transform');
+var uglify = require('gulp-uglify');
 var watch = require('gulp-watch');
 
 var paths = {
@@ -26,74 +24,26 @@ var paths = {
   node: './node',
 };
 
-function jstransform(file, src, opts) {
-  var options = {};
-  if (!opts.prod) {
-    options = {
-      sourceFileName: file,
-      sourceMapName: file + '.map.json'
-    };
-  }
-
-  // Transform async functions first
-  src = asyncTransform(file, src, {
-    delegateName: 'delegateToWorker',
-    delegatePath: './jsnx/_internals'
-  }).code;
-
-  // Then ES6 and inline source maps
-  var result = esnext.compile(src, options);
-  var code = result.code;
-  if (!opts.prod) {
-    code += '\n' + inlineSMC(result.map, {sourcesContent: true});
-  }
-  return code;
-}
 
 function transformNode(src, prod) {
   return src
     .pipe(preprocess({context: {NODE: true}}))
-    .pipe(mapStream(function (file, cb) {
-      try {
-        var src = jstransform(
-          file.path,
-          file.contents.toString(),
-          {prod: prod}
-        );
-        file.contents = new Buffer(src);
-        cb(null, file);
-      } catch(ex) {
-        cb(file.path + ': ' + ex);
-      }
-    }))
+    .pipe(transform.mapStream(prod))
     .pipe(gulp.dest(paths.node));
 }
 
 function transformBrowser(prod) {
   return gulp.src(paths.browser)
     .pipe(vinylTransform(function(filename) {
-       var b = browserify({
+       return browserify({
         standalone: 'jsnx',
         debug: !prod,
       })
       .add(filename)
-      .transform(function(file) {
-        var data = '';
-        return through(write, end);
-
-        function write (buf) { data += buf; }
-        function end() {
-          /*jshint validthis:true*/
-          var code = jstransform(file, data, {prod: prod});
-          this.queue(code);
-          this.queue(null);
-        }
-      })
-      if (prod) {
-        b.transform('uglifyify', {global: true});
-      }
-      return b.bundle();
-    }));
+      .transform(transform(prod, {runtime: true}))
+      .bundle();
+    }))
+    .pipe(header(require("6to5").runtime()));
 }
 
 gulp.task('build-node-dev', ['clean-node'], function() {
@@ -114,6 +64,7 @@ gulp.task('build-dev', function() {
 gulp.task('build-prod', function() {
   return transformBrowser(true)
     .pipe(concat(paths.jsnx))
+    .pipe(uglify())
     .pipe(replace('{{BUNDLE_NAME}}', paths.jsnx))
     .pipe(gulp.dest('./'));
 });
@@ -139,13 +90,13 @@ gulp.task('test-node', function () {
   var pattern = argv.p;
 
   sourceMapSupport.install();
-  regenerator.runtime();
+  require('6to5/polyfill');
   global.utils = require(paths.node + '/_internals');
   global.assert = require('./mocha/assert');
   global.sinon = require('sinon');
   return gulp.src(paths.node + '/**/__tests__/*-test.js')
     .pipe(mocha({
-      reporter: 'spec',
+      reporter: 'dot',
       ui: 'exports',
       globals: ['utils', 'assert', 'sinon'],
       grep: pattern,

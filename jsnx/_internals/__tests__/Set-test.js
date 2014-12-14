@@ -11,7 +11,7 @@ exports.Set = {
 
   testAddElements: function() {
     var set = new Set([1,2,3]);
-    assert.deepEqual(utils.iteratorToArray(set.values()).sort(), [1,2,3]);
+    assert.deepEqual(Array.from(set.values()).sort(), [1,2,3]);
 
     set = new Set();
     set.add(1);
