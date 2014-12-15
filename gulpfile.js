@@ -10,7 +10,6 @@ var vinylTransform = require('vinyl-transform');
 var mocha = require('gulp-mocha');
 var preprocess = require('gulp-preprocess');
 var plumber = require('gulp-plumber');
-var regenerator = require('regenerator');
 var replace = require('gulp-replace');
 var sourceMapSupport = require('source-map-support');
 var transform = require('./transforms/transform');

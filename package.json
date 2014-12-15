@@ -20,20 +20,17 @@
   },
   "main": "node/index.js",
   "dependencies": {
+    "6to5": "^1.15.0",
     "lodash-node": "^2.4.1",
-    "promise": "^6.0.1",
-    "regenerator": "^0.6.10",
     "tiny-sprintf": "^0.3.0"
   },
   "devDependencies": {
-    "6to5": "^1.15.0",
+    "acorn-6to5": "^0.9.1-14",
     "browserify": "^7.0.0",
     "chai": "^1.9.1",
     "chai-as-promised": "^4.1.1",
     "chai-members-deep": "0.0.1",
     "del": "^1.0.0",
-    "esprima-fb": "git://github.com/facebook/esprima#fb-harmony",
-    "glob": "^4.1.5",
     "gulp": "^3.8.0",
     "gulp-concat": "^2.4.1",
     "gulp-header": "^1.2.2",
