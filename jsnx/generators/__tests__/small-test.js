@@ -1,7 +1,7 @@
 /*global assert*/
 "use strict";
 
-import {couldBeIsmormphic as isIsomorphic} from '../../algorithms';
+import {couldBeIsomorphic as isIsomorphic} from '../../algorithms';
 
 import {
   makeSmallGraph,
@@ -18,7 +18,7 @@ export var testGeneratorSmall = {
       list: [[2,3],[1,3,4],[1,2,5],[2],[3]]
     };
     var G = makeSmallGraph(d);
-    assert.equal(isIsomorphic(G, bullGraph()), true);
+    assert.ok(isIsomorphic(G, bullGraph()));
   },
 
   testPropertiesNamedSmallGraphs: function() {
