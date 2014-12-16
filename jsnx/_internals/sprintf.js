@@ -1,6 +1,6 @@
 'use strict';
 
-var sprintf = require('tiny-sprintf');
+import sprintf from 'tiny-sprintf';
 
 sprintf.j = function(value) {
   try {
@@ -11,4 +11,4 @@ sprintf.j = function(value) {
   }
 };
 
-module.exports = sprintf;
+export default sprintf;

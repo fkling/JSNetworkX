@@ -1,23 +1,21 @@
 "use strict";
 
-var JSNetworkXError = require('../exceptions/JSNetworkXError');
+import JSNetworkXError from '../exceptions/JSNetworkXError';
 
-var {
+import {
   fillArray,
   isMap,
   isPlainObject,
   sprintf
-} = require('../_internals');
+} from '../_internals';
 
 /**
  * Return a copy of the graph nodes in a list.
  *
  * @param {Graph} G Graph
- *
  * @return {Array} List of nodes
- * @export
  */
-function nodes(G) {
+export function nodes(G) {
   return G.nodes();
 }
 
@@ -25,11 +23,9 @@ function nodes(G) {
  * Return an iterator over the graph nodes.
  *
  * @param {Graph} G Graph
- *
- * @return {goog.iter.Iterator} Iterator over graph nodes
- * @export
+ * @return {Iterator} Iterator over graph nodes
  */
-function nodesIter(G) {
+export function nodesIter(G) {
   return G.nodesIter();
 }
 
@@ -41,11 +37,9 @@ function nodesIter(G) {
  *
  * @param {Graph} G Graph
  * @param {NodeContainer=} opt_nbunch Nodes
- *
  * @return {Array} List of edges
- * @export
  */
-function edges(G, optNbunch) {
+export function edges(G, optNbunch) {
   return G.edges(optNbunch);
 }
 
@@ -57,11 +51,9 @@ function edges(G, optNbunch) {
  *
  * @param {Graph} G Graph
  * @param {NodeContainer=} opt_nbunch Nodes
- *
  * @return {Iterator} Iterator over edges
- * @export
  */
-function edgesIter(G, optNbunch) {
+export function edgesIter(G, optNbunch) {
   return G.edgesIter(optNbunch);
 }
 
@@ -72,48 +64,40 @@ function edgesIter(G, optNbunch) {
  * @param {Graph} G Graph
  * @param {NodeContainer=} opt_nbunch Nodes
  * @param {string=} opt_weight Weight attribute name
- *
  * @return {(number|Map)} Degree of node(s)
- * export
  */
-function degree(G, optNbunch, optWeight) {
+export function degree(G, optNbunch, optWeight) {
   return G.degree(optNbunch, optWeight);
 }
 
 /**
  * Return a list of nodes connected to node n.
  *
- * @param {jsnx.classes.Graph} G Graph
- * @param {jsnx.Node} n Node
- *
+ * @param {Graph} G Graph
+ * @param {Node} n Node
  * @return {Array} List of nodes
- * @export
  */
-function neighbors(G, n) {
+export function neighbors(G, n) {
   return G.neighbors(n);
 }
 
 /**
  * Return the number of nodes in the graph.
  *
- * @param {jsnx.classes.Graph} G Graph
- *
+ * @param {Graph} G Graph
  * @return {number} Number of nodes
- * @export
  */
-function numberOfNodes(G) {
+export function numberOfNodes(G) {
   return G.numberOfNodes();
 }
 
 /**
  * Return the number of edges in the graph.
  *
- * @param {jsnx.classes.Graph} G Graph
- *
+ * @param {Graph} G Graph
  * @return {number} Number of edges
- * @export
  */
-function numberOfEdges(G) {
+export function numberOfEdges(G) {
   return G.numberOfEdges();
 }
 
@@ -121,23 +105,25 @@ function numberOfEdges(G) {
  * Return the density of a graph.
  * The density for undirected graphs is
  *
- * {@math d = \frac{2m}{n(n-1)}}
+ * ```math
+ * d = \frac{2m}{n(n-1)}
+ * ```
  *
  * and for directed graphs is
  *
- * {@math \frac{m}{n(n-1)}}
+ * ```math
+ * \frac{m}{n(n-1)}
+ * ```
  *
  * where n is the number of nodes and m is the number of edges in G
  *
  * The density is 0 for an graph without edges and 1.0 for a complete graph.
  * The density of multigraphs can be higher than 1.
  *
- * @param {jsnx.classes.Graph} G Graph
- *
+ * @param {Graph} G Graph
  * @return {number} Density
- * @export
  */
-function density(G) {
+export function density(G) {
   var n = G.numberOfNodes();
   var m = G.numberOfEdges();
   var d;
@@ -164,13 +150,11 @@ function density(G) {
  * (Order(number_of_edges))
  *
  *
- * @param {jsnx.classes.Graph} G Graph
- *
+ * @param {Graph} G Graph
  * @return {Array} A list of frequencies of degrees.
  *      The degree values are the index in the list.
- *  @export
  */
-function degreeHistogram(G) {
+export function degreeHistogram(G) {
   var degseq = Array.from(G.degree().values());
   var dmax = Math.max.apply(Math, degseq) + 1;
   var freq = fillArray(dmax, 0);
@@ -185,12 +169,10 @@ function degreeHistogram(G) {
 /**
  * Return True if graph is directed.
  *
- * @param {jsnx.classes.Graph} G Graph
- *
+ * @param {Graph} G Graph
  * @return {boolean}  True if graph is directed
- * @export
  */
-function isDirected(G) {
+export function isDirected(G) {
   return G.isDirected();
 }
 
@@ -202,12 +184,10 @@ function isDirected(G) {
  *
  * @see #is_frozen
  *
- * @param {jsnx.classes.Graph} G Graph
- *
- * @return {jsnx.classes.Graph} A reference to the input graph
- * @export
+ * @param {Graph} G Graph
+ * @return {Graph} A reference to the input graph
  */
-function freeze(G) {
+export function freeze(G) {
   function frozen() {
     throw new JSNetworkXError(
       "Frozen graph can't be modified"
@@ -233,12 +213,10 @@ function freeze(G) {
  *
  * @see #freeze
  *
- * @param {jsnx.classes.Graph} G Graph
- *
+ * @param {Graph} G Graph
  * @return {boolean}  True if graph is frozen.
- * @export
  */
-function isFrozen(G) {
+export function isFrozen(G) {
   return !!G.frozen;
 }
 
@@ -247,19 +225,17 @@ function isFrozen(G) {
  *
  * Note:  subgraph(G) calls G.subgraph()
  *
- * @param {jsnx.classes.Graph} G Graph
- * @param {jsnx.NodeContainer} nbunch
+ * @param {Graph} G Graph
+ * @param {NodeContainer} nbunch
  *      A container of nodes that will be iterated through once (thus
  *      it should be an iterator or be iterable).  Each element of the
  *      container should be a valid node type: any hashable type except
  *      None.  If nbunch is None, return all edges data in the graph.
  *      Nodes in nbunch that are not in the graph will be (quietly)
  *      ignored.
- *
- * @return {jsnx.classes.Graph} Subgraph
- * @export
+ * @return {Graph} Subgraph
  */
-function subgraph(G, nbunch) {
+export function subgraph(G, nbunch) {
   return G.subgraph(nbunch);
 }
 
@@ -268,14 +244,13 @@ function subgraph(G, nbunch) {
  *
  * Notes: Graph, node, and edge data is not propagated to the new graph.
  *
- * @param {jsnx.classes.Graph} G Graph
+ * @param {Graph} G Graph
  * @param {boolean} opt_with_nodes (default=True)
  *      Include nodes.
  *
- * @return {jsnx.classes.Graph} A copy of the graph
- * @export
+ * @return {Graph} A copy of the graph
  */
-function createEmptyCopy(G, optWithNodes=true) {
+export function createEmptyCopy(G, optWithNodes=true) {
   var H = new G.constructor();
   if(optWithNodes) {
     H.addNodesFrom(G);
@@ -286,13 +261,11 @@ function createEmptyCopy(G, optWithNodes=true) {
 /**
  * Print short summary of information for the graph G or the node n.
  *
- * @param {jsnx.classes.Graph} G Graph
- * @param {jsnx.Node=} opt_n A node in the graph G
- *
+ * @param {Graph} G Graph
+ * @param {Node=} opt_n A node in the graph G
  * @return {string} Info
- * @export
  */
-function info(G, optN) {
+export function info(G, optN) {
   var result = '';
   if (optN == null) {
     var template =
@@ -353,12 +326,11 @@ function info(G, optN) {
 /**
  * Set node attributes from dictionary of nodes and values
  *
- * @param {jsnx.classes.Graph} G Graph
+ * @param {Graph} G Graph
  * @param {string} name Attribute name
  * @param {(Object|Map)} attributes Dictionary of attributes keyed by node
- * @export
  */
-function setNodeAttributes(G, name, attributes) {
+export function setNodeAttributes(G, name, attributes) {
   if (isMap(attributes)) {
     attributes.forEach((value, node) => G.node.get(node)[name] = value);
   }
@@ -376,13 +348,11 @@ function setNodeAttributes(G, name, attributes) {
 /**
  * Get node attributes from graph
  *
- * @param {jsnx.classes.Graph} G Graph
+ * @param {Graph} G Graph
  * @param {string} name Attribute name
- *
  * @return {!Map} Dictionary of attributes keyed by node.
- * @export
  */
-function getNodeAttributes(G, name) {
+export function getNodeAttributes(G, name) {
   var dict = new Map();
   G.node.forEach(function(node, data) {
     if (data.hasOwnProperty(name)) {
@@ -395,13 +365,12 @@ function getNodeAttributes(G, name) {
 /**
  * Set edge attributes from dictionary of edge tuples and values
  *
- * @param {jsnx.classes.Graph} G Graph
+ * @param {Graph} G Graph
  * @param {string} name Attribute name
  * @param {Map} attributes
  *    Dictionary of attributes keyed by edge (tuple).
- * @export
  */
-function setEdgeAttributes(G, name, attributes) {
+export function setEdgeAttributes(G, name, attributes) {
   attributes.forEach(function(edge, value) {
     G.get(edge[0]).get(edge[1])[name] = value;
   });
@@ -414,13 +383,11 @@ function setEdgeAttributes(G, name, attributes) {
  * {@code "node1,node2"} string. You'd have to call {@code .split(',')} on
  * the keys to extract the actual node names.
  *
- * @param {jsnx.classes.Graph} G Graph
+ * @param {Graph} G Graph
  * @param {string} name Attribute name
- *
  * @return {!Map} Dictionary of attributes keyed by edge.
- * @export
  */
-function getEdgeAttributes(G, name) {
+export function getEdgeAttributes(G, name) {
   var dict = new Map();
   G.edges(null, true).forEach(function(edged) {
     if (edged[2].hasOwnProperty(name)) {
@@ -431,26 +398,3 @@ function getEdgeAttributes(G, name) {
   });
   return dict;
 }
-
-module.exports = {
-  nodes,
-  nodesIter,
-  edges,
-  edgesIter,
-  degree,
-  neighbors,
-  numberOfNodes,
-  numberOfEdges,
-  density,
-  degreeHistogram,
-  isDirected,
-  freeze,
-  isFrozen,
-  subgraph,
-  createEmptyCopy,
-  info,
-  setNodeAttributes,
-  getNodeAttributes,
-  setEdgeAttributes,
-  getEdgeAttributes,
-};

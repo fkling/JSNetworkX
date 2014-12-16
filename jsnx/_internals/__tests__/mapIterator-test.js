@@ -1,7 +1,7 @@
 /*globals assert, utils*/
 "use strict";
 
-var mapIterator = require('../mapIterator');
+import mapIterator from '../mapIterator';
 
 function* generator(data) {
   for (var i = 0; i < data.length; i++) {
@@ -9,7 +9,7 @@ function* generator(data) {
   }
 }
 
-exports.mapIterator = function() {
+export var testMapIterator = function() {
   var iterator = mapIterator(generator([1,2,3]), x => x * 3);
 
   assert(utils.isIterator(iterator));

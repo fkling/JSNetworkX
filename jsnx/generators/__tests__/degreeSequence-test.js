@@ -1,13 +1,12 @@
 /*global assert*/
 "use strict";
 
-var DiGraph = require('../../classes/digraph');
-var JSNetworkXError = require('../../exceptions/JSNetworkXError');
+import DiGraph from '../../classes/digraph';
+import JSNetworkXError from '../../exceptions/JSNetworkXError';
 
-var havelHakimiGraph = require('../degreeSequence').havelHakimiGraph;
+import {havelHakimiGraph} from '../degreeSequence';
 
-
-exports.degreeSequence = {
+export var degreeSequence = {
 
   // TODO: test_configuration_model_empty
   // TODO: test_configuration_model

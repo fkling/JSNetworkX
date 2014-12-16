@@ -1,9 +1,9 @@
 /*global assert*/
 "use strict";
 
-var toObjectFromKV = require('../toObjectFromKV');
+import toObjectFromKV from '../toObjectFromKV';
 
-exports.toObjectFromKV = {
+export var testToObjectFromKV = {
 
   'generate object from array of pairs': function() {
     var obj = toObjectFromKV([['foo', 5], [10, [1,2]]]);

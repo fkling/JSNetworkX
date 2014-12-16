@@ -1,12 +1,9 @@
 /*global assert*/
 "use strict";
 
-var {
-  genRange,
-  isIterator
-} = require('../');
+import {genRange, isIterator} from '../';
 
-exports.genRange = {
+export var testGenRange = {
   'end': function() {
     var range = genRange(5);
     assert(isIterator(range));

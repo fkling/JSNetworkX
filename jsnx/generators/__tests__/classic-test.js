@@ -1,15 +1,15 @@
 /*global assert*/
 'use strict';
 
-var DiGraph = require('../../classes/digraph');
+import DiGraph from '../../classes/digraph';
 /*jshint ignore:start*/
 var Map = utils.Map;
 /*jshint ignore:end*/
 
-var classic = require('../classic');
-var degreeHistogram = require('../../classes/functions').degreeHistogram;
+import classic from '../classic';
+import {degreeHistogram} from '../../classes/functions';
 
-exports.TestGeneratorClassic = {
+export var generatorClassic = {
 
   testBalancedTree: function() {
     [[2,2],[3,3],[6,2]].forEach(function(d) {

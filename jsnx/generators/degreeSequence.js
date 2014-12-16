@@ -1,11 +1,10 @@
 "use strict";
 
-var JSNetworkXError = require('../exceptions/JSNetworkXError');
+import JSNetworkXError from '../exceptions/JSNetworkXError';
 
-var isValidDegreeSequence =
-  require('../algorithms/graphical').isValidDegreeSequence;
-var emptyGraph = require('./classic').emptyGraph;
-var sprintf = require('../_internals/sprintf');
+import {isValidDegreeSequence} from '../algorithms/graphical';
+import {emptyGraph} from './classic';
+import sprintf from '../_internals/sprintf';
 
 
 // TODO: configuration_model
@@ -48,7 +47,7 @@ var sprintf = require('../_internals/sprintf');
  *
  * @return {Graph}
  */
-async function havelHakimiGraph(degreeSequence, optCreateUsing) {
+export async function havelHakimiGraph(degreeSequence, optCreateUsing) {
   degreeSequence = Array.from(degreeSequence);
   if (!(await isValidDegreeSequence(degreeSequence))) {
     throw new JSNetworkXError('Invalid degree sequence');
@@ -135,7 +134,3 @@ async function havelHakimiGraph(degreeSequence, optCreateUsing) {
 // TODO: degree_sequence_tree
 // TODO: random_degree_sequence_graph
 // TODO: DegreeSequenceRandomGraph
-
-module.exports = {
-  havelHakimiGraph,
-};

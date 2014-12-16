@@ -7,8 +7,6 @@
 
  * @return {boolean}
  */
-function isIterable(obj) {
+export default function isIterable(obj) {
   return typeof obj[Symbol.iterator] === 'function';
 }
-
-module.exports = isIterable;

@@ -1,6 +1,6 @@
 "use strict";
 
-var genRange = require('./genRange');
+import genRange from './genRange';
 
 /**
  * Implements Python's range function, returns an array.
@@ -14,8 +14,6 @@ var genRange = require('./genRange');
  * @param {?number=} optStep Step size
  * @return {!Array}
  */
-function range(optStart, optEnd, optStep) {
+export default function range(optStart, optEnd, optStep) {
   return Array.from(genRange(optStart, optEnd, optStep));
 }
-
-module.exports = range;

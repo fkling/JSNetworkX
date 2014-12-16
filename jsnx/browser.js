@@ -1,12 +1,8 @@
 "use strict";
-require("6to5/polyfill");
+import '6to5/polyfill';
 
-var isIterator = require('./_internals/isIterator');
-
-Object.assign(
-  exports,
-  require('./')
-);
+import isIterator from './_internals/isIterator';
+export * from './';
 
 if (!global.document) {
   // inside worker

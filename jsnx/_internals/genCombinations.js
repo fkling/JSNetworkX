@@ -1,6 +1,6 @@
 "use strict";
 
-var range = require('./range');
+import range from './range';
 
 function reversed(array) {
   return array.slice().reverse();
@@ -16,7 +16,7 @@ function reversed(array) {
  *
  * @return {Iterator}
  */
-function *genCombinations(iterable, r) {
+export default function *genCombinations(iterable, r) {
   // genCombinations('ABCD', 2) --> AB AC AD BC BD CD
   // genCombinations(range(4), 3) --> 012 013 023 123
   var pool = Array.from(iterable);
@@ -45,5 +45,3 @@ function *genCombinations(iterable, r) {
     yield indicies.map(i => pool[i]);
   }
 }
-
-module.exports = genCombinations;

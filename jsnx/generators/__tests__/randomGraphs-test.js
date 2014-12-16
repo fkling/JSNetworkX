@@ -1,14 +1,14 @@
 /* global assert*/
 "use strict";
 
-var {
+import {
   fastGnpRandomGraph,
   gnpRandomGraph,
   binomialGraph,
   erdosRenyiGraph
-} = require('../randomGraphs');
+} from '../randomGraphs';
 
-exports.randomGraphs = {
+export var randomGraphs = {
 
   // TODO: smoke_test_random_graph
   // TODO: test_random_zero_regular_graph

@@ -1,17 +1,17 @@
 /*global assert*/
 "use strict";
 
-var BaseGraphTester = require('./BaseGraphTester');
-var DiGraph= require('../digraph');
+import BaseGraphTester from './BaseGraphTester';
+import DiGraph from '../digraph';
 /*jshint ignore:start*/
 var Map = utils.Map;
 /*jshint ignore:end*/
-var JSNetworkXError = require('../../exceptions/JSNetworkXError');
+import JSNetworkXError from '../../exceptions/JSNetworkXError';
 
 var _ = require('lodash-node');
 
 // Tests specific to dict-of-dict-of-dict graph data structure
-var BaseDiGraphTester = _.extend({}, BaseGraphTester, {
+export default _.extend({}, BaseGraphTester, {
   testHasSuccessor: function() {
     var G = this.K3;
     assert.ok(G.hasSuccessor(0, 1));
@@ -296,5 +296,3 @@ var BaseDiGraphTester = _.extend({}, BaseGraphTester, {
     assert.deepEqual(G.edges(), [[2,1]]);
   }
 });
-
-module.exports = BaseDiGraphTester;

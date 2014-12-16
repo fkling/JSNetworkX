@@ -1,6 +1,6 @@
 "use strict";
 
-var forEach = require('./forEach');
+import forEach from './forEach';
 
 /**
  * Returns an object, given an array of keys and an default value.
@@ -11,15 +11,13 @@ var forEach = require('./forEach');
  *
  * @return {!Object}
  */
-function toObjectFromKeys(keys, optValue) {
-    if(optValue == null) { // && opt_value == undefined
-        optValue = null;
-    }
-    var result = {};
-    forEach(keys, function(key) {
-        result[key] = optValue;
-    });
-    return result;
+export default function toObjectFromKeys(keys, optValue) {
+  if(optValue == null) { // && opt_value == undefined
+    optValue = null;
+  }
+  var result = {};
+  forEach(keys, function(key) {
+    result[key] = optValue;
+  });
+  return result;
 }
-
-module.exports = toObjectFromKeys;

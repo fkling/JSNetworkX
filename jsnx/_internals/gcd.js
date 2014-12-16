@@ -7,7 +7,7 @@
  * @param {number} b
  * @return {number}
  */
-function gcd(a, b) {
+export default function gcd(a, b) {
   while (b !== 0) {
     var _ = a;
     a = b;
@@ -15,5 +15,3 @@ function gcd(a, b) {
   }
   return a;
 }
-
-module.exports = gcd;

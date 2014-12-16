@@ -7,8 +7,6 @@
  * @param {*} defaultValue
  * @return {?}
  */
-function get(value, defaultValue) {
+export default function get(value, defaultValue) {
   return value == null ? defaultValue : value;
 }
-
-module.exports = get;

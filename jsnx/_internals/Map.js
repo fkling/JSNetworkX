@@ -5,13 +5,13 @@
  * and does not accept arrays as keys (just like Python does not accept lists).
  */
 
-var clear = require('./clear');
-var collectionsForEach = require('lodash-node/modern/collections/forEach');
-var isIterator = require('./isIterator');
-var isFunction = require('lodash-node/modern/objects/isFunction');
-var isObject = require('lodash-node/modern/objects/isObject');
-var isArrayLike = require('./isArrayLike');
-var size = require('lodash-node/modern/collections/size');
+import clear from './clear';
+import collectionsForEach from 'lodash-node/modern/collections/forEach';
+import isIterator from './isIterator';
+import isFunction from 'lodash-node/modern/objects/isFunction';
+import isObject from 'lodash-node/modern/objects/isObject';
+import isArrayLike from './isArrayLike';
+import size from 'lodash-node/modern/collections/size';
 
 /**
  * @param {Iterable=} opt_data An object, array or iterator to
@@ -22,7 +22,7 @@ var size = require('lodash-node/modern/collections/size');
  *  values.
  * @constructor
  */
-class Map {
+export default class Map {
   constructor(optData) {
     // Can't use class syntax because of generator functions
     this._stringValues = Object.create(null); // strings
@@ -244,5 +244,3 @@ class Map {
     return this.entries();
   }
 }
-
-module.exports = Map;

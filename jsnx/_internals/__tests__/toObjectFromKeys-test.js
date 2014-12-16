@@ -1,9 +1,9 @@
-/*jshint strict:false, node:true*/
 /*global assert */
+"use strict";
 
-var toObjectFromKeys = require('../toObjectFromKeys');
+import toObjectFromKeys from '../toObjectFromKeys';
 
-exports.toObjectFromKeys = {
+export var testToObjectFromKeys = {
   'without default value (null)': function() {
     var keys = ['foo', 'bar', 'baz'];
     assert.deepEqual(

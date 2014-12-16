@@ -1,9 +1,9 @@
 "use strict";
 
-var isArrayLike = require('./isArrayLike');
-var isGraph = require('./isGraph');
-var isPlainObject = require('lodash-node/modern/objects/isPlainObject');
-var objectSize = require('lodash-node/modern/collections/size');
+import isArrayLike from './isArrayLike';
+import isGraph from './isGraph';
+import isPlainObject from 'lodash-node/modern/objects/isPlainObject';
+import objectSize from 'lodash-node/modern/collections/size';
 
 /**
  * Returns the number of elements in the container. That is
@@ -16,7 +16,7 @@ var objectSize = require('lodash-node/modern/collections/size');
  * @return {number} The number of elements
  * @throws {TypeError} When length cannot be determined
  */
-function size(obj) {
+export default function size(obj) {
   if (isGraph(obj)) {
     return obj.numberOfNodes();
   }
@@ -33,5 +33,3 @@ function size(obj) {
     );
   }
 }
-
-module.exports = size;

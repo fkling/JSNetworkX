@@ -8,14 +8,15 @@
  * Otherwise raise an exception because create_using is not a jsnx graph.
  *
  * @param {Graph=} opt_create_using
- *
  * @return {Graph}
  */
-function prepCreateUsing(optCreateUsing) {
+export function prepCreateUsing(optCreateUsing) {
   var G;
+  // can't use import statement because of circular dependency
+  var Graph = require('../classes/graph');
 
   if (optCreateUsing == null) {
-    G = new require('../classes/graph')();
+    G = new Graph();
   }
   else {
     G = optCreateUsing;

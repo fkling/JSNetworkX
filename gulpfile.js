@@ -27,7 +27,7 @@ var paths = {
 function transformNode(src, prod) {
   return src
     .pipe(preprocess({context: {NODE: true}}))
-    .pipe(transform.mapStream(prod))
+    .pipe(transform.mapStream(prod, {experimental: true, modules: 'commonInterop'}))
     .pipe(gulp.dest(paths.node));
 }
 
@@ -39,7 +39,11 @@ function transformBrowser(prod) {
         debug: !prod,
       })
       .add(filename)
-      .transform(transform(prod, {runtime: true}))
+      .transform(transform(prod, {
+        runtime: true,
+        modules: 'commonInterop',
+        experimental: true
+      }))
       .bundle();
     }))
     .pipe(header(require("6to5").runtime()));

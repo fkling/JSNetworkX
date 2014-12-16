@@ -1,21 +1,18 @@
 "use strict";
 
-var clique = require('./clique');
-var cluster = require('./cluster');
-var dag = require('./dag');
-var graphical = require('./graphical');
+import * as clique from './clique';
+import * as cluster from './cluster';
+import * as dag from './dag';
+import * as graphical from './graphical';
 
-module.exports = exports = {
-  clique,
-  cluster,
-  dag,
-  graphical,
-};
-
-Object.assign(
-  exports,
+export {
   clique,
   cluster,
   dag,
   graphical
-);
+};
+
+export * from './clique';
+export * from './cluster';
+export * from './dag';
+export * from './graphical';

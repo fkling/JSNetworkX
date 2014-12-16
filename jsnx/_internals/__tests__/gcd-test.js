@@ -1,9 +1,9 @@
 /*globals assert*/
 "use strict";
 
-var gcd = require('../gcd');
+import gcd from '../gcd';
 
-exports.gcd = function() {
+export var testGcd = function() {
   assert.strictEqual(gcd(48, 18), 6);
   assert.strictEqual(gcd(54, 24), 6);
   assert.strictEqual(gcd(48, 180), 12);

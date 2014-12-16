@@ -1,12 +1,10 @@
 "use strict";
 
-var JSNetworkXException = require('./JSNetworkXException');
+import JSNetworkXException from './JSNetworkXException';
 
-class JSNetworkXError extends JSNetworkXException {
+export default class JSNetworkXError extends JSNetworkXException {
   constructor(message) {
     super(message);
     this.name = 'JSNetworkXError';
   }
 }
-
-module.exports = JSNetworkXError;

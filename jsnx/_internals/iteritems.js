@@ -1,7 +1,7 @@
 "use strict";
 
-var items = require('./items');
-var toIterator = require('./toIterator');
+import items from './items';
+import toIterator from './toIterator';
 
 /**
  * Returns an iterator of [key, value] pairs for the given object (just like
@@ -10,10 +10,6 @@ var toIterator = require('./toIterator');
  * @param {Object} obj
  * @return {!Array}
  */
-function iteritems(obj) {
+export default function iteritems(obj) {
   return toIterator(items(obj));
 }
-
-
-
-module.exports = iteritems;

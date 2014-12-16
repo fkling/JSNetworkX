@@ -1,6 +1,6 @@
 "use strict";
 
-var forEach = require('./forEach');
+import forEach from './forEach';
 
 /**
  * Returns an object, given a container of (key, value) tuples.
@@ -9,12 +9,10 @@ var forEach = require('./forEach');
  *
  * @return {!Object}
  */
-function toObjectFromKV(kvs) {
+export default function toObjectFromKV(kvs) {
   var obj = {};
   forEach(kvs, function(kv) {
     obj[kv[0]] = kv[1];
   });
   return obj;
 }
-
-module.exports = toObjectFromKV;

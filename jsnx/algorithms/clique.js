@@ -1,6 +1,6 @@
 'use strict';
 
-var {
+import {
 /*jshint ignore:start*/
   Map,
   Set,
@@ -9,7 +9,7 @@ var {
   mapIterator,
   max,
   tuple2
-} = require('../_internals');
+} from '../_internals';
 
 /**
  * @fileoverview
@@ -76,7 +76,7 @@ var {
  *
  * @see findCliquesRecursive
  */
-async function* findCliques(G) {
+export async function* findCliques(G) {
   if (G.numberOfNodes() === 0) {
     return [];
   }
@@ -171,7 +171,7 @@ async function* findCliques(G) {
  *
  * @see find_cliques
  */
-async function* findCliquesRecursive(G) {
+export async function* findCliquesRecursive(G) {
   if (G.size === 0) {
     yield [];
   }
@@ -220,7 +220,7 @@ async function* findCliquesRecursive(G) {
  * @param {Iterable=} optCliques
  * @return {number};
  */
-function graphCliqueNumber(G, optCliques) {
+export async function graphCliqueNumber(G, optCliques) {
   if (optCliques == null) {
     optCliques = findCliques(G);
   }
@@ -236,7 +236,7 @@ function graphCliqueNumber(G, optCliques) {
  * @param {Iterable} optCliques
  * @return {number}
  */
-function graphNumberOfCliques(G, optCliques) {
+export async function graphNumberOfCliques(G, optCliques) {
   if (optCliques == null) {
     optCliques = findCliques(G);
   }
@@ -257,7 +257,7 @@ function graphNumberOfCliques(G, optCliques) {
  * @param {Iterable=} optCliques List of cliques
  * @return {!(Map|number)}
  */
-function numberOfCliques(G, optNodes, optCliques) {
+export async function numberOfCliques(G, optNodes, optCliques) {
   optCliques = Array.from(optCliques || findCliques(G));
 
   if (optNodes == null) {
@@ -280,11 +280,3 @@ function numberOfCliques(G, optNodes, optCliques) {
 }
 
 //TODO: cliques_containing_node
-
-module.exports = {
-  findCliques,
-  findCliquesRecursive,
-  graphCliqueNumber,
-  graphNumberOfCliques,
-  numberOfCliques
-};

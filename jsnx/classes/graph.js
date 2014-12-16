@@ -1,17 +1,17 @@
 "use strict";
 
-var KeyError = require('../exceptions/KeyError');
+import KeyError from '../exceptions/KeyError';
 /* jshint ignore:start */
-var Map = require('../_internals/Map');
-var Set = require('../_internals/Set');
+import Map from '../_internals/Map';
+import Set from '../_internals/Set';
 /* jshint ignore:end */
-var JSNetworkXError = require('../exceptions/JSNetworkXError');
+import JSNetworkXError from '../exceptions/JSNetworkXError';
 
-var isBoolean = require('lodash-node/modern/objects/isBoolean');
-var isString = require('lodash-node/modern/objects/isString');
+import isBoolean from 'lodash-node/modern/objects/isBoolean';
+import isString from 'lodash-node/modern/objects/isString';
 
-var convert = require('../convert');
-var {
+import convert from '../convert';
+import {
   clear,
   clone,
   deepcopy,
@@ -26,7 +26,7 @@ var {
   tuple3,
   tuple3c,
   zipSequence
-} = require('../_internals');
+} from '../_internals';
 
 
 
@@ -58,7 +58,7 @@ var {
  * @param {Object=} opt_attr (default= no attributes)
  *       Attributes to add to graph as key=value pairs.
  */
-class Graph {
+export default class Graph {
 
   constructor(optData, optAttr) {
     // makes it possible to call jsnx.Graph without new
@@ -83,14 +83,24 @@ class Graph {
   }
 
 
-/**
- * Gets or sets the name of the graph.
- *
- * @param {string=} opt_name Graph name.
- *
- * @return {(string|undefined)} Graph name if no parameter was passed.
- * @export
- */
+  /**
+   * Holds the graph type (class) name for information.
+   * This is compatible to Pythons __name__ property.
+   *
+   * @type {string}
+   */
+  static get __name__() {
+    return 'Graph';
+  }
+
+  /**
+   * Gets or sets the name of the graph.
+   *
+   * @param {string=} opt_name Graph name.
+   *
+   * @return {(string|undefined)} Graph name if no parameter was passed.
+   * @export
+   */
   get name() {
     return this.graph.name || '';
   }
@@ -1205,49 +1215,3 @@ class Graph {
     return this.node.keys();
   }
 }
-
-/**
- * Holds the graph type (class) name for information.
- * This is compatible to Pythons __name__ property.
- *
- * @type {string}
- */
-Graph.__name__ = 'Graph';
-
-
-/**
- * Dictionary for graph attributes
- *
- * @dict
- * @export
- */
-Graph.prototype.graph = null;
-
-
-/**
- * Node dict
- *
- * @type {jsnx.contrib.Map}
- * @export
- */
-Graph.prototype.node = null;
-
-
-/**
- * Adjacency dict
- *
- * @type {jsnx.contrib.Map}
- * @export
- */
-Graph.prototype.adj = null;
-
-
-/**
- * Edge dict
- *
- * @type {jsnx.contrib.Map}
- * @export
- */
-Graph.prototype.edge = null;
-
-module.exports = Graph;

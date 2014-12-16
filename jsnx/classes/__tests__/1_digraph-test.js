@@ -1,21 +1,21 @@
 /*jshint strict:false, node:true*/
 /*global assert*/
 
-var BaseDiGraphTester = require('./BaseDiGraphTester');
-var DiGraph = require('../digraph');
+import BaseDiGraphTester from './BaseDiGraphTester';
+import DiGraph from '../digraph';
 /*jshint ignore:start*/
 var Map = utils.Map;
 /*jshint ignore:end*/
-var JSNetworkXError = require('../../exceptions/JSNetworkXError');
-var TestGraph = require('./0_graph-test').TestGraph;
+import JSNetworkXError from '../../exceptions/JSNetworkXError';
+import {TestGraph} from './0_graph-test';
 
-var _ = require('lodash-node');
+import _ from 'lodash-node';
 
 var sorted = function(iterator) {
   return Array.from(iterator).sort();
 };
 
-exports.TestDiGraph = _.extend({}, TestGraph, BaseDiGraphTester, {
+export var TestDiGraph = _.extend({}, TestGraph, BaseDiGraphTester, {
   beforeEach: function() {
     this.Graph = DiGraph;
 

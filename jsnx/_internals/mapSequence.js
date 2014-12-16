@@ -1,12 +1,13 @@
 "use strict";
 
-var isPlainObject = require('lodash-node/modern/objects/isPlainObject');
-var mapValues = require('lodash-node/modern/objects/mapValues');
+import isPlainObject from 'lodash-node/modern/objects/isPlainObject';
+import mapValues from 'lodash-node/modern/objects/mapValues';
 
-var isArrayLike = require('./isArrayLike');
-var isIterable = require('./isIterable');
-var isIterator = require('./isIterator');
-var mapIterator = require('./mapIterator');
+import isArrayLike from './isArrayLike';
+import isIterable from './isIterable';
+import isIterator from './isIterator';
+import mapIterator from './mapIterator';
+
 var nativeMap = Array.prototype.map;
 
 /**
@@ -26,7 +27,7 @@ var nativeMap = Array.prototype.map;
  *
  * @return {(Array|Object|Iterator)}
  */
-function mapSequence(sequence, callback, thisObj) {
+export default function mapSequence(sequence, callback, thisObj) {
   if (isArrayLike(sequence)) {
     return nativeMap.call(sequence, callback, thisObj);
   }
@@ -46,5 +47,3 @@ function mapSequence(sequence, callback, thisObj) {
     );
   }
 }
-
-module.exports = mapSequence;

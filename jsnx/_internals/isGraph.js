@@ -6,9 +6,7 @@
  * @param {*} value
  * @return {bool}
  */
-function isGraph(value) {
+export default function isGraph(value) {
   // We are not using instanceof to avoid circular dependencies
   return value && typeof value.addNode === 'function';
 }
-
-module.exports = isGraph;

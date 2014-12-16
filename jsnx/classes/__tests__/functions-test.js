@@ -1,17 +1,16 @@
 /*jshint strict:false, node:true*/
 /*global utils, assert*/
 
-var Graph = require('../graph');
-var DiGraph = require('../digraph');
+import Graph from '../graph';
+import DiGraph from '../digraph';
 /*jshint ignore:start*/
 var Map = utils.Map;
 /*jshint ignore:end*/
-var JSNetworkXError = require('../../exceptions/JSNetworkXError');
+import JSNetworkXError from '../../exceptions/JSNetworkXError';
 
-var funcs = require('../functions');
+import funcs from '../functions';
 
-
-exports.TestFunction = {
+export var testFunction = {
   beforeEach: function() {
     this.G = new Graph({0:[1,2,3], 1:[1,2,0], 4:[]}, {name: 'Test'});
     this.Gdegree = new Map({0:3, 1:2, 3:1, 4:0});

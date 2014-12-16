@@ -1,24 +1,24 @@
 /*global assert, utils*/
 "use strict";
 
-var {
+import {
   convertNodeLabelsToIntegers,
   relabelNodes
-} = require('../../relabel');
-var {
+} from '../../relabel';
+import {
   havelHakimiGraph,
   completeGraph
-} = require('../../generators');
+} from '../../generators';
 
-var {
+import {
   findCliques,
   findCliquesRecursive,
   graphCliqueNumber,
   graphNumberOfCliques,
   numberOfCliques
-} = require('../clique');
+} from '../clique';
 
-exports.clique = {
+export var clique = {
 
   beforeEach: function() {
     var z = [3,4,3,4,2,4,2,1,1,1,1];

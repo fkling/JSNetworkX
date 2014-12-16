@@ -1,8 +1,8 @@
 "use strict";
 
-var isArrayLike = require('./isArrayLike');
-var isIterator = require('./isIterator');
-var zipIterator = require('./zipIterator');
+import isArrayLike from './isArrayLike';
+import isIterator from './isIterator';
+import zipIterator from './zipIterator';
 
 function zipArray(...varArgs) {
   // Pre-allocation arrays speeds up assignment drastically, so we want to
@@ -53,7 +53,7 @@ function zipArray(...varArgs) {
  *
  * @return {!(Array|Iterator)}
  */
-function zipSequence(...varArgs) {
+export default function zipSequence(...varArgs) {
   var first = varArgs[0];
 
   if (isArrayLike(first)) {
@@ -69,5 +69,3 @@ function zipSequence(...varArgs) {
     );
   }
 }
-
-module.exports = zipSequence;

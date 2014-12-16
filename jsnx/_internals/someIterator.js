@@ -8,7 +8,7 @@
  * @param {function} callback
  * @return {boolean}
  */
-function someIterator(iterator, callback) {
+export default function someIterator(iterator, callback) {
   for (var value of iterator) {
     if (callback(value)) {
       return true;
@@ -16,5 +16,3 @@ function someIterator(iterator, callback) {
   }
   return false;
 }
-
-module.exports = someIterator;

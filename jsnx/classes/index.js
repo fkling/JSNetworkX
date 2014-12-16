@@ -1,17 +1,13 @@
 'use strict';
 
-var Graph = require('./graph');
-var DiGraph = require('./digraph');
+import Graph from './graph';
+import DiGraph from './digraph';
 
-var functions = require('./functions');
+import functions from './functions';
 
-module.exports = exports = {
+export {
   Graph,
   DiGraph,
-  functions,
-};
-
-Object.assign(
-  exports,
   functions
-);
+};
+export * from './functions';

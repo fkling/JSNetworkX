@@ -1,9 +1,9 @@
 /*global assert*/
 "use strict";
 
-var range = require('../range');
+import range from '../range';
 
-exports.range = {
+export var testRange = {
   'end': function() {
     var r = range(5);
     assert.deepEqual(r, [0,1,2,3,4]);

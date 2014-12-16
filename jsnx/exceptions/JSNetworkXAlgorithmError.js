@@ -1,18 +1,15 @@
 "use strict";
 
-var JSNetworkXException = require('./JSNetworkXException');
+import JSNetworkXException from './JSNetworkXException';
 
 /**
  * Exception for unexpected termination of algorithms.
  * @constructor
  * @extends {JSNetworkXException}
- * @export
  */
-class JSNetworkXAlgorithmError extends JSNetworkXException {
+export default class JSNetworkXAlgorithmError extends JSNetworkXException {
    constructor(message) {
      super(message);
      this.name = 'JSNetworkXAlgorithmError';
    }
 }
-
-module.exports = JSNetworkXAlgorithmError;

@@ -8,7 +8,7 @@
  * @param {...Iterator} var_args
  * @return {Iterator}
  */
-function* zipIterator() {
+export default function* zipIterator() {
   // TODO: Use rest parameter once 6to5 is fixed (2.0)
   var varArgs = arguments;
   var length = varArgs.length;
@@ -30,5 +30,3 @@ function* zipIterator() {
     yield nextZip;
   }
 }
-
-module.exports = zipIterator;

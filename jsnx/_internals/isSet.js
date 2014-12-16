@@ -1,6 +1,6 @@
 "use strict";
 
-var Set = require('./Set');
+import Set from './Set';
 
 /**
  * Tests whether the value is a Map.
@@ -8,8 +8,6 @@ var Set = require('./Set');
  * @param {*} v The value to test
  * @return {bool}
  */
-function isSet(v) {
+export default function isSet(v) {
   return v instanceof Set;
 }
-
-module.exports = isSet;

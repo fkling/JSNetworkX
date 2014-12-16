@@ -1,8 +1,8 @@
 "use strict";
 
-var Map = require('./Map');
+import Map from './Map';
 
-var forEach = require('./forEach');
+import forEach from './forEach';
 
 /**
  * Same as 'toObjectFromKeys' but returns a Map instead of an object.
@@ -12,7 +12,7 @@ var forEach = require('./forEach');
  *
  * @return {!Map}
  */
-function toMapFromKeys(keys, optValue) {
+export default function toMapFromKeys(keys, optValue) {
    if (optValue == null) { // && opt_value == undefined
      optValue = null;
    }
@@ -22,5 +22,3 @@ function toMapFromKeys(keys, optValue) {
    });
    return result;
 }
-
-module.exports = toMapFromKeys;

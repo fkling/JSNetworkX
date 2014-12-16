@@ -1,3 +1,3 @@
 "use strict";
-
-module.exports = require('lodash-node/modern/objects/clone');
+import clone from 'lodash-node/modern/objects/clone';
+export default clone;

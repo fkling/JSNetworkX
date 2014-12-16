@@ -1,31 +1,31 @@
 "use strict";
 
-require("6to5/polyfill");
+import '6to5/polyfill';
 
-var algorithms = require('./algorithms');
-var classes = require('./classes');
-var convert = require('./convert');
-var exceptions = require('./exceptions');
-var generators = require('./generators');
-var relabel = require('./relabel');
+import * as algorithms from './algorithms';
+import * as classes from './classes';
+import * as convert from './convert';
+import * as exceptions from './exceptions';
+import * as generators from './generators';
+import * as relabel from './relabel';
 
-module.exports = exports = {
-  Map: require('./_internals/Map'),
-  Set: require('./_internals/Set'),
-  algorithms,
-  classes,
-  convert,
-  exceptions,
-  generators,
-  relabel,
-};
+import Map from './_internals/Map';
+import Set from './_internals/Set';
 
-Object.assign(
-  exports,
+export {
+  Map,
+  Set,
   algorithms,
   classes,
   convert,
   exceptions,
   generators,
   relabel
-);
+};
+
+export * from './algorithms';
+export * from './classes';
+export * from './convert';
+export * from './exceptions';
+export * from './generators';
+export * from './relabel';

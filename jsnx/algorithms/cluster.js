@@ -2,7 +2,7 @@
 
 var JSNetworkXError = require('../exceptions/JSNetworkXError');
 
-var {
+import {
 /*jshint ignore:start*/
   Map,
   Set,
@@ -15,7 +15,7 @@ var {
   next,
   tuple2,
   tuple3
-} = require('../_internals');
+} from '../_internals';
 
 /**
  * Compute the number of triangles.
@@ -44,7 +44,7 @@ var {
  *
  * @return {!(Map|number)} Number of triangles keyed by node label.
  */
-async function triangles(G, optNodes) {
+export async function triangles(G, optNodes) {
   if (G.isDirected()) {
     throw new JSNetworkXError(
       'triangles() is not defined for directed graphs.'
@@ -183,7 +183,12 @@ function* weightedTrianglesAndDegreeIter(G, optNodes, optWeight='weight') {
  *
  * @return {number}
  */
-async function averageClustering(G, optNodes, optWeight, optCountZeros=true) {
+export async function averageClustering(
+  G,
+  optNodes,
+  optWeight,
+  optCountZeros=true
+) {
   var clusters = Array.from(await clustering(G, optNodes, optWeight).values());
 
   if (!optCountZeros) {
@@ -235,7 +240,7 @@ async function averageClustering(G, optNodes, optWeight, optCountZeros=true) {
  *
  * @return {!(number|Map)} Clustering coefficient at specified nodes
  */
-async function clustering(G, optNodes, optWeight) {
+export async function clustering(G, optNodes, optWeight) {
   if (G.isDirected()) {
     throw new JSNetworkXError(
       'Clustering algorithms are not defined for directed graphs.'
@@ -285,7 +290,7 @@ async function clustering(G, optNodes, optWeight) {
  *
  * @return {number} Transitivity
  */
-async function transitivity(G) {
+export async function transitivity(G) {
   var triangles = 0; // 6 times number of triangles
   var triples = 0;  // 2 times number of connected triples
 
@@ -338,7 +343,7 @@ async function transitivity(G) {
  * @return {!(Map|number)}
  *      A dictionary keyed by node with the square clustering coefficient value.
  */
-async function squareClustering(G, optNodes) {
+export async function squareClustering(G, optNodes) {
   var nodesIter = optNodes == null ? G : G.nbunchIter(optNodes);
   var clustering = new Map();
 
@@ -368,11 +373,3 @@ async function squareClustering(G, optNodes) {
   }
   return clustering;
 }
-
-module.exports = {
-  triangles,
-  averageClustering,
-  clustering,
-  transitivity,
-  squareClustering
-};

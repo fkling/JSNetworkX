@@ -1,6 +1,6 @@
 "use strict";
 
-var forEach = require('./forEach');
+import forEach from './forEach';
 
 /**
  * Returns the maximum value from an iterable. It uses the optional callback
@@ -10,7 +10,7 @@ var forEach = require('./forEach');
  * @param {function(?): ?} map
  * @return {?}
  */
-function max(iterable, map) {
+export default function max(iterable, map) {
   var maxComparisonValue = -Infinity;
   var maxValue;
 
@@ -24,5 +24,3 @@ function max(iterable, map) {
 
   return maxValue;
 }
-
-module.exports = max;

@@ -1,6 +1,6 @@
 "use strict";
 
-var range = require('./range');
+import range from './range';
 
 /**
  * Implements Python's itertools.permutations
@@ -12,7 +12,7 @@ var range = require('./range');
  *
  * @return {Iterator}
  */
-function *genPermutations(iterable, r) {
+export default function *genPermutations(iterable, r) {
   // genPermutations('ABCD', 2) --> AB AC AD BA BC BD CA CB CD DA DB DC
   // genPermutations(range(3)) --> 012 021 102 120 201 210
   var pool = Array.from(iterable);
@@ -48,5 +48,3 @@ function *genPermutations(iterable, r) {
     }
   }
 }
-
-module.exports = genPermutations;

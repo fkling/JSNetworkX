@@ -2,11 +2,11 @@
 "use strict";
 
 /*jshint ignore:start*/
-var Map = require('../Map');
+import Map from '../Map';
 /*jshint ignore:end*/
-var toMapFromKeys = require('../toMapFromKeys');
+import toMapFromKeys from '../toMapFromKeys';
 
-exports.toMapFromKeys = {
+export var testToMapFromKeys = {
   'without default value (null)': function() {
     var keys = ['foo', 'bar', 'baz'];
     assert.deepEqual(

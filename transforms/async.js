@@ -66,36 +66,10 @@ function buildCallTo(delegateName, functionName, args) {
  *
  * var name = require('path');
  */
-function buildRequireStatement(path, name) {
-  return builders.variableDeclaration('var', [
-    builders.variableDeclarator(
-      builders.identifier(name),
-      builders.callExpression(
-        builders.identifier('require'),
-        [builders.literal(path)]
-      )
-    )
-  ]);
-}
-
-/**
- * Creates an module.exports assignment expression.
- */
-function buildExportStatement(name) {
-  return builders.expressionStatement(
-    builders.assignmentExpression(
-      '=',
-      builders.memberExpression(
-        builders.memberExpression(
-          builders.identifier('module'),
-          builders.identifier('exports'),
-          false
-        ),
-        builders.identifier(name),
-        false
-      ),
-      builders.identifier(name)
-    )
+function buildImportStatement(path, name) {
+  return builders.importDeclaration(
+    [builders.importDefaultSpecifier(builders.identifier(name))],
+    builders.moduleSpecifier(path)
   );
 }
 
@@ -103,14 +77,14 @@ function buildExportStatement(name) {
  * Makes the actual transformation
  */
 function transform(source, options) {
-  if (!/^\s*async function/m.test(source)) {
+  if (!/^(export)?\s*async function/m.test(source)) {
     return {code: source};
   }
   // acorn-6to5 isn't able to parse async generators. So we just collect their
   // names and remove "async"
   var asyncGeneratorNames = [];
   source = source.replace(
-    /^(\s*)async function\* ([^(]+)/gm,
+    /^((?:export)?\s*)async function\* ([^(]+)/gm,
     function(match, ws, name) {
       asyncGeneratorNames.push(name);
       return ws + 'function* ' + name;
@@ -126,13 +100,6 @@ function transform(source, options) {
 
   if (options.filename.indexOf(options.delegateName) === -1) {
     types.visit(ast, {
-      /**
-       * We only care about functions in the top level of the module.
-       */
-      isTopLevel: function(path) {
-        return path.parent.node === ast.program;
-      },
-
       /**
        * Removes `awaits` from a descendant of a node.
        */
@@ -157,20 +124,19 @@ function transform(source, options) {
 
           var moduleBody = p.get('body');
           moduleBody.unshift(
-            buildRequireStatement(delegatePath, delegateName)
+            buildImportStatement(delegatePath, delegateName)
           );
-
-          // We also have to export the newly generated functions.
-          asyncFuncs.forEach(function(name) {
-            moduleBody.push(buildExportStatement(name));
-          });
         }
       },
 
-      visitFunctionDeclaration: function(path) {
+      visitExportDeclaration: function(path) {
+        return this.convertFunctionDeclaration(path.get('declaration'));
+      },
+
+      convertFunctionDeclaration: function(path) {
         var node = path.node;
         var name = node.id.name;
-        if ((node.async || asyncGeneratorNames.indexOf(name) > -1) && this.isTopLevel(path)) {
+        if ((node.async || asyncGeneratorNames.indexOf(name) > -1) ) {
           // If the function is async and at the top level, we make it
           // sync and insert an async version after it.
           this.makeSync(path);
@@ -190,14 +156,19 @@ function transform(source, options) {
         var asyncName = 'gen' + name[0].toUpperCase() + name.substr(1);
         // The function doesn't actually have to be marked as async, since the
         // delegate function returns a promise anyway.
-        var funcDeclaration = builders.functionDeclaration(
-          builders.identifier(asyncName),
-          node.params,
-          builders.blockStatement([
-            buildCallTo(delegateName, node.id.name, node.params)
-          ])
+        var exportDeclaration = builders.exportDeclaration(
+          false,
+          builders.functionDeclaration(
+            builders.identifier(asyncName),
+            node.params,
+            builders.blockStatement([
+              buildCallTo(delegateName, node.id.name, node.params)
+            ])
+          ),
+          [],
+          null
         );
-        path.insertAfter(funcDeclaration);
+        path.parent.insertAfter(exportDeclaration);
         asyncFuncs.push(asyncName);
       }
     });

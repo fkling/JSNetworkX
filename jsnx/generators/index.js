@@ -1,21 +1,18 @@
 "use strict";
 
-var classic = require('./classic');
-var degreeSequence = require('./degreeSequence');
-var randomGraphs = require('./randomGraphs');
-var social = require('./social');
+import classic from './classic';
+import degreeSequence from './degreeSequence';
+import randomGraphs from './randomGraphs';
+import social from './social';
 
-module.exports = exports = {
-  classic,
-  degreeSequence,
-  randomGraphs,
-  social,
-};
-
-Object.assign(
-  exports,
+export {
   classic,
   degreeSequence,
   randomGraphs,
   social
-);
+};
+
+export * from './classic';
+export * from './degreeSequence';
+export * from './randomGraphs';
+export * from './social';

@@ -1,9 +1,9 @@
 /*global utils, assert*/
 "use strict";
 
-var genPermutations = require('../genPermutations');
+import genPermutations from '../genPermutations';
 
-exports.genPermutations = {
+export var testGenPermutations = {
   permutations: function() {
     var permutations = genPermutations([0,1,2]);
     assert(utils.isIterator(permutations));

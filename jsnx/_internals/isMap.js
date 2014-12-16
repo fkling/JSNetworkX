@@ -1,6 +1,6 @@
 "use strict";
 
-var Map = require('./Map');
+import Map from './Map';
 
 /**
  * Tests whether the value is a Map.
@@ -8,8 +8,6 @@ var Map = require('./Map');
  * @param {*} v The value to test
  * @return {bool}
  */
-function isMap(v) {
+export default function isMap(v) {
   return v instanceof Map;
 }
-
-module.exports = isMap;

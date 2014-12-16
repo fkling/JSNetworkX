@@ -1,12 +1,12 @@
 /*global assert*/
 "use strict";
 
-var JSNetworkXException = require('../../exceptions/JSNetworkXException');
+import JSNetworkXException from '../../exceptions/JSNetworkXException';
 
-var isValidDegreeSequence = require('../graphical').isValidDegreeSequence;
-var erdosRenyiGraph = require('../../generators/randomGraphs').erdosRenyiGraph;
+import {isValidDegreeSequence} from '../graphical';
+import {erdosRenyiGraph} from '../../generators/randomGraphs';
 
-exports.graphical = {
+export var graphical = {
 
   testValidDegreeSequence1:  function() {
     this.timeout(3000);

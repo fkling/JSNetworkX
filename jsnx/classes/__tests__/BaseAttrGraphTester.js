@@ -1,18 +1,18 @@
 /*global assert*/
 "use strict";
 
-var BaseGraphTester = require('./BaseGraphTester');
-var Graph = require('../graph');
-var DiGraph = require('../digraph');
+import BaseGraphTester from './BaseGraphTester';
+import Graph from '../graph';
+import DiGraph from '../digraph';
 /*jshint ignore:start*/
 var Map = utils.Map;
 /*jshint ignore:end*/
-var JSNetworkXError = require('../../exceptions/JSNetworkXError');
+import JSNetworkXError from '../../exceptions/JSNetworkXError';
 
-var shared = require('./shared');
-var _ = require('lodash-node');
+import shared from './shared';
+import _ from 'lodash-node';
 
-var BaseAttrGraphTester = _.extend({}, BaseGraphTester, {
+export default _.extend({}, BaseGraphTester, {
   testWeightedDegree: function() {
     var G = new this.Graph();
     G.addEdge(1,2,{weight:2,other:3});
@@ -202,4 +202,3 @@ var BaseAttrGraphTester = _.extend({}, BaseGraphTester, {
     );
   }
 });
-module.exports = BaseAttrGraphTester;

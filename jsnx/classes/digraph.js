@@ -1,14 +1,14 @@
 'use strict';
 
 
-var Graph = require('./graph');
+import Graph from './graph';
 /*jshint ignore:start*/
-var Map = require('../_internals/Map');
+import Map from '../_internals/Map';
 /*jshint ignore:end*/
-var JSNetworkXError = require('../exceptions/JSNetworkXError');
+import JSNetworkXError from '../exceptions/JSNetworkXError';
 
-var convert = require('../convert');
-var {
+import convert from '../convert';
+import {
   clear,
   clone,
   createTupleFactory,
@@ -24,7 +24,7 @@ var {
   tuple3,
   tuple3c,
   zipIterator
-} = require('../_internals');
+} from '../_internals';
 
 /**
  * Base class for directed graphs.
@@ -60,9 +60,8 @@ var {
  *
  * @extends Graph
  * @constructor
- * @export
  */
-class DiGraph extends Graph {
+export default class DiGraph extends Graph {
 
   constructor(optData, optAttr) {
     // makes it possible to call DigGraph without new
@@ -1182,18 +1181,3 @@ class DiGraph extends Graph {
     return H;
   }
 }
-
-/**
-* @type {Map}
-* @export
-*/
-DiGraph.prototype.pred = null;
-
-
-/**
-* @type {Map}
-* @export
-*/
-DiGraph.prototype.succ = null;
-
-module.exports  = DiGraph;

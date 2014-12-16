@@ -5,10 +5,8 @@
  *
  * @param {Object} obj
  */
-function clear(obj) {
+export default function clear(obj) {
   for (var prop in obj) {
     delete obj[prop];
   }
 }
-
-module.exports = clear;

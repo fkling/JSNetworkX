@@ -4,10 +4,10 @@
 /*jshint ignore:start*/
 var Map = utils.Map;
 /*jshint ignore:end*/
-var JSNetworkXError = require('../../exceptions/JSNetworkXError');
+import JSNetworkXError from '../../exceptions/JSNetworkXError';
 
 // Tests for data-structure independent graph class features.
-var BaseGraphTester = {
+export default {
   testOrder: function() {
     var G = this.K3;
     // assert_equal(len(G), 3)
@@ -244,5 +244,3 @@ var BaseGraphTester = {
     G.removeNodesFrom([0,1]);
   }
 };
-
-module.exports = BaseGraphTester;

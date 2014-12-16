@@ -1,19 +1,19 @@
 "use strict";
 
-var DiGraph = require('../classes/digraph');
-var Graph = require('../classes/graph');
+import DiGraph from '../classes/digraph';
+import Graph from '../classes/graph';
 
-var {
+import {
   completeGraph,
   emptyGraph
-} = require('./classic');
+} from './classic';
 
-var {
+import {
   genCombinations,
   genPermutations,
   range,
   sprintf
-} = require('../_internals');
+} from '../_internals';
 
 //
 //-------------------------------------------------------------------------
@@ -39,7 +39,7 @@ var {
  *
  * @return {Graph}
  */
-async function fastGnpRandomGraph(n, p, optDirected=false) {
+export async function fastGnpRandomGraph(n, p, optDirected=false) {
   var G = emptyGraph(n);
   G.name = sprintf('fastGnpRandomGraph(%s, %s)', n, p);
 
@@ -108,7 +108,7 @@ async function fastGnpRandomGraph(n, p, optDirected=false) {
  *
  * @return {Graph}
  */
-async function gnpRandomGraph(n, p, optDirected) {
+export async function gnpRandomGraph(n, p, optDirected) {
   var G = optDirected ? new DiGraph() : new Graph();
   var edges;
   var rangeN = range(n);
@@ -137,14 +137,14 @@ async function gnpRandomGraph(n, p, optDirected) {
 /**
  * @alias gnpRandomGraph
  */
-async function binomialGraph(n, p, optDirected) {
+export async function binomialGraph(n, p, optDirected) {
   return await gnpRandomGraph(n, p, optDirected);
 }
 
 /**
  * @alias gnpRandomGraph
  */
-async function erdosRenyiGraph(n, p, optDirected) {
+export async function erdosRenyiGraph(n, p, optDirected) {
   return await gnpRandomGraph(n, p, optDirected);
 }
 
@@ -159,10 +159,3 @@ async function erdosRenyiGraph(n, p, optDirected) {
 //TODO: random_shell_graph
 //TODO: random_powerlaw_tree
 //TODO: random_powerlaw_tree_sequence
-
-module.exports = {
-  fastGnpRandomGraph,
-  gnpRandomGraph,
-  binomialGraph,
-  erdosRenyiGraph,
-};

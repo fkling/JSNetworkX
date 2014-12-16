@@ -1,7 +1,7 @@
 /*global assert*/
 "use strict";
 
-var zip = require('../zipSequence');
+import zip from '../zipSequence';
 
 function* gen(data) {
   for (var i = 0; i < data.length; i++) {
@@ -9,7 +9,7 @@ function* gen(data) {
   }
 }
 
-exports.zipSequence = {
+export var testZipSequence = {
   'zip arrays': function() {
     assert.deepEqual(
       zip([1,2,3], [4,5,6], [7,8,9]),

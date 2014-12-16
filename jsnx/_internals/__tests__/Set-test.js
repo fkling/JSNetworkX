@@ -1,9 +1,9 @@
 /*jshint strict:false, node:true*/
 /*global utils, assert*/
 
-var Set = require('../Set');
+import Set from '../Set';
 
-exports.Set = {
+export var testSet = {
   testCreate: function() {
     var set = new Set();
     assert(set);

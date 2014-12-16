@@ -1,21 +1,21 @@
 /*jshint strict:false, node:true*/
 /*global assert*/
 
-var BaseAttrGraphTester = require('./BaseAttrGraphTester');
-var Graph = require('../graph');
+import BaseAttrGraphTester from './BaseAttrGraphTester';
+import Graph from '../graph';
 /*jshint ignore:start*/
 var Map = utils.Map;
 /*jshint ignore:end*/
-var JSNetworkXError = require('../../exceptions/JSNetworkXError');
-var KeyError = require('../../exceptions/KeyError');
-var _ = require('lodash-node');
+import JSNetworkXError from '../../exceptions/JSNetworkXError';
+import KeyError from '../../exceptions/KeyError';
+import _ from 'lodash-node';
 
 var sorted = function(iterator) {
   return Array.from(iterator).sort();
 };
 
 // Tests specific to dict-of-dict-of-dict graph data structure
-exports.TestGraph = _.extend({}, BaseAttrGraphTester, {
+export var TestGraph = _.extend({}, BaseAttrGraphTester, {
   beforeEach: function() {
     var ed1 = {};
     var ed2 = {};

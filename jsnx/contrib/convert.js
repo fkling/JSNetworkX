@@ -1,8 +1,8 @@
 "use strict";
 
-var prepCreateUsing = require('./prepCreateUsing');
+import prepCreateUsing from './prepCreateUsing';
 
-var {
+import {
   /*jshint ignore:start*/
   Map,
   Set,
@@ -10,13 +10,12 @@ var {
 
   isArrayLike,
   tuple2
-} = require('../_internals');
+} from '../_internals';
 
 /**
  * This module provides functions to convert JSNetworkX graphs to and from
  * non-NetworkX formats.
  */
-
 
  /**
   * Return adjacency representation of graph as a map of lists.
@@ -27,9 +26,8 @@ var {
   * @param {NodeContainer=} opt_nodelist Use only nods specified in nodelist.
   *
   * @return {!Map}
-  * @export
   */
-function toMapOfLists(G, optNodelist) {
+export function toMapOfLists(G, optNodelist) {
   var map = new Map();
 
   if (optNodelist != null) {
@@ -54,9 +52,8 @@ function toMapOfLists(G, optNodelist) {
  *    Otherwise a new graph is created.
  *
  * @return {!Graph}
- * @export
  */
-function fromMapOfLists(map, optCreateUsing) {
+export function fromMapOfLists(map, optCreateUsing) {
   var G = prepCreateUsing(optCreateUsing);
   G.addNodesFrom(map.keys());
 
@@ -97,9 +94,8 @@ function fromMapOfLists(map, optCreateUsing) {
  *      If G is a multigraph, the edge data is a dict for each pair (u,v).
  *
  * @return {!Map}
- * @export
  */
-function toMapOfMaps(G, optNodelist, optEdgeData) {
+export function toMapOfMaps(G, optNodelist, optEdgeData) {
    var mapOfMaps = new Map();
 
    if (optNodelist != null) {
@@ -138,9 +134,8 @@ function toMapOfMaps(G, optNodelist, optEdgeData) {
  *      Otherwise this routine assumes the edge data are singletons.
  *
  * @return {Graph}
- * @export
  */
-function fromMapOfMaps(map, optCreateUsing, optMultigraphInput) {
+export function fromMapOfMaps(map, optCreateUsing, optMultigraphInput) {
   var G = prepCreateUsing(optCreateUsing);
   var seen = new Set(); // don't add both directions of undirected graph
   G.addNodesFrom(map.keys());
@@ -222,10 +217,3 @@ function fromMapOfMaps(map, optCreateUsing, optMultigraphInput) {
 
   return G;
 }
-
-module.exports = {
-  toMapOfLists,
-  fromMapOfLists,
-  toMapOfMaps,
-  fromMapOfMaps
-};

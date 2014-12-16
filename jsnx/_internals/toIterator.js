@@ -1,8 +1,8 @@
 "use strict";
 
-var isArrayLike = require('./isArrayLike');
-var isIterator = require('./isIterator');
-var isIterable = require('./isIterable');
+import isArrayLike from './isArrayLike';
+import isIterator from './isIterator';
+import isIterable from './isIterable';
 
 /**
  * Returns an iterator object for the given array, array-like object
@@ -15,7 +15,7 @@ var isIterable = require('./isIterable');
  * @param {Iterable} seq
  * @return {!Iterator}
  */
-function toIterator(seq) {
+export default function toIterator(seq) {
   /*jshint expr:true*/
   if (isIterator(seq)) {
     return seq;
@@ -34,5 +34,3 @@ function toIterator(seq) {
     throw new TypeError('Unable to convert ' + seq + ' to an iterator');
   }
 }
-
-module.exports = toIterator;

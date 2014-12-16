@@ -1,8 +1,8 @@
-/*jshint strict:false, node:true*/
 /*global assert */
+"use strict";
 
-var Map = require('../Map');
-var forEach = require('../forEach');
+import Map from '../Map';
+import forEach from '../forEach';
 
 function* generator(data) {
   for (var i = 0; i < data.length; i++) {
@@ -10,7 +10,7 @@ function* generator(data) {
   }
 }
 
-exports.forEach = {
+export var testForEach = {
   'over arrays': function() {
     var data = [1,2,3];
     var counter = 0;

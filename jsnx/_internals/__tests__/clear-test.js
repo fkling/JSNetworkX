@@ -1,9 +1,9 @@
 /*jshint strict:false, node:true*/
 /*global assert */
 
-var clear = require('../clear');
+import clear from '../clear';
 
-exports.clear = {
+export var testClear = {
   'emptys object': function() {
     var obj = {foo: 1, bar: 2};
     clear(obj);

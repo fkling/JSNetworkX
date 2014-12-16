@@ -9,10 +9,8 @@
  * @param {?=} opt_this_obj
  * @return {Iterator}
  */
-function* mapIterator(iterator, map, optThisObj) {
+export default function* mapIterator(iterator, map, optThisObj) {
   for (var v of iterator) {
     yield map.call(optThisObj, v);
   }
 }
-
-module.exports = mapIterator;

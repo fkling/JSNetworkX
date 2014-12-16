@@ -1,5 +1,5 @@
-/*jshint strict:false, node:true*/
 /*global assert */
+"use strict";
 
 // TODO
-module.exports = {};
+export var testIsGraph = {};

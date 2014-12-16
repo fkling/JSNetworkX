@@ -1,11 +1,10 @@
-
-/*jshint strict:false, node:true*/
 /*global assert */
+"use strict";
 
-var deepcopy = require('../deepcopy');
-var Map = require('../Map');
+import deepcopy from '../deepcopy';
+import Map from '../Map';
 
-exports.deepcopy = {
+export var testDeepcopy = {
   'it deep copies normal objects and arrays': function() {
     var foo = [1,2];
     var obj = {

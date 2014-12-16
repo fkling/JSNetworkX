@@ -6,11 +6,9 @@
  * @param {?} v
  * @return {bool}
  */
-function isArrayLike(v) {
+export default function isArrayLike(v) {
   return v &&
     typeof v === 'object' &&
     typeof v.length === 'number' &&
     typeof v !== 'function';
 }
-
-module.exports = isArrayLike;

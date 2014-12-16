@@ -1,10 +1,10 @@
-/*jshint strict:false, node:true*/
 /*global assert */
+"use strict";
 
-var isMap = require('../isMap');
-var Map = require('../Map');
+import isMap from '../isMap';
+import Map from '../Map';
 
-exports.isMap = {
+export var testIsMap = {
   'returns true for maps': function() {
     assert(isMap(new Map()));
   },

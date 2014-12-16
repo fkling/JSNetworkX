@@ -1,11 +1,8 @@
 "use strict";
 
-var {
-  JSNetworkXException,
-  JSNetworkXUnfeasible
-}= require('../exceptions');
+import {JSNetworkXException, JSNetworkXUnfeasible} from '../exceptions';
 
-var fillArray = require('../_internals/fillArray');
+import fillArray from '../_internals/fillArray';
 
 /**
  * Returns `true` if `sequence` is a valid degree sequence.
@@ -27,7 +24,7 @@ var fillArray = require('../_internals/fillArray');
  * @return {boolean}
  *      `true` if `sequence` is a valid degree sequence and `false` if not.
  */
-async function isGraphical(sequence, optMethod='hh') {
+export async function isGraphical(sequence, optMethod='hh') {
   switch (optMethod) {
     case 'eg':
       return await isValidDegreeSequenceErdosGallai(Array.from(sequence));
@@ -43,7 +40,7 @@ async function isGraphical(sequence, optMethod='hh') {
 /**
  * @alias isGraphical
  */
-async function isValidDegreeSequence(sequence, optMethod) {
+export async function isValidDegreeSequence(sequence, optMethod) {
   return await isGraphical(sequence, optMethod);
 }
 
@@ -100,7 +97,7 @@ function basicGraphicalTests(sequence) {
  *   in a graph.
  * @return {boolean} `true` if `degreeSequence` is graphical and `false` if not.
  */
-async function isValidDegreeSequenceHavelHakimi(degreeSequence) {
+export async function isValidDegreeSequenceHavelHakimi(degreeSequence) {
   var _;
   var maxDegree;
   var minDegree;
@@ -197,7 +194,7 @@ async function isValidDegreeSequenceHavelHakimi(degreeSequence) {
  *      in a graph.
  * @return {boolean} `true` if `degreeSequence` is graphical and f`alse` if not.
  */
-async function isValidDegreeSequenceErdosGallai(degreeSequence) {
+export async function isValidDegreeSequenceErdosGallai(degreeSequence) {
   var maxDegree;
   var minDegree;
   var _;
@@ -253,10 +250,3 @@ async function isValidDegreeSequenceErdosGallai(degreeSequence) {
 // TODO: is_multigraphical
 // TODO: is_pseudographical
 // TODO: is_digraphical
-
-module.exports = {
-  isGraphical,
-  isValidDegreeSequence,
-  isValidDegreeSequenceHavelHakimi,
-  isValidDegreeSequenceErdosGallai,
-};

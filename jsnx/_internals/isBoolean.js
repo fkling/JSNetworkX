@@ -1,1 +1,3 @@
-module.exports = require('lodash-node/modern/objects/isBoolean');
+"use strict";
+import isBoolean from 'lodash-node/modern/objects/isBoolean';
+export default isBoolean;

@@ -1,11 +1,11 @@
-/*jshint strict:false, node:true*/
 /*global assert, utils*/
+"use strict";
 
-var toIterator = require('../toIterator');
+import toIterator from '../toIterator';
 
 function* generator() { yield 0; }
 
-exports.toIterator = {
+export var testToIterator = {
   'from iterator (identity)': function() {
     var iterator = generator();
     assert.strictEqual(

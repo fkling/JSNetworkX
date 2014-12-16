@@ -1,11 +1,11 @@
 "use strict";
 
-var Graph = require('../classes/graph');
-var DiGraph = require('../classes/digraph');
+import Graph from '../classes/graph';
+import DiGraph from '../classes/digraph';
 
-var convert = require('../convert');
-var isGraph = require('./isGraph');
-var isIterator = require('./isIterator');
+import convert from '../convert';
+import isGraph from './isGraph';
+import isIterator from './isIterator';
 
 var delegateImplementation;
 if (typeof global.Worker === 'function') {
@@ -96,8 +96,6 @@ else {
  *    Some types, such as graphs, are converted to a different format first.
  * @return {Promise}
  */
-function delegateToWorker(method, args) {
+export default function delegateToWorker(method, args) {
   return delegateImplementation(method, args);
 }
-
-module.exports = delegateToWorker;

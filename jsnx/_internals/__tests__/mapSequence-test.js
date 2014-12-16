@@ -1,7 +1,7 @@
 /*global assert*/
 "use strict";
 
-var mapSequence = require('../mapSequence');
+import mapSequence from '../mapSequence';
 
 function* generator(data) {
   for (var i = 0; i < data.length; i++) {
@@ -9,7 +9,7 @@ function* generator(data) {
   }
 }
 
-exports.mapSequence = {
+export var testMapSequence = {
   'from array': function() {
     assert.deepEqual(mapSequence([1,2,3], x => x * 3), [3,6,9]);
   },

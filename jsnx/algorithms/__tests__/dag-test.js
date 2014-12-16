@@ -1,15 +1,15 @@
 /*globals assert, utils*/
 "use strict";
 
-var DiGraph = require('../../classes/digraph');
-var Graph = require('../../classes/graph');
-var JSNetworkXError = require('../../exceptions/JSNetworkXError');
-var JSNetworkXUnfeasible = require('../../exceptions/JSNetworkXUnfeasible');
+import DiGraph from '../../classes/digraph';
+import Graph from '../../classes/graph';
+import JSNetworkXError from '../../exceptions/JSNetworkXError';
+import JSNetworkXUnfeasible from '../../exceptions/JSNetworkXUnfeasible';
 
-var dag = require('../dag');
-var fullRaryTree = require('../../generators/classic').fullRaryTree;
+import dag from '../dag';
+import {fullRaryTree} from '../../generators';
 
-exports.TestDAG = {
+export var TestDAG = {
 
   testTopologicalSort1: function() {
     var DG = new DiGraph();

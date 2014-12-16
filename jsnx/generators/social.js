@@ -3,16 +3,16 @@
  * @fileoverview Famous social networkx
  */
 
-var Graph = require('../classes/graph');
+import Graph from '../classes/graph';
 
-var range = require('../_internals/range');
+import range from '../_internals/range';
 
 /**
  * Return Zachary's Karate club graph.
  *
  * @return {Graph}
  */
-function karateClubGraph() {
+export function karateClubGraph() {
   var G = new Graph();
   G.addNodesFrom(range(34));
   G.name = "Zachary's Karate Club";
@@ -79,7 +79,7 @@ function karateClubGraph() {
  *
  * @return {Graph}
  */
-function davisSouthernWomenGraph() {
+export function davisSouthernWomenGraph() {
   var G = new Graph();
   // top nodes
   G.addNodesFrom(
@@ -227,7 +227,7 @@ function davisSouthernWomenGraph() {
  *
  * @return {Graph}
  */
-function florentineFamiliesGraph() {
+export function florentineFamiliesGraph() {
   var G = new Graph();
   G.addEdge('Acciaiuoli','Medici');
   G.addEdge('Castellani','Peruzzi');
@@ -251,9 +251,3 @@ function florentineFamiliesGraph() {
   G.addEdge('Guadagni','Lamberteschi');
   return G;
 }
-
-module.exports = {
-  karateClubGraph,
-  davisSouthernWomenGraph,
-  florentineFamiliesGraph
-};

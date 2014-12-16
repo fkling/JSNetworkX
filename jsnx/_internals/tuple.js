@@ -13,20 +13,20 @@ var t4 = new Array(4);
  * @param {...*} var_args The elemens of the tuple
  * @return {Array}
  */
-function tuple2(x, y) {
+export function tuple2(x, y) {
   t2[0] = x;
   t2[1] = y;
   return t2;
 }
 
-function tuple3(x, y, z) {
+export function tuple3(x, y, z) {
   t3[0] = x;
   t3[1] = y;
   t3[2] = z;
   return t3;
 }
 
-function tuple4(a, b, c, d) {
+export function tuple4(a, b, c, d) {
   t4[0] = a;
   t4[1] = b;
   t4[2] = c;
@@ -42,14 +42,14 @@ function tuple4(a, b, c, d) {
  * @param {Array} opt_container If present, set values there instead
  * @return {Array}
  */
-function tuple2c(x, y, container) {
+export function tuple2c(x, y, container) {
   container.length = 2;
   container[0] = x;
   container[1] = y;
   return container;
 }
 
-function tuple3c(x, y, z, container) {
+export function tuple3c(x, y, z, container) {
   container.length = 3;
   container[0] = x;
   container[1] = y;
@@ -57,7 +57,7 @@ function tuple3c(x, y, z, container) {
   return container;
 }
 
-function tuple4c(a, b, c, d, container) {
+export function tuple4c(a, b, c, d, container) {
   container.length = 4;
   container[0] = a;
   container[1] = b;
@@ -66,7 +66,7 @@ function tuple4c(a, b, c, d, container) {
   return container;
 }
 
-function createTupleFactory(count) {
+export function createTupleFactory(count) {
   var t = new Array(count);
   switch (count) {
     case 2:
@@ -86,13 +86,3 @@ function createTupleFactory(count) {
       throw new Error('Typle size not supported.');
   }
 }
-
-module.exports = {
-  tuple2,
-  tuple2c,
-  tuple3,
-  tuple3c,
-  tuple4,
-  tuple4c,
-  createTupleFactory
-};

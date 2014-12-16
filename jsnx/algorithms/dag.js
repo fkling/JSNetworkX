@@ -1,24 +1,24 @@
 "use strict";
 
-var JSNetworkXError = require('../exceptions/JSNetworkXError');
-var JSNetworkXUnfeasible = require('../exceptions/JSNetworkXUnfeasible');
-var {
+import JSNetworkXError from '../exceptions/JSNetworkXError';
+import JSNetworkXUnfeasible from '../exceptions/JSNetworkXUnfeasible';
+
+import {
 /*jshint ignore:start*/
   Map,
   Set,
 /*jshint ignore:end*/
   forEach,
   gcd
-} = require('../_internals');
+} from '../_internals';
 
 /**
  * Return true if the graph G is a directed acyclic graph (DAG) or false if not.
  *
  * @param {Graph} G A graph
  * @return {boolean} true of G is a DAG, false otherwise
- * @export
  */
-async function isDirectedAcyclicGraph(G) {
+export async function isDirectedAcyclicGraph(G) {
   try {
     topologicalSort(G);
     return true;
@@ -42,12 +42,9 @@ async function isDirectedAcyclicGraph(G) {
  * @param {Graph} G A directed Graph
  * @param {NodeContainer=} opt_nbunch Explore graph in specified order given
  *    in opt_nbunch.
- *
  * @return {!Array}
- *
- * @export
  */
-async function topologicalSort(G, optNbunch) {
+export async function topologicalSort(G, optNbunch) {
   if (!G.isDirected()) {
     throw new JSNetworkXError(
       'Topological sort not defined on undirected graphs.'
@@ -114,10 +111,8 @@ async function topologicalSort(G, optNbunch) {
  * @param {NodeContainer=} opt_nbunch Explore graph in spcified order given
  *    in opt_nbunch.
  * @return {!Array}
- *
- * @export
  */
-async function topologicalSortRecursive(G, optNbunch) {
+export async function topologicalSortRecursive(G, optNbunch) {
   if (!G.isDirected()) {
     throw new JSNetworkXError(
       'Topological sort not defined on undirected graphs.'
@@ -172,12 +167,10 @@ async function topologicalSortRecursive(G, optNbunch) {
  * A directed graph is aperiodic if there is no integer k > 1 that
  * divides the length of every cycle in the graph.
  *
- * @param {jsnx.classes.Graph} G
- *
+ * @param {Graph} G
  * @return {boolean} true if the graph is aperiodic false otherwise
- * @export
  */
-async function isAperiodic(G) {
+export async function isAperiodic(G) {
   if (!G.isDirected()) {
     throw new JSNetworkXError(
       'is_aperiodic not defined for undirected graphs.'
@@ -220,10 +213,3 @@ async function isAperiodic(G) {
     G.subgraph(new Set(G.nodes()).difference(levels.keys()))
   );
 }
-
-module.exports = {
-  isDirectedAcyclicGraph,
-  topologicalSort,
-  topologicalSortRecursive,
-  isAperiodic,
-};

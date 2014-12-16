@@ -12,7 +12,7 @@
  * @param {?number=} opt_step Step size
  * @return {!Iterator}
  */
-function* genRange(optStart, optEnd, optStep) {
+export default function* genRange(optStart, optEnd, optStep) {
 
   if (optStart == null) {
     return;
@@ -37,5 +37,3 @@ function* genRange(optStart, optEnd, optStep) {
     yield i;
   }
 }
-
-module.exports = genRange;

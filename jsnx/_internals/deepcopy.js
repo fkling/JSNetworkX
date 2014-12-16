@@ -1,10 +1,10 @@
 /*jshint latedef:false*/
 "use strict";
 
-var baseClone = require('lodash-node/modern/internals/baseClone');
-var isGraph = require('./isGraph');
-var isMap = require('./isMap');
-var isSet = require('./isSet');
+import baseClone from 'lodash-node/modern/internals/baseClone';
+import isGraph from './isGraph';
+import isMap from './isMap';
+import isSet from './isSet';
 
 function deepcopyInstance(obj, stackA, stackB) {
   // temporary constructor, we don't know if the original expects
@@ -58,10 +58,8 @@ function deepcopyImplementation(value, stackA, stackB) {
  * Creates a deep copy of the value, also of maps and sets.
  *
  * @param {*} value The value to be cloned
- * @return {?} 
+ * @return {?}
  */
-function deepcopy(value) {
+export default function deepcopy(value) {
   return deepcopyImplementation(value, [], []);
 }
-
-module.exports = deepcopy;

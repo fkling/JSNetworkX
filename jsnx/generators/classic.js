@@ -1,8 +1,8 @@
 "use strict";
 
-var Graph = require('../classes/graph');
+import Graph from '../classes/graph';
 
-var {
+import {
   genCombinations,
   genPermutations,
   genRange,
@@ -10,12 +10,11 @@ var {
   mapIterator,
   range,
   tuple2
-} = require('../_internals');
+} from '../_internals';
 
 /**
  * @param {number} n nodes
- * @param {number} r bredth
- *
+ * @param {number} r breadth
  * @return {Iterator}
  */
 function *treeEdges(n, r) {
@@ -53,11 +52,9 @@ function *treeEdges(n, r) {
  * @param {number} n number of nodes in the tree
  * @param {Graph=} opt_create_using
  *   Use specified type to construct graph
- *
  * @return {Graph} An r-ary tree with n nodes.
- * @export
  */
-function fullRaryTree(r, n, optCreateUsing) {
+export function fullRaryTree(r, n, optCreateUsing) {
   var G = emptyGraph(n, optCreateUsing);
   G.addEdgesFrom(treeEdges(n,r));
   return G;
@@ -79,11 +76,9 @@ function fullRaryTree(r, n, optCreateUsing) {
  * @param {number} h Height of the tree
  * @param {Graph} opt_create_using
  *    Use specified type to construct graph
- *
  * @return {Graph}
- * @export
  */
-function balancedTree(r, h, optCreateUsing) {
+export function balancedTree(r, h, optCreateUsing) {
   var n = r === 1 ? 2 : Math.floor((1 - Math.pow(r, (h+1))) / (1 - r));
   var G = emptyGraph(n, optCreateUsing);
   G.addEdgesFrom(treeEdges(n,r));
@@ -99,11 +94,9 @@ function balancedTree(r, h, optCreateUsing) {
  *  @param{number} n The number of nodes to add to the graph
  *  @param{Graph=} opt_create_using Graph instance to empty and
  *      add nodes to.
- *
  *  @return {Graph}
- *  @export
  */
-function completeGraph(n, optCreateUsing) {
+export function completeGraph(n, optCreateUsing) {
   var G = emptyGraph(n, optCreateUsing);
   G.name = 'complete_graph(' + n + ')';
   if (n > 1) {
@@ -129,11 +122,9 @@ function completeGraph(n, optCreateUsing) {
  * @param{number} n The number of nodes to add to the graph
  * @param{Graph=} opt_create_using Graph instance to empty and
  *      add nodes to.
- *
  * @return {Graph}
- * @export
  */
-function cycleGraph(n, optCreateUsing) {
+export function cycleGraph(n, optCreateUsing) {
   var G = pathGraph(n, optCreateUsing);
   G.name = 'cycle_graph(' + n + ')';
   if (n > 1) {
@@ -183,11 +174,9 @@ function cycleGraph(n, optCreateUsing) {
  *  @param{?number=} opt_n The number of nodes to add to the graph
  *  @param{?Graph=} opt_create_using Graph instance to empty and
  *      add nodes to.
- *
  *  @return {Graph}
- *  @export
  */
-function emptyGraph(optN, optCreateUsing) {
+export function emptyGraph(optN, optCreateUsing) {
   if (isGraph(optN)) {
     optCreateUsing = optN;
     optN = null;
@@ -222,11 +211,9 @@ function emptyGraph(optN, optCreateUsing) {
  * @param {number} n Number of columns
  * @param {boolean=} opt_periodic
  * @param {Graph=} opt_create_using
- *
  * @return {Graph}
- * @export
  */
-function grid2dGraph(m, n, optPeriodic, optCreateUsing) {
+export function grid2dGraph(m, n, optPeriodic, optCreateUsing) {
   var G = emptyGraph(0, optCreateUsing);
   G.name = 'grid_2d_graph';
   var rows = range(m);
@@ -300,9 +287,8 @@ function grid2dGraph(m, n, optPeriodic, optCreateUsing) {
  * @param {Graph=} opt_create_using Graph instance to empty and add nodes to.
  *
  * @return {Graph}
- * @export
  */
-function nullGraph(optCreateUsing) {
+export function nullGraph(optCreateUsing) {
   var G = emptyGraph(0, optCreateUsing);
   G.name = 'null_graph()';
   return G;
@@ -316,11 +302,9 @@ function nullGraph(optCreateUsing) {
  * @param {number} n The number of nodes to add to the graph
  * @param {Graph=} opt_create_using Graph instance to empty and
  *      add nodes to.
- *
  * @return {Graph}
- * @export
  */
-function pathGraph(n, optCreateUsing) {
+export function pathGraph(n, optCreateUsing) {
   var G = emptyGraph(n, optCreateUsing);
   G.name = 'path_graph(' + n + ')';
   G.addEdgesFrom(mapIterator(
@@ -339,26 +323,12 @@ function pathGraph(n, optCreateUsing) {
  *
  * @param{Graph=} opt_create_using Graph instance to empty and
  *      add nodes to.
- *
  * @return {Graph}
- * @export
  */
-function trivialGraph(optCreateUsing) {
+export function trivialGraph(optCreateUsing) {
   var G = emptyGraph(1, optCreateUsing);
   G.name = 'null_graph()';
   return G;
 }
 
 //TODO: wheel_graph
-
-module.exports = {
-  fullRaryTree,
-  balancedTree,
-  completeGraph,
-  cycleGraph,
-  emptyGraph,
-  grid2dGraph,
-  nullGraph,
-  pathGraph,
-  trivialGraph,
-};

@@ -1,9 +1,9 @@
 /*global utils, assert*/
 "use strict";
 
-var iteritems = require('../iteritems');
+import iteritems from '../iteritems';
 
-exports.iteritems = function() {
+export var testIteritems = function() {
   var obj = {foo: 5, bar: [1,2], 5: 42};
   var iter = iteritems(obj);
   assert(utils.isIterator(iter));

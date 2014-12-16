@@ -1,11 +1,11 @@
-/*jshint strict:false, node:true*/
 /*global assert */
+"use strict";
 
-var isIterator = require('../isIterator');
+import isIterator from '../isIterator';
 
 function* generator() { yield 0; }
 
-exports.isIterator = {
+export var testIsIterator = {
   'Generators produce an iterator': function() {
     assert(isIterator(generator()));
   },

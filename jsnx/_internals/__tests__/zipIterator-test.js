@@ -1,7 +1,7 @@
 /*global assert*/
 "use strict";
 
-var zipIterator = require('../zipIterator');
+import zipIterator from '../zipIterator';
 
 function* gen(data) {
   for (var i = 0; i < data.length; i++) {
@@ -9,7 +9,7 @@ function* gen(data) {
   }
 }
 
-exports.zipIterator = {
+export var testZipIterator = {
   'zip itarators of equal length': function() {
     assert.deepEqual(
       Array.from(zipIterator(gen([1,2,3]), gen([4,5,6]), gen([7,8,9]))),

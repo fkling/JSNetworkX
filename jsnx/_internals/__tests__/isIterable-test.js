@@ -1,11 +1,11 @@
-/*jshint strict:false, node:true*/
 /*global assert */
+"use strict";
 
-var Map = require('../Map');
-var Set = require('../Set');
-var isIterable = require('../isIterable');
+import Map from '../Map';
+import Set from '../Set';
+import isIterable from '../isIterable';
 
-exports.isIterable = {
+export var testIsIterable = {
   'Maps are iterable': function() {
     assert(isIterable(new Map()));
   },

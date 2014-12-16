@@ -1,10 +1,10 @@
-/*jshint strict:false, node:true*/
 /*global assert */
+"use strict";
 
-var isSet = require('../isSet');
-var Set = require('../Set');
+import isSet from '../isSet';
+import Set from '../Set';
 
-exports.isSet = {
+export var testIsSet = {
   'returns true for sets': function() {
     assert(isSet(new Set()));
   },

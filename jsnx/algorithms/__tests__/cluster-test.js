@@ -3,24 +3,24 @@
 
 var Map = utils.Map;
 
-var Graph = require('../../classes/graph');
+import Graph from '../../classes/graph';
 
-var {
+import {
   completeGraph,
   cycleGraph,
   pathGraph
-} = require('../../generators');
+} from '../../generators';
 
 
-var {
+import {
   triangles,
   clustering,
   transitivity,
   squareClustering,
   averageClustering,
-} = require('../cluster');
+} from '../cluster';
 
-exports.triangles = {
+export var testTriangles = {
 
   test_empty: function() {
     var G = new Graph();

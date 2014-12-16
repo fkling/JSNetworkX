@@ -1,9 +1,9 @@
 /*jshint strict:false, node:true*/
 /*global assert */
 
-var size = require('../size');
+import size from '../size';
 
-exports.size = {
+export var testSize = {
   'of array': function() {
     var data = [1,2,3];
     assert.equal(size(data), data.length);

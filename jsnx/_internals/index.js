@@ -1,39 +1,67 @@
 "use strict";
 
-Object.assign(exports, {
-  Map: require('./Map'),
-  Set: require('./Set'),
-  clone: require('./clone'),
-  clear: require('./clear'),
-  deepcopy: require('./deepcopy'),
-  gcd: require('./gcd'),
-  genCombinations: require('./genCombinations'),
-  genPermutations: require('./genPermutations'),
-  genRange: require('./genRange'),
-  getDefault: require('./getDefault'),
-  fillArray: require('./fillArray'),
-  forEach: require('./forEach'),
-  isArrayLike: require('./isArrayLike'),
-  isBoolean: require('./isBoolean'),
-  isGraph: require('./isGraph'),
-  isIterable: require('./isIterable'),
-  isIterator: require('./isIterator'),
-  isMap: require('./isMap'),
-  isPlainObject: require('./isPlainObject'),
-  mapIterator: require('./mapIterator'),
-  max: require('./max'),
-  next: require('./next'),
-  range: require('./range'),
-  someIterator: require('./someIterator'),
-  toIterator: require('./toIterator'),
-  tuple: require('./tuple'),
-  size: require('./size'),
-  sprintf: require('./sprintf'),
-  zipIterator: require('./zipIterator'),
-  zipSequence: require('./zipSequence'),
-});
+import Map from './Map';
+import Set from './Set';
+import clone from './clone';
+import clear from './clear';
+import deepcopy from './deepcopy';
+import gcd from './gcd';
+import genCombinations from './genCombinations';
+import genPermutations from './genPermutations';
+import genRange from './genRange';
+import getDefault from './getDefault';
+import fillArray from './fillArray';
+import forEach from './forEach';
+import isArrayLike from './isArrayLike';
+import isBoolean from './isBoolean';
+import isGraph from './isGraph';
+import isIterable from './isIterable';
+import isIterator from './isIterator';
+import isMap from './isMap';
+import isPlainObject from './isPlainObject';
+import mapIterator from './mapIterator';
+import max from './max';
+import next from './next';
+import range from './range';
+import someIterator from './someIterator';
+import toIterator from './toIterator';
+import * as tuple from './tuple';
+import size from './size';
+import sprintf from './sprintf';
+import zipIterator from './zipIterator';
+import zipSequence from './zipSequence';
 
-Object.assign(
-  exports,
-  exports.tuple
-);
+export {
+  Map,
+  Set,
+  clone,
+  clear,
+  deepcopy,
+  gcd,
+  genCombinations,
+  genPermutations,
+  genRange,
+  getDefault,
+  fillArray,
+  forEach,
+  isArrayLike,
+  isBoolean,
+  isGraph,
+  isIterable,
+  isIterator,
+  isMap,
+  isPlainObject,
+  mapIterator,
+  max,
+  next,
+  range,
+  someIterator,
+  toIterator,
+  tuple,
+  size,
+  sprintf,
+  zipIterator,
+  zipSequence
+};
+
+export * from './tuple';

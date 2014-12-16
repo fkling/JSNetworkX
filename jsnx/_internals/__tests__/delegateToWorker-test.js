@@ -1,10 +1,10 @@
 /*global assert, sinon */
 "use strict";
 
-var delegateToWorker = require('../delegateToWorker');
-var jsnx = require('../../');
+import delegateToWorker from '../delegateToWorker';
+import jsnx from '../../';
 
-exports.delegateToWorker = {
+export var testDelegateToWorker = {
   beforeEach: function() {
     this.spy = jsnx.testFunction = sinon.spy();
   },

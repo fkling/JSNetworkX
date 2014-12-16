@@ -1,14 +1,14 @@
 /*globals assert*/
 "use strict";
 
-var {Graph, DiGraph} = require('../classes/');
+import {Graph, DiGraph} from '../classes/';
+import {JSNetworkXError} from '../exceptions';
 
-var relabel = require('../relabel');
-var emptyGraph = require('../generators').emptyGraph;
+import relabel from '../relabel';
+import {emptyGraph} from '../generators';
 
-var {JSNetworkXError} = require('../exceptions');
 
-exports.relabel = {
+export var testRelabel = {
 
   testConvertNodeLabelsToIntegers: function() {
     // test that empty graph converts fine for all options

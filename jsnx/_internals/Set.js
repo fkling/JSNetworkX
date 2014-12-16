@@ -5,12 +5,12 @@
  */
 
 /*jshint ignore:start */
-var Map = require('./Map');
+import Map from './Map';
 /*jshint ignore:end */
 
 var toIterator = require('./toIterator');
 
-class Set {
+export default class Set {
 
   /**
    * @param {Iterable} opt_data An object, array or iterator to populate the set
@@ -186,5 +186,3 @@ class Set {
     return this.values();
   }
 }
-
-module.exports = Set;

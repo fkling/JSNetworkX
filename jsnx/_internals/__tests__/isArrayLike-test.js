@@ -1,9 +1,9 @@
 /*jshint strict:false, node:true*/
 /*global assert */
 
-var isArrayLike = require('../isArrayLike');
+import isArrayLike from '../isArrayLike';
 
-exports.isArrayLike = {
+export var testIsArrayLike = {
   'arrays': function() {
     var data = [1,2,3];
     assert(isArrayLike(data));

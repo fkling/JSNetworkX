@@ -1,8 +1,8 @@
 "use strict";
 
-var _forEach = require('lodash-node/modern/collections/forEach');
-var isIterable = require('./isIterable');
-var isIterator = require('./isIterator');
+import _forEach from 'lodash-node/modern/collections/forEach';
+import isIterable from './isIterable';
+import isIterator from './isIterator';
 
 /**
  * Helper to iterate over sequence types (arrays, array-like objects,
@@ -13,7 +13,7 @@ var isIterator = require('./isIterator');
  * @param {T=} optThisObj
  * @template T
  */
-function forEach(seq, callback, optThisObj) {
+export default function forEach(seq, callback, optThisObj) {
   if (Array.isArray(seq)) {
     seq.forEach(callback, optThisObj);
     return;
@@ -41,5 +41,3 @@ function forEach(seq, callback, optThisObj) {
     _forEach(seq, callback, optThisObj);
   }
 }
-
-module.exports = forEach;

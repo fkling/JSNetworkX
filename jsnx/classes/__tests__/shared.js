@@ -2,15 +2,13 @@
 /*global assert, utils*/
 "use strict";
 
-var BaseGraphTester = require('./BaseGraphTester');
 /*jshint ignore:start*/
 var Map = utils.Map;
 /*jshint ignore:end*/
-var JSNetworkXError = require('../../exceptions/JSNetworkXError');
-var _ = require('lodash-node');
+import JSNetworkXError from '../../exceptions/JSNetworkXError';
 
 
-module.exports = {
+export default {
   addAttributes: function(G) {
     G.graph['foo'] = [];
     G.node.get(0)['foo'] = [];
