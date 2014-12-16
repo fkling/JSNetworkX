@@ -31,20 +31,20 @@ var {
  * This is not always possible if the mapping is circular.
  * In that case use copy=true.
  *
- * @see #convert_node_labels_to_integers
+ * @see #convertNodeLabelsTo_integers
  *
  * @param {Graph} G A JSNetworkX graph
  * @param {(Object|Map|function(Node):Node)} mapping
  *      A dictionary with the old labels as keys and new labels as values.
  *      A partial mapping is allowed.
- * @param {boolean=} opt_copy (default: true)
+ * @param {boolean=} optCopy (default: true)
  *      If True return a copy or if False relabel the nodes in place.
  *
  * @return {Graph}
  * @export
  */
 function relabelNodes(G, mapping, optCopy=true) {
-  // you can pass a function f(old_label)->new_label
+  // you can pass a function f(oldLabel)->newLabel
   // but we'll just make a dictionary here regardless
   var m = mapping;
   if (typeof mapping !== 'function') {
@@ -188,19 +188,19 @@ function relabelCopy(G, mapping) {
  * Return a copy of G node labels replaced with integers.
  *
  * @param {Graph} G A JSNetworkX graph
- * @param {?number=} opt_first_label (default=0)
+ * @param {?number=} optFirstLabel (default=0)
  *      An integer specifying the offset in numbering nodes.
- *      The n new integer labels are numbered first_label, ..., n-1+first_label.
- * @param {?string=} opt_ordering (default="default")
+ *      The n new integer labels are numbered firstLabel, ..., n-1+firstLabel.
+ * @param {?string=} optOrdering (default="default")
  *      "default" : inherit node ordering from G.nodes()
  *      "sorted"  : inherit node ordering from sorted(G.nodes())
  *      "increasing degree" : nodes are sorted by increasing degree
  *      "decreasing degree" : nodes are sorted by decreasing degree
- * @param {?boolean=} opt_discard_old_labels (default=true)
+ * @param {?boolean=} optDiscardOldLabels (default=true)
  *      If true discard old labels. If false, create a node attribute
- *      'old_label' to hold the old labels.
+ *      'oldLabel' to hold the old labels.
  *
- * @return {jsnx.classes.Graph}
+ * @return {Graph}
  * @export
  */
 function convertNodeLabelsToIntegers(
@@ -223,7 +223,7 @@ function convertNodeLabelsToIntegers(
   //   algorithms it is often convenient to strip off the original node
   //   and edge information and appropriately relabel the n nodes with
   //   the integer values 1,..,n. This is the purpose of this function,
-  //   and it provides the option (see discard_old_labels variable) to either
+  //   and it provides the option (see discardOldLabels variable) to either
   //   preserve the original labels in separate dicts (these are not
   //   returned but made an attribute of the new graph.
 
@@ -285,7 +285,7 @@ function convertNodeLabelsToIntegers(
   }
 
   var H = relabelNodes(G, mapping);
-  H.name = '(' + G.name + ')_with_int_labels';
+  H.name = '(' + G.name + ')WithIntLabels';
   if (!optDiscardOldLabels) {
     H.nodeLabels = mapping;
   }

@@ -127,13 +127,13 @@ export var generatorClassic = {
     G = classic.emptyGraph(42);
     assert(G.numberOfNodes(), 42);
     assert.equal(G.numberOfEdges(), 0);
-    assert.equal(G.name, 'empty_graph(42)');
+    assert.equal(G.name, 'emptyGraph(42)');
 
     // create empty digraph
     G = classic.emptyGraph(42, new DiGraph(null, {name: 'duh'}));
     assert.equal(G.numberOfNodes(), 42);
     assert.equal(G.numberOfEdges(), 0);
-    assert.equal(G.name, 'empty_graph(42)');
+    assert.equal(G.name, 'emptyGraph(42)');
     assert.equal(G instanceof DiGraph, true);
 
     /* TODO MultiGraph

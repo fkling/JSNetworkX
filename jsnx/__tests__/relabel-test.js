@@ -14,7 +14,7 @@ export var testRelabel = {
     // test that empty graph converts fine for all options
     var G = emptyGraph();
     var H = relabel.convertNodeLabelsToIntegers(G, 100);
-    assert.equal(H.name, '(empty_graph(0))_with_int_labels');
+    assert.equal(H.name, '(emptyGraph(0))WithIntLabels');
     assert.deepEqual(H.nodes(), []);
     assert.deepEqual(H.edges(), []);
 
@@ -22,7 +22,7 @@ export var testRelabel = {
      'decreasing degree'].forEach(function(opt) {
         var G = emptyGraph();
         var H = relabel.convertNodeLabelsToIntegers(G, 100, opt);
-        assert.equal(H.name, '(empty_graph(0))_with_int_labels');
+        assert.equal(H.name, '(emptyGraph(0))WithIntLabels');
         assert.deepEqual(H.nodes(), []);
         assert.deepEqual(H.edges(), []);
     });

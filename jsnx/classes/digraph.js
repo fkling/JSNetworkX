@@ -44,19 +44,13 @@ import {
  * @see MultiGraph
  * @see MultiDiGraph
  *
- * @param {?=} opt_data
+ * @param {?=} optData
  *      Data to initialize graph.  If data=None (default) an empty
  *      graph is created.  The data can be an edge list, or any
  *      NetworkX graph object.
  *
- * @param {Object=} opt_attr
+ * @param {Object=} optAttr
  *       Attributes to add to graph as key=value pairs.
- *
- * WARNING: If only {@code opt_attr} is provided, it will be interpreted as
- * {@code opt_data}, since both arguments can be of the same type. Hence you
- * have to pass {@code null} explicitly:
- *
- * var G = new jsnx.DiGraph(null, {name: 'test'});
  *
  * @extends Graph
  * @constructor
@@ -64,7 +58,7 @@ import {
 export default class DiGraph extends Graph {
 
   constructor(optData, optAttr) {
-    // makes it possible to call DigGraph without new
+    // makes it possible to call DiGraph without new
     if(!(this instanceof DiGraph)) {
         return new DiGraph(optData, optAttr);
     }
@@ -102,7 +96,7 @@ export default class DiGraph extends Graph {
    *
    * @see #add_nodes_from
    *
-   * @param {jsnx.Node} n Node
+   * @param {Node} n Node
    * @param {Object=} opt_attr_dict Dictionary of node attributes.
    *      Key/value pairs will update existing data associated with the node.
    *
@@ -132,7 +126,7 @@ export default class DiGraph extends Graph {
    *
    * @see #add_node
    *
-   * @param {jsnx.NodeContainer} nodes
+   * @param {NodeContainer} nodes
    *      A container of nodes (list, dict, set, etc.).
    *      OR
    *      A container of (node, attribute dict) tuples.
@@ -184,7 +178,7 @@ export default class DiGraph extends Graph {
    *
    * @see #remove_nodes_from
    *
-   * @param {jsnx.Node} n  A node in the graph
+   * @param {Node} n  A node in the graph
    *
    * @override
    * @export
@@ -213,7 +207,7 @@ export default class DiGraph extends Graph {
    *
    * @see #remove_node
    *
-   * @param {jsnx.NodeContainer} nodes  A container of nodes.
+   * @param {NodeContainer} nodes  A container of nodes.
    *      If a node in the container is not in the graph it is silently ignored.
    *
    * @override
@@ -257,8 +251,8 @@ export default class DiGraph extends Graph {
    *       the edge weight a numerical value assigned to a keyword
    *       which by default is 'weight'.
    *
-   * @param {jsnx.Node} u Node
-   * @param {jsnx.Node} v Node
+   * @param {Node} u Node
+   * @param {Node} v Node
    * @param {Object=} opt_attr_dict Dictionary of edge attributes.
    *      Key/value pairs will update existing data associated with the edge.
    *
@@ -365,8 +359,8 @@ export default class DiGraph extends Graph {
    *
    * @see #remove_edges_from
    *
-   * @param {jsnx.Node} u Node
-   * @param {jsnx.Node} v Node
+   * @param {Node} u Node
+   * @param {Node} v Node
    *
    * @override
    * @export
@@ -417,8 +411,8 @@ export default class DiGraph extends Graph {
    *
    * This is true if graph has the edge u->v.
    *
-   * @param {jsnx.Node} u Node
-   * @param {jsnx.Node} v Node
+   * @param {Node} u Node
+   * @param {Node} v Node
    *
    * @return {boolean} True if node u has successor v
    *
@@ -433,8 +427,8 @@ export default class DiGraph extends Graph {
    *
    * This is true if graph has the edge u<-v.
    *
-   * @param {jsnx.Node} u Node
-   * @param {jsnx.Node} v Node
+   * @param {Node} u Node
+   * @param {Node} v Node
    *
    * @return {boolean} True if node u has predecessor v
    *
@@ -449,7 +443,7 @@ export default class DiGraph extends Graph {
    *
    * {@code neighbors_iter()} and {@code successors_iter()} are the same.
    *
-   * @param {jsnx.Node} n Node
+   * @param {Node} n Node
    *
    * @return {!Iterator} Iterator over successor nodes of n
    *
@@ -468,7 +462,7 @@ export default class DiGraph extends Graph {
   /**
    * Return an iterator over predecessor nodes of n.
    *
-   * @param {jsnx.Node} n Node
+   * @param {Node} n Node
    *
    * @return {!Iterator} Iterator over predecessor nodes of n
    *
@@ -489,7 +483,7 @@ export default class DiGraph extends Graph {
    *
    * {@code neighbors()} and {@code successors()} are the same.
    *
-   * @param {jsnx.Node} n Node
+   * @param {Node} n Node
    *
    * @return {!Array} List of successor nodes of n
    *
@@ -502,7 +496,7 @@ export default class DiGraph extends Graph {
   /**
    * Return list of predecessor nodes of n.
    *
-   * @param {jsnx.Node} n Node
+   * @param {Node} n Node
    *
    * @return {!Array} List of predecessor nodes of n
    *
@@ -546,7 +540,7 @@ export default class DiGraph extends Graph {
    *
    *      Nodes in nbunch that are not in the graph will be (quietly) ignored.
    *
-   * @param {?(jsnx.NodeContainer|boolean)=} opt_nbunch A container of nodes.
+   * @param {?(NodeContainer|boolean)=} opt_nbunch A container of nodes.
    *       The container will be iterated through once.
    *
    * @param {?boolean=} opt_data
@@ -598,7 +592,7 @@ export default class DiGraph extends Graph {
   }
 
   /**
-   * @see jsnx.Graph#edges
+   * @see Graph#edges
    * @export
    */
   get outEdges() {
@@ -611,7 +605,7 @@ export default class DiGraph extends Graph {
    * @see #edges_iter
    *
    *
-   * @param {(?jsnx.NodeContainer|boolean)=} opt_nbunch A container of nodes.
+   * @param {(?NodeContainer|boolean)=} opt_nbunch A container of nodes.
    *       The container will be iterated through once.
    *
    * @param {?boolean=} opt_data
@@ -657,7 +651,7 @@ export default class DiGraph extends Graph {
    *
    * @see #edges
    *
-   * @param {jsnx.NodeContainer} opt_nbunch A container of nodes.
+   * @param {NodeContainer} opt_nbunch A container of nodes.
    *       The container will be iterated through once.
    *
    * @param {boolean} opt_data
@@ -683,7 +677,7 @@ export default class DiGraph extends Graph {
    * @see #out_degree_iter
    *
    *
-   * @param {(jsnx.Node|jsnx.NodeContainer)=} opt_nbunch  A container of nodes.
+   * @param {(Node|NodeContainer)=} opt_nbunch  A container of nodes.
    *       The container will be iterated through once.
    *
    * @param {string=} opt_weight
@@ -759,7 +753,7 @@ export default class DiGraph extends Graph {
    * @see #out_degree
    * @see #out_degree_iter
    *
-   * @param {(jsnx.Node|jsnx.NodeContainer)=} opt_nbunch  A container of nodes.
+   * @param {(Node|NodeContainer)=} opt_nbunch  A container of nodes.
    *       The container will be iterated through once.
    *
    * @param {string=} opt_weight
@@ -820,7 +814,7 @@ export default class DiGraph extends Graph {
    * @see #out_degree
    * @see #in_degree_iter
    *
-   * @param {jsnx.NodeContainer=} opt_nbunch  A container of nodes.
+   * @param {NodeContainer=} opt_nbunch  A container of nodes.
    *       The container will be iterated through once.
    *
    * @param {string=} opt_weight
@@ -880,7 +874,7 @@ export default class DiGraph extends Graph {
    * @see #in_degree_iter
    *
    *
-   * @param {jsnx.NodeContainer=} opt_nbunch  A container of nodes.
+   * @param {NodeContainer=} opt_nbunch  A container of nodes.
    *       The container will be iterated through once.
    *
    * @param {string=} opt_weight
@@ -920,7 +914,7 @@ export default class DiGraph extends Graph {
    * @see #in_degree_iter
    *
    *
-   * @param {jsnx.NodeContainer=} opt_nbunch  A container of nodes.
+   * @param {NodeContainer=} opt_nbunch  A container of nodes.
    *       The container will be iterated through once.
    *
    * @param {string=} opt_weight
@@ -1000,7 +994,7 @@ export default class DiGraph extends Graph {
    *      This is in contrast to the similar D = new DiGraph(G) which returns a
    *      shallow copy of the data.
    *
-   * @return {!jsnx.classes.DiGraph} A deepcopy of the graph
+   * @return {!DiGraph} A deepcopy of the graph
    *
    * @override
    * @export
@@ -1031,7 +1025,7 @@ export default class DiGraph extends Graph {
   *      If True only keep edges that appear in both directions
   *      in the original digraph.
   *
-  * @return {!jsnx.classes.Graph}
+  * @return {!Graph}
   *      An undirected graph with the same name and nodes and
   *      with edge (u,v,data) if either (u,v,data) or (v,u,data)
   *      is in the digraph.  If both edges exist in digraph and
@@ -1088,7 +1082,7 @@ export default class DiGraph extends Graph {
   *      If False, reverse the reverse graph is created using
   *      the original graph (this changes the original graph).
   *
-  * @return {!jsnx.classes.DiGraph} A copy of the graph or the graph itself
+  * @return {!DiGraph} A copy of the graph or the graph itself
   *
   * @export
   */
@@ -1137,10 +1131,10 @@ export default class DiGraph extends Graph {
   * For an inplace reduction of a graph to a subgraph you can remove nodes:
   * G.remove_nodes_from([ n in G if n not in set(nbunch)])
   *
-  * @param {jsnx.NodeContainer} nbunch
+  * @param {NodeContainer} nbunch
   *      A container of nodes which will be iterated through once.
   *
-  * @return {jsnx.classes.DiGraph} A subgraph of the graph with the same edge
+  * @return {DiGraph} A subgraph of the graph with the same edge
   *   attributes.
   *
   *

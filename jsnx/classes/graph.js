@@ -61,7 +61,7 @@ import {
 export default class Graph {
 
   constructor(optData, optAttr) {
-    // makes it possible to call jsnx.Graph without new
+    // makes it possible to call Graph without new
     if(!(this instanceof Graph)) {
         return new Graph(optData, optAttr);
     }
@@ -144,9 +144,9 @@ export default class Graph {
   /**
    * Return a dict of neighbors of node n.
    *
-   * @param {jsnx.Node} n  A node in the graph.
+   * @param {Node} n  A node in the graph.
    *
-   * @return {!jsnx.contrib.Map} The adjacency dictionary for nodes
+   * @return {!Map} The adjacency dictionary for nodes
    *   connected to n.
    * @export
    */
@@ -166,7 +166,7 @@ export default class Graph {
    * all attributes must be passed in an object as second
    * argument.
    *
-   * @param {!jsnx.Node} n A node.
+   * @param {!Node} n A node.
    * @param {Object=} opt_attr_dict Dictionary of node attributes.
    *      Key/value pairs will update existing data associated with the node.
    * @export
@@ -193,7 +193,7 @@ export default class Graph {
    * all attributes must be passed in an object as second
    * argument.
    *
-   * @param {!jsnx.NodeContainer} nodes
+   * @param {!NodeContainer} nodes
    *       A container of nodes (Array, Object, Array-like).
    *       OR
    *       A container of (node, attribute dict) tuples.
@@ -237,7 +237,7 @@ export default class Graph {
    * Removes the node n and all adjacent edges.
    * Attempting to remove a non-existent node will raise an exception.
    *
-   * @param {jsnx.Node} n A node in the graph.
+   * @param {Node} n A node in the graph.
    * @export
    */
   removeNode(n) {
@@ -258,7 +258,7 @@ export default class Graph {
   /**
    * Remove multiple nodes.
    *
-   * @param {jsnx.NodeContainer} nodes A container of nodes
+   * @param {NodeContainer} nodes A container of nodes
    *      If a node in the container is not in the graph it is silently ignored.
    *
    * @export
@@ -334,7 +334,7 @@ export default class Graph {
   /**
    * Return true if the graph contains the node n.
    *
-   * @param {!(jsnx.Node|jsnx.NodeContainer)} n node.
+   * @param {!(Node|NodeContainer)} n node.
    *
    * @return {boolean}
    * @export
@@ -356,8 +356,8 @@ export default class Graph {
    * Unlike in Python, attributes can only be defined
    * via the dictionary.
    *
-   * @param {jsnx.Node} u Node.
-   * @param {jsnx.Node} v Node.
+   * @param {Node} u Node.
+   * @param {Node} v Node.
    * @param {?Object=} opt_attr_dict Dictionary of edge attributes.
    *      Key/value pairs will update existing data associated with the edge.
    *
@@ -488,8 +488,8 @@ export default class Graph {
   /**
    * Remove the edge between u and v.
    *
-   * @param {jsnx.Node} u Node.
-   * @param {jsnx.Node} v Node.
+   * @param {Node} u Node.
+   * @param {Node} v Node.
    *
    * @export
    */
@@ -539,8 +539,8 @@ export default class Graph {
   /**
    * Return True if the edge (u,v) is in the graph.
    *
-   * @param {jsnx.Node} u Node.
-   * @param {jsnx.Node} v Node.
+   * @param {Node} u Node.
+   * @param {Node} v Node.
    *
    * @return {boolean} True if edge is in the graph, False otherwise.
    * @export
@@ -554,7 +554,7 @@ export default class Graph {
   /**
    * Return a list of the nodes connected to the node n.
    *
-   * @param {!jsnx.Node} n A node in the graph.
+   * @param {!Node} n A node in the graph.
    *
    * @return {!Array} A list of nodes that are adjacent to n.
    * @export
@@ -567,7 +567,7 @@ export default class Graph {
   /**
    * Return an iterator over all neighbors of node n.
    *
-   * @param {!jsnx.Node} n A node in the graph.
+   * @param {!Node} n A node in the graph.
    *
    * @return {!Iterator} A list of nodes that are adjacent to n.
    * @export
@@ -592,7 +592,7 @@ export default class Graph {
    * Note: Nodes in nbunch that are not in the graph will be (quietly) ignored.
    * For directed graphs this returns the out-edges.
    *
-   * @param {?jsnx.NodeContainer=} opt_nbunch A container of nodes.
+   * @param {?NodeContainer=} opt_nbunch A container of nodes.
    *      The container will be iterated through once.
    * @param {?boolean=} opt_data Return two tuples (u,v) (False)
    *      or three-tuples (u,v,data) (True).
@@ -616,7 +616,7 @@ export default class Graph {
    * Note: Nodes in nbunch that are not in the graph will be (quietly) ignored.
    * For directed graphs this returns the out-edges.
    *
-   * @param {?(jsnx.NodeContainer|boolean)=} opt_nbunch A container of nodes.
+   * @param {?(NodeContainer|boolean)=} opt_nbunch A container of nodes.
    *      The container will be iterated through once.
    * @param {?boolean=} opt_data Return two tuples (u,v) (False)
    *      or three-tuples (u,v,data) (True).
@@ -672,8 +672,8 @@ export default class Graph {
   /**
    * Return the attribute dictionary associated with edge (u,v).
    *
-   * @param {jsnx.Node} u Node.
-   * @param {jsnx.Node} v Node.
+   * @param {Node} u Node.
+   * @param {Node} v Node.
    * @param {T=} opt_default (default=null)
    *      Value to return if the edge (u,v) is not found.
    *
@@ -734,7 +734,7 @@ export default class Graph {
    * name could be equal to a node name, nbunch as to be set to null explicitly
    * to use the second argument as weight attribute name.
    *
-   * @param {(jsnx.Node|jsnx.NodeContainer)=} opt_nbunch (default=all nodes)
+   * @param {(Node|NodeContainer)=} opt_nbunch (default=all nodes)
    *      A container of nodes.  The container will be iterated
    *      through once.
    *
@@ -743,7 +743,7 @@ export default class Graph {
    *      as a weight.  If null or not defined, then each edge has weight 1.
    *      The degree is the sum of the edge weights adjacent to the node.
    *
-   * @return {!(number|jsnx.contrib.Map)} A dictionary with nodes as keys and
+   * @return {!(number|Map)} A dictionary with nodes as keys and
    * degree as values or a number if a single node is specified.
    * @export
    */
@@ -762,7 +762,7 @@ export default class Graph {
    * Return an array for (node, degree).
    *
    *
-   * @param {(jsnx.Node|jsnx.NodeContainer)=} opt_nbunch (default=all nodes)
+   * @param {(Node|NodeContainer)=} opt_nbunch (default=all nodes)
    *       A container of nodes.  The container will be iterated
    *       through once.
    * @param {string=} opt_weight (default=None)
@@ -935,17 +935,20 @@ export default class Graph {
    * the original graph while changes to the attributes will.
    *
    * To create a subgraph with its own copy of the edge/node attributes use:
-   * jsnx.Graph(G.subgraph(nbunch))
+   * `jsnx.Graph(G.subgraph(nbunch))`.
    *
    * If edge attributes are containers, a deep copy can be obtained using:
-   * G.subgraph(nbunch).copy()
+   * `G.subgraph(nbunch).copy()`
    *
    * For an inplace reduction of a graph to a subgraph you can remove nodes:
-   * G.remove_nodes_from(jsnx.array.filter(G.nodes(), function(n) {
-   *      return jsnx.array.contains(nbunch, n);
-   * }))
    *
-   * @param {jsnx.NodeContainer} nbunch
+   * ```
+   * G.removeNodesFrom(G.nodes().filter(function(n) {
+   *      return nbunch.indexOf(n) > -1;
+   * }))
+   * ```
+   *
+   * @param {NodeContainer} nbunch
    *      A container of nodes which will be iterated through once.
    *
    * @return {Graph}
@@ -1077,8 +1080,8 @@ export default class Graph {
   /**
    * Return the number of edges between two nodes.
    *
-   * @param {!jsnx.Node=} u node.
-   * @param {!jsnx.Node=} v node
+   * @param {!Node=} u node.
+   * @param {!Node=} v node
    *       If u and v are specified, return the number of edges between
    *       u and v. Otherwise return the total number of all edges.
    *
@@ -1106,7 +1109,7 @@ export default class Graph {
    * The first node in nodes is the middle of the star.  It is connected
    * to all other nodes.
    *
-   * @param {jsnx.NodeContainer} nodes A container of nodes.
+   * @param {NodeContainer} nodes A container of nodes.
    * @param {Object=} opt_attr  Attributes to add to every edge in star.
    * @export
    */
@@ -1121,7 +1124,7 @@ export default class Graph {
   /**
    * Add a path.
    *
-   * @param {jsnx.NodeContainer} nodes A container of nodes.
+   * @param {NodeContainer} nodes A container of nodes.
    *      A path will be constructed from the nodes (in order)
    *      and added to the graph.
    * @param {Object=} opt_attr Attributes to add to every edge in path.
@@ -1140,7 +1143,7 @@ export default class Graph {
   /**
    * Add a cycle.
    *
-   * @param {jsnx.NodeContainer} nodes A container of nodes.
+   * @param {NodeContainer} nodes A container of nodes.
    *      A cycle will be constructed from the nodes (in order)
    *      and added to the graph.
    * @param {Object=} opt_attr  Attributes to add to every edge in cycle.
@@ -1174,7 +1177,7 @@ export default class Graph {
    * If nbunch is not a node or a (possibly empty) sequence/iterator
    * or not defined, an Error is raised.
    *
-   * @param {(jsnx.Node|jsnx.NodeContainer)=} opt_nbunch (default=all nodes)
+   * @param {(Node|NodeContainer)=} opt_nbunch (default=all nodes)
    *      A container of nodes.  The container will be iterated
    *      through once.
    *

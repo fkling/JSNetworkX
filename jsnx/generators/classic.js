@@ -50,7 +50,7 @@ function *treeEdges(n, r) {
  *
  * @param {number} r branching factor of the tree
  * @param {number} n number of nodes in the tree
- * @param {Graph=} opt_create_using
+ * @param {Graph=} optCreateUsing
  *   Use specified type to construct graph
  * @return {Graph} An r-ary tree with n nodes.
  */
@@ -68,13 +68,13 @@ export function fullRaryTree(r, n, optCreateUsing) {
  * the root. The root has degree r and all other internal nodes have
  * degree r+1.
  *
- * Node labels are the integers 0 (the root) up to  number_of_nodes - 1.
+ * Node labels are the integers 0 (the root) up to  numberOfNodes - 1.
  *
  * Also refered to as a complete r-ary tree.
  *
  * @param {number} r  Branching factor of the tree
  * @param {number} h Height of the tree
- * @param {Graph} opt_create_using
+ * @param {Graph} optCreateUsing
  *    Use specified type to construct graph
  * @return {Graph}
  */
@@ -88,13 +88,12 @@ export function balancedTree(r, h, optCreateUsing) {
 //TODO: barbell_graph
 
 /**
- * Return the complete graph K_n with n nodes.
+ * Return the complete graph `$K_n$ with n nodes.
  *
  * Node labels are the integers 0 to n-1.
- *  @param{number} n The number of nodes to add to the graph
- *  @param{Graph=} opt_create_using Graph instance to empty and
- *      add nodes to.
- *  @return {Graph}
+ * @param {number} n The number of nodes to add to the graph
+ * @param {Graph=} optCreateUsing Graph instance to empty and add nodes to.
+ * @return {Graph}
  */
 export function completeGraph(n, optCreateUsing) {
   var G = emptyGraph(n, optCreateUsing);
@@ -119,9 +118,8 @@ export function completeGraph(n, optCreateUsing) {
  * Node labels are the integers 0 to n-1
  * If create_using is a DiGraph, the direction is in increasing order.
  *
- * @param{number} n The number of nodes to add to the graph
- * @param{Graph=} opt_create_using Graph instance to empty and
- *      add nodes to.
+ * @param {number} n The number of nodes to add to the graph
+ * @param {Graph=} optCreateUsing Graph instance to empty and add nodes to.
  * @return {Graph}
  */
 export function cycleGraph(n, optCreateUsing) {
@@ -136,45 +134,50 @@ export function cycleGraph(n, optCreateUsing) {
 //TODO: dorogovtsev_goltsev_mendes_graph
 
 /**
- *  Return the empty graph with n nodes and zero edges.
+ * Return the empty graph with n nodes and zero edges.
  *
- *  Node labels are the integers 0 to n-1
+ * Node labels are the integers 0 to n-1
  *
- *  For example:
- *  >>> var G = jsnx.empty_graph(10)
- *  >>> G.number_of_nodes()
- *  10
- *  >>> G.number_of_edges()
- *  0
+ * ### Example
  *
- *  The variable create_using should point to a "graph"-like object that
- *  will be cleaned (nodes and edges will be removed) and refitted as
- *  an empty "graph" with n nodes with integer labels. This capability
- *  is useful for specifying the class-nature of the resulting empty
- *  "graph" (i.e. Graph, DiGraph, MyWeirdGraphClass, etc.).
+ * ```
+ * var G = jsnx.emptyGraph(10)
+ * G.numberOfNodes()
+ * // 10
+ * G.numberOfEdges()
+ * // 0
+ * ```
  *
- *  The variable create_using has two main uses:
- *  Firstly, the variable create_using can be used to create an
- *  empty digraph, network,etc.  For example,
+ * The variable create_using should point to a "graph"-like object that
+ * will be cleaned (nodes and edges will be removed) and refitted as
+ * an empty "graph" with n nodes with integer labels. This capability
+ * is useful for specifying the class-nature of the resulting empty
+ * "graph" (i.e. Graph, DiGraph, MyWeirdGraphClass, etc.).
  *
- *  >>> var n = 10
- *  >>> var G = jsnx.empty_graph(n, jsnx.DiGraph())
+ * The variable create_using has two main uses:
+ * Firstly, the variable create_using can be used to create an
+ * empty digraph, network,etc.  For example,
  *
- *  will create an empty digraph on n nodes.
+ * ```
+ * var n = 10
+ * var G = jsnx.emptyGraph(n, jsnx.DiGraph())
+ * ```
  *
- *  Secondly, one can pass an existing graph (digraph, pseudograph,
- *  etc.) via create_using. For example, if G is an existing graph
- *  (resp. digraph, pseudograph, etc.), then empty_graph(n,G)
- *  will empty G (i.e. delete all nodes and edges using G.clear() in
- *  base) and then add n nodes and zero edges, and return the modified
- *  graph (resp. digraph, pseudograph, etc.).
+ * will create an empty digraph on n nodes.
  *
- *  @see create_empty_copy
+ * Secondly, one can pass an existing graph (digraph, pseudograph,
+ * etc.) via create_using. For example, if G is an existing graph
+ * (resp. digraph, pseudograph, etc.), then empty_graph(n,G)
+ * will empty G (i.e. delete all nodes and edges using G.clear() in
+ * base) and then add n nodes and zero edges, and return the modified
+ * graph (resp. digraph, pseudograph, etc.).
  *
- *  @param{?number=} opt_n The number of nodes to add to the graph
- *  @param{?Graph=} opt_create_using Graph instance to empty and
- *      add nodes to.
- *  @return {Graph}
+ * @see createEmptyCopy
+ *
+ * @param{?number=} optN The number of nodes to add to the graph
+ * @param{?Graph=} optCreateUsing Graph instance to empty and
+ *     add nodes to.
+ * @return {Graph}
  */
 export function emptyGraph(optN, optCreateUsing) {
   if (isGraph(optN)) {
@@ -197,7 +200,7 @@ export function emptyGraph(optN, optCreateUsing) {
   }
 
   G.addNodesFrom(genRange(optN));
-  G.name = 'empty_graph(' + optN + ')';
+  G.name = 'emptyGraph(' + optN + ')';
   return G;
 }
 
@@ -209,13 +212,13 @@ export function emptyGraph(optN, optCreateUsing) {
  *
  * @param {number} m Number of rows
  * @param {number} n Number of columns
- * @param {boolean=} opt_periodic
- * @param {Graph=} opt_create_using
+ * @param {boolean=} optPeriodic
+ * @param {Graph=} optCreateUsing
  * @return {Graph}
  */
 export function grid2dGraph(m, n, optPeriodic, optCreateUsing) {
   var G = emptyGraph(0, optCreateUsing);
-  G.name = 'grid_2d_graph';
+  G.name = 'grid2dGraph';
   var rows = range(m);
   var columns = range(n);
   var i;
@@ -269,7 +272,7 @@ export function grid2dGraph(m, n, optPeriodic, optCreateUsing) {
         }
       }
     }
-    G.name = 'periodic_grid_2d_graph(' + m + ',' + n + ')';
+    G.name = 'periodicGrid2dGraph(' + m + ',' + n + ')';
   }
   return G;
 }
@@ -282,31 +285,30 @@ export function grid2dGraph(m, n, optPeriodic, optCreateUsing) {
 /**
  * Return the Null graph with no nodes or edges.
  *
- * See empty_graph for the use of create_using.
+ * See `emptyGraph` for the use of `optCreateUsing`.
  *
- * @param {Graph=} opt_create_using Graph instance to empty and add nodes to.
- *
+ * @param {Graph=} optCreateUsing Graph instance to empty and add nodes to.
  * @return {Graph}
  */
 export function nullGraph(optCreateUsing) {
   var G = emptyGraph(0, optCreateUsing);
-  G.name = 'null_graph()';
+  G.name = 'nullGraph()';
   return G;
 }
 
 /**
  * Return the Null graph with no nodes or edges.
  *
- * See empty_graph for the use of create_using.
+ * See `emptyGraph` for the use of `optCreateUsing`.
  *
  * @param {number} n The number of nodes to add to the graph
- * @param {Graph=} opt_create_using Graph instance to empty and
+ * @param {Graph=} optCreateUsing Graph instance to empty and
  *      add nodes to.
  * @return {Graph}
  */
 export function pathGraph(n, optCreateUsing) {
   var G = emptyGraph(n, optCreateUsing);
-  G.name = 'path_graph(' + n + ')';
+  G.name = 'pathGraph(' + n + ')';
   G.addEdgesFrom(mapIterator(
     genRange(n-1),
     function(v) {
@@ -321,13 +323,13 @@ export function pathGraph(n, optCreateUsing) {
 /**
  * Return the Trivial graph with one node (with integer label 0) and no edges.
  *
- * @param{Graph=} opt_create_using Graph instance to empty and
+ * @param{Graph=} optCreateUsing Graph instance to empty and
  *      add nodes to.
  * @return {Graph}
  */
 export function trivialGraph(optCreateUsing) {
   var G = emptyGraph(1, optCreateUsing);
-  G.name = 'null_graph()';
+  G.name = 'nullGraph()';
   return G;
 }
 
