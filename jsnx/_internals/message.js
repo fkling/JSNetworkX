@@ -81,8 +81,8 @@ export function isSupported(value) {
     value.constructor.__name__ === 'Graph' ||
     value.constructor.__name__ === 'DiGraph' ||
 
-    // Generic iterators
-    isIterator(value)
+    // Generic iterables
+    isIterable(value)
   );
 }
 
