@@ -1,39 +1,34 @@
 "use strict";
 
-import Graph from '../classes/graph';
-import DiGraph from '../classes/digraph';
-
-import convert from '../convert';
-import isGraph from './isGraph';
 import isIterator from './isIterator';
+import {isSupported, serialize, deserialize} from './message';
 
 var delegateImplementation;
 if (typeof global.Worker === 'function') {
   // Workers are supported
   delegateImplementation = function(method, args) {
-    var isGraphSupported = true;
-    args = args.map(function(arg) {
-      if (isGraph(arg)) {
-        isGraphSupported = arg instanceof Graph || arg instanceof DiGraph;
-        return !isGraphSupported ?
-          arg :
-          {
-            __type__: arg.constructor.__name__,
-            data: convert.toEdgelist(arg)
-          };
+    var serializedArgs = new Array(args.length);
+    var serializable =  args.every((arg, i) => {
+      var supported = isSupported(arg);
+      if (supported) {
+        serializedArgs[i] = serialize(arg);
       }
-      return arg;
+      return supported;
     });
 
-    if (!isGraphSupported) {
+    if (!serializable) {
       console.info(
-        `Only Graphs and DiGraphs can be sent to the worker. We will run ` +
-        `${method} synchronously instead.`
+        `At least one argument can't be serialized and sent to the worker. ` +
+        `We will run ${method} synchronously instead.`
       );
       var jsnx = require('../');
       return new Promise(function(resolve, reject) {
         try {
-          resolve(jsnx[method].apply(null, args));
+          var result = jsnx[method].apply(null, args);
+          if (isIterator(result)) {
+            result = Array.from(result);
+          }
+          resolve(result);
         } catch(ex) {
           reject(ex);
         }
@@ -43,10 +38,10 @@ if (typeof global.Worker === 'function') {
     return new Promise(function(resolve, reject) {
       var worker = new global.Worker('{{BUNDLE_NAME}}');
       worker.addEventListener("message", function (oEvent) {
-        resolve(oEvent.data);
+        resolve(deserialize(oEvent.data));
       }, false);
       worker.addEventListener("error", reject, false);
-      worker.postMessage({method, args});
+      worker.postMessage({method, args: serializedArgs});
     });
   };
 }

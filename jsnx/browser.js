@@ -2,28 +2,15 @@
 import '6to5/polyfill';
 
 import isIterator from './_internals/isIterator';
+import {serialize, deserialize} from './_internals/message';
 export * from './';
 
 if (!global.document) {
   // inside worker
   global.onmessage = function(event) {
-    var args = event.data.args.map(function(arg) {
-      if (typeof arg === 'object' && arg.__type__) {
-        switch (arg.__type__) {
-          case 'Graph':
-          case 'DiGraph':
-            return new exports[arg.__type__](arg.data);
-        }
-      }
-      return arg;
-    });
+    var args = event.data.args.map(deserialize);
     var result = exports[event.data.method].apply(null, args);
-    // If the function normally returns an iterator, we return an array from
-    // the async version
-    if (isIterator(result)) {
-      result = Array.from(result);
-    }
-    global.postMessage(result);
+    global.postMessage(serialize(result));
     global.close();
   };
 }
