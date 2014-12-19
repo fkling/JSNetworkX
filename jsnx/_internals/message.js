@@ -30,12 +30,12 @@ function serializeMap(value) {
   // TODO: serialize nested values
   return {
     [KEY]: 'Map',
-    data: Array.from(value)
+    data: [for ([k,v] of value) [k, serialize(v)]]
   };
 }
 
 function deserializeMap(value) {
-  return new Map(value.data);
+  return new Map(value.data.map(kv => (kv[1] = deserialize(kv[1]), kv)));
 }
 
 function serializeGraph(value) {

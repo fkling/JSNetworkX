@@ -25,6 +25,7 @@ import mapIterator from './mapIterator';
 import mapSequence from './mapSequence';
 import max from './max';
 import next from './next';
+import nodesAreEqual from './nodesAreEqual';
 import range from './range';
 import someIterator from './someIterator';
 import toIterator from './toIterator';
@@ -60,6 +61,7 @@ export {
   mapSequence,
   max,
   next,
+  nodesAreEqual,
   range,
   someIterator,
   toIterator,

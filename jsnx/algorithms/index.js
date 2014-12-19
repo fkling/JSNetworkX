@@ -6,6 +6,7 @@ import * as cluster from './cluster';
 import * as dag from './dag';
 import * as graphical from './graphical';
 import * as isomorphism from './isomorphism';
+import * as shortestPaths from './shortestPaths';
 
 export {
   centrality,
@@ -13,7 +14,8 @@ export {
   cluster,
   dag,
   graphical,
-  isomorphism
+  isomorphism,
+  shortestPaths
 };
 
 export * from './centrality';
@@ -22,3 +24,4 @@ export * from './cluster';
 export * from './dag';
 export * from './graphical';
 export * from './isomorphism';
+export * from './shortestPaths';
