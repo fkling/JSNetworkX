@@ -31,6 +31,7 @@ var acorn = require('acorn-6to5');
 var path = require('path');
 var recast = require('recast');
 var types = recast.types;
+var namedTypes = types.namedTypes;
 var builders = types.builders;
 
 var parseWrapper = {
@@ -156,13 +157,21 @@ function transform(source, options) {
         var asyncName = 'gen' + name[0].toUpperCase() + name.substr(1);
         // The function doesn't actually have to be marked as async, since the
         // delegate function returns a promise anyway.
+        var params = node.params.map(function(param) {
+          // convert patters to single variables
+          if (namedTypes.ObjectPattern.check(param) ||
+              namedTypes.ArrayPattern.check(param)) {
+            return path.scope.declareTemporary();
+          }
+          return param;
+        });
         var exportDeclaration = builders.exportDeclaration(
           false,
           builders.functionDeclaration(
             builders.identifier(asyncName),
-            node.params,
+            params,
             builders.blockStatement([
-              buildCallTo(delegateName, node.id.name, node.params)
+              buildCallTo(delegateName, node.id.name, params)
             ])
           ),
           [],

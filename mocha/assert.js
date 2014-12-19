@@ -45,6 +45,18 @@ chai.use(function(_chai) {
   _chai.assert.isOneOf = function(actual, expected, msg) {
     new Assertion(actual, msg).to.be.oneOf(expected);
   };
+
+  _chai.assert.almostEqual = function(actual, expected, message) {
+    var diff = Math.abs(actual - expected);
+    // round to 3th place
+    diff = Math.round(diff * 1000) / 1000;
+    new Assertion(actual, message).assert(
+      diff === 0,
+      'expected #{this} to be close to ' + expected,
+      'expected #{this) not to be close to ' + expected,
+      expected
+    );
+  };
 });
 
 module.exports = chai.assert;

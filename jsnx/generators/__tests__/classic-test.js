@@ -12,9 +12,7 @@ import {degreeHistogram} from '../../classes/functions';
 export var generatorClassic = {
 
   testBalancedTree: function() {
-    [[2,2],[3,3],[6,2]].forEach(function(d) {
-      var r = d[0];
-      var h = d[1];
+    [[2,2],[3,3],[6,2]].forEach(([r, h]) => {
       var t = classic.balancedTree(r, h);
       var order = t.order();
       assert.equal(order, (Math.pow(r, h+1) - 1) / (r - 1));

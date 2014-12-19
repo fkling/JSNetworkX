@@ -8,6 +8,7 @@ import {
   genRange,
   isGraph,
   mapIterator,
+  next,
   range,
   tuple2
 } from '../_internals';
@@ -24,11 +25,11 @@ function *treeEdges(n, r) {
   if (n === 0) {
     return;
   }
-  var parents = [nodes.next().value];
+  var parents = [next(nodes)];
   while (parents.length > 0) {
     /*jshint unused:false*/
-    var source = parents.pop();
-    for (var _ of genRange(r)) {
+    var source = parents.shift();
+    for (var i = 0; i < r; i++) {
       var target = nodes.next();
       if (target.done) {
         return;
@@ -228,24 +229,24 @@ export function grid2dGraph(m, n, optPeriodic, optCreateUsing) {
       G.addNode([i,j]);
     }
   }
-  for (i of genRange(1, m)) {
+  for (i = 1; i < m; i++) {
     for (j = 0; j < columns.length; j++) {
       G.addEdge([i,j], [i-1,j]);
     }
   }
   for (i = 0; i < rows.length; i++) {
-    for (j of genRange(1, n)) {
+    for (j = 1; j < n; j++) {
       G.addEdge([i,j], [i,j-1]);
     }
   }
   if (G.isDirected()) {
-    for (i of genRange(0, m-1)) {
+    for (i = 0; i < m-1; i++) {
       for (j = 0; j < columns.length; j++) {
         G.addEdge([i,j], [i+1,j]);
       }
     }
     for (i = 0; i < rows.length; i++) {
-      for (j of genRange(0, n - 1)) {
+      for (j = 0; j < n -1; j++) {
         G.addEdge([i,j], [i,j+1]);
       }
     }

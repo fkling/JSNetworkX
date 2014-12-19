@@ -1,6 +1,8 @@
 "use strict";
 
+import Arrays from './Arrays';
 import Map from './Map';
+import PriorityQueue from './PriorityQueue';
 import Set from './Set';
 import clone from './clone';
 import clear from './clear';
@@ -20,6 +22,7 @@ import isIterator from './isIterator';
 import isMap from './isMap';
 import isPlainObject from './isPlainObject';
 import mapIterator from './mapIterator';
+import mapSequence from './mapSequence';
 import max from './max';
 import next from './next';
 import range from './range';
@@ -32,7 +35,9 @@ import zipIterator from './zipIterator';
 import zipSequence from './zipSequence';
 
 export {
+  Arrays,
   Map,
+  PriorityQueue,
   Set,
   clone,
   clear,
@@ -52,6 +57,7 @@ export {
   isMap,
   isPlainObject,
   mapIterator,
+  mapSequence,
   max,
   next,
   range,
