@@ -1,6 +1,6 @@
 "use strict";
 
-import isIterator from './isIterator';
+import delegate from './delegate';
 import {isSupported, serialize, deserialize} from './message';
 
 var delegateImplementation;
@@ -19,24 +19,13 @@ if (typeof global.Worker === 'function') {
     if (!serializable) {
       console.info(
         `At least one argument can't be serialized and sent to the worker. ` +
-        `We will run ${method} synchronously instead.`
+        `We will run ${method} in the same thread instead.`
       );
-      var jsnx = require('../');
-      return new Promise(function(resolve, reject) {
-        try {
-          var result = jsnx[method].apply(null, args);
-          if (isIterator(result)) {
-            result = Array.from(result);
-          }
-          resolve(result);
-        } catch(ex) {
-          reject(ex);
-        }
-      });
+      delegate(method, args);
     }
 
     return new Promise(function(resolve, reject) {
-      var worker = new global.Worker('{{BUNDLE_NAME}}');
+      var worker = new global.Worker('{{BUNDLE}}');
       worker.addEventListener("message", function (oEvent) {
         resolve(deserialize(oEvent.data));
       }, false);
@@ -47,27 +36,11 @@ if (typeof global.Worker === 'function') {
 }
 else {
   delegateImplementation = function(method, args) {
-    // @ifndef NODE
-    // We don't want to show this in Node.
     console.info(
       `Workers are not supported in this environment, so "${method}" will ` +
-      `be performed synchronously instead. This might block the environment.`
+      `run in the same thread instead. This might block the environment.`
     );
-    // @endif
-    var jsnx = require('../');
-    return new Promise(function(resolve, reject) {
-      try {
-        // We have to do the same here as we do in the worker, which is
-        // returning an array if we get back an iterator
-        var result = jsnx[method].apply(null, args);
-        if (isIterator(result)) {
-          result = Array.from(result);
-        }
-        resolve(result);
-      } catch(ex) {
-        reject(ex);
-      }
-    });
+    delegate(method, args);
   };
 }
 
@@ -77,9 +50,6 @@ else {
  * Tries to create a worker and pass the arguments to it. Copying large graphs
  * is not very fast, but still faster than running most algorithms
  * synchronously.
- *
- * NOTE: Currently only Graphs and DiGraphs are supported and no edge data is
- * sent to the worker.
  *
  * Falls back to synchronous execution if browser doesn't support workers.
  *

@@ -30,26 +30,34 @@
     "chai": "^1.9.1",
     "chai-as-promised": "^4.1.1",
     "chai-members-deep": "0.0.1",
-    "del": "^1.0.0",
-    "gulp": "^3.8.0",
-    "gulp-concat": "^2.4.1",
-    "gulp-header": "^1.2.2",
-    "gulp-mocha": "^2.0.0",
-    "gulp-plumber": "^0.6.6",
-    "gulp-preprocess": "^1.1.1",
-    "gulp-replace": "^0.5.0",
-    "gulp-uglify": "^1.0.2",
-    "gulp-watch": "^3.0.0",
+    "commoner": "^0.10.1",
+    "istanbul": "^0.3.5",
     "lodash": "^2.4.1",
-    "map-stream": "0.0.5",
-    "recast": "^0.9.1",
+    "mocha": "^2.0.1",
+    "recast": "^0.9.11",
     "sinon": "^1.11.1",
     "source-map-support": "^0.2.8",
     "through": "^2.3.6",
-    "vinyl-transform": "0.0.1",
-    "yargs": "^1.3.2"
+    "uglify-js": "^2.4.16"
+  },
+  "browser": {
+    "./jsnx/_internals/delegate.js": "./jsnx/_internals/delegateToWorker.js"
+  },
+  "browserify": {
+    "transform": [
+      "./transforms/es7"
+    ]
   },
   "scripts": {
-    "test": "gulp build-node-dev && gulp test-node"
+    "clean": "rm -rf node/ jsnetworkx.js jsnetworkx-dev.js",
+    "build:node": "npm run build:node:dev -- --prod",
+    "build:node:dev": "rm -rf node/ && node scripts/build-node.js jsnx/ node/",
+    "watch:node": "npm run build:node:dev -- -w",
+    "build:browser": "rm jsnetworkx.js && { 6to5-runtime; NODE_ENV=prod browserify -t [./transforms/replace --BUNDLE=jsnetworkx.js] jsnx/browser.js -s jsnx; } | uglifyjs -c -m -o jsnetworkx.js",
+    "build:browser:dev": "rm jsnetworkx-dev.js && { 6to5-runtime; browserify -t [./transforms/replace --BUNDLE=jsnetworkx-dev.js] jsnx/browser.js -d -s jsnx; } > jsnetworkx-dev.js",
+    "test": "npm run build:node:dev && mocha --ui exports -R progress -r './mocha/setup' `find node/ -name *-test.js`",
+    "test:fast": "mocha --ui exports -R progress -r './mocha/setup' `find node/ -name *-test.js`",
+    "watch:test": "npm test -- -b -w",
+    "cover": "npm run build:node && istanbul cover _mocha -x '**/__tests__/**' -x 'mocha/*' -- --ui exports -R progress -r './mocha/setup' `find node/ -name *-test.js`"
   }
 }

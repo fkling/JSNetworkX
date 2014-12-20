@@ -1,4 +1,4 @@
-# WIP - Convertion to ES6 and CJS modules
+# WIP - Convertion to ES6
 
 **Note:** If you are reading this, then you are looking at the WIP branch. This
 branch is unstable and only has the purpose to keep interested users up-to-date
@@ -10,81 +10,36 @@ branch.
 ## What is this branch about?
 
 This branch represents that part of JSNetworkX that has been converted to ES6 and
-CJS modules. It will eventually become master.
-
-### Why are you moving to ES6 and CJS modules?
-
-To simplify the code base, which is supposed to make it easier to understand and
-maintain the code base, which in turn makes it easier for others to contribute.
-
-The main problem is that this project has not enough contributers.
-
-Node.js became so popular over the last years that most JS devs will already be
-familiar with it.
-
-Every JS developer has to make themselves familiar with ES6 at some point. This
-is probably easier and more valuable than learning a specific framework (see next
-section).
-
-### What do you think lead to this situation?
-
-Using **Google Closure**. I think that the Google Closure Compiler is a great tool, but,
-together with the Closure library, it may not be the right tool for an OS project.
-I simply made the wrong choice back then.
-
-Contributing is more difficult because the contributer has to learn about
-the compiler, the library and all the specific rules to follow, to make the compiler
-work properly. It's difficult for a one person project to convince others to learn
-about it and use it.
-
-In addition, it requires you to install Java. One could make the same
-argument about Node.js, but, as a JavaScript developer, what is more likely to
-run on your machine already?
-
-**Python port**. Maybe there are fewer developers than I thougjt,  who
-a) know JavaScript, b) know Python, c) are interested in graph processing.
-
-### Priorities
-
-While the JSNetworkX has started with the intent to great a complete graph processing
-and visualization package, this may have been too ambitious of a goal. There are
-other projects dedicated to graph visualization only, which do a much better
-job at this.
-
-However, I don't think there is a complete graph *processing* package out there,
-so the main focus will be *feature completenes* with NetworkX (1.6 at least),
-and to work as a platform for other graph algorithms not included in NetworkX.
-
-Visualization will stay a part, but we should also explore options how to
-make it easy to use other visualization libraries with JSNetworkX.
+is independent from the Google Closure library.
+It will eventually become master.
 
 ### Next Steps
 
 - Phase 1: Convert existing stuff
   - [x] Convert helper functions and base (simple) graphs
-  - [ ] Convert generators
-  - [ ] Convert algorithms
-  - [ ] Convert multi graphs
+  - [x] Convert generators
+  - [x] Convert algorithms
+  - [x] Convert multi graphs
+  - [ ] Convert drawing methods
   - [ ] Publish version 0.3.0
 
 - Phase 2: Become feature complete and other improvements
   - Feature completeness
     - [ ] Implement missing algorithms
-    - [ ] Implement missing generators (are there any?)
+    - [ ] Implement missing generators
     - [ ] Implement missing utility functions
   - Improvements / new features
     - [ ] Evaluate how React could simplify the rendering process
-    - [ ] Async algorithm implementation (e.g. with web workers)
+    - [x] Async algorithm implementation (e.g. with web workers)
 
 ## How to contribute
 
 You can contribute by:
 
-- Converting existing code from the master branch to ES6 and CJS
 - Porting code from Python
+- Improve the documentation
 
-Porting from Python will become easier the more existing was converted. If you
-plan on converting/porting a specific part, please create an issue beforehand.
+If you plan on converting/porting a specific part, please create an issue beforehand.
 
 ### Build JSNetworkX
 
@@ -92,49 +47,62 @@ First install all dependencies via
 
     npm install
 
-You will also have to install `gulp`, the build system we use:
+#### Build for browser
 
-    npm install -g gulp
+    npm run build:browser
 
-Then you build a standalone, minified version of JSNetworkX, which can be used in
-the browser with
+creates `jsnetworkx.js`,  a minified version for production.
 
-    gulp build
+    npm run build:browser:dev
 
-A non-minified verison can be built with
+Creates `jsnetworkx-dev.js`, an unminified version with inline source maps for
+development.
 
-    gulp build-dev
+#### Build for node
 
-Because the code also has to be transformed to be able to run in Node.js,
+    npm run build:node
 
-    gulp node
+Transforms all modules to ES5 and saves them inside the `node/` directory.
 
-simply transforms all modules and saves them inside the `node/` directory. These
-modules are also used to tun the unit tests.
+   npm run build:node:dev
+
+Same as above but with inline source maps. These modules are also used to tun the unit tests.
+
+   npm run watch:node
+
+Incrementally transform modules when files change.
 
 ### Create and run tests
 
 Tests are stored in the respective `__tests__` directories and have to follow
 the naming convention `<testname>-test.js`. The tests can be run with
 
-    gulp test
-    # or
     npm test
+    # or
+    npm run test:fast
 
 This will run all tests by default. To consider only those files whose path
-matches a specific string, pass the `-p` option:
+matches a specific string, pass the `-g` option:
 
     # Runs all digraph tests but no graph tests
-    gulp test -p digraph
+    npm test:fast -- -g digraph
 
-The tests in Node, so you first have to build the Node version with
+The difference between `npm test` and `npm run test:fast` is that the former
+will always transplile all files from ES6 to ES5 first. This is slow and
+annoying during development. Therefore you can use
 
-    gulp node
+    npm run watch:node
 
-You can also only incrementally transform changed files via
-
-    gulp watch-node
+to automatically convert only the changed file and run `npm run test:fast` to
+quickly test them.
 
 Ideally, every module has corresponding unit test. If you port a module from Python, make sure to implement the same tests.
 
-Eventually we will add coverage and maybe performance tests.
+### Run coverage
+
+We use istanbul to generate a coverage report. We are not enforcing any coverage
+yet, but there should not be a regression. The report can be created via
+
+    npm run cover
+
+and written to `coverage/`.

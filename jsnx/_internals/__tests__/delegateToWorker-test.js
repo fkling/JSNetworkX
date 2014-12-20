@@ -1,10 +1,10 @@
 /*global assert, sinon */
 "use strict";
 
-import delegateToWorker from '../delegateToWorker';
+import delegate from '../delegate';
 import jsnx from '../../';
 
-export var testDelegateToWorker = {
+export var testDelegate = {
   beforeEach: function() {
     this.spy = jsnx.testFunction = sinon.spy();
   },
@@ -14,12 +14,12 @@ export var testDelegateToWorker = {
   },
 
   'it returns a promise': function() {
-    var promise = delegateToWorker('testFunction');
+    var promise = delegate('testFunction');
     assert.isFunction(promise.then);
   },
 
   'it passes the arguments to the delegated function': function() {
-    delegateToWorker('testFunction', ['foo', 'bar']);
+    delegate('testFunction', ['foo', 'bar']);
     assert(this.spy.calledWith('foo', 'bar'));
   },
 
@@ -27,7 +27,7 @@ export var testDelegateToWorker = {
     jsnx.testFunction = function() {
       return 'foo';
     };
-    var promise = delegateToWorker('testFunction', ['foo', 'bar']);
+    var promise = delegate('testFunction', ['foo', 'bar']);
     assert.becomes(promise, 'foo');
   },
 
@@ -35,7 +35,7 @@ export var testDelegateToWorker = {
     jsnx.testFunction = function() {
       throw new Error('some error');
     };
-    var promise = delegateToWorker('testFunction', ['foo', 'bar']);
+    var promise = delegate('testFunction', ['foo', 'bar']);
     assert.isRejected(promise, 'some error');
   }
 };
