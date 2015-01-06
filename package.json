@@ -52,7 +52,7 @@
   "scripts": {
     "clean": "rm -rf node/ jsnetworkx.js jsnetworkx-dev.js",
     "build:node": "rm -rf node/ && node scripts/build-node.js jsnx/ node/",
-    "build:node:dev": "npm run build:node -- --dev",
+    "build:node:dev": "rm -rf node/ && node scripts/build-node.js --dev jsnx/ node/",
     "watch:node": "npm run build:node:dev -- -w",
     "build:browser": "(export BUNDLE=jsnetworkx.js; rm -f $BUNDLE && { 6to5-runtime; browserify jsnx/browser.js -s jsnx; } | uglifyjs -cmo $BUNDLE)",
     "build:browser:dev": "(export BUNDLE=jsnetworkx-dev.js; rm -f $BUNDLE && { 6to5-runtime; NODE_ENV=dev browserify jsnx/browser.js -ds jsnx; } > $BUNDLE)",
