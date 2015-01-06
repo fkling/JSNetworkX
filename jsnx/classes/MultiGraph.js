@@ -1,6 +1,6 @@
 "use strict";
 
-import Graph from './graph';
+import Graph from './Graph';
 import JSNetworkXError from '../exceptions/JSNetworkXError';
 
 import {
@@ -754,7 +754,7 @@ export default class MultiGraph extends Graph {
    *      (u,v,data) and (v,u,data).
    */
   toDirected() {
-    var G = new require('./multidigraph')();
+    var G = new require('./MultiDiGraph')();
     G.addNodesFrom(this);
     for (var [u, nbrs] of this.adjacencyIter()) {
       for (var [v, keydict] of nbrs) {

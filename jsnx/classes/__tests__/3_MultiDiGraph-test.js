@@ -2,9 +2,9 @@
 "use strict";
 
 import BaseMultiDiGraphTester from './BaseMultiDiGraphTester';
-import MultiDiGraph from '../multidigraph';
+import MultiDiGraph from '../MultiDiGraph';
 import {JSNetworkXError} from '../../exceptions';
-import {TestMultiGraph} from './2_multigraph-test';
+import {TestMultiGraph} from './2_MultiGraph-test';
 
 var Map = utils.Map;
 

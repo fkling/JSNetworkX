@@ -3,7 +3,7 @@
 
 var Map = utils.Map;
 
-import Graph from '../../classes/graph';
+import {Graph} from '../../classes';
 
 import {
   completeGraph,

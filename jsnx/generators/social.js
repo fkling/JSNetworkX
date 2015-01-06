@@ -3,7 +3,7 @@
  * @fileoverview Famous social networkx
  */
 
-import Graph from '../classes/graph';
+import Graph from '../classes/Graph';
 
 import range from '../_internals/range';
 

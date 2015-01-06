@@ -1,7 +1,7 @@
 /*global assert*/
 "use strict";
 
-import DiGraph from '../../classes/digraph';
+import {DiGraph} from '../../classes';
 import JSNetworkXError from '../../exceptions/JSNetworkXError';
 
 import {havelHakimiGraph} from '../degreeSequence';

@@ -13,7 +13,7 @@
 export function prepCreateUsing(optCreateUsing) {
   var G;
   // can't use import statement because of circular dependency
-  var Graph = require('../classes/graph');
+  var Graph = require('../classes/Graph');
 
   if (optCreateUsing == null) {
     G = new Graph();

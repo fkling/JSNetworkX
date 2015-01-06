@@ -2,8 +2,8 @@
 "use strict";
 
 import BaseGraphTester from './BaseGraphTester';
-import Graph from '../graph';
-import DiGraph from '../digraph';
+import Graph from '../Graph';
+import DiGraph from '../DiGraph';
 /*jshint ignore:start*/
 var Map = utils.Map;
 /*jshint ignore:end*/

@@ -1,8 +1,8 @@
 /*jshint strict:false, node:true*/
 /*global utils, assert*/
 
-import Graph from '../graph';
-import DiGraph from '../digraph';
+import Graph from '../Graph';
+import DiGraph from '../DiGraph';
 /*jshint ignore:start*/
 var Map = utils.Map;
 /*jshint ignore:end*/

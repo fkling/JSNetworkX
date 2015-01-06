@@ -1,10 +1,10 @@
 /*global assert, utils*/
 "use strict";
 import BaseMultiGraphTester from './BaseMultiGraphTester';
-import {TestGraph} from './0_graph-test';
+import {TestGraph} from './0_Graph-test';
 import {KeyError, JSNetworkXError} from '../../exceptions';
 
-import MultiGraph from '../multigraph';
+import MultiGraph from '../MultiGraph';
 
 var Map = utils.Map;
 

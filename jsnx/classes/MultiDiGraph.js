@@ -1,7 +1,7 @@
 "use strict";
 
-import DiGraph from './digraph';
-import MultiGraph from './multigraph';
+import DiGraph from './DiGraph';
+import MultiGraph from './MultiGraph';
 import JSNetworkXError from '../exceptions/JSNetworkXError';
 
 
@@ -712,6 +712,7 @@ export default class MultiDiGraph extends DiGraph {
   }
 }
 
+// Simulate multiple inheritance by merging prototypes
 var proto = Object.assign({}, MultiDiGraph.prototype);
 Object.assign(MultiDiGraph.prototype, MultiGraph.prototype, proto);
 

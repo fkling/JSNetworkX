@@ -1,8 +1,7 @@
 /*globals assert, utils*/
 "use strict";
 
-import DiGraph from '../../classes/digraph';
-import Graph from '../../classes/graph';
+import {Graph, DiGraph} from '../../classes';
 import JSNetworkXError from '../../exceptions/JSNetworkXError';
 import JSNetworkXUnfeasible from '../../exceptions/JSNetworkXUnfeasible';
 

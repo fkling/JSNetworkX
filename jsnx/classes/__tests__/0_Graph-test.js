@@ -2,7 +2,7 @@
 /*global assert*/
 
 import BaseAttrGraphTester from './BaseAttrGraphTester';
-import Graph from '../graph';
+import Graph from '../Graph';
 /*jshint ignore:start*/
 var Map = utils.Map;
 /*jshint ignore:end*/

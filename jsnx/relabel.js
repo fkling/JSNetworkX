@@ -1,6 +1,6 @@
 'use strict';
 
-var DiGraph = require('./classes/digraph');
+var DiGraph = require('./classes/DiGraph');
 /*jshint ignore:start*/
 var Map = require('./_internals/Map');
 var Set = require('./_internals/Set');

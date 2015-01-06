@@ -1,6 +1,6 @@
 "use strict";
 
-import Graph from '../classes/graph';
+import Graph from '../classes/Graph';
 
 import {
   genCombinations,

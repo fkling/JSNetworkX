@@ -1,9 +1,9 @@
 'use strict';
 
-import Graph from './graph';
-import DiGraph from './digraph';
-import MultiGraph from './multigraph';
-import MultiDiGraph from './multidigraph';
+import Graph from './Graph';
+import DiGraph from './DiGraph';
+import MultiGraph from './MultiGraph';
+import MultiDiGraph from './MultiDiGraph';
 
 import functions from './functions';
 

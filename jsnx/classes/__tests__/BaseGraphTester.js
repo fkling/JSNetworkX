@@ -1,5 +1,5 @@
-/*jshint strict:false, node:true*/
 /*global assert */
+"use strict";
 
 /*jshint ignore:start*/
 var Map = utils.Map;

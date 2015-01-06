@@ -886,7 +886,7 @@ export default class Graph {
    * @export
    */
   toDirected() {
-    var G = new require('./digraph')();
+    var G = new require('./DiGraph')();
     G.name = this.name;
     G.addNodesFrom(this);
     G.addEdgesFrom((function*() {

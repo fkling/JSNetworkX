@@ -2,12 +2,12 @@
 /*global assert*/
 
 import BaseDiGraphTester from './BaseDiGraphTester';
-import DiGraph from '../digraph';
+import DiGraph from '../DiGraph';
 /*jshint ignore:start*/
 var Map = utils.Map;
 /*jshint ignore:end*/
 import JSNetworkXError from '../../exceptions/JSNetworkXError';
-import {TestGraph} from './0_graph-test';
+import {TestGraph} from './0_Graph-test';
 
 import _ from 'lodash-node';
 

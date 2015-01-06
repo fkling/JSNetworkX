@@ -1,7 +1,7 @@
 "use strict";
 
-import DiGraph from '../classes/digraph';
-import Graph from '../classes/graph';
+import DiGraph from '../classes/DiGraph';
+import Graph from '../classes/Graph';
 
 import {
   completeGraph,
