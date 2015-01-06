@@ -364,9 +364,7 @@ export default class Graph {
    * @export
    */
   addEdge(u, v, optAttrDict) {
-    optAttrDict = optAttrDict || {};
-
-    if (!isPlainObject(optAttrDict)) {
+    if (optAttrDict && !isPlainObject(optAttrDict)) {
       throw new JSNetworkXError('The attr_dict argument must be an object.');
     }
 

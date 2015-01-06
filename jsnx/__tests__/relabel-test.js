@@ -1,7 +1,7 @@
 /*globals assert*/
 "use strict";
 
-import {Graph, DiGraph} from '../classes/';
+import {Graph, DiGraph, MultiGraph, MultiDiGraph} from '../classes';
 import {JSNetworkXError} from '../exceptions';
 
 import relabel from '../relabel';
@@ -91,31 +91,27 @@ export var testRelabel = {
     assert.deepEqual(H.nodes().sort(), ['aardvark', 'bear', 'cat', 'dog']);
   },
 
-  /* TODO MultiGraph
-  test_relabel_nodes_multigraph: function() {
-    var G = MultiGraph([['a', 'b'], ['a', 'b']]);
+  testRelabelNodesMultigraph: function() {
+    var G = new MultiGraph([['a', 'b'], ['a', 'b']]);
     var mapping = {'a': 'aardvark','b': 'bear'};
-    var H = relabel_nodes(G, mapping, false);
+    var H = relabel.relabelNodes(G, mapping, false);
     assert.deepEqual(H.nodes().sort(), ['aardvark', 'bear']);
     assert.deepEqual(
       H.edges().sort(),
       [['aardvark', 'bear'], ['aardvark', 'bear']]
     );
   },
-  */
 
-  /* TODO MultiDiGraph
-  test_relabel_nodes_multidigraph: function() {
-    var G = MultiDiGraph([['a', 'b'], ['a', 'b']]);
+  testRelabelNodesMultidigraph: function() {
+    var G = new MultiDiGraph([['a', 'b'], ['a', 'b']]);
     var mapping = {'a': 'aardvark','b': 'bear'};
-    var H = relabel_nodes(G, mapping, false);
+    var H = relabel.relabelNodes(G, mapping, false);
     assert.deepEqual(H.nodes().sort(), ['aardvark', 'bear']);
     assert.deepEqual(
       H.edges().sort(),
       [['aardvark', 'bear'], ['aardvark', 'bear']]
     );
   },
-  */
 
   testRelabelNodesMissing: function() {
     var G = new Graph([['A', 'B'], ['A', 'C'], ['B', 'C'], ['C', 'D']]);
@@ -126,5 +122,5 @@ export var testRelabel = {
     );
   }
 
-  //TODO: test_relabel_nodes_topsort
+  //TODO: testRelabelNodesTopsort
 };

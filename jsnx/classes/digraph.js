@@ -262,7 +262,7 @@ export default class DiGraph extends Graph {
   addEdge(u, v, optAttrDict={}) {
     if (!isPlainObject(optAttrDict)) {
       throw new JSNetworkXError(
-        'The top_attr_dict argument must be a plain object.'
+        'The optAttrDict argument must be a plain object.'
       );
     }
 
@@ -585,18 +585,16 @@ export default class DiGraph extends Graph {
 
   /**
    * @see #edges_iter
-   * @export
    */
-  get outEdgesIter() {
-    return this.edgesIter;
+  outEdgesIter(optNbunch, optData) {
+    return this.edgesIter(optNbunch, optData);
   }
 
   /**
    * @see Graph#edges
-   * @export
    */
-  get outEdges() {
-    return this.edges;
+  outEdges(optNbunch, optData) {
+    return this.edges(optNbunch, optData);
   }
 
   /**

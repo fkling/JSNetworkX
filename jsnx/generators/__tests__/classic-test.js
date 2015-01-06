@@ -1,7 +1,7 @@
 /*global assert*/
 'use strict';
 
-import DiGraph from '../../classes/digraph';
+import {MultiGraph, DiGraph} from '../../classes';
 /*jshint ignore:start*/
 var Map = utils.Map;
 /*jshint ignore:end*/
@@ -9,7 +9,11 @@ var Map = utils.Map;
 import classic from '../classic';
 import {degreeHistogram} from '../../classes/functions';
 
-export var generatorClassic = {
+function sorted(v) {
+  return Array.from(v).sort();
+}
+
+export var testGeneratorClassic = {
 
   testBalancedTree: function() {
     [[2,2],[3,3],[6,2]].forEach(([r, h]) => {
@@ -83,10 +87,8 @@ export var generatorClassic = {
         assert.equal(G.numberOfEdges(), Math.floor(m*(m-1) / 2));
     });
 
-    /* TODO MultiGraph
-    var mg = complete_graph(5, new MultiGraph());
-    assert.deepEqual(mg.edges(), g.edges());
-    */
+    var MG = classic.completeGraph(5, new MultiGraph());
+    assert.deepEqual(MG.edges(), G.edges());
   },
 
 
@@ -107,10 +109,8 @@ export var generatorClassic = {
     var G = classic.cycleGraph(4);
     assert.deepEqual(G.edges(), [[0,1],[0,3],[1,2],[2,3]]);
 
-    /* TODO MultiGraph
-    var mG = classic.cycle_graph(4, new MultiGraph());
+    var mG = classic.cycleGraph(4, new MultiGraph());
     assert.deepEqual(sorted(mG.edges()), [[0,1],[0,3],[1,2],[2,3]]);
-    */
 
     G = classic.cycleGraph(4, new DiGraph());
     assert.equal(G.hasEdge(2,1), false);
@@ -134,14 +134,12 @@ export var generatorClassic = {
     assert.equal(G.name, 'emptyGraph(42)');
     assert.equal(G instanceof DiGraph, true);
 
-    /* TODO MultiGraph
     // create empty multigraph
-    G = empty_graph(42, new MultiGraph(null, {name: 'duh'}));
-    assert.equal(number_of_nodes(G), 42);
-    assert.equal(number_of_edges(G), 0);
-    assert.equal(G.name(), 'empty_graph(42)');
+    G = classic.emptyGraph(42, new MultiGraph(null, {name: 'duh'}));
+    assert.equal(G.numberOfNodes(), 42);
+    assert.equal(G.numberOfEdges(), 0);
+    assert.equal(G.name, 'emptyGraph(42)');
     assert.equal(G instanceof MultiGraph, true);
-    */
 
     /* TODO: peterson_graph
     // create empty graph from another
@@ -164,10 +162,9 @@ export var generatorClassic = {
     var DG = classic.grid2dGraph(n, m, false, new DiGraph());
     assert.deepEqual(DG.succ, G.adj);
     assert.deepEqual(DG.pred, G.adj);
-    /* TODO MultiGraph
-    var MG = grid_2d_graph(n, m, false, MultiGraph());
+    debugger;
+    var MG = classic.grid2dGraph(n, m, false, new MultiGraph());
     assert.deepEqual(MG.edges(), G.edges());
-    */
   },
 
   //TODO: test_grid_graph
