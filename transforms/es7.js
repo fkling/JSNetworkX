@@ -5,9 +5,9 @@ var path = require('path');
 var through = require('through');
 var to5 = require('6to5');
 
-function jstransform(src, prod, options) {
+function jstransform(src, dev, options) {
   options = options || {};
-  if (!prod) {
+  if (dev) {
     options = _.assign({
       sourceMap: 'inline',
     }, options);
@@ -34,7 +34,7 @@ module.exports = function(filepath) {
     /*jshint validthis:true*/
     var code = jstransform(
       data,
-      process.env.NODE_ENV === 'prod',
+      process.env.NODE_ENV === 'dev',
       {
         filename: path.relative('./', filepath),
         experimental: true,
@@ -50,7 +50,7 @@ module.exports = function(filepath) {
 module.exports.transform = function(path, source, options) {
   return jstransform(
     source,
-    options.prod,
+    options.dev,
     {
       filename: path,
       experimental: true,

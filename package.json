@@ -25,7 +25,7 @@
     "tiny-sprintf": "^0.3.0"
   },
   "devDependencies": {
-    "acorn-6to5": "git://github.com/6to5/acorn-6to5",
+    "acorn-6to5": "^0.11.1-11",
     "browserify": "^7.0.0",
     "chai": "^1.9.1",
     "chai-as-promised": "^4.1.1",
@@ -45,16 +45,17 @@
   },
   "browserify": {
     "transform": [
-      "./transforms/es7"
+      "./transforms/es7",
+      "./transforms/replace"
     ]
   },
   "scripts": {
     "clean": "rm -rf node/ jsnetworkx.js jsnetworkx-dev.js",
-    "build:node": "npm run build:node:dev -- --prod",
-    "build:node:dev": "rm -rf node/ && node scripts/build-node.js jsnx/ node/",
+    "build:node": "rm -rf node/ && node scripts/build-node.js jsnx/ node/",
+    "build:node:dev": "npm run build:node -- --dev",
     "watch:node": "npm run build:node:dev -- -w",
-    "build:browser": "rm jsnetworkx.js && { 6to5-runtime; NODE_ENV=prod browserify -t [./transforms/replace --BUNDLE=jsnetworkx.js] jsnx/browser.js -s jsnx; } | uglifyjs -c -m -o jsnetworkx.js",
-    "build:browser:dev": "rm jsnetworkx-dev.js && { 6to5-runtime; browserify -t [./transforms/replace --BUNDLE=jsnetworkx-dev.js] jsnx/browser.js -d -s jsnx; } > jsnetworkx-dev.js",
+    "build:browser": "(export BUNDLE=jsnetworkx.js; rm -f $BUNDLE && { 6to5-runtime; browserify jsnx/browser.js -s jsnx; } | uglifyjs -cmo $BUNDLE)",
+    "build:browser:dev": "(export BUNDLE=jsnetworkx-dev.js; rm -f $BUNDLE && { 6to5-runtime; NODE_ENV=dev browserify jsnx/browser.js -ds jsnx; } > $BUNDLE)",
     "test": "npm run build:node:dev && mocha --ui exports -R progress -r './mocha/setup' `find node/ -name *-test.js`",
     "test:fast": "mocha --ui exports -R progress -r './mocha/setup' `find node/ -name *-test.js`",
     "watch:test": "npm test -- -b -w",

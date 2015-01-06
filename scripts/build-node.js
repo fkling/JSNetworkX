@@ -8,12 +8,12 @@ require('commoner').version(
 ).resolve(function(id) {
   return this.readModuleP(id);
 }).option(
-  '--prod',
-  'Create a producation verison (no source maps)'
+  '--dev',
+  'Include inline source maps'
 ).process(function(id, source) {
   return transform(
     path.join(this.options.sourceDir, id),
     source,
-    {prod: this.options.prod}
+    {dev: this.options.dev}
   );
 });
