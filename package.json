@@ -38,7 +38,8 @@
     "sinon": "^1.11.1",
     "source-map-support": "^0.2.8",
     "through": "^2.3.6",
-    "uglify-js": "^2.4.16"
+    "uglify-js": "^2.4.16",
+    "watchify": "^2.2.1"
   },
   "browser": {
     "./jsnx/_internals/delegate.js": "./jsnx/_internals/delegateToWorker.js"
@@ -56,6 +57,7 @@
     "watch:node": "npm run build:node:dev -- -w",
     "build:browser": "(export BUNDLE=jsnetworkx.js; rm -f $BUNDLE && { 6to5-runtime; browserify jsnx/browser.js -s jsnx; } | uglifyjs -cmo $BUNDLE)",
     "build:browser:dev": "(export BUNDLE=jsnetworkx-dev.js; rm -f $BUNDLE && { 6to5-runtime; NODE_ENV=dev browserify jsnx/browser.js -ds jsnx; } > $BUNDLE)",
+    "watch:browser": "(export BUNDLE=jsnetworkx-dev.js; rm -f $BUNDLE && 6to5-runtime > runtime.js && NODE_ENV=dev watchify jsnx/browser.js -vds jsnx -o $BUNDLE)",
     "test": "npm run build:node:dev && mocha --ui exports -R progress -r './mocha/setup' `find node/ -name *-test.js`",
     "test:fast": "mocha --ui exports -R progress -r './mocha/setup' `find node/ -name *-test.js`",
     "watch:test": "npm test -- -b -w",
