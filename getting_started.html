@@ -26,36 +26,16 @@ css: [prettify, getting_started]
 &lt;script src="jsnetworkx.js"&gt;&lt;/script&gt;
 </pre>
 <p>
-There are several <a href="https://github.com/fkling/JSNetworkX/blob/master/dist/">other versions</a> for you to choose from. These
-are:</p>
-<ul>
-  <li>
-    <code>jsnetworkx-base.js</code>: Contains only graph classes and utility functions, no algorithms, graph generators, visualization etc.
-  </li>
-  <li>
-    <code>jsnetworkx-drawing.js</code>: Like the base version, but with visualization.
-  </li>
-  <li>
-    <code>jsnetworkx-node.js</code>: A special Node.js version with all modules but without visualization.
-  </li>
-</ul>
-
-<div class="alert alert-info">
-<strong>Note</strong> Even though the "base" version does not include 
-algorithms explicitly, some might be included due to internal dependencies.
-</div>
-
-<p>
 If you want to <a href="https://github.com/fkling/JSNetworkX/wiki/Drawing-graphs">visualize graphs</a>, 
 you have to include <a href="http://d3js.org/">D3.js</a> as well.<br>
 </p>
 
 <h3>Node.js</h3>
 
-<p>Install JSNetworkX with</p>
+<p>Install JSNetworkX with npm</p>
 
 <pre class="prettyprint linenums">
-npm install <span class="nocode">https://github.com/fkling/JSNetworkX.git</span>
+npm install jsnetworkx
 </pre>
 
 <p>and import it in your application</p>
@@ -63,9 +43,15 @@ npm install <span class="nocode">https://github.com/fkling/JSNetworkX.git</span>
 var jsnx = require('jsnetworkx');
 </pre>
 
-<p>The package will be made available as official node module once it reaches a certain level of completeness.</p>
-</section>
-<section id="create">
+<h3>Environment</h3>
+
+JSNetworkX makes heavy use of upcoming ES2015 features, such as iterators. If
+possible, write your code in ES2015 as well, and
+<a href="https://babeljs.io/">transpile</a> it to ES5. If that's not possible,
+you can at least <a hread="https://github.com/zloirock/core-js">polyfill</a>
+certain standard functions, such as <code>Array.from</code>, which allows you
+to easily convert an iterable to an array.
+
 <h2 class="page-header">Create a graph</h2>
   <p><em>If you are already familiar with NetworkX, then most of the following 
   information will already be familiar to you. Most (if not all) method and function names are the same as in NetworkX.</em></p>
@@ -81,24 +67,28 @@ the module to.
 <ol>
   <li>By calling the <code>Graph</code> constructor or one of its subclasses (<code>DiGraph</code>, <code>MultiGraph</code> or <code>MultiDiGraph</code>).</li>
   <li>By transforming an existing graph into a new graph, for example by creating 
-  a subgraph with <code>G.subgraph</code> or convert an undirected graph to a directed one (<code>G.to_directed</code>).</li>
-  <li>With a graph generator, such as <code>complete_graph().</code></li>
+  a subgraph with <code>G.subgraph</code> or convert an undirected graph to a directed one (<code>G.toDirected</code>).</li>
+  <li>With a graph generator, such as <code>completeGraph().</code></li>
 </ol>
 
 <p>Here are some examples:</p>
 <pre class="prettyprint linenums">
 // This creates a new empty, undirected graph
 var G = new jsnx.Graph();
-// you can even omit the `new` keyword
-var G = jsnx.Graph();
 
 // Generates a complete graph with six nodes
-var G = jsnx.complete_graph(6);
+var G = jsnx.completeGraph(6);
 
 // Generates a random graph with six nodes and
 // an edge between each node is created with a probability of 0.3
-var G = jsnx.binomial_graph(6, 0.3);
+var G = jsnx.binomialGraph(6, 0.3);
 </pre>
+
+<div class="alert alert-warning">
+  <h4><span class="label label-warning">v0.3.0</span> API changes</h4>
+  Prior to v0.3.0 all functions and graph methods followed underscore naming convention
+  (i.e. <code>jsnx.binomial_graph(...)</code>) instead of camelCase.
+</div>
 
 <p>JSNetworkX provides support for four types of graphs: 
 <a href="http://en.wikipedia.org/wiki/Undirected_graph#Undirected_graph">undirected graphs</a> ( <code>Graph</code>),
@@ -115,16 +105,16 @@ structure of the graph.
   <p>Once you obtained a graph, you can modify it, by adding or removing nodes and edges, or access node and edge information.</p>
 
   <h4>Adding and removing nodes</h4>
-  <p>Single nodes can be added with <code>G.add_node</code> and a collection 
-  of nodes with <code>G.add_nodes_from</code>. Typically the collection will 
+  <p>Single nodes can be added with <code>G.addNode</code> and a collection 
+  of nodes with <code>G.addNodesFrom</code>. Typically the collection will 
   be an array, but it could be another graph as well, or any node collection
   returned by another library function.<br>
   Lets have a look at an example and let us print the nodes:
   </p>
 <pre class="prettyprint linenums" data-example="run" data-draw="true">
-var G = jsnx.Graph();
-G.add_node(1);
-G.add_nodes_from([3, 5, 7, 11]);
+var G = new jsnx.Graph();
+G.addNode(1);
+G.addNodesFrom([3, 5, 7, 11]);
 console.log(G.nodes());
 // shows [1, 3, 5, 7, 11] -- v0.2.0
 // shows ["1", "3", "5", "7", "11"] -- v0.1.1 and below
@@ -132,24 +122,11 @@ console.log(G.nodes());
 <p><code>G.nodes</code> returns an array nodes, which shows us that the graph 
 now has four nodes, namely 1, 3, 5 and 7.
 </p>
-<div class="alert alert-info">
-  <span class="label label-info">v0.2.2</span> 
-  As of version 0.2.0, JSNetworkX supports multiple data types as node values.
-  See <a href="documentation.html#node_values">Concepts: Node values</a>.
-</div>
-<div class="alert alert-info">
-  <span class="label label-info">v0.1.1</span> 
-  You will notice that the array of nodes consists of <em>strings</em> although we 
-  added <em>numbers</em>. This is a limitation the library had. Any value you 
-  pass as node will be converted to a string. This should generally not be a
-  problem if you know what data you are working with.
-</div>
-
-<p>Removing nodes is as simple as adding them. You can use either <code>G.remove_node</code>
-or <code>G.remove_nodes_from </code>. 
+<p>Removing nodes is as simple as adding them. You can use either <code>G.removeNode</code>
+or <code>G.removeNodesFrom</code>. 
 
 <pre class="prettyprint linenums" data-example="run" data-draw="update" data-depends="0">
-G.remove_node(11); // same as G.remove_node("5");
+G.removeNode(11); // same as G.removeNode("5");
 console.log(G.nodes());
 // shows [1, 3, 5, 7] -- v0.2.0
 // shows ["1", "3", "5", "7"] -- v0.1.1 and below
@@ -159,17 +136,17 @@ console.log(G.nodes());
 </div>
 <h4>Adding and removing edges</h4>
 <p>Adding and removing edges works pretty much the same way, with the methods 
-<code>G.add_edge</code> which accepts two nodes as arguments, and 
-<code>G.add_edges_from</code> which accepts a list of 2-tuples (arrays).
+<code>G.addEdge</code> which accepts two nodes as arguments, and 
+<code>G.addEdgesFrom</code> which accepts a list of 2-tuples (arrays).
 </p>
 <div class="alert alert-info">
   <strong>Info:</strong> If you add an edge between non-existing nodes, the nodes
   will automatically be created.
 </div>
 <pre class="prettyprint linenums" data-example="run" data-draw="update" data-depends="1">
-G.add_edge(1,3);
-G.add_edge(3,1); // does not do anything in undirected graphs
-G.add_edges_from([[1,5], [1,7], [7,3], [7,9]]); // node 9 does not exist!
+G.addEdge(1,3);
+G.addEdge(3,1); // does not do anything in undirected graphs
+G.addEdgesFrom([[1,5], [1,7], [7,3], [7,9]]); // node 9 does not exist!
 console.log(G.nodes());
 // shows [1, 3, 5, 7, 9] -- v0.2.0
 // shows ["1", "3", "5", "7", "9"] -- v0.1.1 and below
@@ -178,13 +155,13 @@ console.log(G.edges());
 // shows [["1", "3"], ["1", "5"], ["1", "7"], ["7", "3"], ["7", "9"]] -- v0.1.1 and below
 </pre>
 <p>
-Edges are removed with <code>G.remove_edge</code> and <code>G.remove_edges_from</code>.
+Edges are removed with <code>G.removeEdge</code> and <code>G.removeEdgesFrom</code>.
 </p>
 <pre class="prettyprint linenums" data-example="run" data-draw="update" data-depends="2">
-G.remove_edge(5,1); // or G.remove_edge(1,5);
-G.remove_edges_from([[9,7], [7,1]]);
+G.removeEdge(5,1); // or G.removeEdge(1,5);
+G.removeEdgesFrom([[9,7], [7,1]]);
 // Removing a node removes its connected edges as well
-G.remove_node(3);
+G.removeNode(3);
 console.log(G.nodes());
 // shows [1, 5, 7, 9] -- v0.2.0
 // shows ["1", "5", "7", "9"] -- v0.1.1 and below
@@ -198,33 +175,33 @@ console.log(G.edges());
   to nodes and edges and of course JSNetworkX allows you to do this too.</p>
 
   <h4>New nodes, edges</h4>
-  <p><code>G.add_node</code>
+  <p><code>G.addNode</code>
   accepts an object as second argument. Its properties will be the node's 
-  attributes. Similarly, <code>G.add_nodes_from</code> accepts a list of 
+  attributes. Similarly, <code>G.addNodesFrom</code> accepts a list of 
   <strong>2-tuples</strong>, where the first element is the node, and the second 
   element is a data object.  It also accepts an object as second argument. 
   Attributes passed through this object will be added to all nodes.
   </p>
 <pre class="prettyprint linenums">
-var G = jsnx.Graph();
-// Adds a new node, 10, with the attribute {some_data: 42}
-G.add_node(10, {some_data: 42});
+var G = new jsnx.Graph();
+// Adds a new node, 10, with the attribute {someData: 42}
+G.addNode(10, {someData: 42});
 
 // Adds the nodes, "foo" and "bar", with individual attributes and 
 // attributes for both nodes
-G.add_nodes_from([['foo', {size: 5}], ['bar', {size: 10}]], {color: 'blue'});
+G.addNodesFrom([['foo', {size: 5}], ['bar', {size: 10}]], {color: 'blue'});
 
 // Passing `true` to `G.nodes` changes the return value to include the attributes for each node
 console.log(G.nodes(true));
 // shows
 // [
-//    [10,{"some_data":42}],
+//    [10,{"someData":42}],
 //    ["foo",{"color":"blue","size":5}],
 //    ["bar",{"color":"blue","size":10}]
 // ]
 </pre>
-<p>It works the same for edges: <code>G.add_edge</code> accepts an object as third
-argument and <code>G.add_edges_from</code> a list of 3-tuples, where the first two
+<p>It works the same for edges: <code>G.addEdge</code> accepts an object as third
+argument and <code>G.addEdgesFrom</code> a list of 3-tuples, where the first two
 elements are nodes and the third one is an attributes object.</p>
 
 <h4>Existing nodes, edges</h4>
@@ -234,9 +211,9 @@ or access the nodes (edges) via the graphs <code>G.node</code> (<code>G.adj</cod
 properties.
 </p>
 <pre class="prettyprint linenums">
-var G = jsnx.Graph();
-G.add_nodes_from([0,1]);
-G.add_edge(0,1);
+var G = new jsnx.Graph();
+G.addNodesFrom([0,1]);
+G.addEdge(0,1);
 
 G.node.get(0).foo = 'bar';
 // G.node[0].foo = 'bar';  // v0.1.1 and below
@@ -253,13 +230,6 @@ console.log(G.edges(true));
   You should <strong>not</strong> directly modify the <code>G.nodes</code> or <code>G.adj</code> 
   properties, since this can lead to inconsistency within the graph.
 </div>
-<div class="alert alert-warning">
-  <h4><span class="label label-warning">v0.2.0</span> API changes</h4>
-  <p>In order to support generic node values, the <code>G.nodes</code>, 
-  <code>G.adj</code> and other related properties are not  simple objects anymore.
-  They are instances of <code>jsnx.contrib.Map</code>.
-  </p>
-</div>
 
 <h4>What is this data useful for?</h4>
 <p>That is really up to your use case. For example, if you are modeling a social
@@ -272,20 +242,20 @@ nodes and edges in a visualization. This will be explained later, but here is
 already a short example of how this can look like:
 </p>
 <pre class="prettyprint linenums" data-example="run" data-draw="false">
-var G = jsnx.Graph();
-G.add_nodes_from([
+var G = new jsnx.Graph();
+G.addNodesFrom([
     [1, {color: 'red'}],
     [2, {color: 'green'}],
     [3, {color: 'white'}]
 ]);
 
-G.add_edges_from([[1,2], [1,3]]);
+G.addEdgesFrom([[1,2], [1,3]]);
 
 // `jsnx.draw` accept a graph and configuration object
 jsnx.draw(G, {
   element: '#demo-canvas',
-  with_labels: true,
-  node_style: {
+  withLabels: true,
+  nodeStyle: {
       fill: function(d) {
           return d.data.color;
       }
@@ -310,19 +280,19 @@ jsnx.draw(G, {
   </p>
 <pre class="prettyprint linenums" data-example="run" data-draw="false">
 // This is a graph generator
-var G = jsnx.cycle_graph(6);
+var G = jsnx.cycleGraph(6);
 // Compute the shortest path between 0 and 4
-var path = jsnx.bidirectional_shortest_path(G, 0, 4);
+var path = jsnx.bidirectionalShortestPath(G, 0, 4);
 // A simple way to color all nodes in the path:
-G.add_nodes_from(path, {color: '#FFF'});
+G.addNodesFrom(path, {color: '#FFF'});
 // Color the start and end differently
 G.node.get(0).color = '#0F0'; // start is green
 G.node.get(4).color = '#F00'; // end is red
 
 jsnx.draw(G, {
   element: '#demo-canvas',
-  with_labels: true,
-  node_style: {
+  withLabels: true,
+  nodeStyle: {
     fill: function(d) {
       return d.data.color || '#AAA'; // any node without color is gray
     }
@@ -331,7 +301,7 @@ jsnx.draw(G, {
 </pre>
 </section>
 <section id="drawing">
-  <h2 class="page-header">Drawing graphs</h2>
+  <h2 class="page-header">Drawing graphs (browser only)</h2>
   <div class="alert alert-info">
   <strong>Info</strong> 
   The drawing API is not finalized yet and will be extended greatly to make it
@@ -375,11 +345,11 @@ jsnx.draw(G, options [, update]);
  can explicitly set the dimensions by specifying the <code>width</code> and
  <code>height</code> options.
  </p>
- <p>The most interesting options are probably <code>node_style</code>,
- <code>node_attr</code>, <code>edge_style</code> and <code>edge_attr</code>, which
+ <p>The most interesting options are probably <code>nodeStyle</code>,
+ <code>nodeAttr</code>, <code>edgeStyle</code> and <code>edgeAttr</code>, which
  with you can specify the look of nodes and edges. Since the graph is drawn
- with SVG elements, the <code>*_style</code> options should hold values for 
- CSS properties and the <code>*_attr</code> options values for element attributes.
+ with SVG elements, the <code>*Style</code> options should hold values for 
+ CSS properties and the <code>*Attr</code> options values for element attributes.
  If you are not very familiar with SVG, have a look at the <a href="https://developer.mozilla.org/en/docs/SVG">MDN SVG documentation</a>.
  The options are explained in greater detail in the next section.
  </p>
@@ -410,19 +380,19 @@ jsnx.draw(G, options [, update]);
   property to draw the nodes in different sizes. The nodes are drawn as 
   <code>&lt;circle&gt;</code> SVG elements and the radius is controlled by the
   elements <code>r</code> <strong>attribute</strong>. Hence we have to use the
-  <code>node_attr</code> option.
+  <code>nodeAttr</code> option.
 </p>
 <pre class="prettyprint linenums" data-example="run" data-draw="false">
-var G = jsnx.Graph();
-G.add_node(1, {count: 12});
-G.add_node(2, {count: 8});
-G.add_node(3, {count: 15});
-G.add_edges_from([[1,2],[2,3]]);
+var G = new jsnx.Graph();
+G.addNode(1, {count: 12});
+G.addNode(2, {count: 8});
+G.addNode(3, {count: 15});
+G.addEdgesFrom([[1,2],[2,3]]);
 
 jsnx.draw(G, {
   element: '#demo-canvas',
-  with_labels: true,
-  node_attr: {
+  withLabels: true,
+  nodeAttr: {
     r: function(d) {
       // `d` has the properties `node`, `data` and `G`
       return d.data.count;

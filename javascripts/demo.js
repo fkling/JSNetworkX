@@ -7,8 +7,8 @@
   var canvas = document.getElementById('demo-canvas');
   var draw_config = {
     element: canvas,
-    with_labels: true,
-    pan_zoom: {
+    withLabels: true,
+    panZoom: {
       enabled: false
     }
   };

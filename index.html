@@ -22,32 +22,12 @@ server-side, and to provide an easy way to visualize graphs in the
 browser.
 </p>
 <div class="download text-center">
-<a class="btn btn-success btn-large" href="https://raw.github.com/fkling/JSNetworkX/v0.2.0/jsnetworkx.js">Download v0.2.0</a>
+<a class="btn btn-success btn-large" href="https://raw.github.com/fkling/JSNetworkX/v0.3.0/jsnetworkx.js">Download v0.3.0</a>
 <br>
 <small>
   <a href="https://raw.github.com/fkling/JSNetworkX/master/jsnetworkx.js">Latest</a> |
   <a href="https://github.com/fkling/JSNetworkX">GitHub</a>
 </small>
-</div>
-<div class="alert alert-block">
-  <h4>Important!</h4>
-  JSNetworkX currently undergoes a major rewrite (v0.3). This will (hopefully)
-  make it easier for others to contribute and to maintain the library. Some of
-  the upcoming features / changes will be:
-  <ul>
-    <li>Node.js first: JSNetworkX will follow CommonJS module syntax and thus
-      make it very easy to be used with Node.js.</li>
-    <li>Web worker support in browsers: Browsers don't allow scripts to run for
-      a long time, however some graph algorithms take some time. To solve this,
-      JSNetworkX will allow to use <a href="http://www.html5rocks.com/en/tutorials/workers/basics/">web workers</a>
-      to do the heavy computations.</li>
-    <li>Changed API conventions: We are changing from <code>this_naming_convention</code> to
-      <code>thisNamingConvention</code>, which is more popular in the JS community.</li>
-    <li>API documentation: We'll finally have automatic code API documentation.</li>
-  </ul>
-  <p>To find out more about the progress, have a look at the <a href="https://github.com/fkling/JSNetworkX/milestones/v0.3:%20Conversion%20to%20ES6%20and%20CSJ%20modules,%20new%20API">issue tracker</a>
-  and the <a href="https://github.com/fkling/JSNetworkX/tree/es6_WIP">development branch</a>. The plan is to publish
-  prerelease versions to npm as soon as the API documentation process works and the methods are renamed.
 </div>
 <div class="alert alert-block">
   <h4>Note</h4>
@@ -70,10 +50,9 @@ browser.
 <p>JSNetworkX and this website make use of various libraries and tools and we want to hereby thank them:</p>
 <ul>
   <li><a href="http://networkx.github.com/">NetworkX</a> &mdash; it all started with this library</li>
-  <li><a href="https://developers.google.com/closure/">Google Closure Tools</a> &mdash; toolkit, compiler</li>
+  <li><a href="http://babeljs.io/">Babel</a> &mdash; JS transpiler</li>
+  <li><a href="http://browserify.org/">browserify</a> &mdash; bundler</li>
   <li><a href="http://visionmedia.github.io/mocha/">mocha</a> &mdash; testing framework</li>
-  <li><a href="http://gruntjs.com/">Grunt</a> &mdash; build tool</li>
-  <li><a href="http://nodejs.org/">Node.js</a> &mdash; build environment</li>
   <li><a href="http://d3js.org/">D3.js</a> &mdash; graph visualization</li>
 </ul>
 <ul>
@@ -81,7 +60,6 @@ browser.
   <li><a href="http://jquery.com/">jQuery</a> &mdash; website toolkit</li>
   <li><a href="https://code.google.com/p/google-code-prettify/">Google Code Prettify</a> &mdash; syntax highlighter</li>
   <li><a href="https://github.com/">Github</a> &mdash; website and code hosting</li>
-  <li><a href="https://www.heroku.com/">Heroku</a> &mdash; custom build service provider
   </li>
 </ul>
 </div>

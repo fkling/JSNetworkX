@@ -9,12 +9,12 @@ var examples = (function() {
   return [
     function(cb) {
       var n = random(3, 8);
-      var G = jsnx.complete_graph(n);
+      var G = jsnx.completeGraph(n);
       cb(
         G,
         'Complete graph (nodes: ' + n + ')',
         {
-          layout_attr: {
+          layoutAttr: {
             charge: -120,
             linkDistance: 100
           }
@@ -24,23 +24,23 @@ var examples = (function() {
     function(cb) {
       var r = random(2, 6);
       var c = random(2, 6);
-      var G = jsnx.grid_2d_graph(r, c);
+      var G = jsnx.grid2dGraph(r, c);
       cb(G, 'Grid 2d graph (rows: ' + r + ', columns: ' + c + ')');
     },
     function(cb) {
       var n = random(4, 20);
-      var G = jsnx.cycle_graph(n);
+      var G = jsnx.cycleGraph(n);
       cb(G, 'Cycle graph (nodes: ' + n + ')');
     },
     function(cb) {
       var b = random(2,5);
       var n = random(5, 20);
-      var G = jsnx.full_rary_tree(b, n);
+      var G = jsnx.fullRaryTree(b, n);
       cb(
         G,
         'Full rary tree (branch factor: ' + b + ', nodes: ' + n + ')',
         {
-          layout_attr: {
+          layoutAttr: {
             charge: -100,
             linkDistance: 20
           }
@@ -49,15 +49,15 @@ var examples = (function() {
     },
     function(cb) {
       var n = random(5,20);
-      var G = jsnx.fast_gnp_random_graph(n, 0.3);
+      var G = jsnx.fastGnpRandomGraph(n, 0.3);
       cb(G, 'Random graph (nodes: ' + n + ', edge probability: 0.3)');
     },
     function(cb) {
       cb(
-        jsnx.karate_club_graph(),
+        jsnx.karateClubGraph(),
         'Karate club graph',
         {
-          layout_attr: {
+          layoutAttr: {
             charge: -400,
             linkDistance: 60
           }

@@ -16,3 +16,4 @@ exclude:
   - node_modules
   - jsnx
   - jsnetworkx-test.js
+  - scripts

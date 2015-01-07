@@ -63,20 +63,15 @@ css: [prettify]
         </div>
       </li>
       <li>
-        <div><strong>Explicit Node.js support</strong></div>
+        <div><strong>Explicit Node.js support</strong> <span class="label label-success">done</span></div>
         <p>JSNetworkX was started with the intention to simplify the visualization
         of graph data in the browser. Some NetworkX methods make use of functionalities
         typically not found in browser. However, Node.js is becoming increasingly
         popular and some of these functionalities are available in Node.js (such as file system
         support).</p>
-        <p>Thanks to the Google closure compiler, this is easy to achieve. In 
-        ADVANCED_OPTIMIZATIONS mode, the compiler removes unreachable code, so 
-        setting a flag indicating a Node.js build (or a non-Node.js build)  would 
-        remove the Node.js-specific code from the final output.
-        </p>
       </li>
       <li>
-        <div><strong>Support long running processes</strong></div>
+        <div><strong>Support long running processes</strong> <span class="label label-success">done</span></div>
         <p>Complex computations which require long running processes usually don't
         pose any problems on the server. In the browser though, long running processes
         will freeze the page.</p>

@@ -34,23 +34,23 @@
     examples[i](function(G, desc, config) {
       jsnx.draw(G, $.extend({
         element: canvas,
-        layout_attr: {
+        layoutAttr: {
           charge: -300,
           linkDistance: 20,
           gravity: 0.5
         },
-        pan_zoom: {
+        panZoom: {
           enabled: false
         },
-        node_attr: {
+        nodeAttr: {
           r: 6,
           title: function(d) { return d.label;}
         },
-        node_style: {
+        nodeStyle: {
           fill: function(d) { return color(d.node % 4); },
           stroke: 'none'
         },
-        edge_style: {
+        edgeStyle: {
           fill: '#999'
         }
       }, config));
