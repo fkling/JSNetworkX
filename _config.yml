@@ -1,4 +1,3 @@
-auto: true
 menu:
   - name: Home
     url: index.html
@@ -15,6 +14,5 @@ exclude:
   - vendor
   - tools
   - node_modules
-  - examples
   - jsnx
   - jsnetworkx-test.js
