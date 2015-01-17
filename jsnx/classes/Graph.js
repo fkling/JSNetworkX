@@ -412,7 +412,13 @@ export default class Graph {
     }
 
     // process ebunch
-    forEach(ebunch, function(tuple) {
+    for (var tuple of ebunch) {
+      if (tuple.length == null) {
+        throw new JSNetworkXError(
+          sprintf('Edge tuple %j must be a 2-tuple or 3-tuple.', tuple)
+        );
+      }
+
       var [u, v, data] = tuple;
       if (!isPlainObject(data)) {
         data = {};
@@ -438,7 +444,7 @@ export default class Graph {
       Object.assign(datadict, optAttrDict, data);
       this.adj.get(u).set(v, datadict);
       this.adj.get(v).set(u, datadict);
-    }, this);
+    }
   }
 
 
