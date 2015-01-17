@@ -1,4 +1,4 @@
-# WIP - Convertion to ES6
+# WIP - Convertion to ES6 [![Build Status](https://travis-ci.org/fkling/JSNetworkX.svg?branch=es6_WIP)](https://travis-ci.org/fkling/JSNetworkX)
 
 **Note:** If you are reading this, then you are looking at the WIP branch. This
 branch is unstable and only has the purpose to keep interested users up-to-date
