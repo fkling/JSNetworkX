@@ -1,3 +1,4 @@
+"use strict";
 require('6to5/polyfill');
 require('source-map-support').install();
 global.assert = require('./assert');

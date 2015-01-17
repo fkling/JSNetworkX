@@ -7,6 +7,7 @@ import Set from './Set';
 import clone from './clone';
 import clear from './clear';
 import deepcopy from './deepcopy';
+import deepmerge from './deepmerge';
 import gcd from './gcd';
 import genCombinations from './genCombinations';
 import genPermutations from './genPermutations';
@@ -43,6 +44,7 @@ export {
   clone,
   clear,
   deepcopy,
+  deepmerge,
   gcd,
   genCombinations,
   genPermutations,

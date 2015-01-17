@@ -20,17 +20,19 @@
   },
   "main": "node/index.js",
   "dependencies": {
-    "6to5": "^1.15.0",
     "lodash-node": "^2.4.1",
     "tiny-sprintf": "^0.3.0"
   },
   "devDependencies": {
+    "6to5": "^2.9.0",
     "acorn-6to5": "^0.11.1-11",
     "browserify": "^7.0.0",
     "chai": "^1.9.1",
     "chai-as-promised": "^4.1.1",
+    "chai-checkmark": "^1.0.1",
     "chai-members-deep": "0.0.1",
     "commoner": "^0.10.1",
+    "d3": "^3.5.3",
     "istanbul": "^0.3.5",
     "lodash": "^2.4.1",
     "mocha": "^2.0.1",

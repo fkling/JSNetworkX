@@ -1,7 +1,6 @@
 "use strict";
 import '6to5/polyfill';
 
-import isIterator from './_internals/isIterator';
 import {serialize, deserialize} from './_internals/message';
 export * from './';
 

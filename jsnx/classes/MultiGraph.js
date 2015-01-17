@@ -134,7 +134,7 @@ export default class MultiGraph extends Graph {
    *
    * @type {string}
    */
-  get __name__() {
+  static get __name__() {
     return 'MultiGraph';
   }
 

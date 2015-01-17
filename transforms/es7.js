@@ -38,8 +38,7 @@ module.exports = function(filepath) {
       {
         filename: path.relative('./', filepath),
         experimental: true,
-        runtime: true,
-        modules: 'commonInterop'
+        runtime: true
       }
     );
     this.queue(code);
@@ -53,8 +52,7 @@ module.exports.transform = function(path, source, options) {
     options.dev,
     {
       filename: path,
-      experimental: true,
-      modules: 'commonInterop'
+      experimental: true
     }
   );
 };

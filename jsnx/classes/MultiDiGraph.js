@@ -130,7 +130,7 @@ export default class MultiDiGraph extends DiGraph {
    *
    * @type {string}
    */
-  get __name__() {
+  static get __name__() {
     return 'MultiDiGraph';
   }
 

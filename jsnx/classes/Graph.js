@@ -406,8 +406,8 @@ export default class Graph {
    *     update existing data associated with each edge.
    * @export
    */
-  addEdgesFrom(ebunch, optAttrDict={}) {
-    if (!isPlainObject(optAttrDict)) {
+  addEdgesFrom(ebunch, optAttrDict) {
+    if (optAttrDict && !isPlainObject(optAttrDict)) {
       throw new JSNetworkXError('The attr_dict argument must be an object.');
     }
 

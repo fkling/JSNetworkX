@@ -13,16 +13,15 @@ import isObject from 'lodash-node/modern/objects/isObject';
 import isArrayLike from './isArrayLike';
 import size from 'lodash-node/modern/collections/size';
 
-/**
- * @param {Iterable=} opt_data An object, array or iterator to
- *  populate the map with. If 'data' is an array or iterable, each element is
- *  expected to be a 2-tuple. The first element will be the key and second the
- *  value.
- *  If it is an object, the property names will be the keys and the value the
- *  values.
- * @constructor
- */
 export default class Map {
+  /**
+   * @param {Iterable=} opt_data An object, array or iterator to
+   *  populate the map with. If 'data' is an array or iterable, each element is
+   *  expected to be a 2-tuple. The first element will be the key and second the
+   *  value.
+   *  If it is an object, the property names will be the keys and the value the
+   *  values.
+   */
   constructor(optData) {
     // Can't use class syntax because of generator functions
     this._stringValues = Object.create(null); // strings
@@ -30,20 +29,23 @@ export default class Map {
     this._values = Object.create(null); // every other value
     this._keys = Object.create(null);
 
+    var key, value;
+
     if (optData != null) {
       if (isIterator(optData)) {
-        for (var datum of optData) {
-          this.set.apply(this, datum);
+        for (var [key, value] of optData) {
+          this.set(key, value);
         }
       }
       else if(isArrayLike(optData)) {
-        collectionsForEach(optData, function(datum) {
-          this.set.apply(this, datum);
-        }, this);
+        for (var i = 0; i < optData.length; i++) {
+          [key, value] = optData[i];
+          this.set(key, value);
+        }
       }
       else if (isObject(optData)) {
-        for (var k in optData) {
-          this.set(isNaN(+k) ? k : +k, optData[k]);
+        for (var key in optData) {
+          this.set(isNaN(+key) ? key : +key, optData[key]);
         }
       }
     }
