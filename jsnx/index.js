@@ -26,6 +26,7 @@ export {
 export * from './algorithms';
 export * from './classes';
 export * from './convert';
+export * from './contrib/observer';
 export * from './exceptions';
 export * from './generators';
 export * from './relabel';
