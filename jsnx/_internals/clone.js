@@ -1,3 +1,3 @@
 "use strict";
-import clone from 'lodash-node/modern/objects/clone';
+import clone from 'lodash/lang/clone';
 export default clone;

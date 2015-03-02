@@ -1,6 +1,6 @@
 "use strict";
 
-import _forEach from 'lodash-node/modern/collections/forEach';
+import _forEach from 'lodash/collection/forEach';
 import isIterable from './isIterable';
 import isIterator from './isIterator';
 

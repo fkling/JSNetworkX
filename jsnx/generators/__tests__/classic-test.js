@@ -6,7 +6,7 @@ import {MultiGraph, DiGraph} from '../../classes';
 var Map = utils.Map;
 /*jshint ignore:end*/
 
-import classic from '../classic';
+import * as classic from '../classic';
 import {degreeHistogram} from '../../classes/functions';
 
 function sorted(v) {

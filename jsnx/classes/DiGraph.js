@@ -1,6 +1,5 @@
 'use strict';
 
-
 import Graph from './Graph';
 /*jshint ignore:start*/
 import Map from '../_internals/Map';

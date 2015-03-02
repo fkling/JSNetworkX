@@ -754,7 +754,7 @@ export default class MultiGraph extends Graph {
    *      (u,v,data) and (v,u,data).
    */
   toDirected() {
-    var G = new require('./MultiDiGraph')();
+    var G = new (require('./MultiDiGraph'))();
     G.addNodesFrom(this);
     for (var [u, nbrs] of this.adjacencyIter()) {
       for (var [v, keydict] of nbrs) {

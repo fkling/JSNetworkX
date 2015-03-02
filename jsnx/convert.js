@@ -18,7 +18,7 @@ var Set = require('./_internals/Set');
 var convertMap = require('./contrib/convert');
 var hasOwn = Object.prototype.hasOwnProperty;
 var prepCreateUsing = require('./contrib/prepCreateUsing');
-var _mapValues = require('lodash-node/modern/objects/mapValues');
+var _mapValues = require('lodash/object/mapValues');
 
 var {
   clone,

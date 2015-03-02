@@ -7,5 +7,5 @@
  * @param {Object} obj
  * @return {!Array}
  */
-import items from 'lodash-node/modern/objects/pairs';
+import items from 'lodash/object/pairs';
 export default items;

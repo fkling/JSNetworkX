@@ -27,7 +27,7 @@
 
 "use strict";
 var _ = require('lodash');
-var acorn = require('acorn-6to5');
+var acorn = require('acorn-6to5/acorn');
 var path = require('path');
 var recast = require('recast');
 var types = recast.types;

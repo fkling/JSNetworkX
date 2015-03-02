@@ -262,7 +262,7 @@ export default Object.assign({}, BaseMultiGraphTester, {
   },
 
   testToUndirectedReciprocal: function() {
-    var G = this.Graph();
+    var G = new this.Graph();
     G.addEdge(1,2);
     assert.equal(G.toUndirected().hasEdge(1,2), true);
     assert.equal(G.toUndirected(true).hasEdge(1,2), false);

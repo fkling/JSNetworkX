@@ -2,8 +2,8 @@
 
 import isArrayLike from './isArrayLike';
 import isGraph from './isGraph';
-import isPlainObject from 'lodash-node/modern/objects/isPlainObject';
-import objectSize from 'lodash-node/modern/collections/size';
+import isPlainObject from 'lodash/lang/isPlainObject';
+import objectSize from 'lodash/collection/size';
 
 /**
  * Returns the number of elements in the container. That is

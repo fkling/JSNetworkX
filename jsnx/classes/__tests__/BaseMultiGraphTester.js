@@ -113,7 +113,7 @@ export default Object.assign({}, BaseAttrGraphTester, {
   testToDirected: function() {
     var G = this.K3;
     shared.addAttributes(G);
-    var H = MultiDiGraph(G);
+    var H = new MultiDiGraph(G);
     shared.isShallowCopy(H, G);
     H = G.toDirected();
     shared.isDeepcopy(H, G);
@@ -140,7 +140,7 @@ export default Object.assign({}, BaseAttrGraphTester, {
   },
 
   testEdgeAttr4: function() {
-    var G = this.Graph();
+    var G = new this.Graph();
     G.addEdge(1, 2, 0, {data: 7, spam: 'bar', bar: 'foo'});
     assert.deepEqual(G.edges(true), [[1,2,{data: 7, spam: 'bar', bar: 'foo'}]]);
     // OK to set data like this

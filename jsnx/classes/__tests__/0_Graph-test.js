@@ -8,7 +8,7 @@ var Map = utils.Map;
 /*jshint ignore:end*/
 import JSNetworkXError from '../../exceptions/JSNetworkXError';
 import KeyError from '../../exceptions/KeyError';
-import _ from 'lodash-node';
+import _ from 'lodash';
 
 var sorted = function(iterator) {
   return Array.from(iterator).sort();

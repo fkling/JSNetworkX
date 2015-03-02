@@ -713,8 +713,11 @@ export default class MultiDiGraph extends DiGraph {
 }
 
 // Simulate multiple inheritance by merging prototypes
-var proto = Object.assign({}, MultiDiGraph.prototype);
-Object.assign(MultiDiGraph.prototype, MultiGraph.prototype, proto);
+Object.getOwnPropertyNames(MultiGraph.prototype).forEach(prop => {
+  if (!MultiDiGraph.prototype.hasOwnProperty(prop)) {
+    MultiDiGraph.prototype[prop] = MultiGraph.prototype[prop];
+  }
+});
 
 function* yieldEdges(nodesNbrs, data, keys, type) {
   for (var [n, nbrs] of nodesNbrs) {

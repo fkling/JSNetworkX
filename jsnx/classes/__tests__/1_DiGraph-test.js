@@ -9,7 +9,7 @@ var Map = utils.Map;
 import JSNetworkXError from '../../exceptions/JSNetworkXError';
 import {TestGraph} from './0_Graph-test';
 
-import _ from 'lodash-node';
+import _ from 'lodash';
 
 var sorted = function(iterator) {
   return Array.from(iterator).sort();
@@ -61,7 +61,7 @@ export var TestDiGraph = _.extend({}, TestGraph, BaseDiGraphTester, {
   },
 
   testDataInput: function() {
-    var G = this.Graph(new Map([[1,[2]], [2, [1]]]), {name: 'test'});
+    var G = new this.Graph(new Map([[1,[2]], [2, [1]]]), {name: 'test'});
     assert.equal(G.name, 'test');
     assert.deepEqual(
       sorted(G.adj.entries()),
@@ -78,7 +78,7 @@ export var TestDiGraph = _.extend({}, TestGraph, BaseDiGraphTester, {
   },
 
   testAddEdge: function() {
-    var G = this.Graph();
+    var G = new this.Graph();
     G.addEdge(0,1);
     assert.deepEqual(
       G.adj,
@@ -93,7 +93,7 @@ export var TestDiGraph = _.extend({}, TestGraph, BaseDiGraphTester, {
       new Map({0: new Map(), 1: new Map({0:{}})})
     );
 
-    G = this.Graph();
+    G = new this.Graph();
     G.addEdge.apply(G, [0,1]); // tuple unpacking
     assert.deepEqual(
       G.adj,
@@ -110,7 +110,7 @@ export var TestDiGraph = _.extend({}, TestGraph, BaseDiGraphTester, {
   },
 
   testAddEdgesFrom: function() {
-    var G = this.Graph();
+    var G = new this.Graph();
     G.addEdgesFrom([[0,1], [0,2, {data: 3}]], {data: 2});
 
     assert.deepEqual(

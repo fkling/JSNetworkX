@@ -8,7 +8,7 @@ var Map = utils.Map;
 /*jshint ignore:end*/
 import JSNetworkXError from '../../exceptions/JSNetworkXError';
 
-import funcs from '../functions';
+import * as funcs from '../functions';
 
 export var testFunction = {
   beforeEach: function() {

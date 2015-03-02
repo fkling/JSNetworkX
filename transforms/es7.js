@@ -3,7 +3,7 @@ var _ = require('lodash');
 var asyncTransform = require('./async');
 var path = require('path');
 var through = require('through');
-var to5 = require('6to5');
+var babel = require('babel-core');
 
 function jstransform(src, dev, options) {
   options = options || {};
@@ -20,7 +20,7 @@ function jstransform(src, dev, options) {
   }, options)).code;
 
   // Then ES6 and inline source maps
-  var result = to5.transform(src, options);
+  var result = babel.transform(src, options);
   var code = result.code;
   return code;
 }
@@ -38,7 +38,7 @@ module.exports = function(filepath) {
       {
         filename: path.relative('./', filepath),
         experimental: true,
-        runtime: true
+        optional: ['runtime']
       }
     );
     this.queue(code);
@@ -51,8 +51,9 @@ module.exports.transform = function(path, source, options) {
     source,
     options.dev,
     {
+      experimental: true,
       filename: path,
-      experimental: true
+      optional: ['runtime']
     }
   );
 };

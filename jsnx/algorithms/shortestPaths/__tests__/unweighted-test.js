@@ -46,7 +46,7 @@ export var testUnweightedPath = {
   beforeEach: function() {
     this.grid = convertNodeLabelsToIntegers(grid2dGraph(4,4), 1, 'sorted');
     this.cycle = cycleGraph(7);
-    this.directedCycle = cycleGraph(7, DiGraph());
+    this.directedCycle = cycleGraph(7, new DiGraph());
   },
 
   testBidirectionalShortestPath: function() {

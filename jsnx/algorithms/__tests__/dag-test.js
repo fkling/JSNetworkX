@@ -5,7 +5,7 @@ import {Graph, DiGraph} from '../../classes';
 import JSNetworkXError from '../../exceptions/JSNetworkXError';
 import JSNetworkXUnfeasible from '../../exceptions/JSNetworkXUnfeasible';
 
-import dag from '../dag';
+import * as dag from '../dag';
 import {fullRaryTree} from '../../generators';
 
 export var TestDAG = {

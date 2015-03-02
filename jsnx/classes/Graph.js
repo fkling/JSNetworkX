@@ -7,8 +7,8 @@ import Set from '../_internals/Set';
 /* jshint ignore:end */
 import JSNetworkXError from '../exceptions/JSNetworkXError';
 
-import isBoolean from 'lodash-node/modern/objects/isBoolean';
-import isString from 'lodash-node/modern/objects/isString';
+import isBoolean from 'lodash/lang/isBoolean';
+import isString from 'lodash/lang/isString';
 
 import convert from '../convert';
 import {
@@ -892,7 +892,7 @@ export default class Graph {
    * @export
    */
   toDirected() {
-    var G = new require('./DiGraph')();
+    var G = new (require('./DiGraph'))();
     G.name = this.name;
     G.addNodesFrom(this);
     G.addEdgesFrom((function*() {

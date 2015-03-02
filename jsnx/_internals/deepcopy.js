@@ -1,7 +1,7 @@
 /*jshint latedef:false*/
 "use strict";
 
-import baseClone from 'lodash-node/modern/internals/baseClone';
+import baseClone from 'lodash/internal/baseClone';
 import isGraph from './isGraph';
 import isMap from './isMap';
 import isSet from './isSet';
@@ -49,6 +49,8 @@ function deepcopyImplementation(value, stackA, stackB) {
         return copy;
       }
     },
+    null,
+    null,
     stackA,
     stackB
   );

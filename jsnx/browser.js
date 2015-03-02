@@ -1,5 +1,4 @@
 "use strict";
-import '6to5/polyfill';
 
 import {serialize, deserialize} from './_internals/message';
 export * from './';

@@ -6,12 +6,11 @@
  */
 
 import clear from './clear';
-import collectionsForEach from 'lodash-node/modern/collections/forEach';
 import isIterator from './isIterator';
-import isFunction from 'lodash-node/modern/objects/isFunction';
-import isObject from 'lodash-node/modern/objects/isObject';
+import isFunction from 'lodash/lang/isFunction';
+import isObject from 'lodash/lang/isObject';
 import isArrayLike from './isArrayLike';
-import size from 'lodash-node/modern/collections/size';
+import size from 'lodash/collection/size';
 
 export default class Map {
   /**

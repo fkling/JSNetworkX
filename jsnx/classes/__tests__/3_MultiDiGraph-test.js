@@ -36,7 +36,7 @@ export var TestMultiDiGraph = Object.assign({}, TestMultiGraph, BaseMultiDiGraph
   },
 
   testAddEdge: function() {
-    var G = this.Graph();
+    var G = new this.Graph();
     G.addEdge(0, 1);
     assert.deepEqual(
       G.adj,
@@ -51,7 +51,7 @@ export var TestMultiDiGraph = Object.assign({}, TestMultiGraph, BaseMultiDiGraph
       new Map({0: new Map(), 1: new Map({0: {0:{}}})})
     );
 
-    G = this.Graph();
+    G = new this.Graph();
     G.addEdge.apply(G, [0, 1]);
     assert.deepEqual(
       G.adj,
@@ -68,7 +68,7 @@ export var TestMultiDiGraph = Object.assign({}, TestMultiGraph, BaseMultiDiGraph
   },
 
   testAddEdgesFrom: function() {
-    var G = this.Graph();
+    var G = new this.Graph();
     G.addEdgesFrom([[0,1], [0,1, {weight:3}]]);
     assert.deepEqual(
       G.adj,

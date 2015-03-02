@@ -8,7 +8,7 @@ var Map = utils.Map;
 /*jshint ignore:end*/
 import JSNetworkXError from '../../exceptions/JSNetworkXError';
 
-var _ = require('lodash-node');
+import _ from 'lodash';
 
 // Tests specific to dict-of-dict-of-dict graph data structure
 export default _.extend({}, BaseGraphTester, {
@@ -270,7 +270,7 @@ export default _.extend({}, BaseGraphTester, {
   },
 
   testToUndirectedReciprocal: function() {
-    var G = this.Graph();
+    var G = new this.Graph();
     G.addEdge(1,2);
     assert.ok(G.toUndirected().hasEdge(1,2));
     assert.ok(!G.toUndirected(true).hasEdge(1,2));

@@ -1,7 +1,5 @@
 "use strict";
 
-import '6to5/polyfill';
-
 import * as algorithms from './algorithms';
 import * as classes from './classes';
 import * as convert from './convert';

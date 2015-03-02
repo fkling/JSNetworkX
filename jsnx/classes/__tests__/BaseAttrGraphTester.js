@@ -10,7 +10,7 @@ var Map = utils.Map;
 import JSNetworkXError from '../../exceptions/JSNetworkXError';
 
 import shared from './shared';
-import _ from 'lodash-node';
+import _ from 'lodash';
 
 export default _.extend({}, BaseGraphTester, {
   testWeightedDegree: function() {
@@ -29,9 +29,9 @@ export default _.extend({}, BaseGraphTester, {
   },
 
   testName: function() {
-    var G = this.Graph(null, {name:''});
+    var G = new this.Graph(null, {name:''});
     assert.equal(G.name,'');
-    G = this.Graph(null, {name: 'test'});
+    G = new this.Graph(null, {name: 'test'});
     assert.equal(G.toString(), 'test');
     assert.equal(G.name, 'test');
   },
@@ -46,7 +46,7 @@ export default _.extend({}, BaseGraphTester, {
   },
 
   testCopyAttr: function() {
-    var G = this.Graph(null, {foo: []});
+    var G = new this.Graph(null, {foo: []});
     G.addNode(0, {foo: []});
     G.addEdge(1,2, {foo:[]});
     var H = G.copy();
@@ -61,7 +61,7 @@ export default _.extend({}, BaseGraphTester, {
     assert.equal(G.graph['foo'], 'bar');
     delete G.graph['foo'];
     assert.deepEqual(G.graph, {});
-    var H = this.Graph(null, {foo:'bar'});
+    var H = new this.Graph(null, {foo:'bar'});
     assert.equal(H.graph['foo'], 'bar');
 
   },
@@ -88,13 +88,13 @@ export default _.extend({}, BaseGraphTester, {
   },
 
   testEdgeAttr: function() {
-    var G = this.Graph();
+    var G = new this.Graph();
     G.addEdge(1,2,{foo:'bar'});
     assert.deepEqual(G.edges(true), [[1,2,{'foo':'bar'}]]);
   },
 
   testEdgeAttr2: function() {
-    var G = this.Graph();
+    var G = new this.Graph();
     G.addEdgesFrom([[1,2],[3,4]],{foo:'foo'});
     assert.deepEqual(
       G.edges(true).sort(),
@@ -103,7 +103,7 @@ export default _.extend({}, BaseGraphTester, {
   },
 
   testEdgeAttr3: function() {
-    var G = this.Graph();
+    var G = new this.Graph();
     G.addEdgesFrom([[1,2,{'weight':32}],[3,4,{'weight':64}]],{foo:'foo'});
     assert.deepEqual(
       G.edges(true),
@@ -122,7 +122,7 @@ export default _.extend({}, BaseGraphTester, {
   },
 
   testEdgeAttr4: function() {
-    var G = this.Graph();
+    var G = new this.Graph();
     G.addEdge(1,2,{data:7,spam:'bar',bar:'foo'});
     assert.deepEqual(
       G.edges(true),
@@ -150,7 +150,7 @@ export default _.extend({}, BaseGraphTester, {
 
   testAttrDictNotDict: function() {
     // attr_dict must be dict
-    var G = this.Graph();
+    var G = new this.Graph();
     var edges = [[1,2]];
     assert.throws(function(){
       G.addEdgesFrom(edges,[]);
