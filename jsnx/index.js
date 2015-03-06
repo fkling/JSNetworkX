@@ -3,6 +3,7 @@
 import * as algorithms from './algorithms';
 import * as classes from './classes';
 import * as convert from './convert';
+import * as drawing from './drawing';
 import * as exceptions from './exceptions';
 import * as generators from './generators';
 import * as relabel from './relabel';
@@ -16,6 +17,7 @@ export {
   algorithms,
   classes,
   convert,
+  drawing,
   exceptions,
   generators,
   relabel
@@ -24,6 +26,7 @@ export {
 export * from './algorithms';
 export * from './classes';
 export * from './convert';
+export * from './drawing';
 export * from './contrib/observer';
 export * from './exceptions';
 export * from './generators';
