@@ -115,7 +115,7 @@ import {
 export default class MultiGraph extends Graph {
 
   /**
-   * @param {?=} optData Data to initialze graph.
+   * @param {?} optData Data to initialze graph.
    *      If no data is provided, an empty graph is created. The data can be
    *      an edge list or any graph object.
    * @param {Object=} optAttr Attributes to add to graph as key=value pairs.
@@ -785,6 +785,7 @@ export default class MultiGraph extends Graph {
    * // [[1,1,0]]
    * G.selfloopEdges(true, true);
    * // [[1,1,0,{}]]
+   * ```
    *
    * @see #nodesWithSelfloops
    * @see #numberOfSelfloops

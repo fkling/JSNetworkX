@@ -20,10 +20,10 @@ import {
  /**
   * Return adjacency representation of graph as a map of lists.
   *
-  * Completely ignores edge data for MultiGraph and MultiDiGraph.
+  * Completely ignores edge data for `MultiGraph` and `MultiDiGraph`.
   *
   * @param {Graph} G A graph
-  * @param {NodeContainer=} opt_nodelist Use only nods specified in nodelist.
+  * @param {Iterable=} optNodelist Use only nods specified in this list.
   *
   * @return {!Map}
   */
@@ -48,7 +48,7 @@ export function toMapOfLists(G, optNodelist) {
  * Return a graph from a map of lists.
  * *
  * @param {!Map} map A map of lists adjacency representation.
- * @param {Graph=} opt_create_using Use specified graph for result.
+ * @param {Graph=} optCreateUsing Use specified graph for result.
  *    Otherwise a new graph is created.
  *
  * @return {!Graph}
@@ -85,11 +85,11 @@ export function fromMapOfLists(map, optCreateUsing) {
  * Return adjacency representation of graph as a map of maps.
  *
  * @param {Graph} G A jsnx Graph
- * @param {NodeContainer=} opt_nodelist Use only nodes specified in nodelist
- * @param {Object=} opt_edge_data If provided,  the value of the map will be
- *      set to edge_data for all edges.  This is useful to make
+ * @param {Iterable=} optNodelist Use only nodes specified in nodelist
+ * @param {Object=} optEdgeData If provided,  the value of the map will be
+ *      set to edgeData for all edges.  This is useful to make
  *      an adjacency matrix type representation with 1 as the edge data.
- *      If opt_edge_data is null or undefined, the edge data in G is used to
+ *      If optEdgeData is null or undefined, the edge data in G is used to
  *      fill the values.
  *      If G is a multigraph, the edge data is a dict for each pair (u,v).
  *
@@ -126,9 +126,9 @@ export function toMapOfMaps(G, optNodelist, optEdgeData) {
  * Return a graph from a map of maps.
  *
  * @param {!Map} map A map of maps adjacency representation.
- * @param {Graph=} opt_create_using Use specified graph for result.
+ * @param {Graph=} optCreateUsing Use specified graph for result.
  *      Otherwise a new graph is created.
- * @param {boolean=} opt_multigraph_input (default=False)
+ * @param {boolean=} optMultigraphInput (default=False)
  *      When True, the values of the inner dict are assumed
  *      to be containers of edge data for multiple edges.
  *      Otherwise this routine assumes the edge data are singletons.

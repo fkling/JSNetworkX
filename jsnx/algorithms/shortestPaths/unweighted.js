@@ -202,12 +202,6 @@ function bidirectionalPredSucc(G, source, target) {
  * Compute shortest path between source and all other nodes reachable from
  * source.
  *
- * ### Note
- * The shortest path is not necessarily unique. So there can be multiple⋅
- * paths between the source and each target node, all of which have the⋅
- * same 'shortest' length. For each target node, this function returns⋅
- * only one of those paths.
- *
  * ### Example
  *
  * ```
@@ -217,12 +211,20 @@ function bidirectionalPredSucc(G, source, target) {
  * // [1, 2, 3, 4]
  * ```
  *
+ * ### Notes
+ *
+ * The shortest path is not necessarily unique. So there can be multiple⋅
+ * paths between the source and each target node, all of which have the⋅
+ * same 'shortest' length. For each target node, this function returns⋅
+ * only one of those paths.
+ *
+ *
  * @see shortestPath
  *
  * @param {Graph} G
  * @param {Node} source
  * @param {number=} optCutoff Depth to stop the search.
- *    Only paths of length <= cutoff are returned.
+ *    Only paths of `length <= cutoff` are returned.
  *
  * @return {!Map<Array>} Map, keyed by target, of shortest paths.
  */
@@ -296,10 +298,12 @@ export async function allPairsShortestPath(G, optCutoff) {
  * @param {Graph} G
  * @param {Node} source Starting node for path
  * @param {{target: Node, cutoff: number, returnSeen: boolean}} optArgs
- *   target: If provided only predecessors between⋅source and target are
- *           returned
- *   cutoff: Depth to stop the search. Only paths of length <= cutoff are
- *          returned
+ *   - `target(=null)`: If provided only predecessors between⋅source and target
+ *     are returned
+ *   - `cutoff`: Depth to stop the search. Only paths of `length <= cutoff` are
+ *     returned
+ *   - `returnSeen(=false)`: If `true`, return `(seenNodes, predecessors)`
+ *
  * @return {!(Map|Array)} Map, keyed by node, of predecessors in the shortest
  *   path.
  */

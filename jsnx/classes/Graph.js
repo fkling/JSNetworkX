@@ -40,26 +40,109 @@ import {
  * Graphs hold undirected edges.  Self loops are allowed but multiple
  * (parallel) edges are not.
  *
- * Nodes can be arbitrary (hashable) Python objects with optional
- * key/value attributes.
+ * Nodes can be strings, numbers or any object with a custom `toString` method.
  *
  * Edges are represented as links between nodes with optional
  * key/value attributes.
  *
- * See Also
- * --------
- * DiGraph
- * MultiGraph
- * MultiDiGraph
+ * ### Examples
  *
- * @param {*=} opt_data Data to initialize graph.  If data=None (default) an
- *       empty graph is created. The data can be an edge list, or any
- *       NetworkX graph object.
- * @param {Object=} opt_attr (default= no attributes)
- *       Attributes to add to graph as key=value pairs.
+ * Create an empty graph (a "null graph") with no nodes and no edges.
+ *
+ * ```
+ * var G = new jsnx.Graph();
+ * ```
+ *
+ * G can be grown in several ways.
+ *
+ * #### Nodes
+ *
+ * Add one node at a time:
+ *
+ * ```
+ * G.addNode(1);
+ * ```
+ *
+ * Add the nodes from any iterable:
+ *
+ * ```
+ * G.addNodesFrom([2, 3]);
+ * G.addNodesFrom(new Set('foo', 'bar'));
+ * var H = jsnx.completeGraph(10);
+ * G.addNodesFrom(H);
+ * ```
+ *
+ * In addition to strings, numbers and arrays, any object that implements a
+ * custom `toString` method can be used as node.
+ *
+ * #### Edges
+ *
+ * `G` can also be grown by adding edges.
+ *
+ * Add one edge,
+ *
+ * ```
+ * G.addEdge(1, 2);
+ * ```
+ *
+ * a list of edges,
+ *
+ * ```
+ * G.addEdgesFrom([[1,2], [1,3]]);
+ * ```
+ *
+ * or a collection of edges,
+ *
+ * ```
+ * G.addEdgesFrom(H.edges);
+ * ```
+ *
+ * If some edges connect nodes not yet in the graph, the nodes are added
+ * automatically. There are no errors when adding nodes or edges that already
+ * exist.
+ *
+ * #### Attributes
+ *
+ * Each graph, node and edge can hold key/value attribute pairs in an associated
+ * attribute object (keys must be strings or numbers).
+ * By default these are empty, but can added or changed using `addEdge`,
+ * `addNode`.
+ *
+ * ```
+ * var G = new jsnx.Graph(null, {day: 'Friday'});
+ * G.graph
+ * // {day: 'Friday'}
+ * ```
+ *
+ * Add node attributes using `addNode()` or `addNodesFrom()`:
+ *
+ * ```
+ * G.addNode(1, {time: '5pm'});
+ * G.addNodesFrom([2, [3, {time: '3pm'}]], {time: '2pm'});
+ * G.nodes(true);
+ * // [[1, {time: '5pm'}], [2, {time: '2pm'}], [3, {time: '3pm'}]]
+ * ```
+ *
+ * Add edge attributes using `addEdge()`, or `addEdgesFrom()`:
+ *
+ * ```
+ * G.addEdge(1, w, {weight: 4.7});
+ * G.addEdgesFrom([[3,4], [4,5]], {color: 'red'});
+ * ```
+ *
+ * @see DiGraph
+ * @see MultiGraph
+ * @see MultiDiGraph
  */
 export default class Graph {
 
+  /*
+   * @param {Iterable} optData Data to initialize graph.  If `data` is not
+   *    provided, an empty graph is created. The data can be an edge list, or any
+   *    JSNetworkX graph object.
+   * @param {Object=} optAttr (default=no attributes)
+   *    Attributes to add to graph as key=value pairs.
+   */
   constructor(optData, optAttr) {
     // makes it possible to call Graph without new
     if(!(this instanceof Graph)) {
@@ -85,7 +168,6 @@ export default class Graph {
 
   /**
    * Holds the graph type (class) name for information.
-   * This is compatible to Pythons __name__ property.
    *
    * @type {string}
    */
@@ -97,9 +179,7 @@ export default class Graph {
    * Gets or sets the name of the graph.
    *
    * @param {string=} opt_name Graph name.
-   *
    * @return {(string|undefined)} Graph name if no parameter was passed.
-   * @export
    */
   get name() {
     return this.graph.name || '';
@@ -109,46 +189,21 @@ export default class Graph {
     this.graph.name = name;
   }
 
-  // Implements __str__
   /**
    * Return the graph name
    *
    * @return {string} Graph name.
-   * @export
    */
   toString() {
     return this.name;
   }
 
-
-
-  /* for convenience */
-  forEach(callback, optThisValue) {
-    for (var n of this.adj.keys()) {
-      if (optThisValue) {
-        callback.call(optThisValue, n);
-      }
-      else {
-        callback(n);
-      }
-    }
-  }
-
-  // __contains__ is not supported, has_node has to be used
-
-
-  // __len__ is not supported, number_of_nodes or order has to be used
-
-
-  // Implements __getitem__
   /**
-   * Return a dict of neighbors of node n.
+   * Return a Map of neighbors of node n.
    *
    * @param {Node} n  A node in the graph.
    *
-   * @return {!Map} The adjacency dictionary for nodes
-   *   connected to n.
-   * @export
+   * @return {!Map} The adjacency dictionary for nodes connected to n.
    */
   get(n) {
     var value = this.adj.get(n);
@@ -158,18 +213,24 @@ export default class Graph {
     return value;
   }
 
-
   /**
    * Add a single node n and update node attributes.
    *
-   * Since JavaScript does not provide keyword arguments,
-   * all attributes must be passed in an object as second
-   * argument.
+   * ### Examples
    *
-   * @param {!Node} n A node.
+   * ```
+   * var G = new jsnx.Graph() // or DiGraph, MultiGraph, MultiDiGraph, etc
+   * G.addNode(1);
+   * G.addNode('Hello');
+   * G.numberOfNodes();
+   * 2
+   * ```
+   *
+   * @see #addNodesFrom
+   *
+   * @param {Node} n Node
    * @param {Object=} opt_attr_dict Dictionary of node attributes.
    *      Key/value pairs will update existing data associated with the node.
-   * @export
    */
   addNode(n, optAttrDict={}) {
     if (!isPlainObject(optAttrDict)) {
@@ -185,23 +246,47 @@ export default class Graph {
     }
   }
 
-
   /**
    * Add multiple nodes.
    *
-   * Since JavaScript does not provide keyword arguments,
-   * all attributes must be passed in an object as second
-   * argument.
+   * ### Examples
    *
-   * @param {!NodeContainer} nodes
-   *       A container of nodes (Array, Object, Array-like).
-   *       OR
-   *       A container of (node, attribute dict) tuples.
+   * ```
+   * var G = new jsnx.Graph(); // or DiGraph, MultiGraph, MultiDiGraph
+   * G.addNodesFrom([1,2,3]);
+   * G.nodes();
+   * // [1,2,3]
+   * ```
    *
-   * @param {Object=} opt_attr  Update attributes for all nodes in nodes.
+   * Use the second argument to update specific node attributes for every node.
+   *
+   * ```
+   * G.addNodesFrom([1,2], {size: 10});
+   * G.addNodesFrom([2,3], {weight: 0.4});
+   * ```
+   *
+   * Use `(node, object)` tuples to update attributes for specific nodes.
+   *
+   * ```
+   * G.addNodesFrom([[1, {size: 11}], [2, {color: 'blue'}]]);
+   * G.node.get(1).size
+   * // 11
+   * var H = new jsnx.Graph();
+   * H.addNodesFrom(G.nodes(true));
+   * H.node.get(1).size
+   * // 11
+   * ```
+   *
+   * @see #addNode
+   *
+   * @param {Iterable} nodes
+   *      An iterable of nodes
+   *      OR
+   *      An iterable of (node, object) tuples.
+   *
+   * @param {Object=} optAttr  Update attributes for all nodes in nodes.
    *       Node attributes specified in nodes as a tuple
    *       take precedence over attributes specified generally.
-   * @export
    */
   addNodesFrom(nodes, optAttr={}) {
     forEach(nodes, function(node) {
@@ -230,15 +315,27 @@ export default class Graph {
     }, this);
   }
 
-
   /**
    * Remove node n.
    *
    * Removes the node n and all adjacent edges.
    * Attempting to remove a non-existent node will raise an exception.
    *
-   * @param {Node} n A node in the graph.
-   * @export
+   * ### Example
+   *
+   * ```
+   * var G = new jsnx.Graph() // or DiGraph, MultiGraph, MultiDiGraph, etc
+   * G.addPath([0,1,2]);
+   * G.edges();
+   * // [[0,1], [1,2]]
+   * G.removeNode(1);
+   * G.edges();
+   * // []
+   * ```
+   *
+   * @see #removeNodesFrom
+   *
+   * @param {Node} n  A node in the graph
    */
   removeNode(n) {
     var adj = this.adj;
@@ -254,14 +351,24 @@ export default class Graph {
     }
   }
 
-
   /**
    * Remove multiple nodes.
    *
-   * @param {NodeContainer} nodes A container of nodes
-   *      If a node in the container is not in the graph it is silently ignored.
+   * ### Examples
    *
-   * @export
+   * ```
+   * var G = new jsnx.Graph() // or DiGraph, MultiGraph, MultiDiGraph, etc
+   * G.addPath([0,1,2]);
+   * var e = G.nodes(); // [0,1,2]
+   * G.removeNodesFrom(e);
+   * G.nodes();
+   * // []
+   * ```
+   *
+   * @see #removeNode
+   *
+   * @param {Iterable} nodes  A container of nodes.
+   *      If a node in the container is not in the graph it is silently ignored.
    */
   removeNodesFrom(nodes) {
     var adj = this.adj;
@@ -275,45 +382,77 @@ export default class Graph {
     });
   }
 
-
   /**
    * Return an iterator over the nodes.
    *
-   * @param {boolean=} opt_data (default false) If false the iterator returns
+   * ### Examples
+   *
+   * ```
+   * var G = new jsnx.Graph() // or DiGraph, MultiGraph, MultiDiGraph, etc
+   * G.addPath([0,1,2]);
+   * var data = [];
+   * Array.from(G.nodesIter(true)).map(([node, data]) => data);
+   * // [{}, {}, {}]
+   * ```
+   *
+   * ### Notes
+   *
+   * If the node is not required, it is simpler and equivalent to use `G`, e.g.
+   * `Array.from(G)` or `for (var node of G)`.
+   *
+   * @param {boolean=} optData If false the iterator returns
    *   nodes. If true return a two-tuple of node and node data dictionary.
    *
    * @return {Iterator} of nodes If data=true the iterator gives
    *           two-tuples containing (node, node data, dictionary).
-   * @export
    */
-  nodesIter(optData) {
+  nodesIter(optData=false) {
     if (optData) {
       return toIterator(this.node);
     }
     return this.node.keys();
   }
 
-
   /**
    * Return a list of the nodes in the graph.
    *
-   * @param {boolean=} opt_data (default false) If false the iterator returns
+   * ### Examples
+   *
+   * ```
+   * var G = new jsnx.Graph() // or DiGraph, MultiGraph, MultiDiGraph, etc
+   * G.addPath([0,1,2]);
+   * G.nodes();
+   * // [0,1,2]
+   * G.addNode(1, {time: '5pm'});
+   * G.nodes(true);
+   * // [[0,{}], [1,{time: '5pm'}], [2,{}]]
+   * ```
+   *
+   * @param {boolean=} optData If false the iterator returns
    *   nodes. If true return a two-tuple of node and node data dictionary.
    *
    * @return {!Array} of nodes If data=true a list of two-tuples containing
-   *           (node, node data dictionary).
-   * @export
+   *           (node, node data object).
    */
-  nodes(optData) {
+  nodes(optData=false) {
     return Array.from(optData ? this.node.entries() : this.node.keys());
   }
-
 
   /**
    * Return the number of nodes in the graph.
    *
+   * ### Examples
+   *
+   * ```
+   * var G = new jsnx.Graph() // or DiGraph, MultiGraph, MultiDiGraph, etc
+   * G.addPath([0,1,2]);
+   * G.numberOfNodes();
+   * // 3
+   * ```
+   *
+   * @see #order
+   *
    * @return {number} The number of nodes in the graph.
-   * @export
    */
   numberOfNodes() {
     return this.node.size;
@@ -323,8 +462,9 @@ export default class Graph {
   /**
    * Return the number of nodes in the graph.
    *
+   * @see #numberOfNodes
+   *
    * @return {number} The number of nodes in the graph.
-   * @export
    */
   order() {
     return this.node.size;
@@ -334,10 +474,17 @@ export default class Graph {
   /**
    * Return true if the graph contains the node n.
    *
-   * @param {!(Node|NodeContainer)} n node.
+   * ### Examples
    *
+   * ```
+   * var G = new jsnx.Graph() // or DiGraph, MultiGraph, MultiDiGraph, etc
+   * G.addPath([0,1,2]);
+   * G.hasNode(0);
+   * // true
+   * ```
+   *
+   * @param {Node} n node.
    * @return {boolean}
-   * @export
    */
   hasNode(n) {
     return this.node.has(n);
@@ -350,18 +497,40 @@ export default class Graph {
    * The nodes u and v will be automatically added if they are
    * not already in the graph.
    *
-   * Edge attributes can be specified by providing
-   * a dictionary with key/value pairs.
+   * Edge attributes can be specified with keywords or by providing
+   * a object with key/value pairs as third argument.
    *
-   * Unlike in Python, attributes can only be defined
-   * via the dictionary.
    *
-   * @param {Node} u Node.
-   * @param {Node} v Node.
-   * @param {?Object=} opt_attr_dict Dictionary of edge attributes.
+   * ### Examples
+   *
+   * The following all add the edge `(1,2)` to graph `G`:
+   *
+   * ```
+   * var G = new jsnx.Graph() // or DiGraph, MultiGraph, MultiDiGraph, etc
+   * G.addEdge(1,2);
+   * G.addEdgesFrom([[1,2]]);
+   * ```
+   *
+   * Associate data to edges using an object:
+   *
+   * ```
+   * G.addEdge(1, 2, {weight: 3});
+   * G.addEdge(1, 3, {weight: 7, capacity: 15, length: 342.7});
+   * ```
+   *
+   * ### Notes
+   *
+   * Adding an edge that already exists updates the edge data.
+   *
+   * Many algorithms designed for weighted graphs use as the edge weight a
+   * numerical value assigned to an attribute which by default is 'weight'.
+   *
+   * @see #addEdgesFrom
+   *
+   * @param {Node} u Node
+   * @param {Node} v Node
+   * @param {Object=} optAttrDict Object of edge attributes.
    *      Key/value pairs will update existing data associated with the edge.
-   *
-   * @export
    */
   addEdge(u, v, optAttrDict) {
     if (optAttrDict && !isPlainObject(optAttrDict)) {
@@ -387,24 +556,38 @@ export default class Graph {
 
 
   /**
-   * Add all the edges in ebunch.
+   * Add all the edges in `ebunch`.
+   *
+   * ### Examples
+   *
+   * ```
+   * var G = new jsnx.Graph() // or DiGraph, MultiGraph, MultiDiGraph, etc
+   * G.addEdgesFrom([[0,1], [1,2]]); // using a list of edges
+   * ```
+   *
+   * Associate data to edges
+   *
+   * ```
+   * G.addEdgesFrom([[1,2], [2,3]], {weight: 3});
+   * G.addEdgesFrom([[3,4], [1,4]], {label: 'WN2898'});
+   * ```
+   *
+   * ### Notes
    *
    * Adding the same edge twice has no effect but any edge data
    * will be updated when each duplicate edge is added.
    *
-   * Edge attributes specified in edges as a tuple take precedence
-   * over attributes specified generally.
+   * @see #add_edge
+   * @see #addWeightedEdgesFrom
    *
    * @param {Iterable} ebunch container of edges
    *      Each edge given in the container will be added to the
    *      graph. The edges must be given as as 2-tuples (u,v) or
-   *      3-tuples (u,v,d) where d is a dictionary containing edge
-   *      data.
+   *      3-tuples (u,v,d) where d is a dictionary containing edge data.
    *
-   * @param {Object=} opt_attr_dict
-   *     Dictionary of edge attributes.  Key/value pairs will
-   *     update existing data associated with each edge.
-   * @export
+   * @param {Object=} optAttrDict Object of edge attributes.
+   *      Dictionary of edge attributes.  Key/value pairs will
+   *      update existing data associated with each edge.
    */
   addEdgesFrom(ebunch, optAttrDict) {
     if (optAttrDict && !isPlainObject(optAttrDict)) {
@@ -449,27 +632,31 @@ export default class Graph {
 
 
   /**
-   * Add all the edges in ebunch as weighted edges with specified weights.
+   * Add all the edges in `ebunch` as weighted edges with specified weights.
    *
+   * ### Examples
+   *
+   * ```
+   * var G = new jsnx.Graph() // or DiGraph, MultiGraph, MultiDiGraph, etc
+   * G.addWeightedEdgesFrom([[0,1,3.0], [1,2,7.5]]);
+   * ```
+   *
+   * ### Note
    *
    * Adding the same edge twice for Graph/DiGraph simply updates
    * the edge data.  For MultiGraph/MultiDiGraph, duplicate edges
    * are stored.
    *
-   * Since JavaScript does not support keyword arguments, all attributes
-   * must be passed in the attr object.
+   * @see #addEdge
+   * @see #addEdgesFrom
    *
-   * @param {?} ebunch  container of edges
+   * @param {Iterable} ebunch  container of edges
    *      Each edge given in the list or container will be added
    *      to the graph. The edges must be given as 3-tuples (u,v,w)
    *      where w is a number.
-   *
-   * @param {string=} opt_weight (default 'weight')
+   * @param {string=} optWeight (default 'weight')
    *      The attribute name for the edge weights to be added.
-   *
-   * @param {Object=} opt_attr Edge attributes to add/update for all edges.
-   *
-   * @export
+   * @param {Object=} optAttr Edge attributes to add/update for all edges.
    */
   addWeightedEdgesFrom(ebunch, optWeight, optAttr) {
     optAttr = optAttr || {};
@@ -488,14 +675,21 @@ export default class Graph {
     }), optAttr);
   }
 
-
   /**
    * Remove the edge between u and v.
    *
-   * @param {Node} u Node.
-   * @param {Node} v Node.
+   * ### Examples
    *
-   * @export
+   * ```
+   * var G = new jsnx.Graph() // or DiGraph, MultiGraph, MultiDiGraph, etc
+   * G.addPath([0,1,2,3]);
+   * G.removeEdge(0,1);
+   * ```
+   *
+   * @see #removeEdgesFrom
+   *
+   * @param {Node} u Node
+   * @param {Node} v Node
    */
   removeEdge(u, v) {
     var node = this.adj.get(u);
@@ -512,18 +706,27 @@ export default class Graph {
     }
   }
 
-
   /**
-   * Remove all edges specified in ebunch.
+   * Remove all edges specified in `ebunch`.
    *
-   * Notes: Will fail silently if an edge in ebunch is not in the graph.
+   * ### Examples
    *
-   * @param {?} ebunch 1list or container of edge tuples
+   * ```
+   * var G = new jsnx.Graph() // or DiGraph, MultiGraph, MultiDiGraph, etc
+   * G.addPath([0,1,2,3]);
+   * var ebunch = [[1,2], [2,3]];
+   * G.removeEdgesFrom(ebunch);
+   * ```
+   *
+   * ### Notes
+   *
+   * Will fail silently if an edge in `ebunch` is not in the graph.
+   *
+   * @param {Iterable} ebunch Iterable of edge tuples
    *      Each edge given in the list or container will be removed
    *      from the graph. The edges can be:
-   *          - 2-tuples (u,v) edge between u and v.
-   *          - 3-tuples (u,v,k) where k is ignored.
-   * @export
+   *        - 2-tuples (u,v) edge between u and v.
+   *        - 3-tuples (u,v,k) where k is ignored.
    */
   removeEdgesFrom(ebunch) {
     var adj = this.adj;
@@ -539,42 +742,81 @@ export default class Graph {
     });
   }
 
-
   /**
    * Return True if the edge (u,v) is in the graph.
+   *
+   * ### Examples
+   *
+   * ```
+   * var G = new jsnx.Graph() // or DiGraph, MultiGraph, MultiDiGraph, etc
+   * G.addPath([0,1,2,3]);
+   * G.hasEdge(0, 1);
+   * // true
+   * var edge = [0, 1];
+   * G.hasEdge.apply(G, edge);
+   * // true
+   * ```
    *
    * @param {Node} u Node.
    * @param {Node} v Node.
    *
    * @return {boolean} True if edge is in the graph, False otherwise.
-   * @export
    */
   hasEdge(u, v) {
     var unode = this.adj.get(u);
     return unode && unode.has(v);
   }
 
-
   /**
    * Return a list of the nodes connected to the node n.
    *
-   * @param {!Node} n A node in the graph.
+   * ### Examples
    *
+   * ```
+   * var G = new jsnx.Graph() // or DiGraph, MultiGraph, MultiDiGraph, etc
+   * G.addPath([0,1,2,3]);
+   * G.neighbors(0);
+   * // [1]
+   * ```
+   *
+   * ### Notes
+   *
+   * It can be more convenient to access the adjacency map as `G.get(n)`:
+   *
+   * ```
+   * var G = new jsnx.Graph() // or DiGraph, MultiGraph, MultiDiGraph, etc
+   * G.addEdge('a', 'b', {weight: 7});
+   * G.get('a');
+   * // Map {'b': {weight: 7}}
+   * ```
+   *
+   * @param {!Node} n A node in the graph.
    * @return {!Array} A list of nodes that are adjacent to n.
-   * @export
    */
   neighbors(n) {
     return Array.from(this.neighborsIter(n));
   }
 
-
   /**
    * Return an iterator over all neighbors of node n.
    *
-   * @param {!Node} n A node in the graph.
+   * ### Examples
    *
+   * ```
+   * var G = new jsnx.Graph() // or DiGraph, MultiGraph, MultiDiGraph, etc
+   * G.addPath([0,1,2,3]);
+   * Array.from(G.neighborsIter(0));
+   * // [1]
+   * ```
+   *
+   * You could also iterate over the adjacency map instead:
+   *
+   * ```
+   * Array.from(G.get(0).keys());
+   * ```
+   *
+   * @param {!Node} n A node in the graph.
    * @return {!Iterator} A list of nodes that are adjacent to n.
-   * @export
    */
   neighborsIter(n) {
     var node = this.adj.get(n);
@@ -586,30 +828,44 @@ export default class Graph {
     }
   }
 
-
   /**
    * Return a list of edges.
    *
    * Edges are returned as tuples with optional data
    * in the order (node, neighbor, data).
    *
-   * Note: Nodes in nbunch that are not in the graph will be (quietly) ignored.
+   * ### Examples
+   *
+   * ```
+   * var G = new jsnx.Graph() // or DiGraph, MultiGraph, MultiDiGraph, etc
+   * G.addPath([0,1,2]);
+   * G.addEdge(2, 3, {weight: 5});
+   * G.edges();
+   * // [[0,1], [1,2], [2,3]]
+   * G.edges(true);
+   * // [[0,1,{}], [1,2,{}], [2,3, {weight: 5}]
+   * G.edges([0,3]);
+   * // [[0,1], [3,2]]
+   * G.edges(0);
+   * // [[0,1]]
+   * ```
+   *
+   * ### Note
+   *
+   * Nodes in `nbunch` that are not in the graph will be (quietly) ignored.
    * For directed graphs this returns the out-edges.
    *
-   * @param {?NodeContainer=} opt_nbunch A container of nodes.
+   * @param {?(Node|Iterable)=} optNbunch A container of nodes.
    *      The container will be iterated through once.
-   * @param {?boolean=} opt_data Return two tuples (u,v) (False)
+   * @param {?boolean=} optData Return two tuples (u,v) (False)
    *      or three-tuples (u,v,data) (True).
-   *
    * @return {!Array} list of edge tuples
    *      Edges that are adjacent to any node in nbunch, or a list
    *      of all edges if nbunch is not specified.
-   * @export
    */
-  edges(optNbunch, optData) {
+  edges(optNbunch, optData=false) {
     return Array.from(this.edgesIter(optNbunch, optData));
   }
-
 
   /**
    * Return an iterator over the edges.
@@ -617,20 +873,34 @@ export default class Graph {
    * Edges are returned as tuples with optional data
    * in the order (node, neighbor, data).
    *
-   * Note: Nodes in nbunch that are not in the graph will be (quietly) ignored.
+   * ### Examples
+   *
+   * ```
+   * var G = new jsnx.Graph() // or DiGraph, MultiGraph, MultiDiGraph, etc
+   * G.addPath([0,1,2]);
+   * G.addEdge(2, 3, {weight: 5});
+   * Array.from(G.edgesIter());
+   * // [[0,1], [1,2], [2,3]]
+   * Array.from(G.edgesIter(true));
+   * // [[0,1,{}], [1,2,{}], [2,3, {weight: 5}]
+   * Array.from(G.edgesIter([0,3]));
+   * // [[0,1], [3,2]]
+   * Array.from(G.edgesIter(0));
+   * // [[0,1]]
+   * ```
+   *
+   * ### Note
+   *
+   * Nodes in `nbunch` that are not in the graph will be (quietly) ignored.
    * For directed graphs this returns the out-edges.
    *
-   * @param {?(NodeContainer|boolean)=} opt_nbunch A container of nodes.
+   * @param {?(Node|Iterable)=} optNbunch A container of nodes.
    *      The container will be iterated through once.
-   * @param {?boolean=} opt_data Return two tuples (u,v) (False)
+   * @param {?boolean=} optData Return two tuples (u,v) (False)
    *      or three-tuples (u,v,data) (True).
-   *
-   * @return {!Iterator} list of edge tuples
-   *      Edges that are adjacent to any node in nbunch, or a list
-   *      of all edges if nbunch is not specified.
-   * @export
+   * @return {!Iterator} iterater if `(u,v)` or `(u,v,d)` edge tuples
    */
-  *edgesIter(optNbunch, optData) {
+  *edgesIter(optNbunch, optData=false) {
 
     // handle calls with data being the only argument
     if (isBoolean(optNbunch)) {
@@ -672,21 +942,27 @@ export default class Graph {
     }
   }
 
-
   /**
-   * Return the attribute dictionary associated with edge (u,v).
+   * Return the attribute object associated with edge (u,v).
+   *
+   * ### Examples
+   *
+   * ```
+   * var G = new jsnx.Graph() // or DiGraph, MultiGraph, MultiDiGraph, etc
+   * G.addPath([0,1,2,3]);
+   * G.getEdgeData(0,1);
+   * // {}
+   * ```
+   *
+   * If the edge exists, it may be simpler to access `G.get(0).get(1)`.
    *
    * @param {Node} u Node.
    * @param {Node} v Node.
-   * @param {T=} opt_default (default=null)
-   *      Value to return if the edge (u,v) is not found.
-   *
-   * @return {(Object|T)} The edge attribute dictionary.
-   * @template T
-   *
-   * @export
+   * @param {*} optDefault
+   *   Value to return if the edge (u,v) is not found.
+   * @return {*} The edge attribute object.
    */
-  getEdgeData(u, v, optDefault) {
+  getEdgeData(u, v, optDefault=null) {
     var nbrs = this.adj.get(u);
     if (nbrs != null) {
       var data = nbrs.get(v);
@@ -697,16 +973,23 @@ export default class Graph {
     return optDefault;
   }
 
-
   /**
    * Return an adjacency list representation of the graph.
    *
    * The output adjacency list is in the order of G.nodes().
    * For directed graphs, only outgoing adjacencies are included.
    *
+   * ### Examples
+   *
+   * ```
+   * var G = new jsnx.Graph() // or DiGraph, MultiGraph, MultiDiGraph, etc
+   * G.addPath([0,1,2,3]);
+   * G.adjacencyList();
+   * // [[1], [0,2], [1,3], [2]]
+   * ```
+   *
    * @return {!Array.<Array>} The adjacency structure of the graph as a
    *      list of lists.
-   * @export
    */
   adjacencyList() {
     return Array.from(mapIterator(
@@ -715,41 +998,59 @@ export default class Graph {
     ));
   }
 
-
   /**
-   * Return an iterator of (node, adjacency dict) tuples for all nodes.
+   * Return an iterator of (node, adjacency map) tuples for all nodes.
    *
+   * For directed graphs, only outgoing adjacencies are included.
    *
-   * @return {!Iterator} An array of (node, adjacency dictionary)
+   * ### Examples
+   *
+   * ```
+   * var G = new jsnx.Graph() // or DiGraph, MultiGraph, MultiDiGraph, etc
+   * G.addPath([0,1,2,3]);
+   * Array.from(G.adjacencyIter());
+   * // [
+   * //   [0, Map {1: {}}],
+   * //   [1, Map {0: {}, 2: {}}],
+   * //   [2, Map {1: {}, 3: {}}],
+   * //   [3, Map {2: {}]]
+   * // ]
+   * ```
+   *
+   * @return {!Iterator} An array of (node, adjacency map) tuples
    *      for all nodes in the graph.
-   * @export
    */
   adjacencyIter() {
     return this.adj.entries();
   }
-
 
   /**
    * Return the degree of a node or nodes.
    *
    * The node degree is the number of edges adjacent to that node.
    *
-   * WARNING: Since both parameters are optional, and the weight attribute
-   * name could be equal to a node name, nbunch as to be set to null explicitly
-   * to use the second argument as weight attribute name.
+   * ### Examples
    *
-   * @param {(Node|NodeContainer)=} opt_nbunch (default=all nodes)
-   *      A container of nodes.  The container will be iterated
+   * ```
+   * var G = new jsnx.Graph();  // or DiGraph, MultiGraph, MultiDiGraph, etc
+   * G.addPath([0,1,2,3])
+   * G.degree(0)
+   * // 1
+   * G.degree([0,1])
+   * // Map {0: 1, 1: 2}
+   * Array.from(G.degree([0,1]).values())
+   * // [1, 2]
+   * ```
+   *
+   * @param {(Node|Iterable)=} optNbunch (default=all nodes)
+   *      An iterable of nodes.  The iterable will be iterated
    *      through once.
-   *
-   * @param {string=} opt_weight (default=None)
+   * @param {string=} optWeight
    *      The edge attribute that holds the numerical value used
    *      as a weight.  If null or not defined, then each edge has weight 1.
    *      The degree is the sum of the edge weights adjacent to the node.
-   *
    * @return {!(number|Map)} A dictionary with nodes as keys and
-   * degree as values or a number if a single node is specified.
-   * @export
+   *      degree as values or a number if a single node is specified.
    */
   degree(optNbunch, optWeight) {
     if (optNbunch != null && this.hasNode(optNbunch)) {
@@ -761,23 +1062,29 @@ export default class Graph {
     }
   }
 
-
   /**
    * Return an array for (node, degree).
    *
+   * The node degree is the number of edges adjacent to that node.
    *
-   * @param {(Node|NodeContainer)=} opt_nbunch (default=all nodes)
+   * ### Examples
+   *
+   * ```
+   * var G = new jsnx.Graph();  // or DiGraph, MultiGraph, MultiDiGraph, etc
+   * G.addPath([0,1,2,3])
+   * Array.from(G.degreeIter(0));
+   * // [[0, 1]]
+   * Array.from(G.degreeIter([0,1]));
+   * // [[0, 1], [1, 2]]
+   * ```
+   *
+   * @param {(Node|Iterable)=} optNbunch (default=all nodes)
    *       A container of nodes.  The container will be iterated
    *       through once.
-   * @param {string=} opt_weight (default=None)
+   * @param {string=} optWeight
    *      The edge attribute that holds the numerical value used
    *      as a weight.  If null or not defined, then each edge has weight 1.
    *      The degree is the sum of the edge weights adjacent to the node.
-   *
-   * WARNING: Since both parameters are optional, and the weight attribute
-   * name could be equal to a node name, nbunch as to be set to null explicitly
-   * to use the second argument as weight attribute name.
-   *
    * @return {!Iterator} of two-tuples of (node, degree).
    *
    * @export
@@ -832,7 +1139,17 @@ export default class Graph {
    *
    * This also removes the name, and all graph, node, and edge attributes.
    *
-   * @export
+   * ### Examples
+   *
+   * ```
+   * var G = new jsnx.Graph(); // or DiGraph, MultiGraph, MultiDiGraph, etc
+   * G.addPath([0,1,2,3]);
+   * G.clear();
+   * G.nodes();
+   * // []
+   * G.edges();
+   * // []
+   * ```
    */
   clear() {
     this.name = '';
@@ -841,26 +1158,32 @@ export default class Graph {
     clear(this.graph);
   }
 
-
   /**
    * Return a copy of the graph.
+   *
+   * ### Examples
+   *
+   * ```
+   * var G = new jsnx.Graph(); // or DiGraph, MultiGraph, MultiDiGraph, etc
+   * G.addPath([0,1,2,3]);
+   * var H = G.copy();
+   * ```
+   *
+   * ### Notes
    *
    * This makes a complete copy of the graph including all of the
    * node or edge attributes.
    *
    * @return {!Graph}
-   * @export
    */
   copy() {
     return deepcopy(this);
   }
 
-
   /**
    * Return True if graph is a multigraph, False otherwise.
    *
    * @return {boolean} True if graph is a multigraph, False otherwise.
-   * @export
    */
   isMultigraph() {
     return false;
@@ -871,7 +1194,6 @@ export default class Graph {
    * Return True if graph is directed, False otherwise.
    *
    * @return {boolean}  True if graph is directed, False otherwise.
-   * @export
    */
   isDirected() {
     return false;
@@ -881,15 +1203,39 @@ export default class Graph {
   /**
    * Return a directed representation of the graph.
    *
+   * ### Examples
+   *
+   * ```
+   * var G = new jsnx.Graph(); // or MultiGraph, etc
+   * G.addPath([0,1]);
+   * var H = G.toDirected();
+   * H.edges();
+   * // [[0,1], [1,0]]
+   * ```
+   *
+   * If already directed, return a (deep) copy
+   *
+   * ```
+   * var G = new jsnx.DiGraph(); // or MultiDiGraph, etc
+   * G.addPath([0,1]);
+   * var H = G.toDirected();
+   * H.edges();
+   * // [[0,1]]
+   * ```
+   *
+   * ### Notes
+   *
    * This returns a "deepcopy" of the edge, node, and
    * graph attributes which attempts to completely copy
    * all of the data and references.
    *
-   * This is in contrast to the similar D=DiGraph(G) which returns a
-   * shallow copy of the data.
+   * This is in contrast to the similar `var H = new jsnx.DiGraph(G)` which
+   * returns a shallow copy of the data.
    *
    * @return {!DiGraph}
-   * @export
+   *   A directed graph with the same name, same nodes, and with
+   *   each edge (u,v,data) replaced by two directed edges
+   *   (u,v,data) and (v,u,data).
    */
   toDirected() {
     var G = new (require('./DiGraph'))();
@@ -909,18 +1255,32 @@ export default class Graph {
     return G;
   }
 
-
   /**
    * Return an undirected copy of the graph.
+   *
+   * ### Examples
+   *
+   * ```
+   * var G = new jsnx.Graph(); // or MultiGraph, etc
+   * G.addPath([0,1]);
+   * var H = G.toDirected();
+   * G.edges();
+   * // [[0,1], [1,0]]
+   * var G2 = H.toUndirected();
+   * G2.edges();
+   * // [[0,1]]
+   * ```
+   *
+   * ### Notes
    *
    * This returns a "deepcopy" of the edge, node, and
    * graph attributes which attempts to completely copy
    * all of the data and references.
    *
-   * This is in contrast to the similar G=DiGraph(D) which returns a
-   * shallow copy of the data.
+   * This is in contrast to the similar `var H = new jsnx.Graph(G);` which
+   * returns a shallow copy of the data.
    *
-   * @return {!Graph}
+   * @return {!Graph} A deepcopy of the graph.
    * @export
    */
   toUndirected() {
@@ -934,15 +1294,24 @@ export default class Graph {
    * The induced subgraph of the graph contains the nodes in nbunch
    * and the edges between those nodes.
    *
+   * ### Examples
+   *
+   * ```
+   * var G = new jsnx.Graph() // or DiGraph, MultiGraph, MultiDiGraph, etc
+   * G.addPath([0,1,2,3]);
+   * var H = G.subgraph([0,1,2]);
+   * H.edges();
+   * // [[0,1], [1,2]]
+   * ```
+   *
+   * ### Notes
+   *
    * The graph, edge or node attributes just point to the original graph.
    * So changes to the node or edge structure will not be reflected in
    * the original graph while changes to the attributes will.
    *
    * To create a subgraph with its own copy of the edge/node attributes use:
-   * `jsnx.Graph(G.subgraph(nbunch))`.
-   *
-   * If edge attributes are containers, a deep copy can be obtained using:
-   * `G.subgraph(nbunch).copy()`
+   * `new jsnx.Graph(G.subgraph(nbunch))`.
    *
    * For an inplace reduction of a graph to a subgraph you can remove nodes:
    *
@@ -952,11 +1321,9 @@ export default class Graph {
    * }))
    * ```
    *
-   * @param {NodeContainer} nbunch
-   *      A container of nodes which will be iterated through once.
-   *
+   * @param {Iterable} nbunch
+   *      An iterable of nodes which will be iterated through once.
    * @return {Graph}
-   * @export
    */
   subgraph(nbunch) {
     var bunch = this.nbunchIter(nbunch);
@@ -998,8 +1365,17 @@ export default class Graph {
    * A node with a self loop has an edge with both ends adjacent
    * to that node.
    *
-   * @return {Array.<string>} A list of nodes with self loops.
-   * @export
+   * ### Examples
+   *
+   * ```
+   * var G = new jsnx.Graph();   // or DiGraph, MultiGraph, MultiDiGraph, etc
+   * G.addEdge(1, 1)
+   * G.addEdge(1, 2)
+   * G.nodesWithSelfloops()
+   * // [1]
+   * ```
+   *
+   * @return {Array} A list of nodes with self loops.
    */
   nodesWithSelfloops() {
     var nodes = [];
@@ -1011,20 +1387,30 @@ export default class Graph {
     return nodes;
   }
 
-
   /**
    * Return a list of selfloop edges.
    *
    * A selfloop edge has the same node at both ends.
    *
-   * @param {boolean=} opt_data (default=False)
+   * ### Examples
+   *
+   * ```
+   * var G = new jsnx.Graph();   // or DiGraph, MultiGraph, MultiDiGraph, etc
+   * G.addEdge(1,1)
+   * G.addEdge(1,2)
+   * G.selfloopEdges()
+   * // [(1, 1)]
+   * G.selfloop_edges(true)
+   * // [(1, 1, {})]
+   * ```
+   *
+   * @param {boolean=} optData
    *      Return selfloop edges as two tuples (u,v) (data=False)
    *      or three-tuples (u,v,data) (data=True).
    *
    * @return {Array}  A list of all selfloop edges.
-   * @export
    */
-  selfloopEdges(optData) {
+  selfloopEdges(optData=false) {
     var edges = [];
 
     for (var nd of this.adj.entries()) {
@@ -1042,28 +1428,50 @@ export default class Graph {
     return edges;
   }
 
-
   /**
    * Return the number of selfloop edges.
    *
    * A selfloop edge has the same node at both ends.
    *
+   * ### Examples
+   *
+   * ```
+   * var G = new jsnx.Graph();   // or DiGraph, MultiGraph, MultiDiGraph, etc
+   * G.add_edge(1,1)
+   * G.add_edge(1,2)
+   * G.number_of_selfloops()
+   * // 1
+   * ```
+   *
    * @return {number} The number of selfloops.
-   * @export
    */
   numberOfSelfloops() {
     return this.selfloopEdges().length;
   }
 
-
   /**
    * Return the number of edges.
    *
-   * @param {string=} opt_weight The edge attribute that holds the numerical
-   *      value used as a weight.  If not defined, then each edge has weight 1.
+   * ### Examples
    *
+   * ```
+   * var G = new jsnx.Graph();   // or DiGraph, MultiGraph, MultiDiGraph, etc
+   * G.addPath([0,1,2,3])
+   * G.size()
+   * // 3
+   *
+   * var G = new jsnx.Graph();   // or DiGraph, MultiGraph, MultiDiGraph, etc
+   * G.addEdge('a',' b', {weight: 2});
+   * G.addEdge('b', 'c', {weight: 4});
+   * G.size()
+   * // 2
+   * G.size('weight');
+   * // 6.0
+   * ```
+   *
+   * @param {string=} optWeight The edge attribute that holds the numerical
+   *      value used as a weight.  If not defined, then each edge has weight 1.
    * @return {number} The number of edges or sum of edge weights in the graph.
-   * @export
    */
   size(optWeight) {
     var s = 0;
@@ -1084,15 +1492,24 @@ export default class Graph {
   /**
    * Return the number of edges between two nodes.
    *
+   * ### Examples
+   *
+   * ```
+   * var G = new jsnx.Graph();   // or DiGraph, MultiGraph, MultiDiGraph, etc
+   * G.addPath([0,1,2,3]);
+   * G.numberOfEdges();
+   * // 3
+   * G.number_of_edges(0,1);
+   * // 1
+   * ```
+   *
    * @param {!Node=} u node.
    * @param {!Node=} v node
-   *       If u and v are specified, return the number of edges between
+   *       If u and v are both specified, return the number of edges between
    *       u and v. Otherwise return the total number of all edges.
-   *
    * @return {number} The number of edges in the graph.
    *      If nodes u and v are specified return the number of edges between
    *      those nodes.
-   * @export
    */
   numberOfEdges(u, v) {
     if (u == null) {
@@ -1110,12 +1527,18 @@ export default class Graph {
   /**
    * Add a star.
    *
+   * ### Examples
+   * ```
+   * var G = new jsnx.Graph();   // or DiGraph, MultiGraph, MultiDiGraph, etc
+   * G.addStar([0,1,2,3]);
+   * G.addStar([10,11,12], {weight: 2});
+   * ```
+   *
    * The first node in nodes is the middle of the star.  It is connected
    * to all other nodes.
    *
-   * @param {NodeContainer} nodes A container of nodes.
-   * @param {Object=} opt_attr  Attributes to add to every edge in star.
-   * @export
+   * @param {Iterable} nodes A container of nodes.
+   * @param {Object=} optAttr  Attributes to add to every edge in the star.
    */
   addStar(nodes, optAttr) {
     var niter = toIterator(nodes);
@@ -1128,11 +1551,18 @@ export default class Graph {
   /**
    * Add a path.
    *
-   * @param {NodeContainer} nodes A container of nodes.
+   * ### Examples
+   *
+   * ```
+   * var G= new jsnx.Graph();   // or DiGraph, MultiGraph, MultiDiGraph, etc
+   * G.addPath([0,1,2,3]);
+   * G.addPath([10,11,12], {weight: 7});
+   * ```
+   *
+   * @param {Iterable} nodes A container of nodes.
    *      A path will be constructed from the nodes (in order)
    *      and added to the graph.
-   * @param {Object=} opt_attr Attributes to add to every edge in path.
-   * @export
+   * @param {Object=} optAttr Attributes to add to every edge in path.
    */
   addPath(nodes, optAttr) {
     var nlist = Array.from(nodes);
@@ -1147,11 +1577,18 @@ export default class Graph {
   /**
    * Add a cycle.
    *
-   * @param {NodeContainer} nodes A container of nodes.
+   * ### Examples
+   *
+   * ```
+   * var G= new jsnx.Graph();   // or DiGraph, MultiGraph, MultiDiGraph, etc
+   * G.addCycle([0,1,2,3]);
+   * G.addCycle([10,11,12], {weight: 7});
+   * ```
+   *
+   * @param {Iterable} nodes A container of nodes.
    *      A cycle will be constructed from the nodes (in order)
    *      and added to the graph.
-   * @param {Object=} opt_attr  Attributes to add to every edge in cycle.
-   * @export
+   * @param {Object=} optAttr  Attributes to add to every edge in cycle.
    */
   addCycle(nodes, optAttr) {
     var nlist = Array.from(nodes);
@@ -1164,31 +1601,29 @@ export default class Graph {
 
 
   /**
-   * Return an iterator of nodes contained in nbunch that are
+   * Return an iterator of nodes contained in `nbunch` that are
    * also in the graph.
    *
-   * The nodes in nbunch are checked for membership in the graph
+   * The nodes in `nbunch` are checked for membership in the graph
    * and if not are silently ignored.
    *
-   * Notes
-   * -----
-   * When nbunch is an iterator, the returned iterator yields values
-   * directly from nbunch, becoming exhausted when nbunch is exhausted.
+   * ### Notes
    *
-   * To test whether nbunch is a single node, one can use
-   * "if(this.has_node(nbunch)", even after processing with this routine.
+   * When `nbunch` is an iterator, the returned iterator yields values
+   * directly from `nbunch`, becoming exhausted when `nbunch` is exhausted.
    *
-   * If nbunch is not a node or a (possibly empty) sequence/iterator
+   * To test whether `nbunch` is a single node, one can use
+   * `if (this.hasNode(nbunch))`, even after processing with this routine.
+   *
+   * If `nbunch` is not a node or a (possibly empty) sequence/iterator
    * or not defined, an Error is raised.
    *
-   * @param {(Node|NodeContainer)=} opt_nbunch (default=all nodes)
+   * @param {(Node|Iterable)=} optNbunch (default=all nodes)
    *      A container of nodes.  The container will be iterated
    *      through once.
-   *
    * @return {!Iterator} An iterator over nodes in nbunch
    *      that are also in the graph.
    *      If nbunch is null or not defined, iterate over all nodes in the graph.
-   * @export
    */
   *nbunchIter(optNbunch) {
     if (optNbunch == null) { // include all nodes
@@ -1218,6 +1653,21 @@ export default class Graph {
     }
   }
 
+  /**
+   * A graph is an iterable over its nodes.
+   *
+   * ### Example
+   *
+   * ```
+   * var G = new jsnx.Graph();   // or DiGraph, MultiGraph, MultiDiGraph, etc
+   * G.addNodesFrom([0,1,2,3]);
+   * for (var node of G) {
+   *   console.log(node);
+   * }
+   * ```
+   *
+   * @return {Iterator}
+   */
   [Symbol.iterator]() {
     return this.node.keys();
   }

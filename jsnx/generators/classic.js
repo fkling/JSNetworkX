@@ -43,11 +43,17 @@ function *treeEdges(n, r) {
 
 /**
  * Creates a full r-ary tree of n vertices.
+ *
  * Sometimes called a k-ary, n-ary, or m-ary tree.  "... all non-leaf
  * vertices have exactly r children and all levels are full except
  * for some rightmost position of the bottom level (if a leaf at the
  * bottom level is missing, then so are all of the leaves to its
- * right."
+ * right." (1)
+ *
+ * ### References
+ *
+ * [1] An introduction to data structures and algorithms,
+ *    James Andrew Storer,  Birkhauser Boston 2001, (page 225).
  *
  * @param {number} r branching factor of the tree
  * @param {number} n number of nodes in the tree
@@ -61,7 +67,6 @@ export function fullRaryTree(r, n, optCreateUsing) {
   return G;
 }
 
-
 /**
  * Return the perfectly balanced r-tree of height h.
  *
@@ -71,7 +76,7 @@ export function fullRaryTree(r, n, optCreateUsing) {
  *
  * Node labels are the integers 0 (the root) up to  numberOfNodes - 1.
  *
- * Also refered to as a complete r-ary tree.
+ * Also referred to as a complete r-ary tree.
  *
  * @param {number} r  Branching factor of the tree
  * @param {number} h Height of the tree
@@ -114,10 +119,10 @@ export function completeGraph(n, optCreateUsing) {
 /**
  * Return the cycle graph C_n over n nodes.
  *
- * C_n is the n-path with two end-nodes connected.
+ * `$C_n$` is the n-path with two end-nodes connected.
  *
  * Node labels are the integers 0 to n-1
- * If create_using is a DiGraph, the direction is in increasing order.
+ * If `optCreateUsing` is a DiGraph, the direction is in increasing order.
  *
  * @param {number} n The number of nodes to add to the graph
  * @param {Graph=} optCreateUsing Graph instance to empty and add nodes to.
@@ -149,27 +154,27 @@ export function cycleGraph(n, optCreateUsing) {
  * // 0
  * ```
  *
- * The variable create_using should point to a "graph"-like object that
+ * The variable `optCreateUsing` should point to a "graph"-like object that
  * will be cleaned (nodes and edges will be removed) and refitted as
  * an empty "graph" with n nodes with integer labels. This capability
  * is useful for specifying the class-nature of the resulting empty
  * "graph" (i.e. Graph, DiGraph, MyWeirdGraphClass, etc.).
  *
- * The variable create_using has two main uses:
- * Firstly, the variable create_using can be used to create an
+ * The variable `optCreateUsing` has two main uses:
+ * Firstly, the variable `optCreateUsing` can be used to create an
  * empty digraph, network,etc.  For example,
  *
  * ```
  * var n = 10
- * var G = jsnx.emptyGraph(n, jsnx.DiGraph())
+ * var G = jsnx.emptyGraph(n, new jsnx.DiGraph())
  * ```
  *
  * will create an empty digraph on n nodes.
  *
  * Secondly, one can pass an existing graph (digraph, pseudograph,
- * etc.) via create_using. For example, if G is an existing graph
- * (resp. digraph, pseudograph, etc.), then empty_graph(n,G)
- * will empty G (i.e. delete all nodes and edges using G.clear() in
+ * etc.) via `optCreateUsing`. For example, if `G` is an existing graph
+ * (resp. digraph, pseudograph, etc.), then `emptyGraph(n,G)`
+ * will empty G (i.e. delete all nodes and edges using `G.clear()` in
  * base) and then add n nodes and zero edges, and return the modified
  * graph (resp. digraph, pseudograph, etc.).
  *
@@ -208,7 +213,7 @@ export function emptyGraph(optN, optCreateUsing) {
 /**
  * Return the 2d grid graph of mxn nodes,
  * each connected to its nearest neighbors.
- * Optional argument periodic=True will connect
+ * Optional argument `optPeriodic` will connect
  * boundary nodes via periodic boundary conditions.
  *
  * @param {number} rows Number of rows
@@ -217,7 +222,12 @@ export function emptyGraph(optN, optCreateUsing) {
  * @param {Graph=} optCreateUsing
  * @return {Graph}
  */
-export function grid2dGraph(rows, columns, optPeriodic, optCreateUsing) {
+export function grid2dGraph(
+  rows,
+  columns,
+  optPeriodic=false,
+  optCreateUsing=null
+) {
   var G = emptyGraph(0, optCreateUsing);
   G.name = 'grid2dGraph';
   var i;

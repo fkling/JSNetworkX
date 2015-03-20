@@ -22,21 +22,26 @@ import {
 
 
 /**
- * Return a random graph G_{n,p} (Erdős-Rényi graph, binomial graph).
+ * Return a random graph `$G_{n,p}$` (Erdős-Rényi graph, binomial graph).
  *
- * The G_{n,p} graph algorithm chooses each of the `[n(n-1)]/2`
- * (undirected) or `n(n-1)` (directed) possible edges with probability `p`.
+ * The `$G_{n,p}$` graph algorithm chooses each of the `$[n(n-1)]/2$`
+ * (undirected) or `$n(n-1)$` (directed) possible edges with probability `$p$`.
  *
- * This algorithm is `O(n+m)` where `m` is the expected number of
- * edges `m = p*n*(n-1)/2`.
+ * This algorithm is `$O(n+m)$` where `$m$` is the expected number of
+ * edges `$m = p*n*(n-1)/2$`.
  *
- * It should be faster than `gnpRandomGraph` when `p is small and
+ * It should be faster than `gnpRandomGraph` when `p` is small and
  * the expected number of edges is small (sparse graph).
+ *
+ * ### References
+ *
+ * [1] Vladimir Batagelj and Ulrik Brandes,
+ *     "Efficient generation of large random networks",
+ *     Phys. Rev. E, 71, 036113, 2005.
  *
  * @param {number} n The number of nodes
  * @param {number} p Probability for edge creation
- * @param {boolean} optDirected (default=false) If true return a directed graph
- *
+ * @param {boolean} optDirected If true return a directed graph
  * @return {Graph}
  */
 export async function fastGnpRandomGraph(n, p, optDirected=false) {
@@ -92,23 +97,22 @@ export async function fastGnpRandomGraph(n, p, optDirected=false) {
 
 
 /**
- * Return a random graph G_{n,p} (Erdős-Rényi graph, binomial graph).
+ * Return a random graph `$G_{n,p}$` (Erdős-Rényi graph, binomial graph).
  *
  * Chooses each of the possible edges with probability `p.
  *
  * This is also called `binomialGraph` and `erdosRenyiGraph`.
  *
- * This is an `O(n^2)` algorithm.  For sparse graphs (small `p`) see
+ * This is an `$O(n^2)$` algorithm.  For sparse graphs (small `$p$`) see
  * `fastGnpRandomGraph for a faster algorithm.
  *
  * @param {number} n The number of nodes
  * @param {number} p Probability for edge creation
- * @param {boolean} opt_directed (default=false)
+ * @param {boolean} optDirected
  *  If true returns a directed graph
- *
  * @return {Graph}
  */
-export async function gnpRandomGraph(n, p, optDirected) {
+export async function gnpRandomGraph(n, p, optDirected=false) {
   var G = optDirected ? new DiGraph() : new Graph();
   var edges;
   var rangeN = range(n);

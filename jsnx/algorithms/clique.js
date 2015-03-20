@@ -32,16 +32,12 @@ import {
  * a given node.  The largest maximal clique is sometimes called
  * the maximum clique.
  *
- * See Also
- * --------
- * find_cliques_recursive :
- *    A recursive version of the same algorithm
  *
  * ### Notes
  *
- * Based on the algorithm published by Bron & Kerbosch (1973) [1]_
- * as adapated by Tomita, Tanaka and Takahashi (2006) [2]_
- * and discussed in Cazals and Karande (2008) [3]_.
+ * Based on the algorithm published by Bron & Kerbosch (1973) ([1][])
+ * as adapted by Tomita, Tanaka and Takahashi (2006) ([2][])
+ * and discussed in Cazals and Karande (2008) ([3][]).
  *
  * This algorithm ignores self-loops and parallel edges as
  * clique is not conventionally defined with such edges.
@@ -51,30 +47,31 @@ import {
  *
  * ### References
  *
- * .. [1] Bron, C. and Kerbosch, J. 1973.
+ * [1] [Bron, C. and Kerbosch, J. 1973.
  *    Algorithm 457: finding all cliques of an undirected graph.
- *    Commun. ACM 16, 9 (Sep. 1973), 575-577.
- *    http://portal.acm.org/citation.cfm?doid=362342.362367
+ *    Commun. ACM 16, 9 (Sep. 1973), 575-577.][1]
+ * [1]: http://portal.acm.org/citation.cfm?doid=362342.362367
  *
- * .. [2] Etsuji Tomita, Akira Tanaka, Haruhisa Takahashi,
+ * [2] [Etsuji Tomita, Akira Tanaka, Haruhisa Takahashi,
  *    The worst-case time complexity for generating all maximal
  *    cliques and computational experiments,
  *    Theoretical Computer Science, Volume 363, Issue 1,
  *    Computing and Combinatorics,
  *    10th Annual International Conference on
- *    Computing and Combinatorics (COCOON 2004), 25 October 2006, Pages 28-42
- *    http://dx.doi.org/10.1016/j.tcs.2006.06.015
+ *    Computing and Combinatorics (COCOON 2004), 25 October 2006, Pages 28-42][2]
+ * [2]: http://dx.doi.org/10.1016/j.tcs.2006.06.015
  *
- * .. [3] F. Cazals, C. Karande,
+ * [3] [F. Cazals, C. Karande,
  *    A note on the problem of reporting maximal cliques,
  *    Theoretical Computer Science,
- *    Volume 407, Issues 1-3, 6 November 2008, Pages 564-568,
- *    http://dx.doi.org/10.1016/j.tcs.2008.05.010
- *
- * @param {Graph} G
- * @return {Iterator<Array<Node>>}
+ *    Volume 407, Issues 1-3, 6 November 2008, Pages 564-568][3]
+ * [3]: http://dx.doi.org/10.1016/j.tcs.2008.05.010
  *
  * @see findCliquesRecursive
+ *
+ * @param {Graph} G
+ * @return {Iterator<Array<Node>>} Iterator over member lists for each maximal
+ *  clique
  */
 export async function* findCliques(G) {
   if (G.numberOfNodes() === 0) {
@@ -92,28 +89,28 @@ export async function* findCliques(G) {
   var Q = [null];
 
   var u = max(subgraph, u => candidates.intersection(adj.get(u)).size);
-  var ext_u = candidates.difference(adj.get(u));
+  var extU = candidates.difference(adj.get(u));
   var stack = [];
 
   while (true) {
-    if (ext_u.size > 0) {
-      var q = ext_u.pop();
+    if (extU.size > 0) {
+      var q = extU.pop();
       candidates.delete(q);
       Q[Q.length - 1] = q;
-      var adj_q = adj.get(q);
-      var subgraph_q = subgraph.intersection(adj_q);
-      if (subgraph_q.size === 0) {
+      var adjQ = adj.get(q);
+      var subgraphQ = subgraph.intersection(adjQ);
+      if (subgraphQ.size === 0) {
         yield Q.slice();
       }
       else {
-        var candidates_q = candidates.intersection(adj_q);
-        if (candidates_q.size > 0) {
-          stack.push([subgraph, candidates, ext_u]);
+        var candidatesQ = candidates.intersection(adjQ);
+        if (candidatesQ.size > 0) {
+          stack.push([subgraph, candidates, extU]);
           Q.push(null);
-          subgraph = subgraph_q;
-          candidates = candidates_q;
+          subgraph = subgraphQ;
+          candidates = candidatesQ;
           u = max(subgraph, u => candidates.intersection(adj.get(u)).size);
-          ext_u = candidates.difference(adj.get(u));
+          extU = candidates.difference(adj.get(u));
         }
       }
     }
@@ -122,7 +119,7 @@ export async function* findCliques(G) {
         break;
       }
       Q.pop();
-      [subgraph, candidates, ext_u] = stack.pop();
+      [subgraph, candidates, extU] = stack.pop();
     }
   }
 }
@@ -136,35 +133,35 @@ export async function* findCliques(G) {
  *
  * ### Notes
  *
- * Based on the algorithm published by Bron & Kerbosch (1973) [1]_
- * as adapated by Tomita, Tanaka and Takahashi (2006) [2]_
- * and discussed in Cazals and Karande (2008) [3]_.
+ * Based on the algorithm published by Bron & Kerbosch (1973) ([1][])
+ * as adapted by Tomita, Tanaka and Takahashi (2006) ([2][])
+ * and discussed in Cazals and Karande (2008) ([3][]).
  *
  * This algorithm ignores self-loops and parallel edges as
  * clique is not conventionally defined with such edges.
  *
- * References
- * ----------
- * .. [1] Bron, C. and Kerbosch, J. 1973.
- *    Algorithm 457: finding all cliques of an undirected graph.
- *    Commun. ACM 16, 9 (Sep. 1973), 575-577.
- *    http://portal.acm.org/citation.cfm?doid=362342.362367
  *
- * .. [2] Etsuji Tomita, Akira Tanaka, Haruhisa Takahashi,
+ * ### References
+ *
+ * [1] [Bron, C. and Kerbosch, J. 1973.
+ *    Algorithm 457: finding all cliques of an undirected graph.
+ *    Commun. ACM 16, 9 (Sep. 1973), 575-577.][1]
+ * [1]: http://portal.acm.org/citation.cfm?doid=362342.362367
+ *
+ * [2] [Etsuji Tomita, Akira Tanaka, Haruhisa Takahashi,
  *    The worst-case time complexity for generating all maximal
  *    cliques and computational experiments,
  *    Theoretical Computer Science, Volume 363, Issue 1,
  *    Computing and Combinatorics,
  *    10th Annual International Conference on
- *    Computing and Combinatorics (COCOON 2004), 25 October 2006, Pages 28-42
- *    http://dx.doi.org/10.1016/j.tcs.2006.06.015
+ *    Computing and Combinatorics (COCOON 2004), 25 October 2006, Pages 28-42][2]
+ * [2]: http://dx.doi.org/10.1016/j.tcs.2006.06.015
  *
- * .. [3] F. Cazals, C. Karande,
+ * [3] [F. Cazals, C. Karande,
  *    A note on the problem of reporting maximal cliques,
  *    Theoretical Computer Science,
- *    Volume 407, Issues 1-3, 6 November 2008, Pages 564-568,
- *    http://dx.doi.org/10.1016/j.tcs.2008.05.010
- *
+ *    Volume 407, Issues 1-3, 6 November 2008, Pages 564-568][3]
+ * [3]: http://dx.doi.org/10.1016/j.tcs.2008.05.010
  *
  * @param {Graph} G
  * @return {!Iterator<Array<Node>>} List of members in each maximal clique
@@ -188,15 +185,15 @@ export async function* findCliquesRecursive(G) {
     for (var q of candidates.difference(adj.get(u))) {
       candidates.delete(q);
       Q.push(q);
-      var adj_q = adj.get(q);
-      var subgraph_q = subgraph.intersection(adj_q);
-      if (subgraph_q.size === 0) {
+      var adjQ = adj.get(q);
+      var subgraphQ = subgraph.intersection(adjQ);
+      if (subgraphQ.size === 0) {
         yield Q.slice();
       }
       else {
-        var candidates_q = candidates.intersection(adj_q);
-        if (candidates_q.size > 0) {
-          yield* expand(subgraph_q, candidates_q);
+        var candidatesQ = candidates.intersection(adjQ);
+        if (candidatesQ.size > 0) {
+          yield* expand(subgraphQ, candidatesQ);
         }
       }
       Q.pop();
@@ -204,7 +201,7 @@ export async function* findCliquesRecursive(G) {
   }
 
   yield* expand(new Set(G), new Set(G));
-}
+};
 
 //TODO: make_max_clique_graph
 //TODO: make_clique_bipartite
@@ -218,11 +215,11 @@ export async function* findCliquesRecursive(G) {
  *
  * @param {Graph} G graph
  * @param {Iterable=} optCliques
- * @return {number};
+ * @return {number}
  */
 export async function graphCliqueNumber(G, optCliques) {
   if (optCliques == null) {
-    optCliques = findCliques(G);
+    optCliques = await findCliques(G);
   }
   return max(optCliques, c => c.length).length;
 }
@@ -233,12 +230,12 @@ export async function graphCliqueNumber(G, optCliques) {
  * An optional list of cliques can be input if already computed.
  *
  * @param {Graph} G graph
- * @param {Iterable} optCliques
+ * @param {Iterable=} optCliques
  * @return {number}
  */
 export async function graphNumberOfCliques(G, optCliques) {
   if (optCliques == null) {
-    optCliques = findCliques(G);
+    optCliques = await findCliques(G);
   }
   return Array.from(optCliques).length;
 }
@@ -253,12 +250,12 @@ export async function graphNumberOfCliques(G, optCliques) {
  * Optional list of cliques can be input if already computed.
  *
  * @param {Graph} G graph
- * @param {NodeContainer=} optNodes List of nodes
+ * @param {Iterable=} optNodes List of nodes
  * @param {Iterable=} optCliques List of cliques
  * @return {!(Map|number)}
  */
 export async function numberOfCliques(G, optNodes, optCliques) {
-  optCliques = Array.from(optCliques || findCliques(G));
+  optCliques = Array.from(optCliques || await findCliques(G));
 
   if (optNodes == null) {
     optNodes = G.nodes(); // none, get entire graph

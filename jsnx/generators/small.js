@@ -6,7 +6,7 @@ import {emptyGraph} from './classic';
 import {forEach} from '../_internals';
 
 /**
- * Return a small undirected graph described by graph_description.
+ * Return a small undirected graph described by `graphDescription`.
  *
  * @see makeSmallGraph.
  *
@@ -14,7 +14,6 @@ import {forEach} from '../_internals';
  *    Description of the graph to create in the form `{type, name, n, list}`.
  * @param {Graph=}
  *    optCreateUsing Graph instance to empty and add nodes to.
- *
  * @return {Graph}
  */
 export function makeSmallUndirectedGraph(graphDescription, optCreateUsing) {
@@ -27,7 +26,7 @@ export function makeSmallUndirectedGraph(graphDescription, optCreateUsing) {
 /**
  * Return the small graph described by graph_description.
  *
- * graphDescription is a list of the form `{type, name, n, list}`.
+ * `graphDescription` is a list of the form `{type, name, n, list}`.
  *
  * Here `ltype` is one of `"adjacencylist"` or `"edgelist"`,
  * `name` is the name of the graph and `n` the number of nodes.
@@ -57,6 +56,7 @@ export function makeSmallUndirectedGraph(graphDescription, optCreateUsing) {
  *   n: 4,
  *   list: [[2,4],[3],[4],[]]]
  * });
+ * ```
  *
  * If `ltype="edgelist"` then `xlist` is an edge list written as
  * `[[v1,w2],[v2,w2],...,[vk,wk]]`, where `vj` and `wj` integers in the range
@@ -73,7 +73,7 @@ export function makeSmallUndirectedGraph(graphDescription, optCreateUsing) {
  * });
  * ```
  *
- * Use the optCreateUsing argument to choose the graph class/type.
+ * Use the `optCreateUsing` argument to choose the graph class/type.
  *
  * @param {Array} graphDescription
  *    Description of the graph to create in the form `{type, name, n, list}`.

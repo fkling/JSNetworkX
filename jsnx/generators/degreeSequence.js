@@ -22,11 +22,11 @@ import sprintf from '../_internals/sprintf';
  * successively connecting the node of highest degree to other nodes
  * of highest degree, resorting remaining nodes by degree, and
  * repeating the process. The resulting graph has a high
- * degree-associativity. Nodes are labeled 1,.., len(degreeSequence),
+ * degree-associativity. Nodes are labeled `1,.., degreeSequence.length`,
  * corresponding to their position in `degreeSequence`.
  *
- * The basic algorithm is from Hakimi [1] and was generalized by
- * Kleitman and Wang [2].
+ * The basic algorithm is from Hakimi (1) and was generalized by
+ * Kleitman and Wang (2).
  *
  * ### References
  *
@@ -44,7 +44,6 @@ import sprintf from '../_internals/sprintf';
  * @param {Graph} optCreateUsing
  *      Return graph of this type. The instance will be cleared.
  *      Directed graphs are not allowed.
- *
  * @return {Graph}
  */
 export async function havelHakimiGraph(degreeSequence, optCreateUsing) {

@@ -1,6 +1,6 @@
-"use strict";
+'use strict';
 
-var JSNetworkXError = require('../exceptions/JSNetworkXError');
+import JSNetworkXError from '../exceptions/JSNetworkXError';
 
 import {
 /*jshint ignore:start*/
@@ -35,11 +35,12 @@ import {
  * ```
  *
  * ### Notes
+ *
  * When computing triangles for the entire graph each triangle is counted
  * three times, once at each node.  Self loops are ignored.
  *
- * @param {Graph} G A jsnetworkx graph
- * @param {NodeContainer=} optNodes (default: all nodes)
+ * @param {Graph} G A JSnetworkX graph
+ * @param {Iterable=} optNodes (default: all nodes)
  *      Compute triangles for nodes in this container.
  *
  * @return {!(Map|number)} Number of triangles keyed by node label.
@@ -66,10 +67,10 @@ export async function triangles(G, optNodes) {
  * Return an iterator of (node, degree, triangles).
  *
  * This double counts triangles so you may want to divide by 2.
- * See degree() and triangles() for definitions and details.
+ * See `degree()` and `triangles()` for definitions and details.
  *
  * @param {Graph} G A jsnetworkx graph
- * @param {NodeContainer=} optNodes (default: all nodes)
+ * @param {Iterable=} optNodes (default: all nodes)
  *      Compute triangles for nodes in this container.
  *
  * @return {!Iterator<Array>}
@@ -98,12 +99,12 @@ function* trianglesAndDegreeIter(G, optNodes) {
 }
 
 /**
- * Return an iterator of (node, degree, weighted_triangles).
+ * Return an iterator of `(node, degree, weightedTriangles)`.
  *
  * Used for weighted clustering.
  *
- * @param {Graph} G A jsnetworkx graph
- * @param {NodeContainer=} optNodes (default: all nodes)
+ * @param {Graph} G A JSnetworkX graph
+ * @param {Iterable=} optNodes (default: all nodes)
  *      Compute triangles for nodes in this container.
  * @param {string=} opt_weight (default: 'weight')
  *      The name of edge weight attribute.
@@ -152,10 +153,10 @@ function* weightedTrianglesAndDegreeIter(G, optNodes, optWeight='weight') {
  * The clustering coefficient for the graph is the average,
  *
  * ```math
- * C = \frac{1}{n}\sum{v \in G} c_v
+ * C = \frac{1}{n}\sum_{v \in G} c_v
  * ```
  *
- * where `n` is the number of nodes in `G`.
+ * where `$n$` is the number of nodes in `$G$`.
  *
  * ### Example
  *
@@ -166,21 +167,28 @@ function* weightedTrianglesAndDegreeIter(G, optNodes, optWeight='weight') {
  * ```
  *
  * ### Notes
- * This is a space saving routine; it might be faster
- * to use the clustering function to get a list and then take the average.
  *
  * Self loops are ignored.
  *
  *
- * @param {Graph} G graph
- * @param {?NodeContainer} optNodes (default: all nodes)
- *      Compute average clustering for nodes in this container.
- * @param {?string} optWeight (default: null)
- *      The edge attribute that holds the numerical value used as a weight.
- *      If None, then each edge has weight 1.
- * @param {?boolean=} optCountZeros (default: true)
- *       If False include only the nodes with nonzero clustering in the average.
+ * ### References
  *
+ * [1] [Generalizations of the clustering coefficient to weighted
+ *     complex networks by J. Saramäki, M. Kivelä, J.-P. Onnela,
+ *     K. Kaski, and J. Kertész, Physical Review E, 75 027105 (2007).][1]
+ * [1]: http://jponnela.com/web_documents/a9.pdf
+ * [2] [Marcus Kaiser,  Mean clustering coefficients: the role of isolated
+ *     nodes and leafs on clustering measures for small-world networks.][2]
+ * [2]:http://arxiv.org/abs/0802.2512
+ *
+ * @param {Graph} G graph
+ * @param {?Iterable} optNodes (default: all nodes)
+ *      Compute average clustering for nodes in this container.
+ * @param {?string=} optWeight (default: null)
+ *      The edge attribute that holds the numerical value used as a weight.
+ *      If `null`, then each edge has weight `1`.
+ * @param {?boolean=} optCountZeros
+ *      If `false` include only the nodes with nonzero clustering in the average.
  * @return {number}
  */
 export async function averageClustering(
@@ -200,18 +208,18 @@ export async function averageClustering(
 /**
  * Compute the clustering coefficient for nodes.
  *
- * For unweighted graphs the clustering of each node `u`
+ * For unweighted graphs the clustering of each node `$u$`
  * is the fraction of possible triangles through that node that exist,
  *
  * ```math
  * c_u = \frac{2 T(u)}{deg(u)(deg(u)-1)}
  * ```
  *
- * where `T(u)` is the number of triangles through node `u` and `deg(u)` is the
- * degree of `u`.
+ * where `$T(u)$` is the number of triangles through node `$u$` and `$deg(u)$`
+ * is the degree of `$u$`.
  *
- * For weighted graphs the clustering is defined
- * as the geometric average of the subgraph edge weights,
+ * For weighted graphs the clustering is defined as the geometric average of
+ * the subgraph edge weights,
  *
  * ```math
  * c_u = \frac{1}{deg(u)(deg(u)-1)}
@@ -221,7 +229,7 @@ export async function averageClustering(
  * The edge weights `$\hat{w}_{uv}$` are normalized by the maximum weight in the
  * network `$\hat{w}_{uv} = w_{uv}/\max(2)$`.
  *
- * The value `$c_u$` is assigned to `0` if `$deg(u) < 2$`.
+ * The value `$c_u$` is assigned to `$0$` if `$deg(u) < 2$`.
  *
  * ### Example
  *
@@ -234,9 +242,11 @@ export async function averageClustering(
  * ```
  *
  * @param {Graph} G graph
- * @param {?NodeContainer=} optNodes (default: all nodes)
+ * @param {?Iterable=} optNodes (default: all nodes)
  *      Compute average clustering for nodes in this container.
  * @param {?string=} optWeight (default: null)
+ *  If the edge attribute that holds the numerical value used as a weight.
+ *  If `null`, then each edge has weight `1`.
  *
  * @return {!(number|Map)} Clustering coefficient at specified nodes
  */
@@ -287,7 +297,6 @@ export async function clustering(G, optNodes, optWeight) {
  * ```
  *
  * @param {Graph} G graph
- *
  * @return {number} Transitivity
  */
 export async function transitivity(G) {
@@ -305,7 +314,7 @@ export async function transitivity(G) {
 /**
  * Compute the squares clustering coefficient for nodes.
  *
- * For each node return the faction of possible sequares that exist at the node
+ * For each node return the faction of possible squares that exist at the node
  *
  * ```math
  * C_4(v) = \frac{ \sum_{u=1}^{k_v}
@@ -316,7 +325,7 @@ export async function transitivity(G) {
  * where `$q_v(u,w)$` are the number of common neighbors of `$u$` and `$v$`
  * other than `$v$` (i.e. squares), and
  * `$a_v(u,w) = (k_u - (1+q_v(u,w)+\theta_{uv}))(k_w - (1+q_v(u,w)+\theta_{uw}))$`
- * where `$\theta_{uw} = 1$` if `u` and `w` are  connected and `$0$` otherwise.
+ * where `$\theta_{uw} = 1$` if `$u$` and `$w$` are  connected and `$0$` otherwise.
  *
  * ### Examples
  *
@@ -331,13 +340,13 @@ export async function transitivity(G) {
  * ### Notes
  *
  * While `$C_3(v)$` (triangle clustering) gives the probability that
- * two neighbors of node v are connected with each other, `$C_4(v)$` is
- * the probability that two neighbors of node v share a common
- * neighbor different from v. This algorithm can be applied to both
+ * two neighbors of node `$v$` are connected with each other, `$C_4(v)$` is
+ * the probability that two neighbors of node `$v$` share a common
+ * neighbor different from `$v$`. This algorithm can be applied to both
  * bipartite and unipartite networks.
  *
  * @param {Graph} G graph
- * @param {NodeContainer} opt_nodes (default: all)
+ * @param {Iterable=} opt_nodes (default: all)
  *   Compute clustering for nodes in this container.
  *
  * @return {!(Map|number)}

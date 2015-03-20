@@ -4,14 +4,14 @@ import {numberOfCliques} from '../clique';
 import {triangles} from '../cluster';
 
 /**
- * Returns False if graphs are definitely not isomorphic.
- * True does NOT guarantee isomorphism.
+ * Returns `false` if graphs are definitely not isomorphic.
+ * `true` does **not** guarantee isomorphism.
  *
  * Checks for matching degree, triangle, and number of cliques sequences.
  *
  * @param {!Graph} G1
  * @param {!Graph} G2
- * @return {boolean}  False if graphs are definitely not isomorphic.
+ * @return {boolean}  `false` if graphs are definitely not isomorphic.
  */
 export async function couldBeIsomorphic(G1, G2) {
   // Check global properties
@@ -45,14 +45,14 @@ export async function couldBeIsomorphic(G1, G2) {
 }
 
 /**
- * Returns False if graphs are definitely not isomorphic.
- * True does NOT guarantee isomorphism.
+ * Returns `false` if graphs are definitely not isomorphic.
+ * `true` does **not** guarantee isomorphism.
  *
  * Checks for matching degree and triangle sequences.
  *
  * @param {!Graph} G1
  * @param {!Graph} G2
- * @return {boolean}  False if graphs are definitely not isomorphic.
+ * @return {boolean}  `false` if graphs are definitely not isomorphic.
  */
 export async function fastCouldBeIsomorphic(G1, G2) {
   // Check global properties
@@ -84,8 +84,8 @@ export async function fastCouldBeIsomorphic(G1, G2) {
 }
 
 /**
- * Returns False if graphs are definitely not isomorphic.
- * True does NOT guarantee isomorphism.
+ * Returns `false` if graphs are definitely not isomorphic.
+ * `true` does **not** guarantee isomorphism.
  *
  * Checks for matching degree sequences.
  *
