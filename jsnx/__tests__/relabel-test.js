@@ -4,7 +4,7 @@
 import {Graph, DiGraph, MultiGraph, MultiDiGraph} from '../classes';
 import {JSNetworkXError} from '../exceptions';
 
-import relabel from '../relabel';
+import * as relabel from '../relabel';
 import {emptyGraph} from '../generators';
 
 

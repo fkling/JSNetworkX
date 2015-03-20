@@ -1,13 +1,11 @@
 'use strict';
 
-var DiGraph = require('./classes/DiGraph');
-/*jshint ignore:start*/
-var Map = require('./_internals/Map');
-var Set = require('./_internals/Set');
-/*jshint ignore:end*/
-var {JSNetworkXError, JSNetworkXUnfeasible} = require('./exceptions');
+import DiGraph from './classes/DiGraph';
+import {JSNetworkXError, JSNetworkXUnfeasible} from './exceptions';
 
-var {
+import {
+  Map,
+  Set,
   clone,
   forEach,
   isMap,
@@ -18,7 +16,7 @@ var {
   tuple2,
   tuple3c,
   tuple4c
-} = require('./_internals');
+} from './_internals';
 
 /**
  * Relabel the nodes of the graph G.
@@ -43,7 +41,7 @@ var {
  * @return {Graph}
  * @export
  */
-function relabelNodes(G, mapping, optCopy=true) {
+export function relabelNodes(G, mapping, optCopy=true) {
   // you can pass a function f(oldLabel)->newLabel
   // but we'll just make a dictionary here regardless
   var m = mapping;
@@ -203,7 +201,7 @@ function relabelCopy(G, mapping) {
  * @return {Graph}
  * @export
  */
-function convertNodeLabelsToIntegers(
+export function convertNodeLabelsToIntegers(
   G,
   optFirstLabel=0,
   optOrdering='default',
@@ -291,8 +289,3 @@ function convertNodeLabelsToIntegers(
   }
   return H;
 }
-
-module.exports = {
-  relabelNodes,
-  convertNodeLabelsToIntegers,
-};
