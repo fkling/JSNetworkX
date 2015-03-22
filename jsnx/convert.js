@@ -10,23 +10,21 @@
  * input type and convert it automatically.
  */
 
-/*jshint ignore:start*/
-var Map = require('./_internals/Map');
-var Set = require('./_internals/Set');
-/*jshint ignore:end*/
+import convertMap from './contrib/convert';
+import prepCreateUsing from './contrib/prepCreateUsing';
+import _mapValues from 'lodash/object/mapValues';
 
-var convertMap = require('./contrib/convert');
-var hasOwn = Object.prototype.hasOwnProperty;
-var prepCreateUsing = require('./contrib/prepCreateUsing');
-var _mapValues = require('lodash/object/mapValues');
-
-var {
+import {
+  Map,
+  Set,
   clone,
   forEach,
   isMap,
   isArrayLike,
   isPlainObject
-} = require('./_internals');
+} from './_internals';
+
+var hasOwn = Object.prototype.hasOwnProperty;
 
 /**
  * Make a jsnx graph from a known data structure.
@@ -48,9 +46,8 @@ var {
  *     a multigraph from a multigraph.
  *
  * @return {Graph}
- * @export
  */
-function toNetworkxGraph(data, optCreateUsing, optMultigraphInput) {
+export function toNetworkxGraph(data, optCreateUsing, optMultigraphInput) {
   var result = null;
 
   // jsnx graph
@@ -136,9 +133,8 @@ function toNetworkxGraph(data, optCreateUsing, optMultigraphInput) {
  * @param {Graph} G Graph to convert
  *
  * @return {!Graph}
- * @export
  */
-function convertToUndirected(G) {
+export function convertToUndirected(G) {
   return G.toUndirected();
 }
 
@@ -162,9 +158,8 @@ function convertToDirected(G) {
  * @param {NodeContainer=} opt_nodelist Use only nodes specified in nodelist
  *
  * @return {!Object.<Array>}
- * @export
  */
-function toDictOfLists(G, optNodelist) {
+export function toDictOfLists(G, optNodelist) {
   var contains = function(n) {
     return optNodelist.indexOf(n) > -1;
   };
@@ -195,9 +190,8 @@ function toDictOfLists(G, optNodelist) {
  *    Otherwise a new graph is created.
  *
  * @return {!Graph}
- * @export
  */
-function fromDictOfLists(d, optCreateUsing) {
+export function fromDictOfLists(d, optCreateUsing) {
   var G = prepCreateUsing(optCreateUsing);
 
   // Convert numeric property names to numbers
@@ -258,9 +252,8 @@ function fromDictOfLists(d, optCreateUsing) {
  *      If G is a multigraph, the edgedata is a dict for each pair (u,v).
  *
  * @return {!Object.<Object>}
- * @export
  */
-function toDictOfDicts(G, optNodelist, optEdgeData) {
+export function toDictOfDicts(G, optNodelist, optEdgeData) {
   var dod = {};
 
   if (optNodelist != null) {
@@ -320,9 +313,8 @@ function toDictOfDicts(G, optNodelist, optEdgeData) {
  *      Otherwise this routine assumes the edge data are singletons.
  *
  * @return {Graph}
- * @export
  */
-function fromDictOfDicts(d, optCreateUsing, optMultigraphInput) {
+export function fromDictOfDicts(d, optCreateUsing, optMultigraphInput) {
   var G = prepCreateUsing(optCreateUsing);
   var seen = new Set();
 
@@ -437,9 +429,8 @@ function fromDictOfDicts(d, optCreateUsing, optMultigraphInput) {
  * @param {NodeContainer=} opt_nodelist Use only nodes specified in nodelist
  *
  * @return {!Array}
- * @export
  */
-function toEdgelist(G, optNodelist) {
+export function toEdgelist(G, optNodelist) {
   if (optNodelist != null) {
     return G.edges(optNodelist, true);
   }
@@ -457,9 +448,8 @@ function toEdgelist(G, optNodelist) {
  *      Otherwise a new graph is created.
  *
  * @return {!Graph}
- * @export
  */
-function fromEdgelist(edgelist, optCreateUsing) {
+export function fromEdgelist(edgelist, optCreateUsing) {
   var G = prepCreateUsing(optCreateUsing);
   G.addEdgesFrom(edgelist);
   return G;
@@ -474,16 +464,3 @@ function fromEdgelist(edgelist, optCreateUsing) {
 // to_scipy_sparse_matrix
 // from_scipy_sparse_matrix
 // setup_module
-
-module.exports = {
-  toNetworkxGraph,
-  convertToUndirected,
-  convertToDirected,
-  toDictOfLists,
-  fromDictOfLists,
-  toDictOfDicts,
-  fromDictOfDicts,
-  toEdgelist,
-  fromEdgelist
-};
-
