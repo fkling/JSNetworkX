@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 
 import isIterable from './isIterable';
 import isPlainObject from './isPlainObject';
@@ -27,7 +27,6 @@ function deserializeSet(value) {
 }
 
 function serializeMap(value) {
-  // TODO: serialize nested values
   return {
     [KEY]: 'Map',
     data: [for ([k,v] of value) [k, serialize(v)]]
@@ -138,4 +137,23 @@ export function deserialize(value) {
 
   // default
   return value;
+}
+
+/**
+ * Serialize an array of values (e.g. arguments passed to a method).,
+ *
+ * @param {Array} values
+ * @return {{serializable: bool, values: Array}}
+ */
+export function serializeAll(values=[]) {
+  var serializedValues = new Array(values.length);
+  var serializable =  values.every((value, i) => {
+    var supported = isSupported(value);
+    if (supported) {
+      serializedValues[i] = serialize(value);
+    }
+    return supported;
+  });
+
+  return {serializable, serializedValues};
 }

@@ -1,36 +1,33 @@
-"use strict";
+'use strict';
 
-import delegate from './delegate';
-import {isSupported, serialize, deserialize} from './message';
+import Worker from './Worker';
+import WorkerSettings from './WorkerSettings';
+import delegateSync from './delegateSync';
+import {serializeAll, deserialize} from './message';
 
 var delegateImplementation;
-if (typeof global.Worker === 'function') {
+if (typeof Worker === 'function') {
   // Workers are supported
   delegateImplementation = function(method, args) {
-    var serializedArgs = new Array(args.length);
-    var serializable =  args.every((arg, i) => {
-      var supported = isSupported(arg);
-      if (supported) {
-        serializedArgs[i] = serialize(arg);
-      }
-      return supported;
-    });
+    var {serializable, serializedValues} = serializeAll(args);
 
     if (!serializable) {
       console.info(
         `At least one argument can't be serialized and sent to the worker. ` +
         `We will run ${method} in the same thread instead.`
       );
-      delegate(method, args);
+      return delegateSync(method, args);
     }
 
     return new Promise(function(resolve, reject) {
-      var worker = new global.Worker('{{BUNDLE}}');
-      worker.addEventListener("message", function (oEvent) {
-        resolve(deserialize(oEvent.data));
-      }, false);
-      worker.addEventListener("error", reject, false);
-      worker.postMessage({method, args: serializedArgs});
+      var worker = new Worker(WorkerSettings.workerPath);
+      worker.addEventListener(
+        'message',
+        oEvent => resolve(deserialize(oEvent.data)),
+        false
+      );
+      worker.addEventListener('error', reject, false);
+      worker.postMessage({method, args: serializedValues});
     });
   };
 }
@@ -40,7 +37,7 @@ else {
       `Workers are not supported in this environment, so "${method}" will ` +
       `run in the same thread instead. This might block the environment.`
     );
-    delegate(method, args);
+    return delegateSync(method, args);
   };
 }
 

@@ -1,10 +1,10 @@
 /*global assert, sinon */
 "use strict";
 
-import delegate from '../delegate';
+import delegate from '../delegateSync';
 import * as jsnx from '../../';
 
-export var testDelegate = {
+export var testDelegateSync = {
   beforeEach: function() {
     this.spy = jsnx.testFunction = sinon.spy();
   },

@@ -1,6 +1,32 @@
-"use strict";
-import * as jsnx from '../';
-import isIterator from './isIterator';
+'use strict';
+
+import path from 'path';
+import child_process from 'child_process';
+import {serializeAll, deserialize} from './message';
+import delegateSync from './delegateSync';
+
+function delegateToChildProcess(method, args) {
+  return new Promise((resolve, reject) => {
+    var response = '';
+    var error = '';
+    var child = child_process.spawn(
+      process.execPath,
+      [path.join(__dirname, '../worker.js')]
+    );
+    child.stdout.on('data', data => response += data);
+    child.stderr.on('data', data => error += data);
+    child.on('close', () => {
+      if (error) {
+        reject(new Error(error));
+      } else {
+        resolve(JSON.parse(response));
+      }
+    });
+
+    child.stdin.write(JSON.stringify({method, args}));
+    child.stdin.end();
+  });
+}
 
 /**
  * DON'T CALL THIS FUNCTION EXPLICITLY. It's inserted by a transform.
@@ -13,17 +39,14 @@ import isIterator from './isIterator';
  * @return {Promise}
  */
 export default function delegate(method, args) {
-  return new Promise(function(resolve, reject) {
-    try {
-      // We have to do the same here as we do in the worker, which is
-      // returning an array if we get back an iterator
-      var result = jsnx[method].apply(null, args);
-      if (isIterator(result)) {
-        result = Array.from(result);
-      }
-      resolve(result);
-    } catch(ex) {
-      reject(ex);
-    }
-  });
+  var {serializable, serializedValues} = serializeAll(args);
+  if (!serializable) {
+    console.info(
+      `At least one argument can't be serialized and sent to the worker. ` +
+      `We will run ${method} in the same thread instead.`
+    );
+    return delegateSync(method, args);
+  }
+  return delegateToChildProcess(method, serializedValues)
+    .then(response => deserialize(response.result));
 }

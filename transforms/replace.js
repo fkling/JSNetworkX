@@ -2,7 +2,7 @@
 var through = require('through');
 
 module.exports = function(filepath, options) {
-  options = options || process.env;
+  options = process.env;
   var data = '';
   var pattern = new RegExp(
     '\\{\\{(' + Object.keys(options).join('|') + ')\\}\\}',
@@ -12,7 +12,6 @@ module.exports = function(filepath, options) {
 
   function write (buf) { data += buf; }
   function end() {
-    /*jshint validthis:true*/
     data = data.replace(pattern, function(match, key) {
       return options[key];
     });
