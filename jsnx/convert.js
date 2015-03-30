@@ -10,7 +10,7 @@
  * input type and convert it automatically.
  */
 
-import convertMap from './contrib/convert';
+import * as convertMap from './contrib/convert';
 import prepCreateUsing from './contrib/prepCreateUsing';
 import _mapValues from 'lodash/object/mapValues';
 

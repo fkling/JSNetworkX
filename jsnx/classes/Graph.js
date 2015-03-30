@@ -10,7 +10,7 @@ import JSNetworkXError from '../exceptions/JSNetworkXError';
 import isBoolean from 'lodash/lang/isBoolean';
 import isString from 'lodash/lang/isString';
 
-import convert from '../convert';
+import * as convert from '../convert';
 import {
   clear,
   clone,

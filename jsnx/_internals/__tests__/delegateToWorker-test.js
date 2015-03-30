@@ -2,7 +2,7 @@
 "use strict";
 
 import delegate from '../delegate';
-import jsnx from '../../';
+import * as jsnx from '../../';
 
 export var testDelegate = {
   beforeEach: function() {
@@ -15,12 +15,15 @@ export var testDelegate = {
 
   'it returns a promise': function() {
     var promise = delegate('testFunction');
-    assert.isFunction(promise.then);
+    return assert.isFunction(promise.then);
   },
 
-  'it passes the arguments to the delegated function': function() {
-    delegate('testFunction', ['foo', 'bar']);
-    assert(this.spy.calledWith('foo', 'bar'));
+  'it passes the arguments to the delegated function': function(done) {
+    var promise = delegate('testFunction', ['foo', 'bar']);
+    promise.then(() => {
+      assert(this.spy.calledWith('foo', 'bar'));
+      done();
+    });
   },
 
   'it resolves to the return value of the delegated function': function() {
@@ -28,7 +31,7 @@ export var testDelegate = {
       return 'foo';
     };
     var promise = delegate('testFunction', ['foo', 'bar']);
-    assert.becomes(promise, 'foo');
+    return assert.becomes(promise, 'foo');
   },
 
   'it rejects if the delegated function throws an error': function() {
@@ -36,6 +39,6 @@ export var testDelegate = {
       throw new Error('some error');
     };
     var promise = delegate('testFunction', ['foo', 'bar']);
-    assert.isRejected(promise, 'some error');
+    return assert.isRejected(promise, 'some error');
   }
 };

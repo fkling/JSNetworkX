@@ -1,5 +1,5 @@
 "use strict";
-import jsnx from '../';
+import * as jsnx from '../';
 import isIterator from './isIterator';
 
 /**

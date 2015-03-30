@@ -6,7 +6,7 @@ import Map from '../_internals/Map';
 /*jshint ignore:end*/
 import JSNetworkXError from '../exceptions/JSNetworkXError';
 
-import convert from '../convert';
+import * as convert from '../convert';
 import {
   clear,
   clone,
@@ -663,15 +663,15 @@ export default class DiGraph extends Graph {
   /**
    * @alias successors
    */
-  neighbors() {
-    return this.successors();
+  neighbors(n) {
+    return this.successors(n);
   }
 
   /**
    * @alias successorsIter
    */
-  neighborsIter() {
-    return this.successorsIter();
+  neighborsIter(n) {
+    return this.successorsIter(n);
   }
 
   /**

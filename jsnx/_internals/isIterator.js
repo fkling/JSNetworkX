@@ -8,5 +8,5 @@
  * @return {boolean}
  */
 export default function isIterator(obj) {
-  return typeof obj.next === 'function';
+  return obj && typeof obj.next === 'function';
 }
