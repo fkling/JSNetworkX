@@ -1,0 +1,1692 @@
+{
+    "Map": {
+        "aliases": [
+            "Map"
+        ]
+    },
+    "Set": {
+        "aliases": [
+            "Set"
+        ],
+        "examples": [],
+        "description": "",
+        "params": [
+            {
+                "name": "opt_data",
+                "type": {
+                    "type": "NameExpression",
+                    "name": "Iterable"
+                },
+                "descr": "An object, array or iterator to  populate the map\nwith."
+            }
+        ],
+        "async": false
+    },
+    "is_directed_acyclic_graph": {
+        "aliases": [
+            "is_directed_acyclic_graph",
+            "algorithms.is_directed_acyclic_graph",
+            "algorithms.dag.is_directed_acyclic_graph",
+            "dag.is_directed_acyclic_graph"
+        ],
+        "examples": [],
+        "description": "Return true if the graph G is a directed acyclic graph (DAG) or false if not.",
+        "params": [
+            {
+                "name": "G",
+                "type": {
+                    "type": "NameExpression",
+                    "name": "Graph"
+                },
+                "descr": "A graph"
+            }
+        ],
+        "returns": {
+            "name": "true",
+            "type": {
+                "type": "NameExpression",
+                "name": "boolean"
+            },
+            "descr": "of G is a DAG, false otherwise"
+        },
+        "async": true
+    },
+    "topological_sort": {
+        "aliases": [
+            "topological_sort",
+            "algorithms.topological_sort",
+            "algorithms.dag.topological_sort",
+            "dag.topological_sort"
+        ],
+        "examples": [],
+        "description": "Return a list of nodes in topological sort order.\n\nA topological sort is a non-unique permutation of the nodes such that an edge\nfrom u to v implies that u appears before v in the topological sort order.",
+        "params": [
+            {
+                "name": "G",
+                "type": {
+                    "type": "NameExpression",
+                    "name": "Graph"
+                },
+                "descr": "A directed Graph"
+            },
+            {
+                "name": "opt_nbunch",
+                "type": {
+                    "type": "NameExpression",
+                    "name": "NodeContainer",
+                    "optional": true
+                },
+                "descr": "Explore graph in specified order given\n   in opt_nbunch."
+            }
+        ],
+        "returns": {
+            "type": {
+                "type": "NameExpression",
+                "name": "Array",
+                "nullable": false
+            }
+        },
+        "async": true
+    },
+    "topological_sort_recursive": {
+        "aliases": [
+            "topological_sort_recursive",
+            "algorithms.topological_sort_recursive",
+            "algorithms.dag.topological_sort_recursive",
+            "dag.topological_sort_recursive"
+        ],
+        "examples": [],
+        "description": "Return a list of nodes in topological sort order.\n\nA topological sort is a non-unique permutation of the nodes such that an edge\nfrom u to v implies that u appears before v in the topological sort order.",
+        "params": [
+            {
+                "name": "G",
+                "type": {
+                    "type": "NameExpression",
+                    "name": "Graph"
+                },
+                "descr": "A directed Graph"
+            },
+            {
+                "name": "opt_nbunch",
+                "type": {
+                    "type": "NameExpression",
+                    "name": "NodeContainer",
+                    "optional": true
+                },
+                "descr": "Explore graph in spcified order given\n   in opt_nbunch."
+            }
+        ],
+        "returns": {
+            "type": {
+                "type": "NameExpression",
+                "name": "Array",
+                "nullable": false
+            }
+        },
+        "async": true
+    },
+    "is_aperiodic": {
+        "aliases": [
+            "is_aperiodic",
+            "algorithms.is_aperiodic",
+            "algorithms.dag.is_aperiodic",
+            "dag.is_aperiodic"
+        ],
+        "examples": [],
+        "description": "Return true if G is aperiodic.\n\nA directed graph is aperiodic if there is no integer k > 1 that\ndivides the length of every cycle in the graph.",
+        "params": [
+            {
+                "name": "G",
+                "type": {
+                    "type": "NameExpression",
+                    "name": "jsnx.classes.Graph"
+                }
+            }
+        ],
+        "returns": {
+            "name": "true",
+            "type": {
+                "type": "NameExpression",
+                "name": "boolean"
+            },
+            "descr": "if the graph is aperiodic false otherwise"
+        },
+        "async": true
+    },
+    "gen_is_directed_acyclic_graph": {
+        "aliases": [
+            "gen_is_directed_acyclic_graph",
+            "algorithms.gen_is_directed_acyclic_graph",
+            "algorithms.dag.gen_is_directed_acyclic_graph",
+            "dag.gen_is_directed_acyclic_graph"
+        ]
+    },
+    "gen_topological_sort": {
+        "aliases": [
+            "gen_topological_sort",
+            "algorithms.gen_topological_sort",
+            "algorithms.dag.gen_topological_sort",
+            "dag.gen_topological_sort"
+        ]
+    },
+    "gen_topological_sort_recursive": {
+        "aliases": [
+            "gen_topological_sort_recursive",
+            "algorithms.gen_topological_sort_recursive",
+            "algorithms.dag.gen_topological_sort_recursive",
+            "dag.gen_topological_sort_recursive"
+        ]
+    },
+    "gen_is_aperiodic": {
+        "aliases": [
+            "gen_is_aperiodic",
+            "algorithms.gen_is_aperiodic",
+            "algorithms.dag.gen_is_aperiodic",
+            "dag.gen_is_aperiodic"
+        ]
+    },
+    "Graph": {
+        "aliases": [
+            "Graph",
+            "classes.Graph"
+        ]
+    },
+    "DiGraph": {
+        "aliases": [
+            "DiGraph",
+            "classes.DiGraph"
+        ]
+    },
+    "nodes": {
+        "aliases": [
+            "nodes",
+            "classes.nodes",
+            "classes.functions.nodes",
+            "functions.nodes"
+        ],
+        "examples": [],
+        "description": "Return a copy of the graph nodes in a list.",
+        "params": [
+            {
+                "name": "G",
+                "type": {
+                    "type": "NameExpression",
+                    "name": "Graph"
+                },
+                "descr": "Graph"
+            }
+        ],
+        "returns": {
+            "name": "List",
+            "type": {
+                "type": "NameExpression",
+                "name": "Array"
+            },
+            "descr": "of nodes"
+        },
+        "async": false
+    },
+    "nodes_iter": {
+        "aliases": [
+            "nodes_iter",
+            "classes.nodes_iter",
+            "classes.functions.nodes_iter",
+            "functions.nodes_iter"
+        ],
+        "examples": [],
+        "description": "Return an iterator over the graph nodes.",
+        "params": [
+            {
+                "name": "G",
+                "type": {
+                    "type": "NameExpression",
+                    "name": "Graph"
+                },
+                "descr": "Graph"
+            }
+        ],
+        "returns": {
+            "name": "Iterator",
+            "type": {
+                "type": "NameExpression",
+                "name": "goog.iter.Iterator"
+            },
+            "descr": "over graph nodes"
+        },
+        "async": false
+    },
+    "edges": {
+        "aliases": [
+            "edges",
+            "classes.edges",
+            "classes.functions.edges",
+            "functions.edges"
+        ],
+        "examples": [],
+        "description": "Return a list of edges adjacent to nodes in nbunch.\n\nReturn all edges if nbunch is unspecified or nbunch=None.\nFor digraphs, edges=out_edges",
+        "params": [
+            {
+                "name": "G",
+                "type": {
+                    "type": "NameExpression",
+                    "name": "Graph"
+                },
+                "descr": "Graph"
+            },
+            {
+                "name": "opt_nbunch",
+                "type": {
+                    "type": "NameExpression",
+                    "name": "NodeContainer",
+                    "optional": true
+                },
+                "descr": "Nodes"
+            }
+        ],
+        "returns": {
+            "name": "List",
+            "type": {
+                "type": "NameExpression",
+                "name": "Array"
+            },
+            "descr": "of edges"
+        },
+        "async": false
+    },
+    "edges_iter": {
+        "aliases": [
+            "edges_iter",
+            "classes.edges_iter",
+            "classes.functions.edges_iter",
+            "functions.edges_iter"
+        ],
+        "examples": [],
+        "description": "Return iterator over  edges adjacent to nodes in nbunch.\n\nReturn all edges if nbunch is unspecified or nbunch=None.\nFor digraphs, edges=out_edges",
+        "params": [
+            {
+                "name": "G",
+                "type": {
+                    "type": "NameExpression",
+                    "name": "Graph"
+                },
+                "descr": "Graph"
+            },
+            {
+                "name": "opt_nbunch",
+                "type": {
+                    "type": "NameExpression",
+                    "name": "NodeContainer",
+                    "optional": true
+                },
+                "descr": "Nodes"
+            }
+        ],
+        "returns": {
+            "name": "Iterator",
+            "type": {
+                "type": "NameExpression",
+                "name": "Iterator"
+            },
+            "descr": "over edges"
+        },
+        "async": false
+    },
+    "degree": {
+        "aliases": [
+            "degree",
+            "classes.degree",
+            "classes.functions.degree",
+            "functions.degree"
+        ],
+        "examples": [],
+        "description": "Return degree of single node or of nbunch of nodes.\nIf nbunch is omitted, then return degrees of *all* nodes.",
+        "params": [
+            {
+                "name": "G",
+                "type": {
+                    "type": "NameExpression",
+                    "name": "Graph"
+                },
+                "descr": "Graph"
+            },
+            {
+                "name": "opt_nbunch",
+                "type": {
+                    "type": "NameExpression",
+                    "name": "NodeContainer",
+                    "optional": true
+                },
+                "descr": "Nodes"
+            },
+            {
+                "name": "opt_weight",
+                "type": {
+                    "type": "NameExpression",
+                    "name": "string",
+                    "optional": true
+                },
+                "descr": "Weight attribute name"
+            }
+        ],
+        "returns": {
+            "name": "Degree",
+            "type": {
+                "type": "TypeUnion",
+                "elements": [
+                    {
+                        "type": "NameExpression",
+                        "name": "number"
+                    },
+                    {
+                        "type": "NameExpression",
+                        "name": "Map"
+                    }
+                ]
+            },
+            "descr": "of node(s)\nexport"
+        },
+        "async": false
+    },
+    "neighbors": {
+        "aliases": [
+            "neighbors",
+            "classes.neighbors",
+            "classes.functions.neighbors",
+            "functions.neighbors"
+        ],
+        "examples": [],
+        "description": "Return a list of nodes connected to node n.",
+        "params": [
+            {
+                "name": "G",
+                "type": {
+                    "type": "NameExpression",
+                    "name": "jsnx.classes.Graph"
+                },
+                "descr": "Graph"
+            },
+            {
+                "name": "n",
+                "type": {
+                    "type": "NameExpression",
+                    "name": "jsnx.Node"
+                },
+                "descr": "Node"
+            }
+        ],
+        "returns": {
+            "name": "List",
+            "type": {
+                "type": "NameExpression",
+                "name": "Array"
+            },
+            "descr": "of nodes"
+        },
+        "async": false
+    },
+    "number_of_nodes": {
+        "aliases": [
+            "number_of_nodes",
+            "classes.number_of_nodes",
+            "classes.functions.number_of_nodes",
+            "functions.number_of_nodes"
+        ],
+        "examples": [],
+        "description": "Return the number of nodes in the graph.",
+        "params": [
+            {
+                "name": "G",
+                "type": {
+                    "type": "NameExpression",
+                    "name": "jsnx.classes.Graph"
+                },
+                "descr": "Graph"
+            }
+        ],
+        "returns": {
+            "name": "Number",
+            "type": {
+                "type": "NameExpression",
+                "name": "number"
+            },
+            "descr": "of nodes"
+        },
+        "async": false
+    },
+    "number_of_edges": {
+        "aliases": [
+            "number_of_edges",
+            "classes.number_of_edges",
+            "classes.functions.number_of_edges",
+            "functions.number_of_edges"
+        ],
+        "examples": [],
+        "description": "Return the number of edges in the graph.",
+        "params": [
+            {
+                "name": "G",
+                "type": {
+                    "type": "NameExpression",
+                    "name": "jsnx.classes.Graph"
+                },
+                "descr": "Graph"
+            }
+        ],
+        "returns": {
+            "name": "Number",
+            "type": {
+                "type": "NameExpression",
+                "name": "number"
+            },
+            "descr": "of edges"
+        },
+        "async": false
+    },
+    "density": {
+        "aliases": [
+            "density",
+            "classes.density",
+            "classes.functions.density",
+            "functions.density"
+        ],
+        "examples": [],
+        "description": "Return the density of a graph.\nThe density for undirected graphs is\n\n{@math d = \\frac{2m}{n(n-1)}}\n\nand for directed graphs is\n\n{@math \\frac{m}{n(n-1)}}\n\nwhere n is the number of nodes and m is the number of edges in G\n\nThe density is 0 for an graph without edges and 1.0 for a complete graph.\nThe density of multigraphs can be higher than 1.",
+        "params": [
+            {
+                "name": "G",
+                "type": {
+                    "type": "NameExpression",
+                    "name": "jsnx.classes.Graph"
+                },
+                "descr": "Graph"
+            }
+        ],
+        "returns": {
+            "name": "Density",
+            "type": {
+                "type": "NameExpression",
+                "name": "number"
+            }
+        },
+        "async": false
+    },
+    "degree_histogram": {
+        "aliases": [
+            "degree_histogram",
+            "classes.degree_histogram",
+            "classes.functions.degree_histogram",
+            "functions.degree_histogram"
+        ],
+        "examples": [],
+        "description": "Return a list of the frequency of each degree value.\n\nNote: the bins are width one, hence list.length can be large\n(Order(number_of_edges))\n",
+        "params": [
+            {
+                "name": "G",
+                "type": {
+                    "type": "NameExpression",
+                    "name": "jsnx.classes.Graph"
+                },
+                "descr": "Graph"
+            }
+        ],
+        "returns": {
+            "name": "A",
+            "type": {
+                "type": "NameExpression",
+                "name": "Array"
+            },
+            "descr": "list of frequencies of degrees.\n     The degree values are the index in the list."
+        },
+        "async": false
+    },
+    "is_directed": {
+        "aliases": [
+            "is_directed",
+            "classes.is_directed",
+            "classes.functions.is_directed",
+            "functions.is_directed"
+        ],
+        "examples": [],
+        "description": "Return True if graph is directed.",
+        "params": [
+            {
+                "name": "G",
+                "type": {
+                    "type": "NameExpression",
+                    "name": "jsnx.classes.Graph"
+                },
+                "descr": "Graph"
+            }
+        ],
+        "returns": {
+            "name": "True",
+            "type": {
+                "type": "NameExpression",
+                "name": "boolean"
+            },
+            "descr": "if graph is directed"
+        },
+        "async": false
+    },
+    "freeze": {
+        "aliases": [
+            "freeze",
+            "classes.freeze",
+            "classes.functions.freeze",
+            "functions.freeze"
+        ],
+        "examples": [],
+        "description": "Modify graph to prevent addition of nodes or edges.\n\nThis does not prevent modification of edge data.\nTo \"unfreeze\" a graph you must make a copy.",
+        "params": [
+            {
+                "name": "G",
+                "type": {
+                    "type": "NameExpression",
+                    "name": "jsnx.classes.Graph"
+                },
+                "descr": "Graph"
+            }
+        ],
+        "returns": {
+            "name": "A",
+            "type": {
+                "type": "NameExpression",
+                "name": "jsnx.classes.Graph"
+            },
+            "descr": "reference to the input graph"
+        },
+        "async": false
+    },
+    "is_frozen": {
+        "aliases": [
+            "is_frozen",
+            "classes.is_frozen",
+            "classes.functions.is_frozen",
+            "functions.is_frozen"
+        ],
+        "examples": [],
+        "description": "Return True if graph is frozen.",
+        "params": [
+            {
+                "name": "G",
+                "type": {
+                    "type": "NameExpression",
+                    "name": "jsnx.classes.Graph"
+                },
+                "descr": "Graph"
+            }
+        ],
+        "returns": {
+            "name": "True",
+            "type": {
+                "type": "NameExpression",
+                "name": "boolean"
+            },
+            "descr": "if graph is frozen."
+        },
+        "async": false
+    },
+    "subgraph": {
+        "aliases": [
+            "subgraph",
+            "classes.subgraph",
+            "classes.functions.subgraph",
+            "functions.subgraph"
+        ],
+        "examples": [],
+        "description": "Return the subgraph induced on nodes in nbunch.\n\nNote:  subgraph(G) calls G.subgraph()",
+        "params": [
+            {
+                "name": "G",
+                "type": {
+                    "type": "NameExpression",
+                    "name": "jsnx.classes.Graph"
+                },
+                "descr": "Graph"
+            },
+            {
+                "name": "nbunch",
+                "type": {
+                    "type": "NameExpression",
+                    "name": "jsnx.NodeContainer"
+                },
+                "descr": "A container of nodes that will be iterated through once (thus\n     it should be an iterator or be iterable).  Each element of the\n     container should be a valid node type: any hashable type except\n     None.  If nbunch is None, return all edges data in the graph.\n     Nodes in nbunch that are not in the graph will be (quietly)\n     ignored."
+            }
+        ],
+        "returns": {
+            "name": "Subgraph",
+            "type": {
+                "type": "NameExpression",
+                "name": "jsnx.classes.Graph"
+            }
+        },
+        "async": false
+    },
+    "create_empty_copy": {
+        "aliases": [
+            "create_empty_copy",
+            "classes.create_empty_copy",
+            "classes.functions.create_empty_copy",
+            "functions.create_empty_copy"
+        ],
+        "examples": [],
+        "description": "Return a copy of the graph G with all of the edges removed.\n\nNotes: Graph, node, and edge data is not propagated to the new graph.",
+        "params": [
+            {
+                "name": "G",
+                "type": {
+                    "type": "NameExpression",
+                    "name": "jsnx.classes.Graph"
+                },
+                "descr": "Graph"
+            },
+            {
+                "name": "opt_with_nodes",
+                "type": {
+                    "type": "NameExpression",
+                    "name": "boolean"
+                },
+                "descr": "(default=True)\n     Include nodes."
+            }
+        ],
+        "returns": {
+            "name": "A",
+            "type": {
+                "type": "NameExpression",
+                "name": "jsnx.classes.Graph"
+            },
+            "descr": "copy of the graph"
+        },
+        "async": false
+    },
+    "info": {
+        "aliases": [
+            "info",
+            "classes.info",
+            "classes.functions.info",
+            "functions.info"
+        ],
+        "examples": [],
+        "description": "Print short summary of information for the graph G or the node n.",
+        "params": [
+            {
+                "name": "G",
+                "type": {
+                    "type": "NameExpression",
+                    "name": "jsnx.classes.Graph"
+                },
+                "descr": "Graph"
+            },
+            {
+                "name": "opt_n",
+                "type": {
+                    "type": "NameExpression",
+                    "name": "jsnx.Node",
+                    "optional": true
+                },
+                "descr": "A node in the graph G"
+            }
+        ],
+        "returns": {
+            "name": "Info",
+            "type": {
+                "type": "NameExpression",
+                "name": "string"
+            }
+        },
+        "async": false
+    },
+    "set_node_attributes": {
+        "aliases": [
+            "set_node_attributes",
+            "classes.set_node_attributes",
+            "classes.functions.set_node_attributes",
+            "functions.set_node_attributes"
+        ],
+        "examples": [],
+        "description": "Set node attributes from dictionary of nodes and values",
+        "params": [
+            {
+                "name": "G",
+                "type": {
+                    "type": "NameExpression",
+                    "name": "jsnx.classes.Graph"
+                },
+                "descr": "Graph"
+            },
+            {
+                "name": "name",
+                "type": {
+                    "type": "NameExpression",
+                    "name": "string"
+                },
+                "descr": "Attribute name"
+            },
+            {
+                "name": "attributes",
+                "type": {
+                    "type": "TypeUnion",
+                    "elements": [
+                        {
+                            "type": "NameExpression",
+                            "name": "Object"
+                        },
+                        {
+                            "type": "NameExpression",
+                            "name": "Map"
+                        }
+                    ]
+                },
+                "descr": "Dictionary of attributes keyed by node"
+            }
+        ],
+        "async": false
+    },
+    "get_node_attributes": {
+        "aliases": [
+            "get_node_attributes",
+            "classes.get_node_attributes",
+            "classes.functions.get_node_attributes",
+            "functions.get_node_attributes"
+        ],
+        "examples": [],
+        "description": "Get node attributes from graph",
+        "params": [
+            {
+                "name": "G",
+                "type": {
+                    "type": "NameExpression",
+                    "name": "jsnx.classes.Graph"
+                },
+                "descr": "Graph"
+            },
+            {
+                "name": "name",
+                "type": {
+                    "type": "NameExpression",
+                    "name": "string"
+                },
+                "descr": "Attribute name"
+            }
+        ],
+        "returns": {
+            "name": "Dictionary",
+            "type": {
+                "type": "NameExpression",
+                "name": "Map",
+                "nullable": false
+            },
+            "descr": "of attributes keyed by node."
+        },
+        "async": false
+    },
+    "set_edge_attributes": {
+        "aliases": [
+            "set_edge_attributes",
+            "classes.set_edge_attributes",
+            "classes.functions.set_edge_attributes",
+            "functions.set_edge_attributes"
+        ],
+        "examples": [],
+        "description": "Set edge attributes from dictionary of edge tuples and values",
+        "params": [
+            {
+                "name": "G",
+                "type": {
+                    "type": "NameExpression",
+                    "name": "jsnx.classes.Graph"
+                },
+                "descr": "Graph"
+            },
+            {
+                "name": "name",
+                "type": {
+                    "type": "NameExpression",
+                    "name": "string"
+                },
+                "descr": "Attribute name"
+            },
+            {
+                "name": "attributes",
+                "type": {
+                    "type": "NameExpression",
+                    "name": "Map"
+                },
+                "descr": "Dictionary of attributes keyed by edge (tuple)."
+            }
+        ],
+        "async": false
+    },
+    "get_edge_attributes": {
+        "aliases": [
+            "get_edge_attributes",
+            "classes.get_edge_attributes",
+            "classes.functions.get_edge_attributes",
+            "functions.get_edge_attributes"
+        ],
+        "examples": [],
+        "description": "Get edge attributes from graph\n\nSince keys can only be strings in JavaScript, the edge is returned as\n{@code \"node1,node2\"} string. You'd have to call {@code .split(',')} on\nthe keys to extract the actual node names.",
+        "params": [
+            {
+                "name": "G",
+                "type": {
+                    "type": "NameExpression",
+                    "name": "jsnx.classes.Graph"
+                },
+                "descr": "Graph"
+            },
+            {
+                "name": "name",
+                "type": {
+                    "type": "NameExpression",
+                    "name": "string"
+                },
+                "descr": "Attribute name"
+            }
+        ],
+        "returns": {
+            "name": "Dictionary",
+            "type": {
+                "type": "NameExpression",
+                "name": "Map",
+                "nullable": false
+            },
+            "descr": "of attributes keyed by edge."
+        },
+        "async": false
+    },
+    "to_networkx_graph": {
+        "aliases": [
+            "to_networkx_graph",
+            "convert.to_networkx_graph"
+        ],
+        "examples": [],
+        "description": "Make a jsnx graph from a known data structure.",
+        "params": [
+            {
+                "name": "data",
+                "type": {
+                    "type": "UnknownLiteral"
+                },
+                "descr": "An object to be converted\n    Current known types are:\n       any jsnx graph\n       dict-of-dicts\n       dict-of-lists\n       list of edges"
+            },
+            {
+                "name": "opt_create_using",
+                "type": {
+                    "type": "NameExpression",
+                    "name": "Graph",
+                    "optional": true
+                },
+                "descr": "NetworkX graph\n    Use specified graph for result.  Otherwise a new graph is created."
+            },
+            {
+                "name": "opt_multigraph_input",
+                "type": {
+                    "type": "NameExpression",
+                    "name": "boolean",
+                    "optional": true
+                },
+                "descr": "(default false)\n    If true and  data is a dict_of_dicts,\n    try to create a multigraph assuming dict_of_dict_of_lists.\n    If data and create_using are both multigraphs then create\n    a multigraph from a multigraph."
+            }
+        ],
+        "returns": {
+            "type": {
+                "type": "NameExpression",
+                "name": "Graph"
+            }
+        },
+        "async": false
+    },
+    "convert_to_undirected": {
+        "aliases": [
+            "convert_to_undirected",
+            "convert.convert_to_undirected"
+        ],
+        "examples": [],
+        "description": "Return a new undirected representation of the graph G.",
+        "params": [
+            {
+                "name": "G",
+                "type": {
+                    "type": "NameExpression",
+                    "name": "jsnx.classes.Graph"
+                },
+                "descr": "Graph to convert"
+            }
+        ],
+        "returns": {
+            "type": {
+                "type": "NameExpression",
+                "name": "jsnx.classes.Graph",
+                "nullable": false
+            }
+        },
+        "async": false
+    },
+    "convert_to_directed": {
+        "aliases": [
+            "convert_to_directed",
+            "convert.convert_to_directed"
+        ],
+        "examples": [],
+        "description": "Return a new directed representation of the graph G.",
+        "params": [
+            {
+                "name": "G",
+                "type": {
+                    "type": "NameExpression",
+                    "name": "jsnx.classes.Graph"
+                },
+                "descr": "Graph to convert"
+            }
+        ],
+        "returns": {
+            "type": {
+                "type": "NameExpression",
+                "name": "jsnx.classes.Graph",
+                "nullable": false
+            }
+        },
+        "async": false
+    },
+    "to_dict_of_lists": {
+        "aliases": [
+            "to_dict_of_lists",
+            "convert.to_dict_of_lists"
+        ],
+        "examples": [],
+        "description": "Return adjacency representation of graph as a dictionary of lists.\n\nCompletely ignores edge data for MultiGraph and MultiDiGraph.",
+        "params": [
+            {
+                "name": "G",
+                "type": {
+                    "type": "NameExpression",
+                    "name": "jsnx.classes.Graph"
+                },
+                "descr": "A jsnx graph"
+            },
+            {
+                "name": "opt_nodelist",
+                "type": {
+                    "type": "NameExpression",
+                    "name": "jsnx.NodeContainer",
+                    "optional": true
+                },
+                "descr": "Use only nodes specified in nodelist"
+            }
+        ],
+        "returns": {
+            "type": {
+                "type": "TypeApplication",
+                "expression": {
+                    "type": "NameExpression",
+                    "name": "Object"
+                },
+                "applications": [
+                    {
+                        "type": "NameExpression",
+                        "name": "Array"
+                    }
+                ],
+                "nullable": false
+            }
+        },
+        "async": false
+    },
+    "from_dict_of_lists": {
+        "aliases": [
+            "from_dict_of_lists",
+            "convert.from_dict_of_lists"
+        ],
+        "examples": [],
+        "description": "Return a graph from a dictionary of lists.\n*",
+        "params": [
+            {
+                "name": "d",
+                "type": {
+                    "type": "TypeApplication",
+                    "expression": {
+                        "type": "NameExpression",
+                        "name": "Object"
+                    },
+                    "applications": [
+                        {
+                            "type": "NameExpression",
+                            "name": "Array"
+                        }
+                    ],
+                    "nullable": false
+                },
+                "descr": "A dictionary of lists adjacency representation."
+            },
+            {
+                "name": "opt_create_using",
+                "type": {
+                    "type": "NameExpression",
+                    "name": "Graph",
+                    "optional": true
+                },
+                "descr": "Use specified graph for result.\n   Otherwise a new graph is created."
+            }
+        ],
+        "returns": {
+            "type": {
+                "type": "NameExpression",
+                "name": "Graph",
+                "nullable": false
+            }
+        },
+        "async": false
+    },
+    "to_dict_of_dicts": {
+        "aliases": [
+            "to_dict_of_dicts",
+            "convert.to_dict_of_dicts"
+        ],
+        "examples": [],
+        "description": "Return adjacency representation of graph as a dictionary of dictionaries.",
+        "params": [
+            {
+                "name": "G",
+                "type": {
+                    "type": "NameExpression",
+                    "name": "jsnx.classes.Graph"
+                },
+                "descr": "A jsnx Graph"
+            },
+            {
+                "name": "opt_nodelist",
+                "type": {
+                    "type": "NameExpression",
+                    "name": "jsnx.NodeContainer",
+                    "optional": true
+                },
+                "descr": "Use only nodes specified in nodelist"
+            },
+            {
+                "name": "opt_edge_data",
+                "type": {
+                    "type": "NameExpression",
+                    "name": "Object",
+                    "optional": true
+                },
+                "descr": "If provided,  the value of the dictionary will be\n     set to edge_data for all edges.  This is useful to make\n     an adjacency matrix type representation with 1 as the edge data.\n     If edgedata is null or undefined, the edgedata in G is used to fill\n     the values.\n     If G is a multigraph, the edgedata is a dict for each pair (u,v)."
+            }
+        ],
+        "returns": {
+            "type": {
+                "type": "TypeApplication",
+                "expression": {
+                    "type": "NameExpression",
+                    "name": "Object"
+                },
+                "applications": [
+                    {
+                        "type": "NameExpression",
+                        "name": "Object"
+                    }
+                ],
+                "nullable": false
+            }
+        },
+        "async": false
+    },
+    "from_dict_of_dicts": {
+        "aliases": [
+            "from_dict_of_dicts",
+            "convert.from_dict_of_dicts"
+        ],
+        "examples": [],
+        "description": "Return a graph from a dictionary of dictionaries.",
+        "params": [
+            {
+                "name": "d",
+                "type": {
+                    "type": "TypeApplication",
+                    "expression": {
+                        "type": "NameExpression",
+                        "name": "Object"
+                    },
+                    "applications": [
+                        {
+                            "type": "NameExpression",
+                            "name": "Object",
+                            "nullable": false
+                        }
+                    ],
+                    "nullable": false
+                },
+                "descr": "A dictionary of dictionaries adjacency\n     representation."
+            },
+            {
+                "name": "opt_create_using",
+                "type": {
+                    "type": "NameExpression",
+                    "name": "jsnx.classes.Graph",
+                    "optional": true
+                },
+                "descr": "Use specified graph for result.\n     Otherwise a new graph is created."
+            },
+            {
+                "name": "opt_multigraph_input",
+                "type": {
+                    "type": "NameExpression",
+                    "name": "boolean",
+                    "optional": true
+                },
+                "descr": "(default=False)\n     When True, the values of the inner dict are assumed\n     to be containers of edge data for multiple edges.\n     Otherwise this routine assumes the edge data are singletons."
+            }
+        ],
+        "returns": {
+            "type": {
+                "type": "NameExpression",
+                "name": "jsnx.classes.Graph"
+            }
+        },
+        "async": false
+    },
+    "to_edgelist": {
+        "aliases": [
+            "to_edgelist",
+            "convert.to_edgelist"
+        ],
+        "examples": [],
+        "description": "Return a list of edges in the graph.",
+        "params": [
+            {
+                "name": "G",
+                "type": {
+                    "type": "NameExpression",
+                    "name": "jsnx.classes.Graph"
+                },
+                "descr": "A jsnx graph"
+            },
+            {
+                "name": "opt_nodelist",
+                "type": {
+                    "type": "NameExpression",
+                    "name": "jsnx.NodeContainer",
+                    "optional": true
+                },
+                "descr": "Use only nodes specified in nodelist"
+            }
+        ],
+        "returns": {
+            "type": {
+                "type": "NameExpression",
+                "name": "Array",
+                "nullable": false
+            }
+        },
+        "async": false
+    },
+    "from_edgelist": {
+        "aliases": [
+            "from_edgelist",
+            "convert.from_edgelist"
+        ],
+        "examples": [],
+        "description": "Return a graph from a list of edges.",
+        "params": [
+            {
+                "name": "edgelist",
+                "type": {
+                    "type": "TypeApplication",
+                    "expression": {
+                        "type": "NameExpression",
+                        "name": "Array"
+                    },
+                    "applications": [
+                        {
+                            "type": "NameExpression",
+                            "name": "Array"
+                        }
+                    ]
+                },
+                "descr": "Edge tuples"
+            },
+            {
+                "name": "opt_create_using",
+                "type": {
+                    "type": "NameExpression",
+                    "name": "jsnx.classes.Graph",
+                    "optional": true
+                },
+                "descr": "Use specified graph for result.\n     Otherwise a new graph is created."
+            }
+        ],
+        "returns": {
+            "type": {
+                "type": "NameExpression",
+                "name": "jsnx.classes.Graph",
+                "nullable": false
+            }
+        },
+        "async": false
+    },
+    "KeyError": {
+        "aliases": [
+            "KeyError",
+            "exceptions.KeyError"
+        ]
+    },
+    "JSNetworkXAlgorithmError": {
+        "aliases": [
+            "JSNetworkXAlgorithmError",
+            "exceptions.JSNetworkXAlgorithmError"
+        ]
+    },
+    "JSNetworkXError": {
+        "aliases": [
+            "JSNetworkXError",
+            "exceptions.JSNetworkXError"
+        ]
+    },
+    "JSNetworkXException": {
+        "aliases": [
+            "JSNetworkXException",
+            "exceptions.JSNetworkXException"
+        ]
+    },
+    "JSNetworkXUnfeasible": {
+        "aliases": [
+            "JSNetworkXUnfeasible",
+            "exceptions.JSNetworkXUnfeasible"
+        ]
+    },
+    "full_rary_tree": {
+        "aliases": [
+            "full_rary_tree",
+            "generators.full_rary_tree",
+            "generators.classic.full_rary_tree",
+            "classic.full_rary_tree"
+        ],
+        "examples": [],
+        "description": "Creates a full r-ary tree of n vertices.\nSometimes called a k-ary, n-ary, or m-ary tree.  \"... all non-leaf\nvertices have exactly r children and all levels are full except\nfor some rightmost position of the bottom level (if a leaf at the\nbottom level is missing, then so are all of the leaves to its\nright.\"",
+        "params": [
+            {
+                "name": "r",
+                "type": {
+                    "type": "NameExpression",
+                    "name": "number"
+                },
+                "descr": "branching factor of the tree"
+            },
+            {
+                "name": "n",
+                "type": {
+                    "type": "NameExpression",
+                    "name": "number"
+                },
+                "descr": "number of nodes in the tree"
+            },
+            {
+                "name": "opt_create_using",
+                "type": {
+                    "type": "NameExpression",
+                    "name": "Graph",
+                    "optional": true
+                },
+                "descr": "Use specified type to construct graph"
+            }
+        ],
+        "returns": {
+            "name": "An",
+            "type": {
+                "type": "NameExpression",
+                "name": "Graph"
+            },
+            "descr": "r-ary tree with n nodes."
+        },
+        "async": false
+    },
+    "balanced_tree": {
+        "aliases": [
+            "balanced_tree",
+            "generators.balanced_tree",
+            "generators.classic.balanced_tree",
+            "classic.balanced_tree"
+        ],
+        "examples": [],
+        "description": "Return the perfectly balanced r-tree of height h.\n\nThis is the rooted tree where all leaves are at distance h from\nthe root. The root has degree r and all other internal nodes have\ndegree r+1.\n\nNode labels are the integers 0 (the root) up to  number_of_nodes - 1.\n\nAlso refered to as a complete r-ary tree.",
+        "params": [
+            {
+                "name": "r",
+                "type": {
+                    "type": "NameExpression",
+                    "name": "number"
+                },
+                "descr": "Branching factor of the tree"
+            },
+            {
+                "name": "h",
+                "type": {
+                    "type": "NameExpression",
+                    "name": "number"
+                },
+                "descr": "Height of the tree"
+            },
+            {
+                "name": "opt_create_using",
+                "type": {
+                    "type": "NameExpression",
+                    "name": "Graph"
+                },
+                "descr": "Use specified type to construct graph"
+            }
+        ],
+        "returns": {
+            "type": {
+                "type": "NameExpression",
+                "name": "Graph"
+            }
+        },
+        "async": false
+    },
+    "complete_graph": {
+        "aliases": [
+            "complete_graph",
+            "generators.complete_graph",
+            "generators.classic.complete_graph",
+            "classic.complete_graph"
+        ],
+        "examples": [],
+        "description": "Return the complete graph K_n with n nodes.\n\nNode labels are the integers 0 to n-1.",
+        "params": [],
+        "returns": {
+            "type": {
+                "type": "NameExpression",
+                "name": "Graph"
+            }
+        },
+        "async": false
+    },
+    "cycle_graph": {
+        "aliases": [
+            "cycle_graph",
+            "generators.cycle_graph",
+            "generators.classic.cycle_graph",
+            "classic.cycle_graph"
+        ],
+        "examples": [],
+        "description": "Return the cycle graph C_n over n nodes.\n\nC_n is the n-path with two end-nodes connected.\n\nNode labels are the integers 0 to n-1\nIf create_using is a DiGraph, the direction is in increasing order.",
+        "params": [],
+        "returns": {
+            "type": {
+                "type": "NameExpression",
+                "name": "Graph"
+            }
+        },
+        "async": false
+    },
+    "empty_graph": {
+        "aliases": [
+            "empty_graph",
+            "generators.empty_graph",
+            "generators.classic.empty_graph",
+            "classic.empty_graph"
+        ],
+        "examples": [],
+        "description": " Return the empty graph with n nodes and zero edges.\n\n Node labels are the integers 0 to n-1\n\n For example:\n >>> var G = jsnx.empty_graph(10)\n >>> G.number_of_nodes()\n 10\n >>> G.number_of_edges()\n 0\n\n The variable create_using should point to a \"graph\"-like object that\n will be cleaned (nodes and edges will be removed) and refitted as\n an empty \"graph\" with n nodes with integer labels. This capability\n is useful for specifying the class-nature of the resulting empty\n \"graph\" (i.e. Graph, DiGraph, MyWeirdGraphClass, etc.).\n\n The variable create_using has two main uses:\n Firstly, the variable create_using can be used to create an\n empty digraph, network,etc.  For example,\n\n >>> var n = 10\n >>> var G = jsnx.empty_graph(n, jsnx.DiGraph())\n\n will create an empty digraph on n nodes.\n\n Secondly, one can pass an existing graph (digraph, pseudograph,\n etc.) via create_using. For example, if G is an existing graph\n (resp. digraph, pseudograph, etc.), then empty_graph(n,G)\n will empty G (i.e. delete all nodes and edges using G.clear() in\n base) and then add n nodes and zero edges, and return the modified\n graph (resp. digraph, pseudograph, etc.).",
+        "params": [],
+        "returns": {
+            "type": {
+                "type": "NameExpression",
+                "name": "Graph"
+            }
+        },
+        "async": false
+    },
+    "grid_2d_graph": {
+        "aliases": [
+            "grid_2d_graph",
+            "generators.grid_2d_graph",
+            "generators.classic.grid_2d_graph",
+            "classic.grid_2d_graph"
+        ],
+        "examples": [],
+        "description": "Return the 2d grid graph of mxn nodes,\neach connected to its nearest neighbors.\nOptional argument periodic=True will connect\nboundary nodes via periodic boundary conditions.",
+        "params": [
+            {
+                "name": "m",
+                "type": {
+                    "type": "NameExpression",
+                    "name": "number"
+                },
+                "descr": "Number of rows"
+            },
+            {
+                "name": "n",
+                "type": {
+                    "type": "NameExpression",
+                    "name": "number"
+                },
+                "descr": "Number of columns"
+            },
+            {
+                "name": "opt_periodic",
+                "type": {
+                    "type": "NameExpression",
+                    "name": "boolean",
+                    "optional": true
+                }
+            },
+            {
+                "name": "opt_create_using",
+                "type": {
+                    "type": "NameExpression",
+                    "name": "Graph",
+                    "optional": true
+                }
+            }
+        ],
+        "returns": {
+            "type": {
+                "type": "NameExpression",
+                "name": "Graph"
+            }
+        },
+        "async": false
+    },
+    "null_graph": {
+        "aliases": [
+            "null_graph",
+            "generators.null_graph",
+            "generators.classic.null_graph",
+            "classic.null_graph"
+        ],
+        "examples": [],
+        "description": "Return the Null graph with no nodes or edges.\n\nSee empty_graph for the use of create_using.",
+        "params": [
+            {
+                "name": "opt_create_using",
+                "type": {
+                    "type": "NameExpression",
+                    "name": "Graph",
+                    "optional": true
+                },
+                "descr": "Graph instance to empty and add nodes to."
+            }
+        ],
+        "returns": {
+            "type": {
+                "type": "NameExpression",
+                "name": "Graph"
+            }
+        },
+        "async": false
+    },
+    "path_graph": {
+        "aliases": [
+            "path_graph",
+            "generators.path_graph",
+            "generators.classic.path_graph",
+            "classic.path_graph"
+        ],
+        "examples": [],
+        "description": "Return the Null graph with no nodes or edges.\n\nSee empty_graph for the use of create_using.",
+        "params": [
+            {
+                "name": "n",
+                "type": {
+                    "type": "NameExpression",
+                    "name": "number"
+                },
+                "descr": "The number of nodes to add to the graph"
+            },
+            {
+                "name": "opt_create_using",
+                "type": {
+                    "type": "NameExpression",
+                    "name": "Graph",
+                    "optional": true
+                },
+                "descr": "Graph instance to empty and\n     add nodes to."
+            }
+        ],
+        "returns": {
+            "type": {
+                "type": "NameExpression",
+                "name": "Graph"
+            }
+        },
+        "async": false
+    },
+    "trivial_graph": {
+        "aliases": [
+            "trivial_graph",
+            "generators.trivial_graph",
+            "generators.classic.trivial_graph",
+            "classic.trivial_graph"
+        ],
+        "examples": [],
+        "description": "Return the Trivial graph with one node (with integer label 0) and no edges.",
+        "params": [],
+        "returns": {
+            "type": {
+                "type": "NameExpression",
+                "name": "Graph"
+            }
+        },
+        "async": false
+    },
+    "relabel_nodes": {
+        "aliases": [
+            "relabel_nodes",
+            "relabel.relabel_nodes"
+        ],
+        "examples": [],
+        "description": "Relabel the nodes of the graph G.\n\nNotes\n-----\nOnly the nodes specified in the mapping will be relabeled.\n\nThe setting copy=false modifies the graph in place.\nThis is not always possible if the mapping is circular.\nIn that case use copy=true.",
+        "params": [
+            {
+                "name": "G",
+                "type": {
+                    "type": "NameExpression",
+                    "name": "Graph"
+                },
+                "descr": "A JSNetworkX graph"
+            },
+            {
+                "name": "mapping",
+                "type": {
+                    "type": "TypeUnion",
+                    "elements": [
+                        {
+                            "type": "NameExpression",
+                            "name": "Object"
+                        },
+                        {
+                            "type": "NameExpression",
+                            "name": "Map"
+                        },
+                        {
+                            "type": "FunctionType",
+                            "params": [
+                                {
+                                    "type": "NameExpression",
+                                    "name": "Node"
+                                }
+                            ],
+                            "result": {
+                                "type": "NameExpression",
+                                "name": "Node"
+                            }
+                        }
+                    ]
+                },
+                "descr": "A dictionary with the old labels as keys and new labels as values.\n     A partial mapping is allowed."
+            },
+            {
+                "name": "opt_copy",
+                "type": {
+                    "type": "NameExpression",
+                    "name": "boolean",
+                    "optional": true
+                },
+                "descr": "(default: true)\n     If True return a copy or if False relabel the nodes in place."
+            }
+        ],
+        "returns": {
+            "type": {
+                "type": "NameExpression",
+                "name": "Graph"
+            }
+        },
+        "async": false
+    },
+    "convert_node_labels_to_integers": {
+        "aliases": [
+            "convert_node_labels_to_integers",
+            "relabel.convert_node_labels_to_integers"
+        ],
+        "examples": [],
+        "description": "Return a copy of G node labels replaced with integers.",
+        "params": [
+            {
+                "name": "G",
+                "type": {
+                    "type": "NameExpression",
+                    "name": "Graph"
+                },
+                "descr": "A JSNetworkX graph"
+            },
+            {
+                "name": "opt_first_label",
+                "type": {
+                    "type": "NameExpression",
+                    "name": "number",
+                    "optional": true,
+                    "nullable": true
+                },
+                "descr": "(default=0)\n     An integer specifying the offset in numbering nodes.\n     The n new integer labels are numbered first_label, ..., n-1+first_label."
+            },
+            {
+                "name": "opt_ordering",
+                "type": {
+                    "type": "NameExpression",
+                    "name": "string",
+                    "optional": true,
+                    "nullable": true
+                },
+                "descr": "(default=\"default\")\n     \"default\" : inherit node ordering from G.nodes()\n     \"sorted\"  : inherit node ordering from sorted(G.nodes())\n     \"increasing degree\" : nodes are sorted by increasing degree\n     \"decreasing degree\" : nodes are sorted by decreasing degree"
+            },
+            {
+                "name": "opt_discard_old_labels",
+                "type": {
+                    "type": "NameExpression",
+                    "name": "boolean",
+                    "optional": true,
+                    "nullable": true
+                },
+                "descr": "(default=true)\n     If true discard old labels. If false, create a node attribute\n     'old_label' to hold the old labels."
+            }
+        ],
+        "returns": {
+            "type": {
+                "type": "NameExpression",
+                "name": "jsnx.classes.Graph"
+            }
+        },
+        "async": false
+    }
+}
