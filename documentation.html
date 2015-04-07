@@ -12,7 +12,8 @@ css: [prettify]
       <li><a href="#api">API documentation</a></li>
       <li class="nav-header">Concepts</li>
       <li><a href="#node_values">Node values</a></li>
-      <li><a href="#iter_gen">Iterators and Generators</a></li>
+      <li><a href="#iter_gen">Iterables</a></li>
+      <li><a href="#async">Asynchronous functions</a></li>
       <li><a href="#optional_args">Optional arguments</a></li>
       <li class="divider"></li>
       <li class="nav-header">Migration</li>
@@ -112,9 +113,38 @@ jsnx.forEach(G, function(n) {
 });
 </pre>
 
-      <h3 id="optional_args">Optional arguments</h3>
-      <p>Some methods have one or more optional arguments. Optional arguments can be omitted, as long as the arguments are of different types and therefore distinguishable.
-      </p>
+  <h3 id="async">Asynchronous Functions</h3>
+  <p>
+    Graph algorithms can take a long time to run, especially on larger graphs.
+    This is usually not a problem for code running on the server (though it can
+    be), but it is definitely a problem in the browser, where the run time per
+    script is limited.
+  </p>
+  <p>
+    To solve that issue, most algorithms are provided as synchronous and as asynchronous functions.
+    The asynchronous function has the same name as the synchronous function,
+    only prefixed with <code>gen</code>, and returns a<a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a>.
+  </p>
+  <p>
+    In the browser, the asynchronous version will create a WebWorker, if available.
+    If not, it will fall back to the synchronous version.
+  </p>
+  <p>
+    In Node.js, the asynchronous version will spawn a new process.
+  </p>
+  <pre class="prettyprint linenums">
+// synchronous
+var cliques = jsnx.findCliques(G);
+
+// asynchronous
+jsnx.genFindCliques(G).then(function(cliques) {
+  console.log(cliques);
+});
+</pre>
+
+  <h3 id="optional_args">Optional arguments</h3>
+  <p>Some methods have one or more optional arguments. Optional arguments can be omitted, as long as the arguments are of different types and therefore distinguishable.
+  </p>
 
       <p> For example, this is OK:</p>
       <pre class="prettyprint linenums">

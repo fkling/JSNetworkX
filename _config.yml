@@ -5,7 +5,6 @@ menu:
     url: getting_started.html
   - name: Examples
   - name: Documentation
-  - name: Development
   - name: API progress
     url: api_progress.html
 exclude:
