@@ -1,0 +1,10 @@
+{
+  "parser": "babel-eslint",
+  "rules": {
+    "global-strict": 0,
+    "max-len": [1, 80, 4],
+    "no-constant-condition": 0,
+    "quotes": [1, "single", "avoid-escape"],
+    "strict": 0
+  }
+}
