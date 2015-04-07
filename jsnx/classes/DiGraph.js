@@ -742,7 +742,7 @@ export default class DiGraph extends Graph {
   // alias out_edges to edges
 
   /**
-   * @alias edges_iter
+   * @alias edgesIter
    */
   outEdgesIter(optNbunch, optData) {
     return this.edgesIter(optNbunch, optData);
@@ -758,7 +758,7 @@ export default class DiGraph extends Graph {
   /**
    * Return an iterator over the incoming edges.
    *
-   * @see #edges_iter
+   * @see edgesIter
    *
    * @param {?boolean=} optNbunch A container of nodes.
    *       The container will be iterated through once.

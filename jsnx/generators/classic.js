@@ -180,9 +180,8 @@ export function cycleGraph(n, optCreateUsing) {
  *
  * @see createEmptyCopy
  *
- * @param{?number=} optN The number of nodes to add to the graph
- * @param{?Graph=} optCreateUsing Graph instance to empty and
- *     add nodes to.
+ * @param {?number=} optN The number of nodes to add to the graph
+ * @param {?Graph=} optCreateUsing Graph instance to empty and add nodes to.
  * @return {Graph}
  */
 export function emptyGraph(optN, optCreateUsing) {
@@ -332,7 +331,7 @@ export function pathGraph(n, optCreateUsing) {
 /**
  * Return the Trivial graph with one node (with integer label 0) and no edges.
  *
- * @param{Graph=} optCreateUsing Graph instance to empty and
+ * @param {Graph=} optCreateUsing Graph instance to empty and
  *      add nodes to.
  * @return {Graph}
  */
