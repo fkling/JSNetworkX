@@ -85,7 +85,7 @@ export function fullRaryTree(r, n, optCreateUsing) {
  * @return {Graph}
  */
 export function balancedTree(r, h, optCreateUsing) {
-  var n = r === 1 ? 2 : Math.floor((1 - Math.pow(r, (h+1))) / (1 - r));
+  var n = r === 1 ? h : Math.floor((1 - Math.pow(r, (h+1))) / (1 - r));
   var G = emptyGraph(n, optCreateUsing);
   G.addEdgesFrom(treeEdges(n, r));
   return G;
