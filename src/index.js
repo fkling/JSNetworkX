@@ -10,10 +10,12 @@ import * as relabel from './relabel';
 
 import Map from './_internals/Map';
 import Set from './_internals/Set';
+import forEach from './_internals/forEach';
 
 export {
   Map,
   Set,
+  forEach,
   algorithms,
   classes,
   convert,
