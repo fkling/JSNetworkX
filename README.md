@@ -1,64 +1,131 @@
-# WIP - Convertion to ES6 [![Build Status](https://travis-ci.org/fkling/JSNetworkX.svg?branch=es6_WIP)](https://travis-ci.org/fkling/JSNetworkX)
+# JSNetworkX [![Build Status](https://travis-ci.org/fkling/JSNetworkX.svg?branch=es6_WIP)](https://travis-ci.org/fkling/JSNetworkX)
 
-**Note:** If you are reading this, then you are looking at the WIP branch. This
-branch is unstable and only has the purpose to keep interested users up-to-date
-about the progress, get feedback and help!
+JSNetworkX allows you to build, process and analyze graphs in JavaScript. It
+can be used together with D3.js in the browser to create interactive graph
+visualizations.
 
-I assume you know what JSNetworkX is, if not, look at the readme of the master
-branch.
+It is a port of [NetworkX](http://networkx.lanl.gov/) (v1.6), a
+popular graph library for Python, to JavaScript. Extensive information can
+be found on:
 
-## What is this branch about?
+- the [website][]
+- the [API documentation][api]
+- the [wiki][]
 
-This branch represents that part of JSNetworkX that has been converted to ES6 and
-is independent from the Google Closure library.
-It will eventually become master.
+## Install
 
-### Next Steps
+### Node.js
 
-- Phase 1: Convert existing stuff
-  - [x] Convert helper functions and base (simple) graphs
-  - [x] Convert generators
-  - [x] Convert algorithms
-  - [x] Convert multi graphs
-  - [ ] Convert drawing methods
-  - [ ] Publish version 0.3.0
+Install from [npm][]:
 
-- Phase 2: Become feature complete and other improvements
-  - Feature completeness
-    - [ ] Implement missing algorithms
-    - [ ] Implement missing generators
-    - [ ] Implement missing utility functions
-  - Improvements / new features
-    - [ ] Evaluate how React could simplify the rendering process
-    - [x] Async algorithm implementation (e.g. with web workers)
+```
+npm install jsnetworkx
+```
+
+### Browser
+
+Download [jsnetworkx.js](./jsnetworkx.js) and include it in your page with
+
+```
+<script src="/path/to/jsnetworkx.js"></script>
+```
+
+This will create the global variable `jsnx`, with which all functions can be
+accessed.
+
+## Usage
+
+JSNetworkX consists of multiple parts which work closely together:
+
+- Graph classes (`Graph`, `DiGraph`, `MultiGraph` and `MultiDiGraph`) to model
+  the data
+- Graph generators for common graphs
+- Various graph algorithms
+- Graph visualization (in the browser)
+
+Most classes and functions are available on the root object (`jsnx` in
+browsers, `require('jsnetworkx')` in Node).
+
+Information about which algorithms are available and the API of the classes,
+can be found in the auto-generated [API documentation][api].
+
+### Example
+
+```js
+// var jsnx = require('jsnetworkx'); // in Node
+
+// a tree of height 4 with fan-out 2
+var G = jsnx.balancedTree(2, 4);
+
+// Computest the shortest path between node 2 and 6
+var path = jsnx.bidirectionalShortestPath(G, 2, 7);
+// [ 2, 0, 1, 3, 7 ]
+
+// or asynchronously
+jsnx.genBidirectionalShortestPath(G, 2, 7).then(function(path) {
+  // path = [ 2, 0, 1, 3, 7 ]
+});
+```
+
+More examples can we found on the [website][].
+
+### Asynchronous computation
+
+All the algorithms are implement in a synchronous fashion (for now at least).
+However, many algorithms are also available as asynchronous version. Their
+names are `gen<SyncFunctionName>` (see example above) and they return a
+Promise.
+
+This is achieved in **browsers** by creating a [WebWorker][]. The WebWorker has
+to be passed the path to the `jsnetworkx.js` file. You have to set the path
+explicitly if the file is not located at the root:
+
+```js
+jsnx.workerPath = '/path/to/jsnetworkx.js';
+```
+
+In **Node**, a subprocess will be spawned (no setup is required).
+
+**Caveat:** In both cases the input data has to be serialized before it can be
+set to the worker or subprocess. However, not every value can be serialized, in
+which case JSNetworkX will use the synchronous version instead. If you
+encounter a situation where a value is not serialized, but it should be
+serializable, please file an [issue][].
+
+---
 
 ## How to contribute
 
 You can contribute by:
 
 - Porting code from Python
-- Improve the documentation
+- Improving the documentation/website
 
-If you plan on converting/porting a specific part, please create an issue beforehand.
+If you plan on converting/porting a specific part, please create an issue
+beforehand.
 
 ### Build JSNetworkX
 
-First install all dependencies via
+JSNetworkX is written in ES2015 (ES6) and [Babel][] is used to convert it to
+ES5. For the browser, all modules are bundled together with [browserify][].
+
+To build JSNetworkX, all dependencies have to be installed via
 
     npm install
 
-#### Build for browser
+#### Build for the browser
 
     npm run build:browser
 
 creates `jsnetworkx.js`,  a minified version for production.
 
     npm run build:browser:dev
+    npm run watch:browser
 
 Creates `jsnetworkx-dev.js`, an unminified version with inline source maps for
-development.
+development. The second version automatically rebuilds the file on change.
 
-#### Build for node
+#### Build for Node
 
     npm run build:node
 
@@ -66,7 +133,8 @@ Transforms all modules to ES5 and saves them inside the `node/` directory.
 
    npm run build:node:dev
 
-Same as above but with inline source maps. These modules are also used to tun the unit tests.
+Same as above but with inline source maps. These modules are also used to tun
+the unit tests.
 
    npm run watch:node
 
@@ -79,7 +147,7 @@ the naming convention `<testname>-test.js`. The tests can be run with
 
     npm test
     # or
-    npm run test:fast
+    npm run test:fast # if you also run `npm run watch:node`
 
 This will run all tests by default. To consider only those files whose path
 matches a specific string, pass the `-g` option:
@@ -96,13 +164,25 @@ annoying during development. Therefore you can use
 to automatically convert only the changed file and run `npm run test:fast` to
 quickly test them.
 
-Ideally, every module has corresponding unit test. If you port a module from Python, make sure to implement the same tests.
+Ideally, every module has corresponding unit test. If you port a module from
+NetworkX, make sure to implement the same tests.
 
 ### Run coverage
 
-We use istanbul to generate a coverage report. We are not enforcing any coverage
+We use [istanbul][] to generate a coverage report. We are not enforcing any coverage
 yet, but there should not be a regression. The report can be created via
 
     npm run cover
 
 and written to `coverage/`.
+
+
+[issue]: https://github.com/fkling/JSNetworkX/issues
+[npm]: https://www.npmjs.com/
+[website]: http://jsnetworkx.org
+[api]: http://jsnetworkx.org/api/
+[wiki]: https://github.com/fkling/JSNetworkX/wiki
+[WebWorker]: https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API/Using_web_workers
+[Babel]: https://babeljs.io/
+[browserify]: http://browserify.org/
+[istanbul]: https://gotwarlost.github.io/istanbul/
