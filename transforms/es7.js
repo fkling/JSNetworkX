@@ -16,7 +16,7 @@ function jstransform(src, dev, options) {
   // Transform async functions first
   src = asyncTransform(src, _.assign({
     delegateName: 'delegate',
-    delegatePath: './jsnx/_internals'
+    delegatePath: './src/_internals'
   }, options)).code;
 
   // Then ES6 and inline source maps

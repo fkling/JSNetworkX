@@ -25,7 +25,7 @@ function compile(filepath) {
 }
 
 
-glob('jsnx/**/*.js', function(err, files) {
+glob('src/**/*.js', function(err, files) {
   if (err) {
     console.log(err);
     process.exit(1);

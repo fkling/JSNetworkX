@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 require('babel-core/polyfill');
 require('source-map-support').install();
 global.assert = require('./assert');

@@ -46,7 +46,7 @@
     "watchify": "^2.2.1"
   },
   "browser": {
-    "./jsnx/_internals/delegate.js": "./jsnx/_internals/delegateToWorker.js"
+    "./src/_internals/delegate.js": "./src/_internals/delegateToWorker.js"
   },
   "browserify": {
     "transform": [
@@ -57,16 +57,16 @@
   "scripts": {
     "prepublish": "npm run build:node",
     "clean": "rm -rf node/ jsnetworkx.js jsnetworkx-dev.js",
-    "build:node": "rm -rf node/ && node scripts/build-node.js jsnx/ node/",
-    "build:node:dev": "rm -rf node/ && node scripts/build-node.js --dev jsnx/ node/",
+    "build:node": "rm -rf node/ && node scripts/build-node.js src/ node/",
+    "build:node:dev": "rm -rf node/ && node scripts/build-node.js --dev src/ node/",
     "watch:node": "npm run build:node:dev -- -w",
-    "build:browser": "(export BUNDLE=jsnetworkx.js; rm -f $BUNDLE && browserify jsnx/browser.js -s jsnx | uglifyjs -cmo $BUNDLE)",
-    "build:browser:dev": "(export BUNDLE=jsnetworkx-dev.js; rm -f $BUNDLE && NODE_ENV=dev browserify jsnx/browser.js -ds jsnx > $BUNDLE)",
-    "watch:browser": "(export BUNDLE=jsnetworkx-dev.js; rm -f $BUNDLE && NODE_ENV=dev watchify jsnx/browser.js -vds jsnx -o $BUNDLE)",
-    "test": "npm run build:node:dev && mocha --ui exports -R progress -r './mocha/setup' `find node/ -name *-test.js`",
-    "test:fast": "mocha --ui exports -R progress -r './mocha/setup' `find node/ -name *-test.js`",
+    "build:browser": "(export BUNDLE=jsnetworkx.js; rm -f $BUNDLE && browserify src/browser.js -s jsnx | uglifyjs -cmo $BUNDLE)",
+    "build:browser:dev": "(export BUNDLE=jsnetworkx-dev.js; rm -f $BUNDLE && NODE_ENV=dev browserify src/browser.js -ds jsnx > $BUNDLE)",
+    "watch:browser": "(export BUNDLE=jsnetworkx-dev.js; rm -f $BUNDLE && NODE_ENV=dev watchify src/browser.js -vds jsnx -o $BUNDLE)",
+    "test": "npm run build:node:dev && mocha --ui exports -R progress -r './scripts/setup-testenv.js' `find node/ -name *-test.js`",
+    "test:fast": "mocha --ui exports -R progress -r './scripts/setup-testenv.js' `find node/ -name *-test.js`",
     "watch:test": "npm test -- -b -w",
-    "cover": "npm run build:node && istanbul cover _mocha -x '**/__tests__/**' -x 'mocha/*' -- --ui exports -R progress -r './mocha/setup' `find node/ -name *-test.js`",
-    "lint": "eslint jsnx/"
+    "cover": "npm run build:node && istanbul cover _mocha -x '**/__tests__/**' -x 'scripts/*' -- --ui exports -R progress -r './mocha/setup' `find node/ -name *-test.js`",
+    "lint": "eslint src/"
   }
 }
