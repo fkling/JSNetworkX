@@ -92,6 +92,16 @@ which case JSNetworkX will use the synchronous version instead. If you
 encounter a situation where a value is not serialized, but it should be
 serializable, please file an [issue][].
 
+
+### Iterables
+
+Many methods return generators or Maps. In an ES2015 environment, these can be
+easily consumed with a [`for/of`][forof] loop or [`Array.from`][arrayfrom].
+
+If those are not available to you, JSNetworkX provides two helper methods for
+iterating iterables and converting them to arrays: `jsnx.forEach` and
+`jsnx.toArray`
+
 ---
 
 ## How to contribute
@@ -186,3 +196,5 @@ and written to `coverage/`.
 [Babel]: https://babeljs.io/
 [browserify]: http://browserify.org/
 [istanbul]: https://gotwarlost.github.io/istanbul/
+[forof]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/for...of
+[arrayfrom]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/from
