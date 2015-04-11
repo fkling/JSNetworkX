@@ -1,6 +1,6 @@
 {
   "name": "jsnetworkx",
-  "version": "0.3.0-wip",
+  "version": "0.3.0",
   "description": "A graph processing and visualization library for JavaScript (port of NetworkX for Python).",
   "keywords": [
     "jsnetworkx",
