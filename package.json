@@ -2,6 +2,7 @@
   "name": "jsnetworkx",
   "version": "0.3.0",
   "description": "A graph processing and visualization library for JavaScript (port of NetworkX for Python).",
+  "license": "BSD-3-Clause",
   "keywords": [
     "jsnetworkx",
     "graph",
