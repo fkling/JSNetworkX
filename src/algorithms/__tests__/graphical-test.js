@@ -9,7 +9,7 @@ import {erdosRenyiGraph} from '../../generators/randomGraphs';
 export var graphical = {
 
   testValidDegreeSequence1: function() {
-    this.timeout(3000);
+    this.timeout(5000);
     var n = 100;
     var p = 0.3;
     for(var i = 0; i < 10; i++) {

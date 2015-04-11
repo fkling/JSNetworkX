@@ -14,6 +14,7 @@ export var randomGraphs = {
   // TODO: test_random_zero_regular_graph
 
   testGnp: function() {
+    this.timeout(5000);
     var generators = [
       gnpRandomGraph,
       binomialGraph,
