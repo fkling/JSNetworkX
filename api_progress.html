@@ -40,9 +40,6 @@ css: [api]
     implementation was made or have been ported but are completely different
     than their Python counterpart (e.g. the <code>drawing</code> module).
     </p>
-    <p>
-    The information provided here is based on the <a href="https://github.com/fkling/JSNetworkX">latest version</a>.
-    </p>
     <hr>
     <div class="lead loader">Loading ...</div>
     <div id="api" class="accordion"></div>
@@ -50,20 +47,14 @@ css: [api]
   </div>
 </div>
 
-<script>
-  var jsnx_latest;
-  window.define = function(factory) {
-    jsnx_latest = factory();
-  }
-  define.amd = {};
-</script>
-<script src="javascripts/jsnetworkx-latest.js"></script>
-<script>
-  delete window.define;
-</script>
 <script src="javascripts/wont_implement.js"></script>
 <script src="javascripts/gradients.js"></script>
 <script>
+  function toCamelCase(str) {
+    return str.replace(/_(.)/g, function(m, char) {
+      return char.toUpperCase();
+    });
+  }
   var elements = {};
   $('#filter').on('click', 'button', function() {
     if (this.id === 'filter-all') {
@@ -78,6 +69,26 @@ css: [api]
   });
 
   $.getJSON('networkx_api.json', function(api) {
+    api.functions.forEach(function(func) {
+      func[0] = toCamelCase(func[0])
+        .replace('.func', '.functions')
+        .replace('.degreeSeq', '.degreeSequence');
+      func[1] = toCamelCase(func[1]);
+    });
+    api.modules = api.modules.map(function(m) {
+      return toCamelCase(m)
+        .replace('.func', '.functions')
+        .replace('.exception', '.exceptions')
+        .replace('.degreeSeq', '.degreeSequence');
+    });
+    api.types.forEach(function(t) {
+      t[0] = toCamelCase(t[0])
+        .replace('.exception', '.exceptions')
+        .replace('.func', '.functions')
+        .replace('.degreeSeq', '.degreeSequence');
+      t[1] = toCamelCase(t[1]);
+    });
+
     $('.loading').removeClass('loading');
     $.each(api.modules.slice(1), function(i, m) {
       genererate_output(m);
@@ -135,7 +146,7 @@ css: [api]
         $header.children('span')
         .append('&nbsp;&nbsp;')
         .append($('<a />', {
-          href:'https://github.com/fkling/JSNetworkX/tree/master/' + n.replace(/\./g,'/') + '.js',
+          href:'https://github.com/fkling/JSNetworkX/tree/master/' + n.replace(/^jsnx/, 'src').replace(/\./g,'/') + '.js',
           html: '&rarr; file',
           on: {
             click: function(e) {
@@ -153,7 +164,7 @@ css: [api]
 
   function exists(m, n) {
     var parts = m.split('.').slice(1);
-    m = jsnx_latest;
+    m = jsnx;
     while (parts.length && (m = m[parts.shift()]));
     return !!(m && n in m);
   }

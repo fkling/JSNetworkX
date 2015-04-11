@@ -1,10 +1,10 @@
 var wont_implement = [
-  'jsnx.convert.to_scipy_sparse_matrix',
-  'jsnx.convert.to_numpy_recarray',
-  'jsnx.convert.to_numpy_matrix',
-  'jsnx.convert.from_scipy_sparse_matrix',
-  'jsnx.convert.from_numpy_matrix',
-  'jsnx.algorithms.centrality.betweenness.edge_betweenness',
+  'jsnx.convert.toScipySparseMatrix',
+  'jsnx.convert.toNumpyRecarray',
+  'jsnx.convert.toNumpyMatrix',
+  'jsnx.convert.fromScipySparseMatrix',
+  'jsnx.convert.fromNumpyMatrix',
+  'jsnx.algorithms.centrality.betweenness.edgeBetweenness',
   'jsnx.drawing',
   'jsnx.external',
   'jsnx.linalg',
@@ -12,6 +12,6 @@ var wont_implement = [
   'jsnx.release',
   'jsnx.tests',
   'jsnx.utils.decorators',
-  'jsnx.utils.misc.default_opener',
-  'jsnx.utils.misc.dict_to_numpy_array'
+  'jsnx.utils.misc.defaultOpener',
+  'jsnx.utils.misc.dictToNumpyArray'
 ];

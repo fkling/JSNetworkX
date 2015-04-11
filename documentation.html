@@ -123,12 +123,18 @@ jsnx.forEach(G, function(n) {
   <p>
     To solve that issue, most algorithms are provided as synchronous and as asynchronous functions.
     The asynchronous function has the same name as the synchronous function,
-    only prefixed with <code>gen</code>, and returns a<a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a>.
+    only prefixed with <code>gen</code>, and returns a <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a>.
   </p>
+  <div class="alert alert-warning">
+    <h5>IMPORTANT</h5>
+    You may have to set <code>jsnx.workerPath</code> to the path of the
+    <code>jsnetworkx.js</code> file in order for the WebWorker to work.
+  </div>
   <p>
     In the browser, the asynchronous version will create a WebWorker, if available.
-    If not, it will fall back to the synchronous version.
+
   </p>
+  <
   <p>
     In Node.js, the asynchronous version will spawn a new process.
   </p>
