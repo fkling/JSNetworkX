@@ -1,9 +1,7 @@
 'use strict';
 
 import Graph from './Graph';
-/*jshint ignore:start*/
 import Map from '../_internals/Map';
-/*jshint ignore:end*/
 import JSNetworkXError from '../exceptions/JSNetworkXError';
 
 import * as convert from '../convert';
@@ -570,7 +568,8 @@ export default class DiGraph extends Graph {
         this.succ.get(u).delete(v);
         this.pred.get(v).delete(u);
       }
-      catch(ex){
+      catch(ex) {
+        /*eslint no-empty:0*/
         // pass
       }
     }, this);
@@ -864,6 +863,7 @@ export default class DiGraph extends Graph {
     }
 
     if (optWeight == null) {
+      /*eslint no-unused-vars:0*/
       return mapIterator(
         nodesNbrs,
         ([[node, succ], [u, pred]]) => [node, pred.size + succ.size]
@@ -873,7 +873,7 @@ export default class DiGraph extends Graph {
       // edge weighted graph - degree is sum of edge weights
       return mapIterator(
         nodesNbrs,
-        function([[node, succ], [_, pred]]) {
+        ([[node, succ], [_, pred]]) => {
           var sum = 0;
 
           function sumData(data) {
@@ -946,7 +946,7 @@ export default class DiGraph extends Graph {
           var sum = 0;
           pred.forEach(function(data) {
             var weight = data[optWeight];
-            sum += weight != null ? +weight :  1;
+            sum += weight != null ? +weight : 1;
           });
           return [node, sum];
         }
@@ -1009,7 +1009,7 @@ export default class DiGraph extends Graph {
           var sum = 0;
           succ.forEach(function(data) {
             var weight = data[optWeight];
-            sum += weight != null ? +weight :  1;
+            sum += weight != null ? +weight : 1;
           });
           return [node, sum];
         }

@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 
 /**
  * A simple event object to any data can be added. It provides four methods:
@@ -76,6 +76,7 @@ export function observe(G) {
   };
   var proto = G.constructor.prototype;
 
+  /*eslint no-shadow:0*/
   function triggerHandlers(event, G, funcName, args) {
     var handlers = eventHandlers[event.type];
     if (!handlers) {

@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 /**
  * Implements a simple event emitter to be merged into other objects.
  *
@@ -15,13 +15,11 @@
  */
 
 export default function(obj) {
-  /*jshint validthis:true*/
   var listeners = Object.create(null);
 
   function on(type, listener, thisObj) {
     var typeListeners = listeners[type] || (listeners[type] = []);
     typeListeners.push(listener, thisObj);
-    return this;
   }
 
   function off(type, listener) {
@@ -39,7 +37,6 @@ export default function(obj) {
         break;
       }
     }
-    return this;
   }
 
   function emit(type, msg) {
@@ -48,14 +45,13 @@ export default function(obj) {
       return;
     }
     var i = 0;
-    Promise.resolve(msg).then(function cb(msg) {
+    Promise.resolve(msg).then(function cb(msg) { //eslint-disable-line no-shadow
       typeListeners[i].call(typeListeners[i+1], msg);
       i += 2;
       if (i < typeListeners.length) {
         return Promise.resolve(msg).then(cb);
       }
     });
-    return this;
   }
 
   if (obj) {

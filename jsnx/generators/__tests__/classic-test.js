@@ -2,9 +2,6 @@
 'use strict';
 
 import {MultiGraph, DiGraph} from '../../classes';
-/*jshint ignore:start*/
-var Map = utils.Map;
-/*jshint ignore:end*/
 
 import * as classic from '../classic';
 import {degreeHistogram} from '../../classes/functions';
@@ -16,7 +13,7 @@ function sorted(v) {
 export var testGeneratorClassic = {
 
   testBalancedTree: function() {
-    [[2,2],[3,3],[6,2]].forEach(([r, h]) => {
+    [[2, 2], [3, 3], [6, 2]].forEach(([r, h]) => {
       var t = classic.balancedTree(r, h);
       var order = t.order();
       assert.equal(order, (Math.pow(r, h+1) - 1) / (r - 1));
@@ -25,7 +22,7 @@ export var testGeneratorClassic = {
       assert.equal(t.size(), order - 1);
       var dh = degreeHistogram(t);
       assert.equal(dh[0], 0); // no nodes of 0
-      assert.equal(dh[1], Math.pow(r,h)); // nodes of degree 1 are leaves
+      assert.equal(dh[1], Math.pow(r, h)); // nodes of degree 1 are leaves
       assert.equal(dh[r], 1); // root is degree r
       // everyone else is degree r+1
       assert.equal(dh[r+1], order - Math.pow(r, h) - 1);
@@ -38,7 +35,7 @@ export var testGeneratorClassic = {
   testFullRaryTree: function() {
     var r = 2;
     var n = 9;
-    var t = classic.fullRaryTree(r,n);
+    var t = classic.fullRaryTree(r, n);
     assert.equal(t.order(), n);
     //TODO: is_connected
     // assert(is_connected(t));
@@ -71,7 +68,7 @@ export var testGeneratorClassic = {
   */
 
   testRaryTree320: function() {
-    var t = classic.fullRaryTree(3,20);
+    var t = classic.fullRaryTree(3, 20);
     assert.equal(t.order(), 20);
   },
 
@@ -81,10 +78,10 @@ export var testGeneratorClassic = {
     // complete_graph(m) is a connected graph with
     // m nodes and  m*(m+1)/2 edges
     var G;
-    [0,1,3,5].forEach(function(m) {
+    [0, 1, 3, 5].forEach(function(m) {
         G = classic.completeGraph(m);
         assert.equal(G.numberOfNodes(), m);
-        assert.equal(G.numberOfEdges(), Math.floor(m*(m-1) / 2));
+        assert.equal(G.numberOfEdges(), Math.floor(m * (m-1) / 2));
     });
 
     var MG = classic.completeGraph(5, new MultiGraph());
@@ -95,10 +92,10 @@ export var testGeneratorClassic = {
   testCompleteDigraph: function() {
     // complete_graph(m) is a connected graph with
     // m nodes and  m*(m+1)/2 edges
-    [0,1,3,5].forEach(function(m) {
+    [0, 1, 3, 5].forEach(function(m) {
         var G = classic.completeGraph(m, new DiGraph());
         assert.equal(G.numberOfNodes(), m);
-        assert.equal(G.numberOfEdges(), Math.floor(m*(m-1)));
+        assert.equal(G.numberOfEdges(), Math.floor(m * (m-1)));
     });
   },
 
@@ -107,14 +104,14 @@ export var testGeneratorClassic = {
 
   testCycleGraph: function() {
     var G = classic.cycleGraph(4);
-    assert.deepEqual(G.edges(), [[0,1],[0,3],[1,2],[2,3]]);
+    assert.deepEqual(G.edges(), [[0, 1], [0, 3], [1, 2], [2, 3]]);
 
     var mG = classic.cycleGraph(4, new MultiGraph());
-    assert.deepEqual(sorted(mG.edges()), [[0,1],[0,3],[1,2],[2,3]]);
+    assert.deepEqual(sorted(mG.edges()), [[0, 1], [0, 3], [1, 2], [2, 3]]);
 
     G = classic.cycleGraph(4, new DiGraph());
-    assert.equal(G.hasEdge(2,1), false);
-    assert.equal(G.hasEdge(1,2), true);
+    assert.equal(G.hasEdge(2, 1), false);
+    assert.equal(G.hasEdge(1, 2), true);
   },
 
   //TODO: test_dorogovtsev_goltsev_mendes_graph
@@ -156,13 +153,14 @@ export var testGeneratorClassic = {
     var n = 5;
     var m = 6;
 
-    var G = classic.grid2dGraph(n,m);
-    assert.equal(G.numberOfNodes(), n*m);
-    assert.deepEqual(degreeHistogram(G), [0,0,4,2*(n+m)-8,(n-2)*(m-2)]);
+    var G = classic.grid2dGraph(n, m);
+    assert.equal(G.numberOfNodes(), n * m);
+    assert.deepEqual(
+      degreeHistogram(G),
+      [0, 0, 4, 2 * (n + m) - 8, (n - 2) * (m - 2)]);
     var DG = classic.grid2dGraph(n, m, false, new DiGraph());
     assert.deepEqual(DG.succ, G.adj);
     assert.deepEqual(DG.pred, G.adj);
-    debugger;
     var MG = classic.grid2dGraph(n, m, false, new MultiGraph());
     assert.deepEqual(MG.edges(), G.edges());
   },

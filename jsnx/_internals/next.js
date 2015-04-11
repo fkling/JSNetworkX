@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 
 /**
  * Returns the next value of an iterator or throws an error if the iterator was

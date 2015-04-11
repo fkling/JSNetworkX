@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 
 import KeyError from './KeyError';
 import JSNetworkXAlgorithmError from './JSNetworkXAlgorithmError';

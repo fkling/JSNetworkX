@@ -1,5 +1,5 @@
 /*global assert */
-"use strict";
+'use strict';
 
 /*jshint ignore:start*/
 import Map from '../Map';

@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 
 import isPlainObject from 'lodash/lang/isPlainObject';
 import mapValues from 'lodash/object/mapValues';

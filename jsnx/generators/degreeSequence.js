@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 
 import JSNetworkXError from '../exceptions/JSNetworkXError';
 
@@ -86,7 +86,7 @@ export async function havelHakimiGraph(degreeSequence, optCreateUsing) {
   // form list of [stubs,name] for each node.
   var modstubs = new Array(maxDegree + 1);
   for (i = 0; i < maxDegree + 1; i++) {
-    modstubs[i] = [0,0];
+    modstubs[i] = [0, 0];
   }
   // Successively reduce degree sequence by removing the maximum degree
   while (n > 0) {

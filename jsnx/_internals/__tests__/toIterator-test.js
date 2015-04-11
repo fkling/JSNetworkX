@@ -1,5 +1,5 @@
 /*global assert, utils*/
-"use strict";
+'use strict';
 
 import toIterator from '../toIterator';
 

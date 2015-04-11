@@ -1,4 +1,5 @@
-"use strict";
+/*eslint max-len:[1, 94]*/
+'use strict';
 
 import {
   Arrays,
@@ -7,36 +8,6 @@ import {
   getDefault,
   tuple2
 } from '../../_internals';
-
-/*jshint expr:true*/
-
-/**
- * Optional "named" arguments to pass to betweennessCentrality.
- *
- * k (default=null)
- *     If k is not null use k node samples to estimate betweenness.
- *     The value of k <= n where n is the number of nodes in the graph.
- *     Higher values give better approximation.
- * normalized (default=false)
- *     If true the betweenness values are normalized by `2/((n-1)(n-2))`
- *     for graphs, and `1/((n-1)(n-2))` for directed graphs where `n`
- *     is the number of nodes in G.
- * weight (default=null)
- *     If null, all edge weights are considered equal.
- *     Otherwise holds the name of the edge attribute used as weight.
- * endpoints (default=false)
- *     If true include the endpoints in the shortest path counts.
- *
- * @typedef {{
- *   k: (number|undefined),
- *   normalized: (boolean|undefined),
- *   weight: (string|undefined),
- *   endpoints: (boolean|undefined)
- * }}
- */
-var betweennessCentralityArgs;
-
-/*jshint expr:false*/
 
 /**
  * Compute the shortest-path betweenness centrality for nodes.
@@ -119,6 +90,7 @@ export async function betweennessCentrality(G, optArgDict={}) {
   normalized = normalized == null ? true : normalized;
   endpoints = endpoints == null ? false : endpoints;
 
+  var v;
   var betweenness = new Map((for (v of G) tuple2(v, 0)));
 
   var nodes = G.nodes();
@@ -195,13 +167,13 @@ export async function edgeBetweennessCentrality(G, optArgDict={}) {
   var {normalized, weight} = optArgDict;
   normalized = normalized == null ? true : normalized;
 
+  var v;
   var betweenness = new Map((for (v of G) tuple2(v, 0)));
   for (var edge of G.edgesIter()) {
     betweenness.set(edge, 0);
   }
 
-  var nodes = G.nodes();
-  for (var s of G) {
+  for (let s of G) {
     // single source shortest paths
     var [S, P, sigma] = weight == null ?
       singleSourceShortestPathBasic(G, s) : // use BFS
@@ -210,7 +182,7 @@ export async function edgeBetweennessCentrality(G, optArgDict={}) {
     betweenness = accumulateEdges(betweenness, S, P, sigma, s);
   }
   // rescaling
-  for (var n of G) {
+  for (let n of G) {
     betweenness.delete(n);
   }
   return rescaleE(betweenness, G.order(), normalized, G.isDirected());
@@ -232,6 +204,7 @@ function singleSourceShortestPathBasic(G, s) {
     S.push(v);
     var Dv = D.get(v);
     var sigmav = sigma.get(v);
+    /* eslint-disable no-loop-func */
     G.neighbors(v).forEach(w => {
       if (!D.has(w)) {
         Q.push(w);
@@ -242,6 +215,7 @@ function singleSourceShortestPathBasic(G, s) {
         P.get(w).push(v);    // predecessors
       }
     });
+    /* eslint-enable no-loop-func */
   }
   return [S, P, sigma];
 }
@@ -268,14 +242,14 @@ function singleSourceDijkstraPathBasic(G, s, weight='weight') {
     D.set(v, dist);
 
     for (var [w, edgedata] of G.get(v)) {
-      var vw_dist = dist + getDefault(edgedata[weight], 1);
-      if (!D.has(w) && (!seen.has(w) || vw_dist < seen.get(w))) {
-        seen.set(w, vw_dist);
-        Q.enqueue(vw_dist, [v, w]);
+      var vwDist = dist + getDefault(edgedata[weight], 1);
+      if (!D.has(w) && (!seen.has(w) || vwDist < seen.get(w))) {
+        seen.set(w, vwDist);
+        Q.enqueue(vwDist, [v, w]);
         sigma.set(w, 0);
         P.set(w, [v]);
       }
-      else if (vw_dist === seen.get(w)) {  // handle equal paths
+      else if (vwDist === seen.get(w)) {  // handle equal paths
         sigma.set(w, sigma.get(w) + sigma.get(v));
         P.get(w).push(v);
       }
@@ -290,9 +264,11 @@ function accumulateBasic(betweenness, S, P, sigma, s) {
   while (S.length > 0) {
     var w = S.pop();
     var coeff = (1 + delta.get(w)) / sigma.get(w);
+    /* eslint-disable no-loop-func */
     P.get(w).forEach(v => {
       delta.set(v, delta.get(v) + sigma.get(v) * coeff);
     });
+    /* eslint-enable no-loop-func */
     // handle object nodes
     if (w !== s || typeof w === 'object' && w.toString() !== s.toString()) {
       betweenness.set(w, betweenness.get(w) + delta.get(w));
@@ -308,9 +284,11 @@ function accumulateEndpoints(betweenness, S, P, sigma, s) {
   while (S.length > 0) {
     var w = S.pop();
     var coeff = (1 + delta.get(w)) / sigma.get(w);
+    /* eslint-disable no-loop-func */
     P.get(w).forEach(v => {
       delta.set(v, delta.get(v) + sigma.get(v) * coeff);
     });
+    /* eslint-enable no-loop-func */
     // handle object nodes
     if (w !== s || typeof w === 'object' && w.toString() !== s.toString()) {
       betweenness.set(w, betweenness.get(w) + delta.get(w) + 1);
@@ -325,6 +303,7 @@ function accumulateEdges(betweenness, S, P, sigma, s) {
   while (S.length > 0) {
     var w = S.pop();
     var coeff = (1 + delta.get(w)) / sigma.get(w);
+    /* eslint-disable no-loop-func */
     P.get(w).forEach(v => {
       var c = sigma.get(v) * coeff;
       var edge = [v, w];
@@ -334,6 +313,7 @@ function accumulateEdges(betweenness, S, P, sigma, s) {
       betweenness.set(edge, betweenness.get(edge) + c);
       delta.set(v, delta.get(v) + c);
     });
+    /* eslint-enable no-loop-func */
     // handle object nodes
     if (w !== s || typeof w === 'object' && w.toString() !== s.toString()) {
       betweenness.set(w, betweenness.get(w) + delta.get(w));

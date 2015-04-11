@@ -27,6 +27,7 @@
   "devDependencies": {
     "acorn-6to5": "babel/acorn-babel#2e78b518",
     "babel-core": "^4.6.3",
+    "babel-eslint": "^2.0.2",
     "browserify": "^9.0.3",
     "chai": "^2.1.0",
     "chai-as-promised": "^4.1.1",
@@ -34,6 +35,7 @@
     "chai-members-deep": "0.0.1",
     "commoner": "^0.10.1",
     "d3": "^3.5.3",
+    "eslint": "^0.18.0",
     "istanbul": "^0.3.5",
     "mocha": "^2.0.1",
     "recast": "^0.10.1",
@@ -64,6 +66,7 @@
     "test": "npm run build:node:dev && mocha --ui exports -R progress -r './mocha/setup' `find node/ -name *-test.js`",
     "test:fast": "mocha --ui exports -R progress -r './mocha/setup' `find node/ -name *-test.js`",
     "watch:test": "npm test -- -b -w",
-    "cover": "npm run build:node && istanbul cover _mocha -x '**/__tests__/**' -x 'mocha/*' -- --ui exports -R progress -r './mocha/setup' `find node/ -name *-test.js`"
+    "cover": "npm run build:node && istanbul cover _mocha -x '**/__tests__/**' -x 'mocha/*' -- --ui exports -R progress -r './mocha/setup' `find node/ -name *-test.js`",
+    "lint": "eslint jsnx/"
   }
 }

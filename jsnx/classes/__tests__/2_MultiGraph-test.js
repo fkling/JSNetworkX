@@ -1,5 +1,5 @@
 /*global assert, utils*/
-"use strict";
+'use strict';
 import BaseMultiGraphTester from './BaseMultiGraphTester';
 import {TestGraph} from './0_Graph-test';
 import {KeyError, JSNetworkXError} from '../../exceptions';
@@ -23,7 +23,7 @@ export var TestMultiGraph = Object.assign({}, TestGraph, BaseMultiGraphTester, {
     this.k3nodes = [0,1,2];
     this.K3 = new this.Graph();
     this.K3.adj = this.K3.edge = this.k3adj;
-    this.K3.node = new Map({0:{}, 1:{}, 2:{}});
+    this.K3.node = new Map({0: {}, 1: {}, 2: {}});
   },
 
   testDataInput: function() {
@@ -32,16 +32,16 @@ export var TestMultiGraph = Object.assign({}, TestGraph, BaseMultiGraphTester, {
     assert.deepEqual(
       Array.from(G.adj),
       [
-        [1, new Map({2: {0:{}}})],
-        [2, new Map({1: {0:{}}})]
+        [1, new Map({2: {0: {}}})],
+        [2, new Map({1: {0: {}}})]
       ]
     );
   },
 
   testGetitem: function() {
     var G = this.K3;
-    assert.deepEqual(G.get(0), new Map({1: {0:{}}, 2: {0:{}}}));
-    assert.throws(function(){G.get('j');}, KeyError);
+    assert.deepEqual(G.get(0), new Map({1: {0: {}}, 2: {0: {}}}));
+    assert.throws(() => G.get('j'), KeyError);
     // not implemented:
     // assert.throws(function(){G.get(['A']);}, TypeError);
   },
@@ -50,24 +50,24 @@ export var TestMultiGraph = Object.assign({}, TestGraph, BaseMultiGraphTester, {
     var G = this.K3;
     G.removeNode(0);
     assert.deepEqual(G.adj, new Map({
-      1: new Map({2: {0:{}}}),
-      2: new Map({1: {0:{}}})
+      1: new Map({2: {0: {}}}),
+      2: new Map({1: {0: {}}})
     }));
-    assert.throws(function(){G.removeNode(-1);}, JSNetworkXError);
+    assert.throws(() => G.removeNode(-1), JSNetworkXError);
   },
 
   testAddEdge: function() {
     var G = new this.Graph();
     G.addEdge(0,1);
     assert.deepEqual(G.adj, new Map({
-      0: new Map({1: {0:{}}}),
-      1: new Map({0: {0:{}}})
+      0: new Map({1: {0: {}}}),
+      1: new Map({0: {0: {}}})
     }));
     G = new this.Graph();
     G.addEdge.apply(G, [0,1]);
     assert.deepEqual(G.adj, new Map({
-      0: new Map({1: {0:{}}}),
-      1: new Map({0: {0:{}}})
+      0: new Map({1: {0: {}}}),
+      1: new Map({0: {0: {}}})
     }));
   },
 
@@ -96,40 +96,47 @@ export var TestMultiGraph = Object.assign({}, TestGraph, BaseMultiGraphTester, {
     assert.deepEqual(
       G.adj,
       new Map({
-        0: new Map({1: {0:{}, 1:{weight: 3}, 2:{weight: 2}, 3:{weight: 3}}}),
-        1: new Map({0: {0:{}, 1:{weight: 3}, 2:{weight: 2}, 3:{weight: 3}}})
+        0: new Map({
+          1: {
+            0: {},
+            1: {weight: 3},
+            2: {weight: 2},
+            3: {weight: 3}
+          }
+        }),
+        1: new Map({0: {0: {}, 1: {weight: 3}, 2: {weight: 2}, 3: {weight: 3}}})
       })
     );
 
     // too few in tuple
-    assert.throws(function(){G.addEdgesFrom([[0]]);}, JSNetworkXError);
+    assert.throws(() => G.addEdgesFrom([[0]]), JSNetworkXError);
     // too many in tuple
-    assert.throws(function(){G.addEdgesFrom([[0,1,2,3,4]]);}, JSNetworkXError);
+    assert.throws(() => G.addEdgesFrom([[0,1,2,3,4]]), JSNetworkXError);
     // not a tuple
-    assert.throws(function(){G.addEdgesFrom([0]);}, TypeError);
+    assert.throws(() => G.addEdgesFrom([0]), TypeError);
   },
 
   testRemoveEdge: function() {
     var G = this.K3;
     G.removeEdge(0,1);
     assert.deepEqual(G.adj, new Map({
-      0: new Map({2: {0:{}}}),
-      1: new Map({2: {0:{}}}),
-      2: new Map({0: {0:{}}, 1: {0: {}}})
+      0: new Map({2: {0: {}}}),
+      1: new Map({2: {0: {}}}),
+      2: new Map({0: {0: {}}, 1: {0: {}}})
     }));
-    assert.throws(function(){G.removeEdge(-1,0);}, JSNetworkXError);
-    assert.throws(function(){G.removeEdge(0,2,1);}, JSNetworkXError);
+    assert.throws(() => G.removeEdge(-1,0), JSNetworkXError);
+    assert.throws(() => G.removeEdge(0,2,1), JSNetworkXError);
   },
 
   testRemoveEdgesFrom: function() {
     var G = this.K3;
     G.removeEdgesFrom([[0,1]]);
     assert.deepEqual(G.adj, new Map({
-      0: new Map({2: {0:{}}}),
-      1: new Map({2: {0:{}}}),
-      2: new Map({0: {0:{}}, 1: {0: {}}})
+      0: new Map({2: {0: {}}}),
+      1: new Map({2: {0: {}}}),
+      2: new Map({0: {0: {}}, 1: {0: {}}})
     }));
-    assert.doesNotThrow(function(){G.removeEdgesFrom([[0,0]]);});
+    assert.doesNotThrow(() => G.removeEdgesFrom([[0,0]]));
   },
 
   testRemoveMultiedge: function() {
@@ -138,16 +145,16 @@ export var TestMultiGraph = Object.assign({}, TestGraph, BaseMultiGraphTester, {
     G.removeEdge(0, 1, 'parallel edge');
 
     assert.deepEqual(G.adj, new Map({
-      0: new Map({1: {0:{}}, 2: {0:{}}}),
-      1: new Map({0: {0:{}}, 2: {0:{}}}),
-      2: new Map({0: {0:{}}, 1: {0: {}}})
+      0: new Map({1: {0: {}}, 2: {0: {}}}),
+      1: new Map({0: {0: {}}, 2: {0: {}}}),
+      2: new Map({0: {0: {}}, 1: {0: {}}})
     }));
     G.removeEdge(0, 1);
     assert.deepEqual(G.adj, new Map({
-      0: new Map({2: {0:{}}}),
-      1: new Map({2: {0:{}}}),
-      2: new Map({0: {0:{}}, 1: {0: {}}})
+      0: new Map({2: {0: {}}}),
+      1: new Map({2: {0: {}}}),
+      2: new Map({0: {0: {}}, 1: {0: {}}})
     }));
-    assert.throws(function(){G.removeEdge(-1,0);}, JSNetworkXError);
+    assert.throws(() => G.removeEdge(-1,0), JSNetworkXError);
   }
 });

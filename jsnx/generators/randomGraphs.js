@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 
 import DiGraph from '../classes/DiGraph';
 import Graph from '../classes/Graph';
@@ -62,7 +62,7 @@ export async function fastGnpRandomGraph(n, p, optDirected=false) {
     G = new DiGraph(G);
     while (v < n) {
       lr = Math.log(1 - Math.random());
-      w = w + 1 + Math.floor(lr/lp);
+      w = w + 1 + Math.floor(lr / lp);
       if (v === w) { // avoid self loops
         w = w + 1;
       }
@@ -82,7 +82,7 @@ export async function fastGnpRandomGraph(n, p, optDirected=false) {
     v = 1; // Nodes in graph are from 0, n-1 (this is the second node index).
     while (v < n) {
       lr = Math.log(1 - Math.random());
-      w = w + 1 + Math.floor(lr/lp);
+      w = w + 1 + Math.floor(lr / lp);
       while (w >= v && v < n) {
         w = w - v;
         v = v + 1;

@@ -1,11 +1,9 @@
-/*global assert*/
-"use strict";
+/*global assert, utils*/
+'use strict';
 
 import BaseGraphTester from './BaseGraphTester';
 import DiGraph from '../DiGraph';
-/*jshint ignore:start*/
 var Map = utils.Map;
-/*jshint ignore:end*/
 import JSNetworkXError from '../../exceptions/JSNetworkXError';
 
 import _ from 'lodash';
@@ -21,7 +19,7 @@ export default _.extend({}, BaseGraphTester, {
   testSuccessors: function() {
     var G = this.K3;
     assert.deepEqual(G.successors(0), [1,2]);
-    assert.throws(function(){G.successors(-1);}, JSNetworkXError);
+    assert.throws(() => G.successors(-1), JSNetworkXError);
   },
 
   testSuccessorsIter: function() {
@@ -30,7 +28,7 @@ export default _.extend({}, BaseGraphTester, {
       Array.from(G.successorsIter(0)),
       [1,2]
     );
-    assert.throws(function(){G.successorsIter(-1);}, JSNetworkXError);
+    assert.throws(() => G.successorsIter(-1), JSNetworkXError);
   },
 
   testHasPredecessor: function() {
@@ -45,7 +43,7 @@ export default _.extend({}, BaseGraphTester, {
       G.predecessors(0),
       [1,2]
     );
-    assert.throws(function(){G.predecessors(-1);}, JSNetworkXError);
+    assert.throws(() => G.predecessors(-1), JSNetworkXError);
   },
 
   testPredecessorsIter: function() {
@@ -54,7 +52,7 @@ export default _.extend({}, BaseGraphTester, {
       Array.from(G.predecessorsIter(0)),
       [1,2]
     );
-    assert.throws(function(){G.predecessorsIter(-1);}, JSNetworkXError);
+    assert.throws(() => G.predecessorsIter(-1), JSNetworkXError);
   },
 
   testEdges: function() {
@@ -67,7 +65,7 @@ export default _.extend({}, BaseGraphTester, {
       G.edges(0),
       [[0,1], [0,2]]
     );
-    assert.throws(function(){G.edges(-1);}, JSNetworkXError);
+    assert.throws(() => G.edges(-1), JSNetworkXError);
   },
 
   testEdgesIter: function() {
@@ -92,7 +90,7 @@ export default _.extend({}, BaseGraphTester, {
       G.edges(0, true),
       [[0,1,{}], [0,2,{}]]
     );
-    assert.throws(function(){G.edges(-1);}, JSNetworkXError);
+    assert.throws(() => G.edges(-1), JSNetworkXError);
   },
 
   testOutEdges: function() {
@@ -105,7 +103,7 @@ export default _.extend({}, BaseGraphTester, {
       G.outEdges(0),
       [[0,1], [0,2]]
     );
-    assert.throws(function(){G.edges(-1);}, JSNetworkXError);
+    assert.throws(() => G.edges(-1), JSNetworkXError);
   },
 
   testOutEdgesIter: function() {
@@ -154,7 +152,7 @@ export default _.extend({}, BaseGraphTester, {
     assert.deepEqual(G.degree(), new Map([[0,4], [1,4], [2,4]]));
     assert.strictEqual(G.degree(0), 4);
     assert.deepEqual(G.degree([0]), new Map([[0,4]]));
-    assert.throws(function(){G.degree(-1);}, JSNetworkXError);
+    assert.throws(() => G.degree(-1), JSNetworkXError);
   },
 
   testDegreeIter: function() {
@@ -173,7 +171,7 @@ export default _.extend({}, BaseGraphTester, {
     assert.deepEqual(G.inDegree(), new Map([[0,2], [1,2], [2,2]]));
     assert.strictEqual(G.inDegree(0), 2);
     assert.deepEqual(G.inDegree([0]), new Map([[0,2]]));
-    assert.throws(function(){G.inDegree(-1);}, JSNetworkXError);
+    assert.throws(() => G.inDegree(-1), JSNetworkXError);
   },
 
   testInDegreeIter: function() {
@@ -221,7 +219,7 @@ export default _.extend({}, BaseGraphTester, {
     assert.deepEqual(G.outDegree(), new Map([[0,2], [1,2], [2,2]]));
     assert.strictEqual(G.outDegree(0), 2);
     assert.deepEqual(G.outDegree([0]), new Map([[0,2]]));
-    assert.throws(function(){G.outDegree(-1);}, JSNetworkXError);
+    assert.throws(() => G.outDegree(-1), JSNetworkXError);
   },
 
   testOutDegreeIter: function() {

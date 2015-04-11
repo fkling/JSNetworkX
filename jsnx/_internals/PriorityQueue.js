@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 
 function sorter(a, b) {
   return b[0] - a[0];

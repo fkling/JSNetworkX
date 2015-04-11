@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 
 import {numberOfCliques} from '../clique';
 import {triangles} from '../cluster';

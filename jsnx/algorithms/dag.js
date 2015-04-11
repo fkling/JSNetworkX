@@ -1,3 +1,4 @@
+/*eslint max-len:[1, 83]*/
 'use strict';
 
 import JSNetworkXError from '../exceptions/JSNetworkXError';
@@ -92,7 +93,7 @@ export async function topologicalSort(G, optNbunch) {
       seen.add(w); // mark as seen
       // Check successors for cycles for new nodes
       var newNodes = [];
-      /*jshint loopfunc:true*/
+      /*eslint-disable no-loop-func*/
       G.get(w).forEach(function(_, n) {
         if (!explored.has(n)) {
           if (seen.has(n)) { // CYCLE !!
@@ -101,6 +102,7 @@ export async function topologicalSort(G, optNbunch) {
           newNodes.push(n);
         }
       });
+      /*eslint-enable no-loop-func*/
       if (newNodes.length > 0) { // add new nodes to fringe
         fringe.push.apply(fringe, newNodes);
       }
@@ -148,7 +150,7 @@ export async function topologicalSortRecursive(G, optNbunch) {
    * @param {string} v
    * @return {boolean}
    */
-  function _dfs(G, seen, explored, v) {
+  function _dfs(G, seen, explored, v) { // eslint-disable-line no-shadow
     seen.add(v);
     G.get(v).forEach(function(_, w) {
       if (!seen.has(w)) {
@@ -226,7 +228,7 @@ export async function isAperiodic(G) {
     var nextLevel = [];
     for (var i = 0; i < thisLevel.length; i++) {
       var u = thisLevel[i];
-      /*jshint loopfunc:true*/
+      /*eslint-disable no-loop-func*/
       G.get(u).forEach(function(_, v) {
         if (levels.has(v)) { // non-tree edge
           g = gcd(g, levels.get(u) - levels.get(v) + 1);
@@ -236,6 +238,7 @@ export async function isAperiodic(G) {
           levels.set(v, l);
         }
       });
+      /*eslint-enable no-loop-func*/
     }
     thisLevel = nextLevel;
     l += 1;

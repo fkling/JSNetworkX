@@ -1,24 +1,24 @@
 /*jshint strict:false, node:true*/
 /*global utils, assert*/
+'use strict';
 
 import Graph from '../Graph';
 import DiGraph from '../DiGraph';
-/*jshint ignore:start*/
+/*eslint no-native-reassign:0*/
 var Map = utils.Map;
-/*jshint ignore:end*/
 import JSNetworkXError from '../../exceptions/JSNetworkXError';
 
 import * as funcs from '../functions';
 
 export var testFunction = {
   beforeEach: function() {
-    this.G = new Graph({0:[1,2,3], 1:[1,2,0], 4:[]}, {name: 'Test'});
-    this.Gdegree = new Map({0:3, 1:2, 3:1, 4:0});
+    this.G = new Graph({0: [1,2,3], 1: [1,2,0], 4: []}, {name: 'Test'});
+    this.Gdegree = new Map({0: 3, 1: 2, 3: 1, 4: 0});
     this.Gnodes = [0, 1, 2, 3, 4];
     this.Gedges = [[0,1],[0,2],[0,3],[1,0],[1,1],[1,2]];
-    this.DG = new DiGraph({0:[1,2,3], 1:[1,2,0], 4:[]});
-    this.DGinDegree = new Map({0:1, 1:2, 2:2, 3:1, 4:0});
-    this.DoutDegree = new Map({0:3, 1:3, 2:0, 3:0, 4:0});
+    this.DG = new DiGraph({0: [1,2,3], 1: [1,2,0], 4: []});
+    this.DGinDegree = new Map({0: 1, 1: 2, 2: 2, 3: 1, 4: 0});
+    this.DoutDegree = new Map({0: 3, 1: 3, 2: 0, 3: 0, 4: 0});
     this.DGnodes = [0, 1, 2, 3, 4];
     this.DGedges = [[0,1],[0,2],[0,3],[1,0],[1,1],[1,2]];
   },
@@ -143,15 +143,15 @@ export var testFunction = {
   testFreeze: function() {
     var G = funcs.freeze(this.G);
     assert.equal(G.frozen, true);
-    assert.throws(function(){ G.addNode(1);}, JSNetworkXError);
-    assert.throws(function(){ G.addNodesFrom([1]);}, JSNetworkXError);
-    assert.throws(function(){ G.removeNode(1);}, JSNetworkXError);
-    assert.throws(function(){ G.removeNodesFrom([1]);}, JSNetworkXError);
-    assert.throws(function(){ G.addEdge([1,2]);}, JSNetworkXError);
-    assert.throws(function(){ G.addEdgesFrom([[1,2]]);}, JSNetworkXError);
-    assert.throws(function(){ G.removeEdge([1,2]);}, JSNetworkXError);
-    assert.throws(function(){ G.removeEdgesFrom([[1,2]]);}, JSNetworkXError);
-    assert.throws(function(){ G.clear();}, JSNetworkXError);
+    assert.throws(() => G.addNode(1), JSNetworkXError);
+    assert.throws(() => G.addNodesFrom([1]), JSNetworkXError);
+    assert.throws(() => G.removeNode(1), JSNetworkXError);
+    assert.throws(() => G.removeNodesFrom([1]), JSNetworkXError);
+    assert.throws(() => G.addEdge([1,2]), JSNetworkXError);
+    assert.throws(() => G.addEdgesFrom([[1,2]]), JSNetworkXError);
+    assert.throws(() => G.removeEdge([1,2]), JSNetworkXError);
+    assert.throws(() => G.removeEdgesFrom([[1,2]]), JSNetworkXError);
+    assert.throws(() => G.clear(), JSNetworkXError);
   },
 
   testIsFrozen: function() {
@@ -199,6 +199,6 @@ export var testFunction = {
     ].join('\n');
     assert.equal(info, expectedNodeInfo);
 
-    assert.throws(function(){ funcs.info(G, -1);}, JSNetworkXError);
+    assert.throws(() => funcs.info(G, -1), JSNetworkXError);
   }
 };

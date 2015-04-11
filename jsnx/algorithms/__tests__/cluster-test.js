@@ -1,5 +1,5 @@
 /*global assert, utils*/
-"use strict";
+'use strict';
 
 var Map = utils.Map;
 
@@ -22,17 +22,17 @@ import {
 
 export var testTriangles = {
 
-  test_empty: function() {
+  testEmpty: function() {
     var G = new Graph();
     assert.deepEqual(Array.from(triangles(G).values()), []);
   },
 
-  test_path: function() {
+  testPath: function() {
     var G = pathGraph(10);
     assert.deepEqual(Array.from(triangles(G).values()), [0,0,0,0,0,0,0,0,0,0]);
     assert.deepEqual(
       triangles(G),
-      new Map({0:0, 1:0, 2:0, 3:0, 4:0, 5:0, 6:0, 7:0, 8:0, 9:0})
+      new Map({0: 0, 1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0, 7: 0, 8: 0, 9: 0})
     );
   },
 
@@ -48,7 +48,7 @@ export var testTriangles = {
   },
 */
 
-  test_k5: function() {
+  testK5: function() {
     var G = completeGraph(5);
     assert.deepEqual(Array.from(triangles(G).values()), [6,6,6,6,6]);
     assert.equal(
@@ -67,13 +67,13 @@ export var testTriangles = {
 
 exports.weightedClustering = {
 
-  test_clustering: function() {
+  testClustering: function() {
     var G = new Graph();
     assert.deepEqual(Array.from(clustering(G, null, 'weight').values()), []);
     assert.deepEqual(clustering(G), new Map());
   },
 
-  test_path: function() {
+  testPath: function() {
     var G = pathGraph(10);
     assert.deepEqual(
       Array.from(clustering(G, null, 'weight').values()),
@@ -81,7 +81,7 @@ exports.weightedClustering = {
     );
     assert.deepEqual(
       clustering(G, null, 'weight'),
-      new Map({0:0, 1:0, 2:0, 3:0, 4:0, 5:0, 6:0, 7:0, 8:0, 9:0})
+      new Map({0: 0, 1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0, 7: 0, 8: 0, 9: 0})
     );
   },
 
@@ -100,7 +100,7 @@ exports.weightedClustering = {
   },
   */
 
-  test_k5: function() {
+  testK5: function() {
     var G = completeGraph(5);
     assert.deepEqual(
       Array.from(clustering(G, null, 'weight').values()),
@@ -122,18 +122,18 @@ exports.weightedClustering = {
 
 exports.clustering = {
 
-  test_clustering: function() {
+  testClustering: function() {
     var G = new Graph();
     assert.deepEqual(Array.from(clustering(G).values()), []);
     assert.deepEqual(clustering(G), new Map());
   },
 
-  test_path: function() {
+  testPath: function() {
     var G = pathGraph(10);
     assert.deepEqual(Array.from(clustering(G).values()), [0,0,0,0,0,0,0,0,0,0]);
     assert.deepEqual(
       clustering(G),
-      new Map({0:0, 1:0, 2:0, 3:0, 4:0, 5:0, 6:0, 7:0, 8:0, 9:0})
+      new Map({0: 0, 1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0, 7: 0, 8: 0, 9: 0})
     );
   },
 
@@ -149,7 +149,7 @@ exports.clustering = {
   },
 */
 
-  test_k5: function() {
+  testK5: function() {
     var G = completeGraph(5);
     assert.deepEqual(Array.from(clustering(G).values()), [1,1,1,1,1]);
     assert.equal(averageClustering(G), 1);
@@ -161,7 +161,7 @@ exports.clustering = {
     );
   },
 
-  test_average_clustering: function() {
+  testAverageClustering: function() {
     var G = cycleGraph(3);
     G.addEdge(2,3);
     assert.equal(averageClustering(G),(1+1+1/3)/4);
@@ -173,12 +173,12 @@ exports.clustering = {
 
 exports.transitivity = {
 
-  test_transitivity: function() {
+  testTransitivity: function() {
     var G = new Graph();
     assert.equal(transitivity(G), 0);
   },
 
-  test_path: function() {
+  testPath: function() {
     var G = pathGraph(10);
     assert.equal(transitivity(G), 0);
   },
@@ -191,7 +191,7 @@ exports.transitivity = {
   },
   */
 
-  test_k5: function() {
+  testK5: function() {
     var G = completeGraph(5);
     assert.equal(transitivity(G), 1);
     G.removeEdge(1,2);
@@ -202,13 +202,13 @@ exports.transitivity = {
 
 exports.squareClustering = {
 
-  test_clustering: function() {
+  testClustering: function() {
     var G = new Graph();
     assert.deepEqual(Array.from(squareClustering(G).values()), []);
     assert.deepEqual(squareClustering(G), new Map());
   },
 
-  test_path: function() {
+  testPath: function() {
     var G = pathGraph(10);
     assert.deepEqual(
       Array.from(squareClustering(G).values()),
@@ -216,7 +216,7 @@ exports.squareClustering = {
     );
     assert.deepEqual(
       squareClustering(G),
-      new Map({0:0, 1:0, 2:0, 3:0, 4:0, 5:0, 6:0, 7:0, 8:0, 9:0})
+      new Map({0: 0, 1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0, 7: 0, 8: 0, 9: 0})
     );
   },
 
@@ -237,7 +237,7 @@ exports.squareClustering = {
   },
   */
 
-  test_k5: function() {
+  testK5: function() {
     var G = completeGraph(5);
     assert.deepEqual(Array.from(squareClustering(G).values()), [1,1,1,1,1]);
   },
@@ -245,7 +245,7 @@ exports.squareClustering = {
   //TODO: test_bipartite_k5
 
   // Test C4 for figure 1 Lind et al (2005)
-  test_lind_square_clustering: function() {
+  testLindSquareClustering: function() {
     var G = new Graph([[1,2],[1,3],[1,6],[1,7],[2,4],[2,5],
                       [3,4],[3,5],[6,7],[7,8],[6,8],[7,9],
                       [7,10],[6,11],[6,12],[2,13],[2,14],[3,15],[3,16]]);

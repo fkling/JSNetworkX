@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 
 export default class KeyError extends Error {
   constructor(message) {

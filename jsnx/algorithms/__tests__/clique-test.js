@@ -1,5 +1,5 @@
 /*global assert, utils*/
-"use strict";
+'use strict';
 
 import {
   convertNodeLabelsToIntegers,
@@ -82,8 +82,8 @@ export var clique = {
     assert.equal(graphNumberOfCliques(G), 5);
     assert.equal(graphNumberOfCliques(G, this.cl), 5);
     assert.equal(numberOfCliques(G, 1), 1);
-    assert.deepEqual(numberOfCliques(G,[1]), new utils.Map({1:1}));
-    assert.deepEqual(numberOfCliques(G,[1,2]), new utils.Map({1:1, 2:2}));
+    assert.deepEqual(numberOfCliques(G,[1]), new utils.Map({1: 1}));
+    assert.deepEqual(numberOfCliques(G,[1,2]), new utils.Map({1: 1, 2: 2}));
     assert.deepEqual(numberOfCliques(G,2), 2);
 
     assert.deepEqual(

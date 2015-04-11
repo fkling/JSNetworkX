@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 
 import _forEach from 'lodash/collection/forEach';
 import isIterable from './isIterable';

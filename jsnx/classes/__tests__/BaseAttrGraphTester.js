@@ -1,12 +1,10 @@
-/*global assert*/
-"use strict";
+/*global assert, utils*/
+'use strict';
 
 import BaseGraphTester from './BaseGraphTester';
 import Graph from '../Graph';
 import DiGraph from '../DiGraph';
-/*jshint ignore:start*/
 var Map = utils.Map;
-/*jshint ignore:end*/
 import JSNetworkXError from '../../exceptions/JSNetworkXError';
 
 import shared from './shared';
@@ -15,8 +13,8 @@ import _ from 'lodash';
 export default _.extend({}, BaseGraphTester, {
   testWeightedDegree: function() {
     var G = new this.Graph();
-    G.addEdge(1,2,{weight:2,other:3});
-    G.addEdge(2,3,{weight:3,other:4});
+    G.addEdge(1,2,{weight: 2,other: 3});
+    G.addEdge(2,3,{weight: 3,other: 4});
     assert.deepEqual(Array.from(G.degree(null, 'weight').values()), [2,5,3]);
     assert.deepEqual(G.degree(null, 'weight'), new Map([[1,2],[2,5],[3,3]]));
     assert.equal(G.degree(1, 'weight'), 2);
@@ -29,7 +27,7 @@ export default _.extend({}, BaseGraphTester, {
   },
 
   testName: function() {
-    var G = new this.Graph(null, {name:''});
+    var G = new this.Graph(null, {name: ''});
     assert.equal(G.name,'');
     G = new this.Graph(null, {name: 'test'});
     assert.equal(G.toString(), 'test');
@@ -48,7 +46,7 @@ export default _.extend({}, BaseGraphTester, {
   testCopyAttr: function() {
     var G = new this.Graph(null, {foo: []});
     G.addNode(0, {foo: []});
-    G.addEdge(1,2, {foo:[]});
+    G.addEdge(1,2, {foo: []});
     var H = G.copy();
     shared.isDeepcopy(H, G);
     H = new G.constructor(G); // just copy
@@ -57,94 +55,94 @@ export default _.extend({}, BaseGraphTester, {
 
   testGraphAttr: function() {
     var G = this.K3;
-    G.graph['foo'] = 'bar';
-    assert.equal(G.graph['foo'], 'bar');
-    delete G.graph['foo'];
+    G.graph.foo = 'bar';
+    assert.equal(G.graph.foo, 'bar');
+    delete G.graph.foo;
     assert.deepEqual(G.graph, {});
-    var H = new this.Graph(null, {foo:'bar'});
-    assert.equal(H.graph['foo'], 'bar');
+    var H = new this.Graph(null, {foo: 'bar'});
+    assert.equal(H.graph.foo, 'bar');
 
   },
 
   testNodeAttr: function() {
     var G = this.K3;
-    G.addNode(1, {foo:'bar'});
+    G.addNode(1, {foo: 'bar'});
     assert.deepEqual(G.nodes(), [0,1,2]);
-    assert.deepEqual(G.nodes(true), [[0,{}],[1,{'foo':'bar'}],[2,{}]]);
-    G.node.get(1)['foo']='baz';
-    assert.deepEqual(G.nodes(true), [[0,{}],[1,{'foo':'baz'}],[2,{}]]);
+    assert.deepEqual(G.nodes(true), [[0,{}],[1,{'foo': 'bar'}],[2,{}]]);
+    G.node.get(1).foo='baz';
+    assert.deepEqual(G.nodes(true), [[0,{}],[1,{'foo': 'baz'}],[2,{}]]);
   },
 
   testNodeAttr2: function() {
     var G = this.K3;
-    var a = {'foo':'bar'};
+    var a = {'foo': 'bar'};
     G.addNode(3, a);
     assert.deepEqual(G.nodes(), [0,1,2,3]);
     assert.deepEqual(
       G.nodes(true),
-      [[0,{}],[1,{}],[2,{}],[3,{'foo':'bar'}]]
+      [[0,{}],[1,{}],[2,{}],[3,{'foo': 'bar'}]]
     );
 
   },
 
   testEdgeAttr: function() {
     var G = new this.Graph();
-    G.addEdge(1,2,{foo:'bar'});
-    assert.deepEqual(G.edges(true), [[1,2,{'foo':'bar'}]]);
+    G.addEdge(1,2,{foo: 'bar'});
+    assert.deepEqual(G.edges(true), [[1,2,{'foo': 'bar'}]]);
   },
 
   testEdgeAttr2: function() {
     var G = new this.Graph();
-    G.addEdgesFrom([[1,2],[3,4]],{foo:'foo'});
+    G.addEdgesFrom([[1,2],[3,4]],{foo: 'foo'});
     assert.deepEqual(
       G.edges(true).sort(),
-      [[1,2,{'foo':'foo'}],[3,4,{'foo':'foo'}]]
+      [[1,2,{'foo': 'foo'}],[3,4,{'foo': 'foo'}]]
     );
   },
 
   testEdgeAttr3: function() {
     var G = new this.Graph();
-    G.addEdgesFrom([[1,2,{'weight':32}],[3,4,{'weight':64}]],{foo:'foo'});
+    G.addEdgesFrom([[1,2,{'weight': 32}],[3,4,{'weight': 64}]],{foo: 'foo'});
     assert.deepEqual(
       G.edges(true),
       [
-        [1,2,{'foo':'foo','weight':32}],
-        [3,4,{'foo':'foo','weight':64}]
+        [1,2,{'foo': 'foo','weight': 32}],
+        [3,4,{'foo': 'foo','weight': 64}]
       ]
     );
 
     G.removeEdgesFrom([[1,2],[3,4]]);
-    G.addEdge(1,2,{data:7,spam:'bar',bar:'foo'});
+    G.addEdge(1,2,{data: 7,spam: 'bar',bar: 'foo'});
     assert.deepEqual(
       G.edges(true),
-      [[1,2,{'data':7,'spam':'bar','bar':'foo'}]]
+      [[1,2,{'data': 7,'spam': 'bar','bar': 'foo'}]]
     );
   },
 
   testEdgeAttr4: function() {
     var G = new this.Graph();
-    G.addEdge(1,2,{data:7,spam:'bar',bar:'foo'});
+    G.addEdge(1,2,{data: 7,spam: 'bar',bar: 'foo'});
     assert.deepEqual(
       G.edges(true),
-      [[1,2,{'data':7,'spam':'bar','bar':'foo'}]]
+      [[1,2,{'data': 7,'spam': 'bar','bar': 'foo'}]]
     );
-    G.get(1).get(2)['data'] = 10;  // OK to set data like this
+    G.get(1).get(2).data = 10;  // OK to set data like this
     assert.deepEqual(
       G.edges(true),
-      [[1,2,{'data':10,'spam':'bar','bar':'foo'}]]
+      [[1,2,{'data': 10,'spam': 'bar','bar': 'foo'}]]
     );
 
-    G.edge.get(1).get(2)['data'] = 20; // another spelling, "edge"
+    G.edge.get(1).get(2).data = 20; // another spelling, "edge"
     assert.deepEqual(
       G.edges(true),
-      [[1,2,{'data':20,'spam':'bar','bar':'foo'}]]
+      [[1,2,{'data': 20,'spam': 'bar','bar': 'foo'}]]
     );
-    G.edge.get(1).get(2)['listdata'] = [20,200];
-    G.edge.get(1).get(2)['weight'] = 20;
+    G.edge.get(1).get(2).listdata = [20,200];
+    G.edge.get(1).get(2).weight = 20;
     assert.deepEqual(
       G.edges(true),
-      [[1,2,{'data':20,'spam':'bar',
-        'bar':'foo','listdata':[20,200],'weight':20}]]
+      [[1,2,{'data': 20,'spam': 'bar',
+        'bar': 'foo','listdata': [20,200],'weight': 20}]]
     );
   },
 
@@ -198,7 +196,7 @@ export default _.extend({}, BaseGraphTester, {
     G.addEdge(1,1,{weight: 2});
     assert.deepEqual(
       G.selfloopEdges(true),
-      [[0,0,{}],[1,1,{weight:2}]]
+      [[0,0,{}],[1,1,{weight: 2}]]
     );
   }
 });

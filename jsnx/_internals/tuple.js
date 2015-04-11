@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 
 var t2 = new Array(2);
 var t3 = new Array(3);

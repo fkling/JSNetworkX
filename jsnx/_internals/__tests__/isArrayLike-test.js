@@ -20,7 +20,7 @@ export var testIsArrayLike = {
   },
 
   'not strings': function() {
-    assert(!isArrayLike("foo"));
+    assert(!isArrayLike('foo'));
   },
 
   'not functions': function() {

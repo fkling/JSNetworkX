@@ -1,5 +1,5 @@
 /*globals assert, utils*/
-"use strict";
+'use strict';
 
 import {Graph, DiGraph} from '../../classes';
 import JSNetworkXError from '../../exceptions/JSNetworkXError';
@@ -18,11 +18,11 @@ export var TestDAG = {
   },
 
   testTopologicalSort2: function() {
-    var DG = new DiGraph({1:[2], 2:[3], 3:[4],
-                          4:[5], 5:[1], 11:[12],
-                          12:[13], 13:[14], 14:[15]});
+    var DG = new DiGraph({1: [2], 2: [3], 3: [4],
+                          4: [5], 5: [1], 11: [12],
+                          12: [13], 13: [14], 14: [15]});
 
-    assert.throws(() =>  dag.topologicalSort(DG), JSNetworkXUnfeasible);
+    assert.throws(() => dag.topologicalSort(DG), JSNetworkXUnfeasible);
     assert.throws(
       () => dag.topologicalSortRecursive(DG),
       JSNetworkXUnfeasible
@@ -132,7 +132,7 @@ export var TestDAG = {
 
   testIsAperiodicRaise: function() {
     var G = new Graph();
-    assert.throws(() =>  dag.isAperiodic(G), JSNetworkXError);
+    assert.throws(() => dag.isAperiodic(G), JSNetworkXError);
   },
 
   /* TODO: davis_southern_women_graph

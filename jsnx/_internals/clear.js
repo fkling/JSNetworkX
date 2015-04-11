@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 
 /**
  * Removes every property of the object.

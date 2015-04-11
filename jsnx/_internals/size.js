@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 
 import isArrayLike from './isArrayLike';
 import isGraph from './isGraph';

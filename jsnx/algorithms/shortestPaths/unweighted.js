@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 /**
  * @fileoverview Shortest path algorithms for unweighted graphs.
  */
@@ -44,7 +44,7 @@ export async function singleSourceShortestPathLength(G, source, optCutoff) {
   while (nextlevel.size > 0) {
     var thislevel = nextlevel;
     nextlevel = new Map();
-    /*jshint loopfunc:true*/
+    /*eslint no-loop-func:0*/
     for (var v of thislevel.keys()) {
       if (!seen.has(v)) {
         seen.set(v, level);
@@ -137,14 +137,14 @@ function bidirectionalPredSucc(G, source, target) {
   }
 
   // handle either directed or undirected
-  var Gpred, Gsucc;
+  var gpred, gsucc;
   if (G.isDirected()) {
-    Gpred = G.predecessorsIter.bind(G);
-    Gsucc = G.successorsIter.bind(G);
+    gpred = G.predecessorsIter.bind(G);
+    gsucc = G.successorsIter.bind(G);
   }
   else {
-    Gpred = G.neighborsIter.bind(G);
-    Gsucc = G.neighborsIter.bind(G);
+    gpred = G.neighborsIter.bind(G);
+    gsucc = G.neighborsIter.bind(G);
   }
 
   // predecesssor and successors in search
@@ -155,15 +155,14 @@ function bidirectionalPredSucc(G, source, target) {
   var forwardFringe = [source];
   var reverseFringe = [target];
   var thisLevel;
-  var v, w;
 
   /*jshint newcap:false*/
   while (forwardFringe.length > 0 && reverseFringe.length > 0) {
     if (forwardFringe.length <= reverseFringe.length) {
       thisLevel = forwardFringe;
       forwardFringe = [];
-      for (v of thisLevel) {
-        for (w of Gsucc(v)) {
+      for (let v of thisLevel) {
+        for (let w of gsucc(v)) {
           if (!pred.has(w)) {
             forwardFringe.push(w);
             pred.set(w, v);
@@ -177,8 +176,8 @@ function bidirectionalPredSucc(G, source, target) {
     else {
       thisLevel = reverseFringe;
       reverseFringe = [];
-      for (v of thisLevel) {
-        for (w of Gpred(v)) {
+      for (let v of thisLevel) {
+        for (let w of gpred(v)) {
           if (!succ.has(w)) {
             reverseFringe.push(w);
             succ.set(w, v);

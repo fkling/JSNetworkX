@@ -1,5 +1,5 @@
 /*global assert, utils*/
-"use strict";
+'use strict';
 
 import {isSupported, serialize, deserialize} from '../message';
 import {Graph, DiGraph} from '../../classes';
@@ -10,7 +10,7 @@ function convert(v) {
   return deserialize(serialize(v));
 }
 
-function graph(directed) {
+function graph() {
   var edges = [[1,2], [2,3]];
   var data = {foo: 'bar'};
   return new Graph(edges, data);
@@ -81,7 +81,7 @@ export var testMessage = {
     assert.equal(convert(foo), foo);
 
     // Iterables (only serialized)
-    foo = function*() { yield 1; yield 2; yield 3;};
+    foo = function*() { yield 1; yield 2; yield 3; };
     assert.deepEqual(serialize(foo()), [1,2,3]);
   },
 

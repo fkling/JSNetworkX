@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 
 import range from './range';
 
@@ -26,20 +26,23 @@ export default function *genPermutations(iterable, r) {
   var rangeR = range(r-1, -1 , -1);
   yield indicies.slice(0, r).map(i => pool[i]);
   while (true) {
-    for (var k = 0; k < rangeR.length; k++) {
-      var i = rangeR[k];
+    let k = 0;
+    for (; k < rangeR.length; k++) {
+      let i = rangeR[k];
       cycles[i] -= 1;
-      var index = indicies[i];
+      let index = indicies[i];
       if (cycles[i] === 0) {
         indicies.splice(i, 1);
         indicies.push(index);
         cycles[i] = n - i;
       }
       else {
-        var j = cycles[i];
+        let j = cycles[i];
         indicies[i] = indicies[indicies.length - j];
         indicies[indicies.length - j] = index;
+        /* eslint-disable no-loop-func */
         yield indicies.slice(0, r).map(i => pool[i]);
+        /* eslint-enable no-loop-func */
         break;
       }
     }

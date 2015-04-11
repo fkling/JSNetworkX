@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 
 /**
  * Returns true if object is an iterator

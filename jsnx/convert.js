@@ -1,4 +1,3 @@
-/*jshint latedef:false*/
 'use strict';
 /**
  * This module provides functions to convert
@@ -59,7 +58,11 @@ var hasOwn = Object.prototype.hasOwnProperty;
  *     a multigraph from a multigraph.
  * @return {Graph}
  */
-export function toNetworkxGraph(data, optCreateUsing, optMultigraphInput=false) {
+export function toNetworkxGraph(
+  data,
+  optCreateUsing,
+  optMultigraphInput=false
+) {
   var result = null;
 
   // jsnx graph
@@ -155,7 +158,7 @@ export function convertToUndirected(G) {
  * @param {Graph} G Graph to convert
  * @return {!Graph}
  */
-function convertToDirected(G) {
+export function convertToDirected(G) {
   return G.toDirected();
 }
 
@@ -185,7 +188,7 @@ export function toDictOfLists(G, optNodelist) {
     optNodelist = Array.from(optNodelist);
   }
 
-  for (var n of optNodelist) {
+  for (let n of optNodelist) {
     d[n] = G.neighbors(n).filter(contains);
   }
 
@@ -231,7 +234,7 @@ export function fromDictOfLists(d, optCreateUsing) {
       nbrlist = d[node];
       // treat numeric keys like numbers
       node = isNaN(node) ? node : +node;
-      /*jshint loopfunc:true*/
+      /*eslint no-loop-func:0*/
       forEach(nbrlist, function(nbr) {
         if (!seen.has(nbr)) {
           G.addEdge(node, nbr);
@@ -299,17 +302,17 @@ export function toDictOfDicts(G, optNodelist, optEdgeData) {
   else { // nodelist is undefined
     if(optEdgeData != null) {
       // dn = [nbrdict, u]
-      for (var dn of G.adjacencyIter()) {
+      for (let [nbrdict, u] of G.adjacencyIter()) {
         /*jshint loopfunc:true*/
-        dod[dn[1]] = _mapValues(dn[0], function() {
+        dod[u] = _mapValues(nbrdict, function() {
           return optEdgeData;
         });
       }
     }
     else { // edge_data is defined
       // dn = [nbrdict, u]
-      for (var dn of G.adjacencyIter()) {
-        dod[dn[1]] = clone(dn[0]);
+      for (let [nbrdict, u] of G.adjacencyIter()) {
+        dod[u] = clone(nbrdict);
       }
     }
   }
@@ -356,18 +359,18 @@ export function fromDictOfDicts(d, optCreateUsing, optMultigraphInput=false) {
   if (optMultigraphInput) {
     // make a copy  of the list of edge data (but not the edge data)
     if (G.isDirected()) {
-      for (var u in d) {
-        var nbrs = d[u];
+      for (let u in d) {
+        let nbrs = d[u];
         if(isArrayLike(nbrs)) { // throw exception of not dict (object)
           throw new TypeError('Inner object seems to be an array');
         }
         // treat numeric keys like numbers
         u = isNaN(u) ? u : +u;
-        for (var v in nbrs) {
-          var datadict = nbrs[v];
+        for (let v in nbrs) {
+          let datadict = nbrs[v];
           // treat numeric keys like numbers
           v = isNaN(v) ? v : +v;
-          for (var key in datadict) {
+          for (let key in datadict) {
             if (G.isMultigraph()) {
               G.addEdge(u, v, key, datadict[key]);
             }
@@ -380,19 +383,19 @@ export function fromDictOfDicts(d, optCreateUsing, optMultigraphInput=false) {
     }
     else { // undirected
       // don't add both directions of undirected graph
-      for (var u in d) {
-        var nbrs = d[u];
+      for (let u in d) {
+        let nbrs = d[u];
         if(isArrayLike(nbrs)) { // throw exception of not dict (object)
           throw new TypeError('Inner object seems to be an array');
         }
         // treat numeric keys like numbers
         u = isNaN(u) ? u : +u;
-        for (var v in nbrs) {
-          var datadict = nbrs[v];
+        for (let v in nbrs) {
+          let datadict = nbrs[v];
           // treat numeric keys like numbers
           v = isNaN(v) ? v : +v;
           if(!seen.has([u, v])) {
-            for (var key in datadict) {
+            for (let key in datadict) {
               if (G.isMultigraph()) {
                 G.addEdge(u, v, key, datadict[key]);
               }
@@ -411,15 +414,15 @@ export function fromDictOfDicts(d, optCreateUsing, optMultigraphInput=false) {
       // d can have both representations u-v, v-u in dict.  Only add one.
       // We don't need this check for digraphs since we add both directions,
       // or for Graph() since it is done implicitly (parallel edges not allowed)
-      for (var u in d) {
-        var nbrs = d[u];
+      for (let u in d) {
+        let nbrs = d[u];
         if(isArrayLike(nbrs)) { // throw exception of not dict (object)
           throw new TypeError('Inner object seems to be an array');
         }
         // treat numeric keys like numbers
         u = isNaN(u) ? u : +u;
-        for (var v in nbrs) {
-          var data = nbrs[v];
+        for (let v in nbrs) {
+          let data = nbrs[v];
           v = isNaN(v) ? v : +v;
           if (!seen.has([u, v])) {
             G.addEdge(u, v, data);
@@ -429,15 +432,15 @@ export function fromDictOfDicts(d, optCreateUsing, optMultigraphInput=false) {
       }
     }
     else {
-      for (var u in d) {
-        var nbrs = d[u];
+      for (let u in d) {
+        let nbrs = d[u];
         if(isArrayLike(nbrs)) { // throw exception of not dict (object)
           throw new TypeError('Inner object seems to be an array');
         }
         // treat numeric keys like numbers
         u = isNaN(u) ? u : +u;
-        for (var v in nbrs) {
-          var data = nbrs[v];
+        for (let v in nbrs) {
+          let data = nbrs[v];
           // treat numeric keys like numbers
           v = isNaN(v) ? v : +v;
           G.addEdge(u, v, data);

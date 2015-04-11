@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 
 import JSNetworkXError from '../exceptions/JSNetworkXError';
 
@@ -116,10 +116,10 @@ export function makeSmallGraph({type, name, n, list}, optCreateUsing) {
  * @return {Graph}
  */
 export function bullGraph(optCreateUsing) {
-  var type = "adjacencylist";
-  var name = "Bull Graph";
+  var type = 'adjacencylist';
+  var name = 'Bull Graph';
   var n = 5;
-  var list = [[2,3],[1,3,4],[1,2,5],[2],[3]];
+  var list = [[2, 3], [1, 3, 4], [1, 2, 5], [2], [3]];
 
   return makeSmallUndirectedGraph({type, name, n, list}, optCreateUsing);
 }
@@ -149,11 +149,21 @@ export function bullGraph(optCreateUsing) {
  * @return {Graph}
  */
 export function krackhardtKiteGraph(optCreateUsing) {
-  var type = "adjacencylist";
-  var name = "Krackhardt Kite Social Network";
+  var type = 'adjacencylist';
+  var name = 'Krackhardt Kite Social Network';
   var n = 10;
-  var list = [[2,3,4,6],[1,4,5,7],[1,4,6],[1,2,3,5,6,7],[2,4,7],[1,3,4,7,8],
-     [2,4,5,6,8],[6,7,9],[8,10],[9]];
+  var list = [
+    [2, 3, 4, 6],
+    [1, 4, 5, 7],
+    [1, 4, 6],
+    [1, 2, 3, 5, 6, 7],
+    [2, 4, 7],
+    [1, 3, 4, 7, 8],
+    [2, 4, 5, 6, 8],
+    [6, 7, 9],
+    [8, 10],
+    [9]
+  ];
 
   return makeSmallUndirectedGraph({type, name, n, list}, optCreateUsing);
 }

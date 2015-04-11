@@ -1,5 +1,5 @@
 /*global assert*/
-"use strict";
+'use strict';
 
 import JSNetworkXException from '../../exceptions/JSNetworkXException';
 
@@ -8,7 +8,7 @@ import {erdosRenyiGraph} from '../../generators/randomGraphs';
 
 export var graphical = {
 
-  testValidDegreeSequence1:  function() {
+  testValidDegreeSequence1: function() {
     this.timeout(3000);
     var n = 100;
     var p = 0.3;

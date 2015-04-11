@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 
 /**
  * Takes a number of iterators and returns a new iterator which emits an array

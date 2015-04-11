@@ -1,10 +1,8 @@
-"use strict";
+'use strict';
 
 import KeyError from '../exceptions/KeyError';
-/* jshint ignore:start */
 import Map from '../_internals/Map';
 import Set from '../_internals/Set';
-/* jshint ignore:end */
 import JSNetworkXError from '../exceptions/JSNetworkXError';
 
 import isBoolean from 'lodash/lang/isBoolean';
@@ -138,8 +136,8 @@ export default class Graph {
 
   /*
    * @param {Iterable} optData Data to initialize graph.  If `data` is not
-   *    provided, an empty graph is created. The data can be an edge list, or any
-   *    JSNetworkX graph object.
+   *    provided, an empty graph is created. The data can be an edge list, or
+   *    any JSNetworkX graph object.
    * @param {Object=} optAttr (default=no attributes)
    *    Attributes to add to graph as key=value pairs.
    */
@@ -992,6 +990,7 @@ export default class Graph {
    *      list of lists.
    */
   adjacencyList() {
+    /*eslint no-unused-vars:0*/
     return Array.from(mapIterator(
       this.adjacencyIter(),
       ([_, adj]) => Array.from(adj.keys())
@@ -1097,7 +1096,7 @@ export default class Graph {
       nodesNbrs = this.adj.entries();
     }
     else {
-      var adj = this.adj;
+      let adj = this.adj;
       nodesNbrs = mapIterator(
         this.nbunchIter(optNbunch),
         n => tuple2(n, adj.get(n))
@@ -1113,15 +1112,15 @@ export default class Graph {
       iterator = mapIterator(
         nodesNbrs,
         function([n, nbrs]) {
-          var sum = 0;
+          let sum = 0;
 
           nbrs.forEach(function(data) {
-            var weight = data[optWeight];
+            let weight = data[optWeight];
             sum += +(weight != null ? weight : 1);
           });
 
           if (nbrs.has(n)) {
-            var weight = nbrs.get(n)[optWeight];
+            let weight = nbrs.get(n)[optWeight];
             sum += +(weight != null ? weight : 1);
           }
 

@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 
 /**
  * Return a graph object ready to be populated.
@@ -25,7 +25,7 @@ export function prepCreateUsing(optCreateUsing) {
       G.clear();
     }
     catch(e) {
-      throw new TypeError("Input graph is not a jsnx graph type");
+      throw new TypeError('Input graph is not a jsnx graph type');
     }
   }
   return G;

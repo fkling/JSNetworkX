@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 
 import Graph from './Graph';
 import JSNetworkXError from '../exceptions/JSNetworkXError';
@@ -674,7 +674,8 @@ export default class MultiGraph extends Graph {
       this.adj :
       mapIterator(this.nbunchIter(optNbunch), n => tuple2(n, this.adj.get(n)));
 
-    for (var [n, nbrs] of nodesNbrs) {
+    for (let [n, nbrs] of nodesNbrs) {
+      /*eslint no-loop-func:0*/
       var deg = 0;
       if (optWeight == null) {
         nbrs.forEach(keydict => deg += Object.keys(keydict).length);

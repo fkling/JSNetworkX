@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 
 import {JSNetworkXException, JSNetworkXUnfeasible} from '../exceptions';
 
@@ -106,7 +106,7 @@ function basicGraphicalTests(sequence) {
  * @return {boolean} `true` if `degreeSequence` is graphical and `false` if not.
  */
 export async function isValidDegreeSequenceHavelHakimi(degreeSequence) {
-  var _;
+  var _; // eslint-disable-line no-unused-vars
   var maxDegree;
   var minDegree;
   var n;
@@ -213,7 +213,7 @@ export async function isValidDegreeSequenceHavelHakimi(degreeSequence) {
 export async function isValidDegreeSequenceErdosGallai(degreeSequence) {
   var maxDegree;
   var minDegree;
-  var _;
+  var _; // eslint-disable-line no-unused-vars
   var n;
   var numDegrees;
 

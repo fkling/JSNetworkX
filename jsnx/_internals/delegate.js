@@ -1,3 +1,4 @@
+/*eslint camelcase:0*/
 'use strict';
 
 import path from 'path';

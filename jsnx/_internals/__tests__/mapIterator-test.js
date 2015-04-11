@@ -1,5 +1,5 @@
 /*globals assert, utils*/
-"use strict";
+'use strict';
 
 import mapIterator from '../mapIterator';
 

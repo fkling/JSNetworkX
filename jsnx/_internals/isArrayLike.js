@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 
 /**
  * Returns true of the array is an object and has a numerical length property.

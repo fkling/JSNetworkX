@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 
 import isArrayLike from './isArrayLike';
 import isIterator from './isIterator';
@@ -24,7 +24,7 @@ export default function toIterator(seq) {
     return seq[Symbol.iterator]();
   }
   else if (Array.isArray(seq) || isArrayLike(seq)) {
-    return (function*(seq) {
+    return (function*(seq) { // eslint-disable-line no-shadow
       for (var i = 0, l = seq.length; i < l; i++) {
         yield seq[i];
       }

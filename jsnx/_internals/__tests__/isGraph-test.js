@@ -1,5 +1,4 @@
-/*global assert */
-"use strict";
+'use strict';
 
 // TODO
 export var testIsGraph = {};

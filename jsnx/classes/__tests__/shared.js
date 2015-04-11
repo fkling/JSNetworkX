@@ -1,24 +1,19 @@
-/*jshint node:true, sub:true*/
-/*global assert, utils*/
-"use strict";
+/*global assert*/
+'use strict';
 
-/*jshint ignore:start*/
-var Map = utils.Map;
-/*jshint ignore:end*/
 import JSNetworkXError from '../../exceptions/JSNetworkXError';
-
 
 export default {
   addAttributes: function(G) {
-    G.graph['foo'] = [];
-    G.node.get(0)['foo'] = [];
+    G.graph.foo = [];
+    G.node.get(0).foo = [];
     G.removeEdge(1,2);
     var ll = [];
-    G.addEdge(1,2,{foo:ll});
-    G.addEdge(2,1,{foo:ll});
+    G.addEdge(1,2,{foo: ll});
+    G.addEdge(2,1,{foo: ll});
     // must be dict
     assert.throws(
-      function(){G.addEdge(0,1,[]);},
+      () => G.addEdge(0,1,[]),
       JSNetworkXError
     );
   },
@@ -36,21 +31,21 @@ export default {
   },
 
   deepcopyGraphAttr: function(H,G) {
-    assert.deepEqual(G.graph['foo'], H.graph['foo']);
-    G.graph['foo'].push(1);
-    assert.notDeepEqual(G.graph['foo'], H.graph['foo']);
+    assert.deepEqual(G.graph.foo, H.graph.foo);
+    G.graph.foo.push(1);
+    assert.notDeepEqual(G.graph.foo, H.graph.foo);
   },
 
   deepcopyNodeAttr: function(H,G) {
-    assert.deepEqual(G.node.get(0)['foo'], H.node.get(0)['foo']);
-    G.node.get(0)['foo'].push(1);
-    assert.notDeepEqual(G.node.get(0)['foo'], H.node.get(0)['foo']);
+    assert.deepEqual(G.node.get(0).foo, H.node.get(0).foo);
+    G.node.get(0).foo.push(1);
+    assert.notDeepEqual(G.node.get(0).foo, H.node.get(0).foo);
   },
 
   deepcopyEdgeAttr: function(H,G) {
-    assert.deepEqual(G.get(1).get(2)['foo'], H.get(1).get(2)['foo']);
-    G.get(1).get(2)['foo'].push(1);
-    assert.notDeepEqual(G.get(1).get(2)['foo'], H.get(1).get(2)['foo']);
+    assert.deepEqual(G.get(1).get(2).foo, H.get(1).get(2).foo);
+    G.get(1).get(2).foo.push(1);
+    assert.notDeepEqual(G.get(1).get(2).foo, H.get(1).get(2).foo);
   },
 
   graphsEqual: function(H,G) {
@@ -80,15 +75,15 @@ export default {
   },
 
   differentAttrdict: function(H, G) {
-    var oldFoo = H.get(1).get(2)['foo'];
-    H.addEdge(1,2,{foo:'baz'});
+    var oldFoo = H.get(1).get(2).foo;
+    H.addEdge(1,2,{foo: 'baz'});
     assert.notDeepEqual(G.edge,H.edge);
-    H.addEdge(1,2,{foo:oldFoo});
+    H.addEdge(1,2,{foo: oldFoo});
     assert.deepEqual(G.edge,H.edge);
-    oldFoo = H.node.get(0)['foo'];
-    H.node.get(0)['foo'] = 'baz';
+    oldFoo = H.node.get(0).foo;
+    H.node.get(0).foo = 'baz';
     assert.notDeepEqual(G.node, H.node);
-    H.node.get(0)['foo'] = oldFoo;
+    H.node.get(0).foo = oldFoo;
     assert.deepEqual(G.node, H.node);
   },
 
@@ -105,33 +100,33 @@ export default {
   },
 
   shallowCopyGraphAttr: function(H,G) {
-    assert.equal(G.graph['foo'], H.graph['foo']);
-    G.graph['foo'].push(1);
-    assert.deepEqual(G.graph['foo'],H.graph['foo']);
+    assert.equal(G.graph.foo, H.graph.foo);
+    G.graph.foo.push(1);
+    assert.deepEqual(G.graph.foo,H.graph.foo);
   },
 
   shallowCopyNodeAttr: function(H,G) {
-    assert.deepEqual(G.node.get(0)['foo'],H.node.get(0)['foo']);
-    G.node.get(0)['foo'].push(1);
-    assert.deepEqual(G.node.get(0)['foo'],H.node.get(0)['foo']);
+    assert.deepEqual(G.node.get(0).foo,H.node.get(0).foo);
+    G.node.get(0).foo.push(1);
+    assert.deepEqual(G.node.get(0).foo,H.node.get(0).foo);
   },
 
   shallowCopyEdgeAttr: function(H,G) {
-    assert.deepEqual(G.get(1).get(2)['foo'],H.get(1).get(2)['foo']);
-    G.get(1).get(2)['foo'].push(1);
-    assert.deepEqual(G.get(1).get(2)['foo'],H.get(1).get(2)['foo']);
+    assert.deepEqual(G.get(1).get(2).foo,H.get(1).get(2).foo);
+    G.get(1).get(2).foo.push(1);
+    assert.deepEqual(G.get(1).get(2).foo,H.get(1).get(2).foo);
   },
 
   sameAttrdict: function(H, G) {
-    var oldFoo = H.get(1).get(2)['foo'];
-    H.addEdge(1,2,{foo:'baz'});
+    var oldFoo = H.get(1).get(2).foo;
+    H.addEdge(1,2,{foo: 'baz'});
     assert.deepEqual(G.edge,H.edge);
-    H.addEdge(1,2,{foo:oldFoo});
+    H.addEdge(1,2,{foo: oldFoo});
     assert.deepEqual(G.edge,H.edge);
-    oldFoo = H.node.get(0)['foo'];
-    H.node.get(0)['foo'] = 'baz';
+    oldFoo = H.node.get(0).foo;
+    H.node.get(0).foo = 'baz';
     assert.deepEqual(G.node,H.node);
-    H.node.get(0)['foo'] = oldFoo;
+    H.node.get(0).foo = oldFoo;
     assert.deepEqual(G.node,H.node);
   }
 };

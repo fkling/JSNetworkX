@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 
 import DiGraph from './DiGraph';
 import MultiGraph from './MultiGraph';
@@ -460,7 +460,9 @@ export default class MultiDiGraph extends DiGraph {
       );
 
     if (optWeight == null) {
-      for (var [[n, succ], [_, pred]] of nodesNbrs) {
+      /* eslint-disable no-unused-vars */
+      for (let [[n, succ], [_, pred]] of nodesNbrs) {
+        /* eslint-enable no-unused-vars */
         var keydict;
         var inDegree = 0;
         for (keydict of pred.values()) {
@@ -474,7 +476,9 @@ export default class MultiDiGraph extends DiGraph {
       }
     }
     else {
-      for (var [[n, succ], [_, pred]] of nodesNbrs) {
+      /* eslint-disable no-unused-vars */
+      for (let [[n, succ], [_, pred]] of nodesNbrs) {
+        /* eslint-enable no-unused-vars */
         yield [
           n,
           sumEdgeAttribute(pred, optWeight, 1) +
@@ -648,7 +652,7 @@ export default class MultiDiGraph extends DiGraph {
     // create new graph and copy subgraph into it
     var H = new this.constructor();
     // copy node and attribute dictionaries
-    for (var n of bunch) {
+    for (let n of bunch) {
       H.node.set(n, this.node.get(n));
     }
     var HSucc = H.succ;
@@ -656,17 +660,17 @@ export default class MultiDiGraph extends DiGraph {
     var thisSucc = this.succ;
 
     // add nodes
-    for (var n of H) {
+    for (let n of H) {
       HSucc.set(n, new Map());
       HPred.set(n, new Map());
     }
     // add edges
-    for (var [u, HNbrs] of HSucc) {
-      for (var [v, keydict] of thisSucc.get(u)) {
+    for (let [u, HNbrs] of HSucc) {
+      for (let [v, keydict] of thisSucc.get(u)) {
         if (HSucc.has(v)) {
           // add both representations of edge: u-v and v-u
           // they share the same keydict
-          var keydictCopy = clone(keydict);
+          let keydictCopy = clone(keydict);
           HNbrs.set(v, keydictCopy);
           HPred.get(v).set(u, keydictCopy);
         }
@@ -752,7 +756,7 @@ function *yieldDegree(graph, edges, nBunch, weight) {
     mapIterator(graph.nbunchIter(nBunch), n => tuple2(n, edges.get(n)));
 
   if (weight == null) {
-    for (var [n, nbrs] of nodesNbrs) {
+    for (let [n, nbrs] of nodesNbrs) {
       var sum = 0;
       for (var keydict of nbrs.values()) {
         sum += Object.keys(keydict).length;
@@ -761,7 +765,7 @@ function *yieldDegree(graph, edges, nBunch, weight) {
     }
   }
   else {
-    for (var [n, nbrs] of nodesNbrs) {
+    for (let [n, nbrs] of nodesNbrs) {
       yield [n, sumEdgeAttribute(nbrs, weight, 1)];
     }
   }

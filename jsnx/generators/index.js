@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 
 import * as classic from './classic';
 import * as degreeSequence from './degreeSequence';

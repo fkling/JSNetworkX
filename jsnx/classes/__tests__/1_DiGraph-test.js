@@ -1,11 +1,8 @@
-/*jshint strict:false, node:true*/
-/*global assert*/
+/*global assert, utils*/
 
 import BaseDiGraphTester from './BaseDiGraphTester';
 import DiGraph from '../DiGraph';
-/*jshint ignore:start*/
 var Map = utils.Map;
-/*jshint ignore:end*/
 import JSNetworkXError from '../../exceptions/JSNetworkXError';
 import {TestGraph} from './0_Graph-test';
 
@@ -82,30 +79,30 @@ export var TestDiGraph = _.extend({}, TestGraph, BaseDiGraphTester, {
     G.addEdge(0,1);
     assert.deepEqual(
       G.adj,
-      new Map({0: new Map({1:{}}), 1: new Map()})
+      new Map({0: new Map({1: {}}), 1: new Map()})
     );
     assert.deepEqual(
       G.succ,
-      new Map({0: new Map({1:{}}), 1: new Map()})
+      new Map({0: new Map({1: {}}), 1: new Map()})
     );
     assert.deepEqual(
       G.pred,
-      new Map({0: new Map(), 1: new Map({0:{}})})
+      new Map({0: new Map(), 1: new Map({0: {}})})
     );
 
     G = new this.Graph();
     G.addEdge.apply(G, [0,1]); // tuple unpacking
     assert.deepEqual(
       G.adj,
-      new Map({0: new Map({1:{}}), 1: new Map()})
+      new Map({0: new Map({1: {}}), 1: new Map()})
     );
     assert.deepEqual(
       G.succ,
-      new Map({0: new Map({1:{}}), 1: new Map()})
+      new Map({0: new Map({1: {}}), 1: new Map()})
     );
     assert.deepEqual(
       G.pred,
-      new Map({0: new Map(), 1: new Map({0:{}})})
+      new Map({0: new Map(), 1: new Map({0: {}})})
     );
   },
 
@@ -116,14 +113,14 @@ export var TestDiGraph = _.extend({}, TestGraph, BaseDiGraphTester, {
     assert.deepEqual(
       G.adj,
       new Map({
-        0: new Map({1: {data:2}, 2: {data: 3}}),
+        0: new Map({1: {data: 2}, 2: {data: 3}}),
         1: new Map(),
         2: new Map()})
     );
     assert.deepEqual(
       G.succ,
       new Map({
-        0: new Map({1: {data:2}, 2: {data: 3}}),
+        0: new Map({1: {data: 2}, 2: {data: 3}}),
         1: new Map(),
         2: new Map()})
     );
@@ -131,20 +128,20 @@ export var TestDiGraph = _.extend({}, TestGraph, BaseDiGraphTester, {
       G.pred,
       new Map({
         0: new Map(),
-        1: new Map({0: {data:2}}),
-        2: new Map({0: {data:3}})
+        1: new Map({0: {data: 2}}),
+        2: new Map({0: {data: 3}})
       })
     );
 
     // too few in tuple
-    assert.throws(function(){G.addEdgesFrom([[0]]);}, JSNetworkXError);
+    assert.throws(() => G.addEdgesFrom([[0]]), JSNetworkXError);
     // too many in tuple
     assert.throws(
-      function(){G.addEdgesFrom([[0,1,2,3]]);},
+      () => G.addEdgesFrom([[0,1,2,3]]),
       JSNetworkXError
     );
     // not a tuple
-    assert.throws(function(){G.addEdgesFrom([0]);}, TypeError);
+    assert.throws(() => G.addEdgesFrom([0]), TypeError);
   },
 
   testRemoveEdge: function() {
@@ -153,21 +150,21 @@ export var TestDiGraph = _.extend({}, TestGraph, BaseDiGraphTester, {
     assert.deepEqual(
       G.succ,
       new Map({
-        0: new Map({2:{}}),
-        1: new Map({0:{}, 2:{}}),
-        2: new Map({0:{}, 1:{}})
+        0: new Map({2: {}}),
+        1: new Map({0: {}, 2: {}}),
+        2: new Map({0: {}, 1: {}})
       })
     );
     assert.deepEqual(
       G.pred,
       new Map({
-        0: new Map({1:{}, 2:{}}),
-        1: new Map({2:{}}),
-        2: new Map({0:{}, 1:{}})
+        0: new Map({1: {}, 2: {}}),
+        1: new Map({2: {}}),
+        2: new Map({0: {}, 1: {}})
       })
     );
     assert.throws(
-      function(){G.removeEdge(-1, 0);},
+      () => G.removeEdge(-1, 0),
       JSNetworkXError
     );
   },
@@ -178,19 +175,19 @@ export var TestDiGraph = _.extend({}, TestGraph, BaseDiGraphTester, {
     assert.deepEqual(
       G.succ,
       new Map({
-        0: new Map({2:{}}),
-        1: new Map({0:{}, 2:{}}),
-        2: new Map({0:{}, 1:{}})
+        0: new Map({2: {}}),
+        1: new Map({0: {}, 2: {}}),
+        2: new Map({0: {}, 1: {}})
       })
     );
     assert.deepEqual(
       G.pred,
       new Map({
-        0: new Map({1:{}, 2:{}}),
-        1: new Map({2:{}}),
-        2: new Map({0:{}, 1:{}})
+        0: new Map({1: {}, 2: {}}),
+        1: new Map({2: {}}),
+        2: new Map({0: {}, 1: {}})
       })
     );
-    assert.doesNotThrow(function(){G.removeEdgesFrom([[0,0]]);});
+    assert.doesNotThrow(() => G.removeEdgesFrom([[0,0]]));
   }
 });

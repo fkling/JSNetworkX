@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 
 import * as algorithms from './algorithms';
 import * as classes from './classes';

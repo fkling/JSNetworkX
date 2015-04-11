@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 /**
  * @fileoverview
  * A shim for ES6 maps and support for custom hash functions via toString()
@@ -28,22 +28,20 @@ export default class Map {
     this._values = Object.create(null); // every other value
     this._keys = Object.create(null);
 
-    var key, value;
-
     if (optData != null) {
       if (isIterator(optData)) {
-        for (var [key, value] of optData) {
+        for (let [key, value] of optData) {
           this.set(key, value);
         }
       }
       else if(isArrayLike(optData)) {
-        for (var i = 0; i < optData.length; i++) {
-          [key, value] = optData[i];
+        for (let i = 0; i < optData.length; i++) {
+          let [key, value] = optData[i];
           this.set(key, value);
         }
       }
       else if (isObject(optData)) {
-        for (var key in optData) {
+        for (let key in optData) {
           this.set(isNaN(+key) ? key : +key, optData[key]);
         }
       }

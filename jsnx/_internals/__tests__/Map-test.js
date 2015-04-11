@@ -1,8 +1,5 @@
-/*jshint strict:false, node:true*/
 /*global utils, assert, regeneratorRuntime*/
-/*jshint ignore:start*/
 import Map from '../Map';
-/*jshint ignore:end*/
 
 var toIterator = utils.toIterator;
 

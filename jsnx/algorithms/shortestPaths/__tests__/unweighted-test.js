@@ -1,5 +1,5 @@
 /*global assert, utils*/
-"use strict";
+'use strict';
 
 import {convertNodeLabelsToIntegers} from '../../../relabel';
 import {
@@ -28,12 +28,13 @@ function validateGridPath(r, c, s, t, p) {
   s = [Math.floor((s - 1) / c), (s - 1) % c];
   t = [Math.floor((t - 1) / c), (t - 1) % c];
   assert.equal(p.length, Math.abs(t[0] - s[0]) + Math.abs(t[1] - s[1]) + 1);
+  var u;
   p = [for (u of p) [Math.floor((u - 1) / c), (u - 1) % c]];
-  for (var u of p) {
+  for (let u of p) {
     assert.ok(0 <= u[0] && u[0] < r);
     assert.ok(0 <= u[1] && u[1] < c);
   }
-  for (var [u,v] of zipSequence(p.slice(0, p.length - 1), p.slice(1))) {
+  for (let [u,v] of zipSequence(p.slice(0, p.length - 1), p.slice(1))) {
     assert.isOneOf(
       [Math.abs(v[0] - u[0]), Math.abs(v[1] - u[1])],
       [[0,1], [1,0]]
@@ -71,7 +72,7 @@ export var testUnweightedPath = {
   testSingleSourceShortestPathLength: function() {
     assert.deepEqual(
       singleSourceShortestPathLength(this.cycle, 0),
-      new Map({0:0,1:1,2:2,3:3,4:3,5:2,6:1})
+      new Map({0: 0,1: 1,2: 2,3: 3,4: 3,5: 2,6: 1})
     );
   },
 
@@ -87,7 +88,7 @@ export var testUnweightedPath = {
     var l = allPairsShortestPathLength(this.cycle);
     assert.deepEqual(
       l.get(0),
-      new Map({0:0,1:1,2:2,3:3,4:3,5:2,6:1})
+      new Map({0: 0,1: 1,2: 2,3: 3,4: 3,5: 2,6: 1})
     );
     l = allPairsShortestPathLength(this.grid);
     assert.deepEqual(l.get(1).get(16), 6);
@@ -97,7 +98,7 @@ export var testUnweightedPath = {
     var G = pathGraph(4);
     assert.deepEqual(
       predecessor(G, 0),
-      new Map({0:[],1:[0],2:[1],3:[2]})
+      new Map({0: [],1: [0],2: [1],3: [2]})
     );
     assert.deepEqual(predecessor(G, 0, {target: 3}), [2]);
     G = grid2dGraph(2, 2);

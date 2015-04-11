@@ -59,7 +59,9 @@ export async function triangles(G, optNodes) {
 
   return new Map(mapIterator(
     trianglesAndDegreeIter(G, optNodes),
+    /* eslint-disable no-unused-vars */
     ([v, _, triangles]) => tuple2(v, Math.floor(triangles/2), v)
+    /* eslint-enable no-unused-vars */
   ));
 }
 
@@ -120,7 +122,9 @@ function* weightedTrianglesAndDegreeIter(G, optNodes, optWeight='weight') {
     1 :
     max(mapIterator(
       G.edgesIter(true),
+      /* eslint-disable no-unused-vars */
       ([u, v, data]) => getDefault(data[optWeight], 1)
+      /* eslint-enable no-unused-vars */
     ));
 
   var nodesNbrs = mapIterator(
@@ -183,12 +187,12 @@ function* weightedTrianglesAndDegreeIter(G, optNodes, optWeight='weight') {
  *
  * @param {Graph} G graph
  * @param {?Iterable} optNodes (default: all nodes)
- *      Compute average clustering for nodes in this container.
+ *    Compute average clustering for nodes in this container.
  * @param {?string=} optWeight (default: null)
- *      The edge attribute that holds the numerical value used as a weight.
- *      If `null`, then each edge has weight `1`.
+ *    The edge attribute that holds the numerical value used as a weight.
+ *    If `null`, then each edge has weight `1`.
  * @param {?boolean=} optCountZeros
- *      If `false` include only the nodes with nonzero clustering in the average.
+ *    If `false` include only the nodes with nonzero clustering in the average.
  * @return {number}
  */
 export async function averageClustering(
@@ -272,7 +276,7 @@ export async function clustering(G, optNodes, optWeight) {
     }
   ));
 
-  return G.hasNode(optNodes) ?  next(clusters.values()) : clusters;
+  return G.hasNode(optNodes) ? next(clusters.values()) : clusters;
 }
 
 /**
@@ -300,10 +304,14 @@ export async function clustering(G, optNodes, optWeight) {
  * @return {number} Transitivity
  */
 export async function transitivity(G) {
+  /* eslint-disable no-shadow */
   var triangles = 0; // 6 times number of triangles
+  /* eslint-enable no-shadow */
   var triples = 0;  // 2 times number of connected triples
 
-  for (var [node, degree, triangles_] of trianglesAndDegreeIter(G)) {
+  /* eslint-disable no-unused-vars */
+  for (let [node, degree, triangles_] of trianglesAndDegreeIter(G)) {
+    /* eslint-enable no-unused-vars */
     triples += degree * (degree - 1);
     triangles += triangles_;
   }
@@ -324,8 +332,9 @@ export async function transitivity(G) {
  *
  * where `$q_v(u,w)$` are the number of common neighbors of `$u$` and `$v$`
  * other than `$v$` (i.e. squares), and
- * `$a_v(u,w) = (k_u - (1+q_v(u,w)+\theta_{uv}))(k_w - (1+q_v(u,w)+\theta_{uw}))$`
- * where `$\theta_{uw} = 1$` if `$u$` and `$w$` are  connected and `$0$` otherwise.
+ * `$a_v(u,w) = (k_u-(1+q_v(u,w)+\theta_{uv}))(k_w-(1+q_v(u,w)+\theta_{uw}))$`
+ * where `$\theta_{uw} = 1$` if `$u$` and `$w$` are  connected and `$0$`
+ * otherwise.
  *
  * ### Examples
  *
@@ -354,7 +363,7 @@ export async function transitivity(G) {
  */
 export async function squareClustering(G, optNodes) {
   var nodesIter = optNodes == null ? G : G.nbunchIter(optNodes);
-  var clustering = new Map();
+  var clustering = new Map(); // eslint-disable-line no-shadow
 
   for (var v of nodesIter) {
     clustering.set(v, 0);

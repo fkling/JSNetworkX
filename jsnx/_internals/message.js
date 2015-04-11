@@ -29,7 +29,7 @@ function deserializeSet(value) {
 function serializeMap(value) {
   return {
     [KEY]: 'Map',
-    data: [for ([k,v] of value) [k, serialize(v)]]
+    data: [for ([k,v] of value) [k, serialize(v)]]//eslint-disable-line no-undef
   };
 }
 
@@ -147,7 +147,7 @@ export function deserialize(value) {
  */
 export function serializeAll(values=[]) {
   var serializedValues = new Array(values.length);
-  var serializable =  values.every((value, i) => {
+  var serializable = values.every((value, i) => {
     var supported = isSupported(value);
     if (supported) {
       serializedValues[i] = serialize(value);

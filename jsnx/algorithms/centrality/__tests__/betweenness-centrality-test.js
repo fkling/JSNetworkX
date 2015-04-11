@@ -1,5 +1,5 @@
 /*global assert, utils*/
-"use strict";
+'use strict';
 
 import {Graph, DiGraph} from '../../../classes';
 
@@ -96,6 +96,7 @@ export var testBetweennessCentrality = {
     var G = florentineFamiliesGraph();
     var b = betweennessCentrality(G, {weight: null, normalized: true});
     var bAnswer = new Map({
+      /* eslint-disable key-spacing */
       'Acciaiuoli':    0.000,
       'Albizzi':       0.212,
       'Barbadori':     0.093,
@@ -111,6 +112,7 @@ export var testBetweennessCentrality = {
       'Salviati':      0.143,
       'Strozzi':       0.103,
       'Tornabuoni':    0.092
+      /* eslint-enable key-spacing */
     });
     G.nodes().forEach(v => assert.almostEqual(b.get(v), bAnswer.get(v)));
   },
@@ -118,7 +120,14 @@ export var testBetweennessCentrality = {
   testLadderGraph: function() {
     var G = new Graph();
     G.addEdgesFrom([[0,1], [0,2], [1,3], [2,3], [2,4], [4,5], [3,5]]);
-    var bAnswer = new Map({0:1.667, 1: 1.667, 2: 6.667, 3: 6.667, 4: 1.667, 5: 1.667});
+    var bAnswer = new Map({
+      0: 1.667,
+      1: 1.667,
+      2: 6.667,
+      3: 6.667,
+      4: 1.667,
+      5: 1.667
+    });
     var b = betweennessCentrality(G, {weight: null, normalized: false});
     b.forEach((v, k) => assert.almostEqual(v, bAnswer.get(k) / 2));
   },
@@ -186,8 +195,18 @@ export var testWeightedBetweennessCentrality = {
 
   testKrackhardtKiteGraph: function() {
     var G = krackhardtKiteGraph();
-    var bAnswer = new Map({0: 1.667,  1: 1.667,  2: 0.000,  3: 7.333,  4: 0.000,
-                    5: 16.667, 6: 16.667, 7: 28.000, 8: 16.000, 9: 0.000});
+    var bAnswer = new Map({
+      0: 1.667,
+      1: 1.667,
+      2: 0.000,
+      3: 7.333,
+      4: 0.000,
+      5: 16.667,
+      6: 16.667,
+      7: 28.000,
+      8: 16.000,
+      9: 0.000
+    });
     var b = betweennessCentrality(G, {weight: 'weight', normalized: false});
     b.forEach((v, k) => assert.almostEqual(v, bAnswer.get(k) / 2));
   },
@@ -202,7 +221,8 @@ export var testWeightedBetweennessCentrality = {
 
   testFlorentineFamiliesGraph: function() {
     var G = florentineFamiliesGraph();
-    var bAnswer = new Map ({
+    var bAnswer = new Map({
+      /* eslint-disable key-spacing */
       'Acciaiuoli':    0.000,
       'Albizzi':       0.212,
       'Barbadori':     0.093,
@@ -218,6 +238,7 @@ export var testWeightedBetweennessCentrality = {
       'Salviati':      0.143,
       'Strozzi':       0.103,
       'Tornabuoni':    0.092
+      /* eslint-enable key-spacing */
     });
     var b = betweennessCentrality(G, {weight: 'weight', normalized: true});
     b.forEach((v, k) => assert.almostEqual(v, bAnswer.get(k)));
@@ -226,7 +247,14 @@ export var testWeightedBetweennessCentrality = {
   testLadderGraph: function() {
     var G = new Graph();
     G.addEdgesFrom([[0,1], [0,2], [1,3], [2,3], [2,4], [4,5], [3,5]]);
-    var bAnswer = new Map({0: 1.667, 1: 1.667, 2: 6.667, 3: 6.667, 4: 1.667, 5: 1.667});
+    var bAnswer = new Map({
+      0: 1.667,
+      1: 1.667,
+      2: 6.667,
+      3: 6.667,
+      4: 1.667,
+      5: 1.667
+    });
     var b = betweennessCentrality(G, {weight: 'weight', normalized: false});
     b.forEach((v, k) => assert.almostEqual(v, bAnswer.get(k) / 2));
   },
@@ -242,10 +270,10 @@ export var testWeightedBetweennessCentrality = {
     var G = new DiGraph();
     G.addWeightedEdgesFrom([
       ['s', 'u', 10], ['s', 'x', 5],
-      ['u', 'v', 1],  ['u', 'x', 2],
-      ['v', 'y', 1],  ['x', 'u', 3],
-      ['x', 'v', 5],  ['x', 'y', 2],
-      ['y', 's', 7],  ['y', 'v', 6]
+      ['u', 'v', 1], ['u', 'x', 2],
+      ['v', 'y', 1], ['x', 'u', 3],
+      ['x', 'v', 5], ['x', 'y', 2],
+      ['y', 's', 7], ['y', 'v', 6]
     ]);
     var bAnswer = new Map({'y': 5, 'x': 5, 's': 4, 'u': 2, 'v': 2});
     var b = betweennessCentrality(G, {weight: 'weight', normalized: false});
@@ -257,6 +285,7 @@ export var testEdgeBetweennessCentrality = {
 
   testk5: function() {
     var G = completeGraph(5);
+    var edge;
     var bAnswer = new Map((for (edge of G.edges()) [edge, 1]));
     var b = edgeBetweennessCentrality(G, {weight: null, normalized: false});
     assert.deepEqual(b, bAnswer);
@@ -264,6 +293,7 @@ export var testEdgeBetweennessCentrality = {
 
   testNormalizedK5: function() {
     var G = completeGraph(5);
+    var edge;
     var bAnswer = new Map((for (edge of G.edges()) [edge, 1/10]));
     var b = edgeBetweennessCentrality(G, {weight: null, normalized: true});
     assert.deepEqual(b, bAnswer);
@@ -271,6 +301,7 @@ export var testEdgeBetweennessCentrality = {
 
   testC4: function() {
     var G = cycleGraph(4);
+    var edge;
     var bAnswer = new Map((for (edge of G.edges()) [edge, 2/6]));
     var b = edgeBetweennessCentrality(G, {weight: null, normalized: true});
     assert.deepEqual(b, bAnswer);
@@ -317,6 +348,7 @@ export var testWeightedEdgeBetweennessCentrality = {
 
   testK5: function() {
     var G = completeGraph(5);
+    var edge;
     var bAnswer = new Map((for (edge of G.edges()) [edge, 1]));
     var b = edgeBetweennessCentrality(G, {weight: 'weight', normalized: false});
     assert.deepEqual(b, bAnswer);
@@ -324,6 +356,7 @@ export var testWeightedEdgeBetweennessCentrality = {
 
   testC4: function() {
     var G = cycleGraph(4);
+    var edge;
     var bAnswer = new Map((for (edge of G.edges()) [edge, 2]));
     var b = edgeBetweennessCentrality(G, {weight: 'weight', normalized: false});
     assert.deepEqual(b, bAnswer);

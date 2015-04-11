@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 
 /**
  * Returns true if the callback function returns true for any of the elements

@@ -1,11 +1,9 @@
-/*jshint strict:false, node:true*/
-/*global assert*/
+/*global assert, utils*/
+'use strict';
 
 import BaseAttrGraphTester from './BaseAttrGraphTester';
 import Graph from '../Graph';
-/*jshint ignore:start*/
 var Map = utils.Map;
-/*jshint ignore:end*/
 import JSNetworkXError from '../../exceptions/JSNetworkXError';
 import KeyError from '../../exceptions/KeyError';
 import _ from 'lodash';
@@ -40,7 +38,7 @@ export var TestGraph = _.extend({}, BaseAttrGraphTester, {
   testDataInput: function() {
     var G = new this.Graph(
       new Map([[1,[2]],[2,[1]]]),
-      {name: "test"}
+      {name: 'test'}
     );
 
     assert.deepEqual(
@@ -78,13 +76,13 @@ export var TestGraph = _.extend({}, BaseAttrGraphTester, {
     G.addNode(2, {c: 'blue'});
     assert.throws(function() { G.addNode(4, []); }, JSNetworkXError);
     assert.throws(function() { G.addNode(4, 4); }, JSNetworkXError);
-    assert.equal(G.node.get(1)['c'], 'red');
-    assert.equal(G.node.get(2)['c'], 'blue');
+    assert.equal(G.node.get(1).c, 'red');
+    assert.equal(G.node.get(2).c, 'blue');
     // test upding attributes
     G.addNode(1, {c: 'blue'});
     G.addNode(2, {c: 'red'});
-    assert.equal(G.node.get(1)['c'], 'blue');
-    assert.equal(G.node.get(2)['c'], 'red');
+    assert.equal(G.node.get(1).c, 'blue');
+    assert.equal(G.node.get(2).c, 'red');
   },
 
   testAddNodesFrom: function() {
@@ -96,28 +94,28 @@ export var TestGraph = _.extend({}, BaseAttrGraphTester, {
     );
     // test add attributes
     G.addNodesFrom([0,1,2], {c: 'red'});
-    assert.equal(G.node.get(0)['c'], 'red');
-    assert.equal(G.node.get(2)['c'], 'red');
+    assert.equal(G.node.get(0).c, 'red');
+    assert.equal(G.node.get(2).c, 'red');
     // test that attribute dicts are not the same
     assert.notEqual(G.node.get(0), G.node.get(1));
     // test updating attributes
     G.addNodesFrom([0,1,2], {c: 'blue'});
-    assert.equal(G.node.get(0)['c'], 'blue');
-    assert.equal(G.node.get(2)['c'], 'blue');
+    assert.equal(G.node.get(0).c, 'blue');
+    assert.equal(G.node.get(2).c, 'blue');
     assert.notEqual(G.node.get(0), G.node.get(1));
 
     // test tuple input
     var H = new this.Graph();
     H.addNodesFrom(G.nodes(true));
-    assert.equal(H.node.get(0)['c'], 'blue');
-    assert.equal(H.node.get(2)['c'], 'blue');
+    assert.equal(H.node.get(0).c, 'blue');
+    assert.equal(H.node.get(2).c, 'blue');
     assert.notEqual(H.node.get(0), H.node.get(1));
     // specific overrides general
     H.addNodesFrom([0, [1, {c: 'green'}], [3, {c: 'cyan'}]], {c: 'red'});
-    assert.equal(H.node.get(0)['c'], 'red');
-    assert.equal(H.node.get(1)['c'], 'green');
-    assert.equal(H.node.get(2)['c'], 'blue');
-    assert.equal(H.node.get(3)['c'], 'cyan');
+    assert.equal(H.node.get(0).c, 'red');
+    assert.equal(H.node.get(1).c, 'green');
+    assert.equal(H.node.get(2).c, 'blue');
+    assert.equal(H.node.get(3).c, 'cyan');
   },
 
   testRemoveNode: function() {
@@ -127,14 +125,14 @@ export var TestGraph = _.extend({}, BaseAttrGraphTester, {
       G.adj,
       new Map([[1,new Map([[2,{}]])],[2,new Map([[1,{}]])]])
     );
-    assert.throws(function() { G.removeNode(-1);}, JSNetworkXError);
+    assert.throws(() => G.removeNode(-1), JSNetworkXError);
   },
 
   testRemoveNodesFrom: function() {
     var G = this.K3;
     G.removeNodesFrom([0,1]);
     assert.deepEqual(G.adj, new Map([[2, new Map()]]));
-    assert.doesNotThrow(function() {G.removeNodesFrom([-1]);}); // silent fail
+    assert.doesNotThrow(() => G.removeNodesFrom([-1])); // silent fail
   },
 
   testAddEdge: function() {
@@ -154,22 +152,22 @@ export var TestGraph = _.extend({}, BaseAttrGraphTester, {
 
   testAddEdgesFrom: function() {
     var G = new this.Graph();
-    G.addEdgesFrom([[0,1],[0,2,{weight:3}]]);
+    G.addEdgesFrom([[0,1],[0,2,{weight: 3}]]);
     assert.deepEqual(
       G.adj,
       new Map([
-        [0, new Map([[1,{}],[2,{weight:3}]])],
+        [0, new Map([[1,{}],[2,{weight: 3}]])],
         [1, new Map([[0,{}]])],
-        [2, new Map([[0,{weight:3}]])]
+        [2, new Map([[0,{weight: 3}]])]
       ])
     );
-    G.addEdgesFrom([[0,1],[0,2,{weight:3}],[1,2,{data:4}]], {data:2});
+    G.addEdgesFrom([[0,1],[0,2,{weight: 3}],[1,2,{data: 4}]], {data: 2});
     assert.deepEqual(
       G.adj,
       new Map([
-        [0, new Map([[1,{data:2}],[2,{data:2, weight:3}]])],
-        [1, new Map([[0,{data:2}], [2, {data:4}]])],
-        [2, new Map([[0,{weight:3, data:2}], [1,{data: 4}]])]
+        [0, new Map([[1,{data: 2}],[2,{data: 2, weight: 3}]])],
+        [1, new Map([[0,{data: 2}], [2, {data: 4}]])],
+        [2, new Map([[0,{weight: 3, data: 2}], [1,{data: 4}]])]
       ])
     );
     assert.throws(function() { G.addEdgesFrom([[0]]); }, JSNetworkXError);
@@ -207,7 +205,7 @@ export var TestGraph = _.extend({}, BaseAttrGraphTester, {
         [2, new Map([[0,{}],[1,{}]])]
       ])
     );
-    assert.doesNotThrow(function() {G.removeEdgesFrom([[0,0]]);}); // silent fail
+    assert.doesNotThrow(() => G.removeEdgesFrom([[0,0]])); // silent fail
   },
 
   testClear: function() {

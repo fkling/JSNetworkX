@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 
 import * as centrality from './centrality';
 import * as clique from './clique';

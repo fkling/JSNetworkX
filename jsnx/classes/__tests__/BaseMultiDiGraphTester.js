@@ -1,5 +1,5 @@
 /*global assert, utils*/
-"use strict";
+'use strict';
 
 import BaseMultiGraphTester from './BaseMultiGraphTester';
 import {MultiGraph, MultiDiGraph} from '../';
@@ -47,9 +47,12 @@ var sharedMultiDigraph = {
 export default Object.assign({}, BaseMultiGraphTester, {
   testEdges: function() {
     var G = this.K3;
-    assert.deepEqual(sorted(G.edges()),[[0,1], [0,2], [1,0], [1,2], [2,0], [2,1]]);
+    assert.deepEqual(
+      sorted(G.edges()),
+      [[0,1], [0,2], [1,0], [1,2], [2,0], [2,1]]
+    );
     assert.deepEqual(sorted(G.edges(0)),[[0,1], [0,2]]);
-    assert.throws(function(){G.edges(-1);}, JSNetworkxError);
+    assert.throws(() => G.edges(-1), JSNetworkxError);
   },
 
   testEdgesData: function() {
@@ -59,7 +62,7 @@ export default Object.assign({}, BaseMultiGraphTester, {
       [[0,1,{}], [0,2,{}], [1,0,{}], [1,2,{}], [2,0,{}], [2,1,{}]]
     );
     assert.deepEqual(sorted(G.edges(0, true)),[[0,1,{}], [0,2,{}]]);
-    assert.throws(function(){G.neighbors(-1);}, JSNetworkxError);
+    assert.throws(() => G.neighbors(-1), JSNetworkxError);
   },
 
   testEdgesIter: function() {
@@ -83,7 +86,7 @@ export default Object.assign({}, BaseMultiGraphTester, {
       [[0,1], [0,2], [1,0], [1,2], [2,0], [2,1]]
     );
     assert.deepEqual(sorted(G.outEdges(0)),[[0,1], [0,2]]);
-    assert.throws(function(){G.outEdges(-1);}, JSNetworkxError);
+    assert.throws(() => G.outEdges(-1), JSNetworkxError);
     assert.deepEqual(sorted(G.outEdges(0, false, true)),[[0,1,0], [0,2,0]]);
   },
 
@@ -157,13 +160,13 @@ export default Object.assign({}, BaseMultiGraphTester, {
   testSuccessors: function() {
     var G = this.K3;
     assert.deepEqual(sorted(G.successors(0)), [1,2]);
-    assert.throws(function(){G.successors(-1);}, JSNetworkxError);
+    assert.throws(() => G.successors(-1), JSNetworkxError);
   },
 
   testSuccessorsIter: function() {
     var G = this.K3;
     assert.deepEqual(sorted(G.successorsIter(0)), [1,2]);
-    assert.throws(function(){G.successorsIter(-1);}, JSNetworkxError);
+    assert.throws(() => G.successorsIter(-1), JSNetworkxError);
   },
 
   testHasPredecessor: function() {
@@ -175,22 +178,22 @@ export default Object.assign({}, BaseMultiGraphTester, {
   testPredecessors: function() {
     var G = this.K3;
     assert.deepEqual(sorted(G.predecessors(0)), [1,2]);
-    assert.throws(function(){G.predecessors(-1);}, JSNetworkxError);
+    assert.throws(() => G.predecessors(-1), JSNetworkxError);
   },
 
   testPredecessorsIter: function() {
     var G = this.K3;
     assert.deepEqual(sorted(G.predecessorsIter(0)), [1,2]);
-    assert.throws(function(){G.predecessorsIter(-1);}, JSNetworkxError);
+    assert.throws(() => G.predecessorsIter(-1), JSNetworkxError);
   },
 
   testDegree: function() {
     var G = this.K3;
     assert.deepEqual(Array.from(G.degree().values()), [4,4,4]);
-    assert.deepEqual(G.degree(), new Map({0:4, 1:4, 2:4}));
+    assert.deepEqual(G.degree(), new Map({0: 4, 1: 4, 2: 4}));
     assert.equal(G.degree(0), 4);
-    assert.deepEqual(G.degree([0]), new Map({0:4}));
-    assert.throws(function(){G.degree(-1);}, JSNetworkxError);
+    assert.deepEqual(G.degree([0]), new Map({0: 4}));
+    assert.throws(() => G.degree(-1), JSNetworkxError);
   },
 
   testDegreeIter: function() {
@@ -201,7 +204,7 @@ export default Object.assign({}, BaseMultiGraphTester, {
       new Map([[0,4], [1,4], [2,4]])
     );
     assert.deepEqual(sorted(G.degreeIter(0)), [[0,4]]);
-    G.addEdge(0,1,{weight:0.3, other:1.2});
+    G.addEdge(0,1,{weight: 0.3, other: 1.2});
     assert.deepEqual(
       sorted(G.degreeIter(null, 'weight')),
       [[0,4.3], [1,4.3], [2,4]]
@@ -215,10 +218,10 @@ export default Object.assign({}, BaseMultiGraphTester, {
   testInDegree: function() {
     var G = this.K3;
     assert.deepEqual(Array.from(G.inDegree().values()), [2,2,2]);
-    assert.deepEqual(G.inDegree(), new Map({0:2, 1:2, 2:2}));
+    assert.deepEqual(G.inDegree(), new Map({0: 2, 1: 2, 2: 2}));
     assert.equal(G.inDegree(0), 2);
-    assert.deepEqual(G.inDegree([0]), new Map({0:2}));
-    assert.throws(function(){G.inDegree(-1);}, JSNetworkxError);
+    assert.deepEqual(G.inDegree([0]), new Map({0: 2}));
+    assert.throws(() => G.inDegree(-1), JSNetworkxError);
   },
 
   testInDegreeIter: function() {
@@ -235,10 +238,10 @@ export default Object.assign({}, BaseMultiGraphTester, {
   testOutDegree: function() {
     var G = this.K3;
     assert.deepEqual(Array.from(G.outDegree().values()), [2,2,2]);
-    assert.deepEqual(G.outDegree(), new Map({0:2, 1:2, 2:2}));
+    assert.deepEqual(G.outDegree(), new Map({0: 2, 1: 2, 2: 2}));
     assert.equal(G.outDegree(0), 2);
-    assert.deepEqual(G.outDegree([0]), new Map({0:2}));
-    assert.throws(function(){G.outDegree(-1);}, JSNetworkxError);
+    assert.deepEqual(G.outDegree([0]), new Map({0: 2}));
+    assert.throws(() => G.outDegree(-1), JSNetworkxError);
   },
 
   testOutDegreeIter: function() {
@@ -256,7 +259,7 @@ export default Object.assign({}, BaseMultiGraphTester, {
     var G = this.K3;
     assert.equal(G.size(), 6);
     assert.equal(G.numberOfEdges(), 6);
-    G.addEdge(0, 1, {weight:0.3, other:1.2});
+    G.addEdge(0, 1, {weight: 0.3, other: 1.2});
     assert.equal(G.size('weight'), 6.3);
     assert.equal(G.size('other'), 7.2);
   },

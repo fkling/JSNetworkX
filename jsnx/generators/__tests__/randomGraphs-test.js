@@ -1,5 +1,5 @@
 /* global assert*/
-"use strict";
+'use strict';
 
 import {
   fastGnpRandomGraph,
@@ -52,9 +52,9 @@ export var randomGraphs = {
       for (var i = 0; i < runs; i++) {
         edges += generator(10, 0.99999, true).numberOfEdges();
       }
-      assert.closeTo(edges / runs, 90, runs*2 / 100, generator.name);
+      assert.closeTo(edges / runs, 90, runs * 2 / 100, generator.name);
     }
-  },
+  }
 
   // TODO: test_gnm
   // TODO: test_watts_strogatz_big_k

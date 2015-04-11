@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 
 import Arrays from './Arrays';
 import Map from './Map';

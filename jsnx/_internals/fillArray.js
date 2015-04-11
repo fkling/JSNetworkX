@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 
 /**
  * Creates an array of `n` elements, each being `value`.

@@ -1,5 +1,5 @@
 /*jshint latedef:false*/
-"use strict";
+'use strict';
 
 import baseClone from 'lodash/internal/baseClone';
 import isGraph from './isGraph';

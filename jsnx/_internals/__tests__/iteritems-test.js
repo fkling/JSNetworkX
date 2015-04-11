@@ -1,5 +1,5 @@
 /*global utils, assert*/
-"use strict";
+'use strict';
 
 import iteritems from '../iteritems';
 

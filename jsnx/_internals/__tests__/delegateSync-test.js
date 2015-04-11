@@ -1,5 +1,5 @@
 /*global assert, sinon */
-"use strict";
+'use strict';
 
 import delegate from '../delegateSync';
 import * as jsnx from '../../';

@@ -1,3 +1,4 @@
+/*eslint max-len:[1, 94]*/
 'use strict';
 
 import {
@@ -58,7 +59,8 @@ import {
  *    Theoretical Computer Science, Volume 363, Issue 1,
  *    Computing and Combinatorics,
  *    10th Annual International Conference on
- *    Computing and Combinatorics (COCOON 2004), 25 October 2006, Pages 28-42][2]
+ *    Computing and Combinatorics (COCOON 2004), 25 October 2006,
+ *    Pages 28-42][2]
  * [2]: http://dx.doi.org/10.1016/j.tcs.2006.06.015
  *
  * [3] [F. Cazals, C. Karande,
@@ -73,7 +75,7 @@ import {
  * @return {Iterator<Array<Node>>} Iterator over member lists for each maximal
  *  clique
  */
-export async function* findCliques(G) {
+export async function* findCliques(G) { // eslint-disable-line no-unused-expressions
   if (G.numberOfNodes() === 0) {
     return [];
   }
@@ -109,7 +111,9 @@ export async function* findCliques(G) {
           Q.push(null);
           subgraph = subgraphQ;
           candidates = candidatesQ;
+          /* eslint-disable no-loop-func*/
           u = max(subgraph, u => candidates.intersection(adj.get(u)).size);
+          /* eslint-enable no-loop-func*/
           extU = candidates.difference(adj.get(u));
         }
       }
@@ -122,7 +126,7 @@ export async function* findCliques(G) {
       [subgraph, candidates, extU] = stack.pop();
     }
   }
-}
+};
 
 /**
  * Recursive search for all maximal cliques in a graph.
@@ -168,7 +172,7 @@ export async function* findCliques(G) {
  *
  * @see find_cliques
  */
-export async function* findCliquesRecursive(G) {
+export async function* findCliquesRecursive(G) { // eslint-disable-line no-unused-expressions
   if (G.size === 0) {
     yield [];
   }
@@ -219,7 +223,7 @@ export async function* findCliquesRecursive(G) {
  */
 export async function graphCliqueNumber(G, optCliques) {
   if (optCliques == null) {
-    optCliques = await findCliques(G);
+    optCliques = await findCliques(G); // eslint-disable-line no-undef
   }
   return max(optCliques, c => c.length).length;
 }
@@ -235,7 +239,7 @@ export async function graphCliqueNumber(G, optCliques) {
  */
 export async function graphNumberOfCliques(G, optCliques) {
   if (optCliques == null) {
-    optCliques = await findCliques(G);
+    optCliques = await findCliques(G); // eslint-disable-line no-undef
   }
   return Array.from(optCliques).length;
 }
@@ -255,7 +259,7 @@ export async function graphNumberOfCliques(G, optCliques) {
  * @return {!(Map|number)}
  */
 export async function numberOfCliques(G, optNodes, optCliques) {
-  optCliques = Array.from(optCliques || await findCliques(G));
+  optCliques = Array.from(optCliques || await findCliques(G)); // eslint-disable-line no-undef
 
   if (optNodes == null) {
     optNodes = G.nodes(); // none, get entire graph

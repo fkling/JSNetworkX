@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 
 /**
  * Returns true if the two values are equal node values. If the values are

@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 /**
  * @fileoverview
  *
@@ -116,7 +116,7 @@ var d3 = global.d3;
  *   list will be drawn.
  * - nodeShape (string): The tag name of the SVG element to be used as nodes.
  *   Defaults to "circle".
- * - nodeAttr (Object): The attributes to set on the node SVG element. This 
+ * - nodeAttr (Object): The attributes to set on the node SVG element. This
  *   object is passed along to D3's `.attr()` method.
  * - nodeStyle (Object): The style properties to set on the node SVG element.
  *   This object is passed along to D3's `.style()` method.
@@ -125,7 +125,7 @@ var d3 = global.d3;
  * - edgeStyle (Object): The style properties to set on the edge SVG element.
  *   Note: Even though the edge element is a SVG path element, you cannot set
  *   `stroke-width` to set the stroke width. Instead, the value of
- *   `stroke-width` is used as maximum value for the edge width. 
+ *   `stroke-width` is used as maximum value for the edge width.
  * - withLabels (boolean): Whether or not to draw node labels. SVG text elements
  *   are used for labels.
  * - labels (string|Object|function): The node labels to use.
@@ -165,7 +165,7 @@ var d3 = global.d3;
  *   in the center of the edge. Can be used to adjust the position.
  * - panZoom (Object):
  *      - enabled (boolean): Enables panning and zooming of the canvas.
- *      - scale (boolean): Whether nodes and labels should keep their size 
+ *      - scale (boolean): Whether nodes and labels should keep their size
  *        when zooming or not.
  *
  * @param {jsnx.classes.Graph} G The graph to draw
@@ -210,75 +210,75 @@ export function draw(G, config, optBind) {
     .append('svg')
     .classed('jsnx', true)
     .attr('pointer-events', 'all');
-  var parent_container = canvas.append('g');
-  var edge_selection = parent_container
+  var parentContainer = canvas.append('g');
+  var edgeSelection = parentContainer
     .append('g')
     .classed('edges', true)
     .selectAll('g.edge');
-  var node_selection = parent_container
+  var nodeSelection = parentContainer
     .append('g')
     .classed('nodes', true)
     .selectAll('g.node');
   var force = d3.layout.force();
   var width = config.width || parseInt(container.style('width'), 10);
   var height = config.height || parseInt(container.style('height'), 10);
-  var layout_attr = config.layoutAttr;
+  var layoutAttr = config.layoutAttr;
   var nodelist = config.nodelist || null;
-  var label_func;
-  var edge_label_func;
-  var weight_func;
+  var labelFunc;
+  var edgeLabelFunc;
+  var weightFunc;
   var directed = G.isDirected();
-  var weighted =  config.weighted;
+  var weighted = config.weighted;
   var selections = {
-    node_selection: node_selection,
-    edge_selection: edge_selection
+    nodeSelection: nodeSelection,
+    edgeSelection: edgeSelection
   };
 
   // determine node label function
   if (config.withLabels) {
-    var labels =  config.labels;
+    var labels = config.labels;
     switch (typeof labels) {
       case 'object':
-        label_func = function(d) {
+        labelFunc = function(d) {
           return getDefault(labels[d.node], '');
         };
         break;
       case 'function':
-        label_func = labels;
+        labelFunc = labels;
         break;
       case 'string':
-        label_func = function(d) {
+        labelFunc = function(d) {
           return d.data[labels];
         };
         break;
       default:
-        label_func = function(d) {
+        labelFunc = function(d) {
           return d.node;
         };
     }
   }
-  config.labels = label_func;
+  config.labels = labelFunc;
 
   // if the graph should be weighted, we need a weight function
   // these will be used as edge labels if no others are provided
   if (weighted) {
-    var weights =  config.weights;
+    var weights = config.weights;
     switch (typeof weigths) {
       case 'object':
-        weight_func = function(d) {
+        weightFunc = function(d) {
           return getDefault(weights[d.node], 1);
         };
         break;
       case 'function':
-        weight_func = weights;
+        weightFunc = weights;
         break;
       case 'string':
-        weight_func = function(d) {
+        weightFunc = function(d) {
           return getDefault(d.data[weights], 1);
         };
         break;
       default:
-        weight_func = function(d) {
+        weightFunc = function(d) {
           return 1;
         };
     }
@@ -289,47 +289,47 @@ export function draw(G, config, optBind) {
     var elabels = config.edgeLabels;
 
     if (weighted && elabels == null) {
-      edge_label_func = weight_func;
+      edgeLabelFunc = weightFunc;
     }
     else {
       switch (typeof elabels) {
         case 'object':
-          edge_label_func = function(d) {
+          edgeLabelFunc = function(d) {
             return getDefault(labels[d.node], '');
           };
           break;
         case 'function':
-          edge_label_func = elabels;
+          edgeLabelFunc = elabels;
           break;
         case 'string':
-          edge_label_func = function(d) {
+          edgeLabelFunc = function(d) {
             return d.data[elabels];
           };
           break;
         default:
-          edge_label_func = function(d) {
+          edgeLabelFunc = function(d) {
             return d.edge;
           };
       }
     }
-    config.edgeLabels = edge_label_func;
+    config.edgeLabels = edgeLabelFunc;
   }
 
   // scale the width of the edge according to the weight
   if (weighted && config.weightedStroke) {
-    var max_weight = 1;
+    var maxWeight = 1;
     for (let {u,v,data} of G.edgesIter(null, true)) {
-      let weight = weight_func({data});
-      if (weight > max_weight) {
-        max_weight = weight;
+      let weight = weightFunc({data});
+      if (weight > maxWeight) {
+        maxWeight = weight;
       }
     }
     var scale = d3.scale.linear()
       .range([2, config.edgeStyle['stroke-width']])
-      .domain([0, max_weight]);
+      .domain([0, maxWeight]);
 
     config.edgeStyle['stroke-width'] = function(d) {
-      return scale(weight_func.call(this, d));
+      return scale(weightFunc.call(this, d));
     };
   }
 
@@ -340,10 +340,10 @@ export function draw(G, config, optBind) {
   canvas
       .attr('width', width + 'px')
       .attr('height', height + 'px')
-      .style("opacity", 1e-6)
+      .style('opacity', 1e-6)
       .transition()
       .duration(1000)
-      .style("opacity", 1);
+      .style('opacity', 1);
 
   // initialize layout
   // don't let the user set these:
@@ -354,22 +354,22 @@ export function draw(G, config, optBind) {
     start: true
   };
 
-  for (let attr in layout_attr) {
+  for (let attr in layoutAttr) {
     if (exclude[attr] !== true) {
-      force[attr](layout_attr[attr]);
+      force[attr](layoutAttr[attr]);
     }
   }
   force.nodes(d3nodes).links(d3links).size([width, height]);
 
   // set up zoom and pan behaviour
   var zoom = 1;
-  var inv_scale = 1; // used to scale nodes and text accordingly
+  var invScale = 1; // used to scale nodes and text accordingly
 
   if (config.panZoom.enabled) {
     let scaled = config.panZoom.scale;
     let zooming = false;
-    let zoom_start_scale = 1;
-    let zoom_start = zoom;
+    let zoomStartScale = 1;
+    let zoomStart = zoom;
 
     canvas.call(d3.behavior.zoom().on('zoom', function() {
       var shiftKey = d3.event.sourceEvent.shiftKey,
@@ -378,58 +378,58 @@ export function draw(G, config, optBind) {
       // if the graph is zoomed, we have to keep track of the
       // ration it was zoomed by
       if(zoomed && !zooming) {
-        zoom_start_scale = d3.event.scale;
-        zoom_start = zoom;
+        zoomStartScale = d3.event.scale;
+        zoomStart = zoom;
         zooming = true;
       }
       else if (!zoomed && zooming) {
         zooming = false;
       }
 
-      zoom =  zoomed ? zoom_start * (d3.event.scale/zoom_start_scale) : zoom;
-      inv_scale = !zoomed ?  zoom / d3.event.scale : inv_scale;
+      zoom = zoomed ? zoomStart * (d3.event.scale / zoomStartScale) : zoom;
+      invScale = !zoomed ? zoom / d3.event.scale : invScale;
 
       var tr = d3.event.translate;
-      parent_container.attr(
+      parentContainer.attr(
         'transform',
-        'translate(' +  tr[0] + ',' +  tr[1] + ')scale(' + d3.event.scale + ')'
+        'translate(' + tr[0] + ',' + tr[1] + ')scale(' + d3.event.scale + ')'
       );
       redraw();
     }));
   }
 
-  var update_edge_position = nullFunction;
+  var updateEdgePosition = nullFunction;
   var offset = config.edgeOffset;
-  var node_radius = config.nodeAttr.r;
-  var node_strw = config.nodeStyle['stroke-width'];
+  var nodeRadius = config.nodeAttr.r;
+  var nodeStrokeWidth = config.nodeStyle['stroke-width'];
 
   if (config.nodeShape === 'circle') {
-    if (typeof node_radius !== 'function') {
-      node_radius = function() {
+    if (typeof nodeRadius !== 'function') {
+      nodeRadius = function() {
         return config.nodeAttr.r;
       };
     }
-    if (typeof node_strw !== 'function') {
-      node_strw = function() {
+    if (typeof nodeStrokeWidth !== 'function') {
+      nodeStrokeWidth = function() {
         return config.nodeStyle['stroke-width'];
       };
     }
     offset = function(d) {
       return [
-        node_radius(d.source) + node_strw(d.source),
-        node_radius(d.target) + node_strw(d.target)
+        nodeRadius(d.source) + nodeStrokeWidth(d.source),
+        nodeRadius(d.target) + nodeStrokeWidth(d.target)
       ];
     };
   }
   else {
     if (Array.isArray(offset)) {
       offset = function() {
-        return  config.edgeOffset;
+        return config.edgeOffset;
       };
     }
     else if (typeof offset === 'number') {
       offset = function() {
-        return  [config.edgeOffset, config.edgeOffset];
+        return [config.edgeOffset, config.edgeOffset];
       };
     }
   }
@@ -439,11 +439,11 @@ export function draw(G, config, optBind) {
       return config.edgeStyle['stroke-width'];
     };
   }
-  var label_offset = config.edgeLabelOffset;
+  var labelOffset = config.edgeLabelOffset;
 
   if (directed) { // don't rotate labels and draw curvy lines
-    update_edge_position = function() {
-      selections.edge_selection.each(function(d) {
+    updateEdgePosition = function() {
+      selections.edgeSelection.each(function(d) {
         if (d.source !== d.target) {
           var $this = d3.select(this);
           var x1 = d.source.x;
@@ -454,39 +454,46 @@ export function draw(G, config, optBind) {
           var dx = Math.sqrt(
             Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2)
           );
-          var offset_ = offset(d);
-
-          offset_ = [offset_[0] * inv_scale, offset_[1] * inv_scale];
+          var computedOffset = offset(d);
+          computedOffset = [
+            computedOffset[0] * invScale,
+            computedOffset[1] * invScale
+          ];
 
           $this.attr(
             'transform',
             ['translate(',x1,',',y1,')', 'rotate(', angle,')'].join('')
           );
 
-          var shift = strw(d) * inv_scale;
-          var arrow_start_point = dx - offset_[1] - 2*shift;
-          var half_shift = shift/2;
+          var shift = strw(d) * invScale;
+          var arrowStartPoint = dx - computedOffset[1] - 2*shift;
+          var halfShift = shift / 2;
           $this.select('.line').attr('d', [
-              'M', offset_[0], 0,
-              'L', offset_[0], -half_shift,
-              'L', arrow_start_point, -half_shift,
-              'L', arrow_start_point, -shift,
-              'L', dx - offset_[1], 0,
+              'M', computedOffset[0], 0,
+              'L', computedOffset[0], -halfShift,
+              'L', arrowStartPoint, -halfShift,
+              'L', arrowStartPoint, -shift,
+              'L', dx - computedOffset[1], 0,
               'z'
           ].join(' '));
 
-          var scale = 1/inv_scale;
+          var edgeScale = 1/invScale;
           $this.select('text')
-            .attr('x', (label_offset.x * scale) + offset_[0] + (dx*scale - offset_[0] - offset_[1]) / 2)
-            .attr('y', -strw(d)/2 + -label_offset.y * scale)
-            .attr('transform', 'scale(' + inv_scale + ')');
+            .attr(
+              'x',
+              (labelOffset.x * edgeScale) +
+              computedOffset[0] +
+              (dx*edgeScale - computedOffset[0] - computedOffset[1]) / 2
+            )
+            .attr('y', -strw(d)/2 + -labelOffset.y * edgeScale)
+            .attr('transform', 'scale(' + invScale + ')');
         }
       });
     };
   }
   else {
-    update_edge_position = function() {
-      selections.edge_selection.each(function(d) {
+    updateEdgePosition = function() {
+      selections.edgeSelection.each(function(d) {
         if (d.source !== d.target) {
           var $this = d3.select(this);
           var x1 = d.source.x;
@@ -498,30 +505,39 @@ export function draw(G, config, optBind) {
             Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2)
           );
           var center = dx/2;
-          var offset_ = offset(d);
+          var computedOffset = offset(d);
+          computedOffset = [
+            computedOffset[0] * invScale,
+            computedOffset[1] * invScale
+          ];
 
-          offset_ = [offset_[0] * inv_scale, offset_[1] * inv_scale];
-
-          var scale = 1/inv_scale;
-          var shift = strw(d) * inv_scale;
+          var edgeScale = 1/invScale;
+          var shift = strw(d) * invScale;
           var flip = angle > 90 && angle < 279;
           $this.attr('transform', [
             'translate(',x1,',',y1,')',
             'rotate(', angle,')'
           ].join(''));
           $this.select('.line').attr('d', [
-            'M', offset_[0], shift/4,
-            'L', offset_[0], -shift/4,
-            'L', dx - offset_[1], -shift/4,
-            'L', dx - offset_[1], shift/4,
+            'M', computedOffset[0], shift/4,
+            'L', computedOffset[0], -shift/4,
+            'L', dx - computedOffset[1], -shift/4,
+            'L', dx - computedOffset[1], shift/4,
             'z'
           ].join(' '));
           if (config.withEdgeLabels) {
             $this.select('text')
-              .attr('x',  ((flip ? 1 : -1) * label_offset.x * scale) + offset_[0] + (dx*scale - offset_[0] - offset_[1]) / 2)
-              .attr('y', -strw(d)/4 + -label_offset.y * scale)
-              .attr('transform', 'scale(' + inv_scale + ')' +
-                (flip ? 'rotate(180,' +  center * (1/inv_scale) +',0)' : '')
+              .attr(
+                'x',
+                ((flip ? 1 : -1) * labelOffset.x * edgeScale) +
+                computedOffset[0] +
+                (dx*edgeScale - computedOffset[0] - computedOffset[1]) / 2
+              )
+              .attr('y', -strw(d)/4 + -labelOffset.y * edgeScale)
+              .attr(
+                'transform',
+                'scale(' + invScale + ')' +
+                (flip ? 'rotate(180,' + center * (1/invScale) +',0)' : '')
               );
           }
         }
@@ -531,15 +547,15 @@ export function draw(G, config, optBind) {
 
   var redraw = function() {
     // update node position
-    selections.node_selection
-    .attr("transform", function(d) {
+    selections.nodeSelection
+    .attr('transform', function(d) {
         return [
           'translate(',d.x,',',d.y,')',
-          'scale(' , inv_scale , ')'
+          'scale(' , invScale , ')'
         ].join('');
     });
 
-    update_edge_position();
+    updateEdgePosition();
   };
 
   force.on('tick', redraw);
@@ -554,26 +570,26 @@ export function draw(G, config, optBind) {
   }
 
   // update d3 node and link data
-  selections.node_selection = addNodes(
+  selections.nodeSelection = addNodes(
     G,
     nodes,
     force,
-    node_selection,
+    nodeSelection,
     config
   );
 
-  selections.edge_selection = addEdges(
+  selections.edgeSelection = addEdges(
     G,
     edges,
     force,
-    edge_selection,
-    edge_label_func
+    edgeSelection,
+    edgeLabelFunc
   );
 
   // apply attributes and styles
-  updateNodeAttr(selections.node_selection, config);
+  updateNodeAttr(selections.nodeSelection, config);
 
-  updateEdgeAttr(selections.edge_selection, config, null, directed);
+  updateEdgeAttr(selections.edgeSelection, config, null, directed);
 
   if (optBind) {
     bind(G, force, config, selections);
@@ -619,12 +635,12 @@ function addNodes(G, nodes, force, selection, config) {
   selection = selection.data(layoutNodes, nodeKeyFunction);
   // create new elements
   var drag = force.drag()
-    .on("dragstart", function(d) {
+    .on('dragstart', function(d) {
       // Prevent pan if node is dragged
       d3.event.sourceEvent.stopPropagation();
       if (config.stickyDrag) {
         d.fixed = true;
-        d3.select(this).classed("fixed", true);
+        d3.select(this).classed('fixed', true);
       }
     });
   var nsel = selection.enter()
@@ -827,169 +843,168 @@ function removeEdges(G, edges, force, selection) {
 * @param {Graph} G A Graph
 * @param {d3.layout.force} force Force layout
 * @param {Object} config The configuration for the output
-* @param {{node_selection:d3.selection, edge_selection:d3.selection }} selections
+* @param {{nodeSelection:d3.selection, edgeSelection:d3.selection }} selections
 *   Various D3 selections
 */
 function bind(G, force, config, selections) {
   unbind(G, false);
 
   var proto = G.constructor.prototype;
-  var edge_label_func = config.edgeLabels;
+  var edgeLabelFunc = config.edgeLabels;
   var directed = G.isDirected();
 
   G.addNode = function(n, optAttr) {
-    var new_node = !this.hasNode(n);
+    var newNode = !this.hasNode(n);
     proto.addNode.call(this, n, optAttr);
 
-    if (new_node) {
-      selections.node_selection = addNodes(
+    if (newNode) {
+      selections.nodeSelection = addNodes(
         this,
         [n],
         force,
-        selections.node_selection,
+        selections.nodeSelection,
         config
       );
     }
 
     // update node attributes
-    updateNodeAttr(selections.node_selection, config, [n]);
+    updateNodeAttr(selections.nodeSelection, config, [n]);
 
     force.start();
   };
 
   G.addNodesFrom = function(nbunch, optAttr) {
     nbunch = toArray(nbunch);
-    var new_nodes = nbunch.filter(
+    var newNodes = nbunch.filter(
       node => !this.hasNode(isArrayLike(node) ? node[0] : node)
     );
 
     proto.addNodesFrom.call(this, nbunch, optAttr);
 
-    if(new_nodes.length > 0) { // add new nodes and update
-      selections.node_selection = addNodes(
+    if(newNodes.length > 0) { // add new nodes and update
+      selections.nodeSelection = addNodes(
         this,
-        new_nodes,
+        newNodes,
         force,
-        selections.node_selection,
+        selections.nodeSelection,
         config
       );
     }
 
-    updateNodeAttr(selections.node_selection, config, nbunch);
+    updateNodeAttr(selections.nodeSelection, config, nbunch);
     force.start();
   };
 
   G.addEdge = function(u, v, optAttr) {
-    var new_edge = !this.hasEdge(u, v);
+    var newEdge = !this.hasEdge(u, v);
     var edges = [[u,v]];
-    var new_nodes = new_edge ?
+    var newNodes = newEdge ?
       (u === v ? [u] : edges[0]).filter(node => !this.hasNode(node)) :
       [];
     proto.addEdge.call(G, u, v, optAttr);
 
-    if(new_nodes.length > 0) {
-      selections.node_selection = addNodes(
+    if(newNodes.length > 0) {
+      selections.nodeSelection = addNodes(
         this,
-        new_nodes,
+        newNodes,
         force,
-        selections.node_selection,
+        selections.nodeSelection,
         config
       );
 
-      updateNodeAttr(selections.node_selection, config, new_nodes);
+      updateNodeAttr(selections.nodeSelection, config, newNodes);
     }
 
-    if (new_edge) {
-      selections.edge_selection = addEdges(
+    if (newEdge) {
+      selections.edgeSelection = addEdges(
         this,
         edges,
         force,
-        selections.edge_selection,
-        edge_label_func
+        selections.edgeSelection,
+        edgeLabelFunc
       );
     }
 
-    updateEdgeAttr(selections.edge_selection, config, edges, directed);
+    updateEdgeAttr(selections.edgeSelection, config, edges, directed);
     force.start();
   };
 
   G.addEdgesFrom = function(ebunch, optAttr) {
-      var new_edges = [];
-      var new_nodes = [];
-      var seen_edges = new Map();
-      var seen_nodes = new Set();
-      var directed = this.isDirected();
+      var newEdges = [];
+      var newNodes = [];
+      var seenEdges = new Map();
+      var seenNodes = new Set();
 
       ebunch = toArray(ebunch);
 
       for (var [u, v] of ebunch) {
         if (!this.hasEdge(u, v) &&
-            seen_edges.get(u) !== v &&
-            (directed || seen_edges.get(v) === u)
+            seenEdges.get(u) !== v &&
+            (directed || seenEdges.get(v) === u)
         ) {
-          new_edges.push([u, v]);
-          seen_edges.set(u, v);
-          if (!this.hasNode(u) && !seen_nodes.has(u)) {
-            new_nodes.push(u);
-            seen_nodes.add(u);
+          newEdges.push([u, v]);
+          seenEdges.set(u, v);
+          if (!this.hasNode(u) && !seenNodes.has(u)) {
+            newNodes.push(u);
+            seenNodes.add(u);
           }
-          if (!this.hasNode(v) && !seen_nodes.has(v)) {
-            new_nodes.push(v);
-            seen_nodes.add(v);
+          if (!this.hasNode(v) && !seenNodes.has(v)) {
+            newNodes.push(v);
+            seenNodes.add(v);
           }
         }
       }
 
       proto.addEdgesFrom.call(G, ebunch, optAttr);
 
-      if(new_nodes.length > 0) {
-        selections.node_selection = addNodes(
+      if(newNodes.length > 0) {
+        selections.nodeSelection = addNodes(
           this,
-          new_nodes,
+          newNodes,
           force,
-          selections.node_selection,
+          selections.nodeSelection,
           config
         );
 
-        updateNodeAttr(selections.node_selection, config, new_nodes);
+        updateNodeAttr(selections.nodeSelection, config, newNodes);
       }
 
-      if (new_edges.length > 0) {
-        selections.edge_selection = addEdges(
+      if (newEdges.length > 0) {
+        selections.edgeSelection = addEdges(
           this,
-          new_edges,
+          newEdges,
           force,
-          selections.edge_selection,
-          edge_label_func
+          selections.edgeSelection,
+          edgeLabelFunc
         );
       }
 
-      updateEdgeAttr(selections.edge_selection, config, new_edges, directed);
+      updateEdgeAttr(selections.edgeSelection, config, newEdges, directed);
       force.start();
   };
 
   G.removeNode = function(n) {
     if (this.hasNode(n)) {
-      selections.node_selection = removeNodes(
+      selections.nodeSelection = removeNodes(
         this,
         [n],
         force,
-        selections.node_selection
+        selections.nodeSelection
       );
       var edges = this.edgesIter([n]);
 
       if (this.isDirected()) {
-        edges = (function*(G, edges) {
-          yield* edges;
-          yield* G.inEdgesIter([n]);
+        edges = (function*(self, outEdges) {
+          yield* outEdges;
+          yield* self.inEdgesIter([n]);
         }(this, edges));
       }
 
-      selections.edge_selection = removeEdges(
+      selections.edgeSelection = removeEdges(
         this,
         edges,
         force,
-        selections.edge_selection
+        selections.edgeSelection
       );
 
       force.resume();
@@ -999,26 +1014,26 @@ function bind(G, force, config, selections) {
 
   G.removeNodesFrom = function(nbunch) {
     nbunch = toArray(nbunch);
-    selections.node_selection = removeNodes(
+    selections.nodeSelection = removeNodes(
       this,
       nbunch,
       force,
-      selections.node_selection
+      selections.nodeSelection
     );
 
     var edges = this.edgesIter(nbunch);
     if (this.isDirected()) {
-        edges = (function*(G, edges) {
-          yield* edges;
-          yield* G.inEdgesIter(nbunch);
+        edges = (function*(self, outEdges) {
+          yield* outEdges;
+          yield* self.inEdgesIter(nbunch);
         }(this, edges));
     }
 
-    selections.edge_selection = removeEdges(
+    selections.edgeSelection = removeEdges(
       this,
       edges,
       force,
-      selections.edge_selection
+      selections.edgeSelection
     );
 
     force.resume();
@@ -1026,11 +1041,11 @@ function bind(G, force, config, selections) {
   };
 
   G.removeEdge = function(u, v) {
-    selections.edge_selection = removeEdges(
+    selections.edgeSelection = removeEdges(
       this,
       [[u,v]],
       force,
-      selections.edge_selection
+      selections.edgeSelection
     );
 
     force.resume();
@@ -1039,11 +1054,11 @@ function bind(G, force, config, selections) {
 
   G.removeEdgesFrom = function(ebunch) {
     ebunch = toArray(ebunch);
-    selections.edge_selection = removeEdges(
+    selections.edgeSelection = removeEdges(
       this,
       ebunch,
       force,
-      selections.edge_selection
+      selections.edgeSelection
     );
 
     force.resume();
@@ -1051,16 +1066,16 @@ function bind(G, force, config, selections) {
   };
 
   G.clear = function() {
-    selections.node_selection = selections.node_selection.data(
+    selections.nodeSelection = selections.nodeSelection.data(
       [],
       nodeKeyFunction
     );
-    selections.node_selection.exit().remove();
-    selections.edge_selection = selections.edge_selection.data(
+    selections.nodeSelection.exit().remove();
+    selections.edgeSelection = selections.edgeSelection.data(
       [],
       edgeKeyFunction
     );
-    selections.edge_selection.exit().remove();
+    selections.edgeSelection.exit().remove();
     force.nodes([]).links([]).resume();
     proto.clear.call(this);
   };
@@ -1106,6 +1121,7 @@ function unbind(G, optClean=true) {
 * @param {Graph} G A Graph
 */
 function clean(G) {
+  /*eslint no-unused-vars:0*/
   for (let [_,data] of G.nodesIter(true)) {
     delete data[D3_DATA_NAME];
   }
@@ -1163,7 +1179,7 @@ var DEFAULT_CONFIG = {
   edgeOffset: 10,
   weighted: false,
   weights: 'weight',
-  weighted_stroke: true,
+  weightedStroke: true,
   panZoom: {
     enabled: true,
     scale: true

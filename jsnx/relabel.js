@@ -128,9 +128,9 @@ function relabelInplace(G, mapping) {
   var newEdges;
 
   forEach(nodes, function(old) {
-    var new_;
+    var newMapping;
     if (mapping.has(old)) {
-      new_ = mapping.get(old);
+      newMapping = mapping.get(old);
     }
     else {
       return; // continue
@@ -139,26 +139,28 @@ function relabelInplace(G, mapping) {
     if (!G.hasNode(old)) {
       throw new JSNetworkXError(sprintf('Node %j is not in the graph.', old));
     }
-    G.addNode(new_, G.node.get(old));
+    G.addNode(newMapping, G.node.get(old));
     if (multigraph) {
       newEdges = G.edges(old, true, true).map(
-          d => tuple4c(new_, d[1], d[2], d[3], d)
+          d => tuple4c(newMapping, d[1], d[2], d[3], d)
       );
 
       if (directed) {
         newEdges = newEdges.concat(
           G.inEdges(old, true, true).map(
-            d => tuple4c(d[0], new_, d[2], d[3], d)
+            d => tuple4c(d[0], newMapping, d[2], d[3], d)
           )
         );
       }
     }
     else {
-      newEdges = G.edges(old, true).map(d => tuple3c(new_, d[1], d[2], d));
+      newEdges = G.edges(old, true).map(
+        d => tuple3c(newMapping, d[1], d[2], d)
+      );
 
       if (directed) {
         newEdges = newEdges.concat(
-          G.inEdges(old, true).map(d => tuple3c(d[0], new_, d[2], d))
+          G.inEdges(old, true).map(d => tuple3c(d[0], newMapping, d[2], d))
         );
       }
     }

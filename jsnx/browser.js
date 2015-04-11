@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 
 import {serialize, deserialize} from './_internals/message';
 import WorkerSettings from './_internals/WorkerSettings';

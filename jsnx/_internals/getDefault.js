@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 
 /**
  * Returns the second argument if the first argument is null or undefined.

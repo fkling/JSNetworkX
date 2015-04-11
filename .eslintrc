@@ -1,10 +1,22 @@
 {
   "parser": "babel-eslint",
   "rules": {
+    "comma-spacing": 0,
+    "comma-dangle": 0,
     "global-strict": 0,
     "max-len": [1, 80, 4],
     "no-constant-condition": 0,
+    "no-native-reassign": 0,
+    "no-process-exit": 0,
+    "no-underscore-dangle": 0,
+    "no-use-before-define": 0,
     "quotes": [1, "single", "avoid-escape"],
-    "strict": 0
+    "space-infix-ops": 0,
+    "strict": 0,
+    "yoda": 0
+  },
+  "env": {
+    "node": true,
+    "browser": true
   }
 }

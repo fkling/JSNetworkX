@@ -1,5 +1,4 @@
-/*jshint strict:false, node:true*/
-/*global utils, assert*/
+/*global assert*/
 
 import Set from '../Set';
 
@@ -15,9 +14,9 @@ export var testSet = {
 
     set = new Set();
     set.add(1);
-    set.add("4");
+    set.add('4');
     assert(set.has(1));
-    assert(set.has("4"));
+    assert(set.has('4'));
   },
 
   testRemoveElements: function() {

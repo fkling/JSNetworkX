@@ -1,5 +1,5 @@
 /*globals assert*/
-"use strict";
+'use strict';
 
 import gcd from '../gcd';
 

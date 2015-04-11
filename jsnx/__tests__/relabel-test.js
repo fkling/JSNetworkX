@@ -1,5 +1,5 @@
 /*globals assert*/
-"use strict";
+'use strict';
 
 import {Graph, DiGraph, MultiGraph, MultiDiGraph} from '../classes';
 import {JSNetworkXError} from '../exceptions';
@@ -20,11 +20,13 @@ export var testRelabel = {
 
     ['default', 'sorted', 'increasing degree',
      'decreasing degree'].forEach(function(opt) {
-        var G = emptyGraph();
-        var H = relabel.convertNodeLabelsToIntegers(G, 100, opt);
-        assert.equal(H.name, '(emptyGraph(0))WithIntLabels');
-        assert.deepEqual(H.nodes(), []);
-        assert.deepEqual(H.edges(), []);
+       /* eslint-disable no-shadow */
+       var G = emptyGraph();
+       var H = relabel.convertNodeLabelsToIntegers(G, 100, opt);
+       /* eslint-enable no-shadow */
+       assert.equal(H.name, '(emptyGraph(0))WithIntLabels');
+       assert.deepEqual(H.nodes(), []);
+       assert.deepEqual(H.edges(), []);
     });
 
     G = emptyGraph();
@@ -77,7 +79,7 @@ export var testRelabel = {
     assert.deepEqual(H.nodes().sort(), [65, 66, 67, 68]);
   },
 
-  testRelabelNodesGraph:  function() {
+  testRelabelNodesGraph: function() {
     var G = new Graph([['A', 'B'], ['A', 'C'], ['B', 'C'], ['C', 'D']]);
     var mapping = {'A': 'aardvark','B': 'bear','C': 'cat','D': 'dog'};
     var H = relabel.relabelNodes(G, mapping);

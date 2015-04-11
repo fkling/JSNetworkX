@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 
 import Graph from '../classes/Graph';
 
@@ -63,7 +63,7 @@ function *treeEdges(n, r) {
  */
 export function fullRaryTree(r, n, optCreateUsing) {
   var G = emptyGraph(n, optCreateUsing);
-  G.addEdgesFrom(treeEdges(n,r));
+  G.addEdgesFrom(treeEdges(n, r));
   return G;
 }
 
@@ -87,7 +87,7 @@ export function fullRaryTree(r, n, optCreateUsing) {
 export function balancedTree(r, h, optCreateUsing) {
   var n = r === 1 ? 2 : Math.floor((1 - Math.pow(r, (h+1))) / (1 - r));
   var G = emptyGraph(n, optCreateUsing);
-  G.addEdgesFrom(treeEdges(n,r));
+  G.addEdgesFrom(treeEdges(n, r));
   return G;
 }
 
@@ -132,7 +132,7 @@ export function cycleGraph(n, optCreateUsing) {
   var G = pathGraph(n, optCreateUsing);
   G.name = 'cycle_graph(' + n + ')';
   if (n > 1) {
-    G.addEdge(n-1,0);
+    G.addEdge(n-1, 0);
   }
   return G;
 }
@@ -233,28 +233,28 @@ export function grid2dGraph(
   var j;
   for (i = 0; i < rows; i++) {
     for (j = 0; j < columns; j++) {
-      G.addNode([i,j]);
+      G.addNode([i, j]);
     }
   }
   for (i = 1; i < rows; i++) {
     for (j = 0; j < columns; j++) {
-      G.addEdge([i,j], [i-1,j]);
+      G.addEdge([i, j], [i-1, j]);
     }
   }
   for (i = 0; i < rows; i++) {
     for (j = 1; j < columns; j++) {
-      G.addEdge([i,j], [i,j-1]);
+      G.addEdge([i, j], [i, j-1]);
     }
   }
   if (G.isDirected()) {
     for (i = 0; i < rows-1; i++) {
       for (j = 0; j < columns; j++) {
-        G.addEdge([i,j], [i+1,j]);
+        G.addEdge([i, j], [i+1, j]);
       }
     }
     for (i = 0; i < rows; i++) {
       for (j = 0; j < columns-1; j++) {
-        G.addEdge([i,j], [i,j+1]);
+        G.addEdge([i, j], [i, j+1]);
       }
     }
   }
@@ -262,25 +262,25 @@ export function grid2dGraph(
   if (optPeriodic) {
     if (columns > 2) {
       for (i = 0; i < rows; i++) {
-        G.addEdge([i,0], [i,columns-1]);
+        G.addEdge([i, 0], [i, columns-1]);
       }
       if (G.isDirected()) {
         for (i = 0; i < rows; i++) {
-          G.addEdge([i,columns-1], [i,0]);
+          G.addEdge([i, columns-1], [i, 0]);
         }
       }
     }
     if (rows > 2) {
       for (j = 0; j < columns; j++) {
-        G.addEdge([0,j], [rows-1,j]);
+        G.addEdge([0, j], [rows-1, j]);
       }
       if (G.isDirected()) {
         for (j = 0; j < columns; j++) {
-          G.addEdge([rows-1,j], [0,j]);
+          G.addEdge([rows-1, j], [0, j]);
         }
       }
     }
-    G.name = 'periodicGrid2dGraph(' + rows + ',' + columns + ')';
+    G.name = 'periodicGrid2dGraph(' + rows + ', ' + columns + ')';
   }
   return G;
 }

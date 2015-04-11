@@ -1,5 +1,5 @@
 /*global assert */
-"use strict";
+'use strict';
 
 import isSet from '../isSet';
 import Set from '../Set';

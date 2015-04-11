@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 
 import JSNetworkXError from '../exceptions/JSNetworkXError';
 
@@ -285,10 +285,10 @@ export function info(G, optN) {
       if(G.isDirected()) {
         var inDegree = 0;
         var outDegree = 0;
-        for (var degree of G.inDegree().values()) {
+        for (let degree of G.inDegree().values()) {
           inDegree += degree;
         }
-        for (degree of G.outDegree().values()) {
+        for (let degree of G.outDegree().values()) {
           outDegree += degree;
         }
 
@@ -299,8 +299,8 @@ export function info(G, optN) {
         );
       }
       else {
-        var sum = 0;
-        for (var v of G.degree().values()) {
+        let sum = 0;
+        for (let v of G.degree().values()) {
           sum += v;
         }
         result += sprintf('Average degree: %s', (sum / nnodes).toFixed(4));

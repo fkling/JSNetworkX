@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 
 /**
  * Returns true if value is a Graph

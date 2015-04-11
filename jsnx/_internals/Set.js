@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 /**
  * @fileoverview
  * A shim for ES6 maps and support for custom hash functions via toString().
@@ -157,9 +157,11 @@ export default class Set {
   intersection(...others) {
     var result = new Set();
     for (var v of this) {
+      /* eslint-disable no-loop-func */
       if (others.every(other => other.has(v))) {
         result.add(v);
       }
+      /* eslint-enable no-loop-func */
     }
     return result;
   }
@@ -174,7 +176,7 @@ export default class Set {
       var value = this.values().next().value;
       this.delete(value);
       return value;
-    } catch (ex) {}
+    } catch (ex) {} // eslint-disable-line no-empty
   }
 
   /**

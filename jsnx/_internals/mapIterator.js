@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 
 /**
  * Returns a new iterator which maps every value from the provided iterator via

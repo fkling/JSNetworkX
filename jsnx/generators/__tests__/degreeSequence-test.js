@@ -1,5 +1,5 @@
 /*global assert*/
-"use strict";
+'use strict';
 
 import {DiGraph} from '../../classes';
 import JSNetworkXError from '../../exceptions/JSNetworkXError';
@@ -23,20 +23,20 @@ export var degreeSequence = {
     var G = havelHakimiGraph([]);
     assert.equal(G.numberOfNodes(), 0);
 
-    var z = [1000,3,3,3,3,2,2,2,1,1,1];
+    var z = [1000, 3, 3, 3, 3, 2, 2, 2, 1, 1, 1];
     assert.throws(() => havelHakimiGraph(z), JSNetworkXError);
 
-    z = ["A",3,3,3,3,2,2,2,1,1,1];
+    z = ['A', 3, 3, 3, 3, 2, 2, 2, 1, 1, 1];
     assert.throws(() => havelHakimiGraph(z), JSNetworkXError);
 
-    z = [5,4,3,3,3,2,2,2];
+    z = [5, 4, 3, 3, 3, 2, 2, 2];
     assert.doesNotThrow(() => havelHakimiGraph(z));
     //TODO: G = jsnx.configuration_model(z);
 
-    z = [6,5,4,4,2,1,1,1];
+    z = [6, 5, 4, 4, 2, 1, 1, 1];
     assert.throws(() => havelHakimiGraph(z), JSNetworkXError);
 
-    z = [10,3,3,3,3,2,2,2,2,2,2];
+    z = [10, 3, 3, 3, 3, 2, 2, 2, 2, 2, 2];
     assert.doesNotThrow(() => havelHakimiGraph(z));
 
     assert.throws(() => havelHakimiGraph(z, new DiGraph()), JSNetworkXError);

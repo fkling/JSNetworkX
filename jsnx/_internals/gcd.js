@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 
 /**
  * Computes the greatest common divisor of two numbers using Euclid's algorithm.

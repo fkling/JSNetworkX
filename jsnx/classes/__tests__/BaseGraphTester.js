@@ -1,9 +1,7 @@
-/*global assert */
-"use strict";
+/*global assert, utils*/
+'use strict';
 
-/*jshint ignore:start*/
 var Map = utils.Map;
-/*jshint ignore:end*/
 import JSNetworkXError from '../../exceptions/JSNetworkXError';
 
 // Tests for data-structure independent graph class features.
@@ -152,7 +150,7 @@ export default {
     G.addStar(nlist, {weight: 2});
     assert.deepEqual(
       G.edges(nlist, true),
-      [[12,13,{weight: 2}],[12,14,{weight:2}],[12,15,{weight:2}]]
+      [[12,13,{weight: 2}],[12,14,{weight: 2}],[12,15,{weight: 2}]]
     );
   },
 
@@ -165,7 +163,7 @@ export default {
     G.addPath(nlist, {weight: 2});
     assert.deepEqual(
       G.edges(nlist, true),
-      [[12,13,{weight: 2}],[13,14,{weight:2}],[14,15,{weight:2}]]
+      [[12,13,{weight: 2}],[13,14,{weight: 2}],[14,15,{weight: 2}]]
     );
   },
 
@@ -182,16 +180,16 @@ export default {
     G = this.K3.copy();
     oklists = [
       [
-        [12,13,{weight:1}],
-        [12,15,{weight:1}],
-        [13,14,{weight:1}],
-        [14,15,{weight:1}]
+        [12,13,{weight: 1}],
+        [12,15,{weight: 1}],
+        [13,14,{weight: 1}],
+        [14,15,{weight: 1}]
       ],
       [
-        [12,13,{weight:1}],
-        [13,14,{weight:1}],
-        [14,15,{weight:1}],
-        [15,12,{weight:1}]
+        [12,13,{weight: 1}],
+        [13,14,{weight: 1}],
+        [14,15,{weight: 1}],
+        [15,12,{weight: 1}]
       ]
     ];
     G.addCycle(nlist, {weight: 1});
@@ -210,7 +208,7 @@ export default {
     // node not in graph doesn't get caught upon creation of iterator
     var bunch = G.nbunchIter(-1);
     // but gets caught when iterator used
-    assert.throws(function() { Array.from(bunch);}, JSNetworkXError);
+    assert.throws(() => Array.from(bunch), JSNetworkXError);
     // unhashable doesn't get caught upon creaton of iterator
     bunch = G.nbunchIter([0,1,2,[]]);
     // there are no unhashable values

@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 
 import prepCreateUsing from './prepCreateUsing';
 
@@ -101,7 +101,7 @@ export function toMapOfMaps(G, optNodelist, optEdgeData) {
    if (optNodelist != null) {
      optNodelist = Array.from(optNodelist);
      optNodelist.forEach(function(u) {
-       var mapOfU = mapOfMaps.set(u, new Map());
+       let mapOfU = mapOfMaps.set(u, new Map());
        G.get(u).forEach(function(v, data) {
          if (optNodelist.indexOf(v) > -1) {
            mapOfU.set(v, optEdgeData == null ? data : optEdgeData);
@@ -110,9 +110,9 @@ export function toMapOfMaps(G, optNodelist, optEdgeData) {
      });
    }
    else { // nodelist is undefined
-     for (var [nbrmap, u] of G.adjacencyIter()) {
-       /*jshint loopfunc:true*/
-       var mapOfU = mapOfMaps.set(u, new Map());
+     for (let [nbrmap, u] of G.adjacencyIter()) {
+       /*eslint no-loop-func:0*/
+       let mapOfU = mapOfMaps.set(u, new Map());
        nbrmap.forEach(function(data, v) {
          mapOfU.set(v, optEdgeData == null ? data : optEdgeData);
        });

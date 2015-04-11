@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 
 import items from './items';
 import toIterator from './toIterator';

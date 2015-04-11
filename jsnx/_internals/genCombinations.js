@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 
 import range from './range';
 
@@ -28,8 +28,9 @@ export default function *genCombinations(iterable, r) {
   var reversedIndicies = reversed(indicies);
   yield indicies.map(i => pool[i]);
   while (true) {
-    var i;
-    for (var k = 0; k < reversedIndicies.length; k++) {
+    let i;
+    let k = 0;
+    for (; k < reversedIndicies.length; k++) {
       i = reversedIndicies[k];
       if (indicies[i] !== i + n - r) {
         break;
@@ -39,9 +40,9 @@ export default function *genCombinations(iterable, r) {
       return;
     }
     indicies[i] += 1;
-    for (var j = i + 1; j < r; j++) {
+    for (let j = i + 1; j < r; j++) {
       indicies[j] = indicies[j-1] + 1;
     }
-    yield indicies.map(i => pool[i]);
+    yield indicies.map(i => pool[i]); // eslint-disable-line no-loop-func
   }
 }

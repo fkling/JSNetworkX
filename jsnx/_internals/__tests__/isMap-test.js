@@ -1,5 +1,5 @@
 /*global assert */
-"use strict";
+'use strict';
 
 import isMap from '../isMap';
 import Map from '../Map';
