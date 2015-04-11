@@ -66,7 +66,7 @@
     "test": "npm run build:node:dev && mocha --ui exports -R progress -r './scripts/setup-testenv.js' `find node/ -name *-test.js`",
     "test:fast": "mocha --ui exports -R progress -r './scripts/setup-testenv.js' `find node/ -name *-test.js`",
     "watch:test": "npm test -- -b -w",
-    "cover": "npm run build:node && istanbul cover _mocha -x '**/__tests__/**' -x 'scripts/*' -- --ui exports -R progress -r './mocha/setup' `find node/ -name *-test.js`",
+    "cover": "npm run build:node && istanbul cover _mocha -x '**/__tests__/**' -x 'scripts/*' -x 'node/drawing/*' -- --ui exports -R progress -r './scripts/setup-testenv.js' `find node/ -name *-test.js`",
     "lint": "eslint src/"
   }
 }
