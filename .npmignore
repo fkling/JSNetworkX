@@ -1,0 +1,6 @@
+/.*
+/*
+!/node/
+__tests__
+.module-cache
+!jsnetworkx.js
