@@ -16,6 +16,9 @@
     <script src="http://d3js.org/d3.v3.min.js"></script>
     <script src="javascripts/scale.fix.js"></script>
     <script src="javascripts/jsnetworkx.js"></script>
+    <script>
+      jsnx.workerPath = '/javascripts/jsnetworkx.js';
+    </script>
     {% for item in page.css %}
       <link href="stylesheets/{{ item }}.css" rel="stylesheet">
     {% endfor %}

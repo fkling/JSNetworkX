@@ -104,13 +104,22 @@ for (var n of G) {
 }
 // logs 0, 1, 2
 </pre>
-  <p>In case you cannot use for/of loops, JSNetworkX exposes a `forEach` method
-  to conveniently iterate over iterables:
+  <p>
+    In case you cannot use for/of loops, JSNetworkX exposes a <code>forEach</code>
+    method to conveniently iterate over iterables:
   </p>
   <pre class="prettyprint linenums">
 jsnx.forEach(G, function(n) {
   console.log(n);
 });
+</pre>
+  <p>
+    It also exposes a <code>toArray</code> method for converting iterables to
+    arrays, in case the environment does not support <code>Array.from</code>:
+  </p>
+  <pre class="prettyprint linenums">
+console.log(jsnx.toArray(jsnx.completeGraph(5)));
+// [0, 1, 2, 3, 4]
 </pre>
 
   <h3 id="async">Asynchronous Functions</h3>
@@ -132,9 +141,7 @@ jsnx.forEach(G, function(n) {
   </div>
   <p>
     In the browser, the asynchronous version will create a WebWorker, if available.
-
   </p>
-  <
   <p>
     In Node.js, the asynchronous version will spawn a new process.
   </p>
