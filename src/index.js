@@ -25,6 +25,7 @@ export {
   relabel
 };
 
+export var toArray = Array.from;
 export * from './algorithms';
 export * from './classes';
 export * from './convert';
