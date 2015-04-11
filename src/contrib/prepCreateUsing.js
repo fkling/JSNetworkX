@@ -10,7 +10,7 @@
  * @param {Graph=} opt_create_using
  * @return {Graph}
  */
-export function prepCreateUsing(optCreateUsing) {
+export default function prepCreateUsing(optCreateUsing) {
   var G;
   // can't use import statement because of circular dependency
   var Graph = require('../classes/Graph');
@@ -30,5 +30,3 @@ export function prepCreateUsing(optCreateUsing) {
   }
   return G;
 }
-
-module.exports = prepCreateUsing;

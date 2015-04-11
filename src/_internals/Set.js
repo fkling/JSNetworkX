@@ -4,11 +4,8 @@
  * A shim for ES6 maps and support for custom hash functions via toString().
  */
 
-/*jshint ignore:start */
 import Map from './Map';
-/*jshint ignore:end */
-
-var toIterator = require('./toIterator');
+import toIterator from './toIterator';
 
 export default class Set {
 

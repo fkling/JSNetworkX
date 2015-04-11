@@ -76,8 +76,9 @@ export function observe(G) {
   };
   var proto = G.constructor.prototype;
 
-  /*eslint no-shadow:0*/
+  /* eslint-disable no-shadow */
   function triggerHandlers(event, G, funcName, args) {
+    /* eslint-enable no-shadow */
     var handlers = eventHandlers[event.type];
     if (!handlers) {
       return;

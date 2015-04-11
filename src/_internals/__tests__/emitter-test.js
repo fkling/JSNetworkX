@@ -1,7 +1,7 @@
 /*global assert*/
 'use strict';
 
-var emitter = require('../emitter');
+import emitter from '../emitter';
 
 function onHelper(obj, type, callback) {
   var resolve;

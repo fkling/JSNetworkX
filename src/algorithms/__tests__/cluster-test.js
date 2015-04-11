@@ -65,7 +65,7 @@ export var testTriangles = {
 };
 
 
-exports.weightedClustering = {
+export var testWeightedClustering = {
 
   testClustering: function() {
     var G = new Graph();
@@ -120,7 +120,7 @@ exports.weightedClustering = {
 };
 
 
-exports.clustering = {
+export var testClustering = {
 
   testClustering: function() {
     var G = new Graph();
@@ -171,7 +171,7 @@ exports.clustering = {
 };
 
 
-exports.transitivity = {
+export var testTransitivity = {
 
   testTransitivity: function() {
     var G = new Graph();
@@ -200,7 +200,7 @@ exports.transitivity = {
 };
 
 
-exports.squareClustering = {
+export var testSquareClustering = {
 
   testClustering: function() {
     var G = new Graph();
