@@ -1,6 +1,5 @@
 'use strict';
 
-import _forEach from 'lodash/collection/forEach';
 import isIterable from './isIterable';
 import isIterator from './isIterator';
 
@@ -15,7 +14,17 @@ import isIterator from './isIterator';
  */
 export default function forEach(seq, callback, optThisObj) {
   if (Array.isArray(seq)) {
-    seq.forEach(callback, optThisObj);
+    let i = 0;
+    let l = seq.length;
+    if (optThisObj) {
+      for (; i < l; i++) {
+        callback.call(optThisObj, seq[i], i);
+      }
+    } else {
+      for (; i < l; i++) {
+        callback(seq[i], i);
+      }
+    }
     return;
   }
   if (isIterable(seq)) {
@@ -38,6 +47,14 @@ export default function forEach(seq, callback, optThisObj) {
     }
   }
   else if(seq && typeof seq === 'object') {
-    _forEach(seq, callback, optThisObj);
+    if (optThisObj) {
+      for (let prop in seq) {
+        callback.call(optThisObj, seq[prop], prop);
+      }
+    } else {
+      for (let prop in seq) {
+        callback(seq[prop], prop);
+      }
+    }
   }
 }

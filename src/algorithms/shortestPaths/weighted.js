@@ -36,7 +36,7 @@ import JSNetworkXNoPath from '../../exceptions/JSNetworkXNoPath';
  *   - weight(='weight'): Edge data key corresponding to the edge weight
  * @return {Array} List of nodes in a shortest path
  */
-export async function dijkstraPath(G, {source, target, weight='weight'}={}) {
+export async function dijkstraPath(G, {source, target, weight='weight'}) {
   var [distances, paths] = // eslint-disable-line no-unused-vars
     await singleSourceDijkstra(G, {source, target, weight});
   var path = paths.get(target);
@@ -76,10 +76,7 @@ export async function dijkstraPath(G, {source, target, weight='weight'}={}) {
  *   - weight(='weight'): Edge data key corresponding to the edge weight
  * @return {number} Shortest path length
  */
-export async function dijkstraPathLength(
-  G,
-  {source, target, weight='weight'}={}
-) {
+export async function dijkstraPathLength(G, {source, target, weight='weight'}) {
   var distances = await singleSourceDijkstraPathLength(G, {source, weight});
   var distance = distances.get(target);
   if (distance == null) {
@@ -134,7 +131,7 @@ function minMultiEdgeWeight(keydata, weight) {
  */
 export async function singleSourceDijkstraPath(
   G,
-  {source, cutoff, weight='weight'}={}
+  {source, cutoff, weight='weight'}
 ) {
  var [length, path] = // eslint-disable-line no-unused-vars
    await singleSourceDijkstra(G, {source, cutoff, weight});
@@ -175,7 +172,7 @@ export async function singleSourceDijkstraPath(
  */
 export async function singleSourceDijkstraPathLength(
   G,
-  {source, cutoff, weight='weight'}={}
+  {source, cutoff, weight='weight'}
 ) {
   var distances = new Map();
   var seen = new Map([[source, 0]]);
@@ -263,7 +260,7 @@ export async function singleSourceDijkstraPathLength(
  */
 export async function singleSourceDijkstra(
   G,
-  {source, target, cutoff, weight='weight'}={}
+  {source, target, cutoff, weight='weight'}
 ) {
   if (nodesAreEqual(source, target)) {
     return [new Map([[source, 0]]), new Map([[source, target]])];
@@ -353,10 +350,12 @@ export async function allPairsDijkstraPathLength(
   {cutoff, weight='weight'}={}
 ) {
   var distances = new Map();
+  var parameters = {weight, cutoff};
   for (let source of G) {
+    parameters.source = source;
     distances.set(
       source,
-      await singleSourceDijkstraPathLength(G, {source, weight, cutoff})
+      await singleSourceDijkstraPathLength(G, parameters)
     );
   }
   return distances;
@@ -389,10 +388,12 @@ export async function allPairsDijkstraPathLength(
  */
 export async function allPairsDijkstraPath(G, {cutoff, weight='weight'}={}) {
   var paths = new Map();
+  var parameters = {weight, cutoff};
   for (let source of G) {
+    parameters.source = source;
     paths.set(
       source,
-      await singleSourceDijkstraPath(G, {source, weight, cutoff})
+      await singleSourceDijkstraPath(G, parameters)
     );
   }
   return paths;
