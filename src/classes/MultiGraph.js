@@ -121,10 +121,6 @@ export default class MultiGraph extends Graph {
    * @param {Object=} optAttr Attributes to add to graph as key=value pairs.
    */
   constructor(optData, optAttr) {
-    // makes it possible to call jsnx.Graph without new
-    if (!(this instanceof MultiGraph)) {
-      return new MultiGraph(optData, optAttr);
-    }
     super(optData, optAttr);
   }
 

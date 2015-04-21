@@ -119,9 +119,6 @@ export default class MultiDiGraph extends DiGraph {
    *       Attributes to add to graph as key=value pairs.
    */
   constructor(optData, optAttr) {
-    if (!(this instanceof MultiDiGraph)) {
-      return new MultiDiGraph(optData, optAttr);
-    }
     super(optData, optAttr);
   }
 

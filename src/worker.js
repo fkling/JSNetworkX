@@ -21,7 +21,7 @@ process.stdin.on('end', () => {
   var args;
   var result;
   try {
-    ({method, args}) = JSON.parse(input);
+    ({method, args} = JSON.parse(input));
     args = args.map(deserialize);
   } catch(error) {
     exitWithError(2, error.message);

@@ -1,31 +1,19 @@
-"use strict";
-var _ = require('lodash');
-var asyncTransform = require('./async');
+'use strict';
 var path = require('path');
 var through = require('through');
 var babel = require('babel-core');
 
-function jstransform(src, dev, options) {
-  options = options || {};
-  if (dev) {
-    options = _.assign({
-      sourceMap: 'inline',
-    }, options);
-  }
-
-  // Transform async functions first
-  src = asyncTransform(src, _.assign({
-    delegateName: 'delegate',
-    delegatePath: './src/_internals'
-  }, options)).code;
-
+function jstransform(src, options) {
   // Then ES6 and inline source maps
   var result = babel.transform(src, options);
   var code = result.code;
   return code;
 }
 
+var plugins = [path.join(__dirname, 'async')];
+
 module.exports = function(filepath) {
+  var dev = process.env.NODE_ENV === 'dev';
   var data = '';
   return through(write, end);
 
@@ -34,11 +22,12 @@ module.exports = function(filepath) {
     /*jshint validthis:true*/
     var code = jstransform(
       data,
-      process.env.NODE_ENV === 'dev',
       {
         filename: path.relative('./', filepath),
-        experimental: true,
-        optional: ['runtime']
+        stage: 0,
+        optional: ['runtime'],
+        sourceMaps: dev ? 'inline' : false,
+        plugins: plugins
       }
     );
     this.queue(code);
@@ -46,14 +35,16 @@ module.exports = function(filepath) {
   }
 };
 
-module.exports.transform = function(path, source, options) {
+module.exports.transform = function(filepath, source, options) {
   return jstransform(
     source,
-    options.dev,
     {
-      experimental: true,
-      filename: path,
-      optional: ['runtime']
+      stage: 0,
+      filename: filepath,
+      plugins: plugins,
+      optional: ['runtime'],
+      sourceMaps: options.dev ? 'inline' : false,
+      auxiliaryComment: "istanbul ignore next"
     }
   );
 };

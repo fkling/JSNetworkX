@@ -137,11 +137,7 @@ export default class DiGraph extends Graph {
    *       Attributes to add to graph as key=value pairs.
    */
   constructor(optData, optAttr) {
-    // makes it possible to call DiGraph without new
-    if(!(this instanceof DiGraph)) {
-        return new DiGraph(optData, optAttr);
-    }
-
+    super();
     this.graph = {}; // dictionary for graph attributes
     this.node = new Map(); // dictionary for node attributes
     // We store two adjacency lists:
