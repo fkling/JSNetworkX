@@ -94,7 +94,7 @@ export function balancedTree(r, h, optCreateUsing) {
 //TODO: barbell_graph
 
 /**
- * Return the complete graph `$K_n$ with n nodes.
+ * Return the complete graph `$K_n$` with n nodes.
  *
  * Node labels are the integers 0 to n-1.
  * @param {number} n The number of nodes to add to the graph
@@ -165,8 +165,8 @@ export function cycleGraph(n, optCreateUsing) {
  * empty digraph, network,etc.  For example,
  *
  * ```
- * var n = 10
- * var G = jsnx.emptyGraph(n, new jsnx.DiGraph())
+ * var n = 10;
+ * var G = jsnx.emptyGraph(n, new jsnx.DiGraph());
  * ```
  *
  * will create an empty digraph on n nodes.

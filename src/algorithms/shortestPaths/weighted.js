@@ -122,7 +122,6 @@ function minMultiEdgeWeight(keydata, weight) {
  *
  * @param {Graph} G
  * @param {{source: Node, weight: ?string, cutoff: ?number}} parameters
- *
  *   - source: Starting node for path
  *   - weight: Edge data key corresponding to the edge weight
  *   - cutoff: Depth to stop the search. Only paths of length <= cutoff are
@@ -163,7 +162,6 @@ export async function singleSourceDijkstraPath(
 
  * @param {Graph} G
  * @param {{source: Node, weight: ?string, cutoff: ?number}} parameters
- *
  *   - source: Starting node for path
  *   - weight: Edge data key corresponding to the edge weight
  *   - cutoff: Depth to stop the search. Only paths of length <= cutoff are
@@ -247,13 +245,12 @@ export async function singleSourceDijkstraPathLength(
  * @param {Graph} G
  * @param {{source: Node, target: ?Node, cutoff: ?number, weight: ?string}}
  *   parameters
- *
  *   - source: Starting node for path
  *   - target: Ending node in the path (optional)
  *   - weight: Edge data key corresponding to the edge weight
  *   - cutoff: Depth to stop the search. Only paths of length <= cutoff are
  *     returned.
- * @return {[distances: Map, paths: Map]}
+ * @return {Array<Map>}
  *   Returns a tuple of two Maps keyed by node. The first Map stores distances
  *   from the source. The second one stores the path from the source to that
  *   node.
@@ -339,7 +336,6 @@ export async function singleSourceDijkstra(
  *
  * @param {Graph} G
  * @param {{weight: ?string, cutoff: ?number}=} optParameters
- *
  *   - weight: Edge data key corresponding to the edge weight
  *   - cutoff: Depth to stop the search. Only paths of length <= cutoff are
  *     returned.
@@ -380,7 +376,6 @@ export async function allPairsDijkstraPathLength(
  *
  * @param {Graph} G
  * @param {{weight: ?string, cutoff: ?number}=} optParameters
- *
  *   - weight: Edge data key corresponding to the edge weight
  *   - cutoff: Depth to stop the search. Only paths of length <= cutoff are
  *     returned.

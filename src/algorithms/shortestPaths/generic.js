@@ -72,7 +72,6 @@ export async function hasPath(G, {source, target}) {
  *
  * @param {Graph} G
  * @param {?{source: ?Node, target: ?Node, weight: ?string}=} optParameters
- *
  *   - source: Starting node for path.
  *     If not specified, compute the shortest paths using all nodes as source
  *     nodes.
@@ -86,19 +85,19 @@ export async function hasPath(G, {source, target}) {
  * @return {(Array|Map)} All returned paths include both the source and the
  *   target in the path.
  *
- *   If the source and target are both specified, return a single list
+ *   If the `source` and `target` are both specified, return a single list
  *   of nodes in a shortest path from the source to the target.
  *
- *   If only the source is specified, return a Map keyed by
+ *   If only the `source` is specified, return a Map keyed by
  *   targets with a list of nodes in a shortest path from the source
  *   to one of the targets.
  *
- *   If only the target is specified, return a Map keyed by
+ *   If only the `target` is specified, return a Map keyed by
  *   sources with a list of nodes in a shortest path from one of the
  *   sources to the target.
  *
- *   If neither the source nor target are specified return a Map
- *   of Maps with path[source][target]=[list of nodes in path].
+ *   If neither the `source` nor `target` are specified return a Map
+ *   of Maps with `Map {source: Map {target: [list of nodes in path] }}`.
  */
 export async function shortestPath(G, {source, target, weight}={}) {
   var paths;
@@ -192,7 +191,6 @@ export async function shortestPath(G, {source, target, weight}={}) {
  *
  * @param {Graph} G
  * @param {?{source: ?Node, target: ?Node, weight: ?string}=} optParameters
- *
  *   - source: Starting node for path.
  *     If not specified, compute the shortest path lengths using all nodes as
  *     source nodes.
@@ -204,18 +202,18 @@ export async function shortestPath(G, {source, target, weight}={}) {
  *     If a string, use this edge attribute as the edge weight. Any edg
  *     attribute not present defaults to 1.
  * @return {(number|Map)}
- *   If the source and target are both specified, return the length of the
+ *   If the `source` and `target` are both specified, return the length of the
  *   shortest path from the source to the target.
  *
- *   If only the source is specified, return a Map keyed by
+ *   If only the `source` is specified, return a Map keyed by
  *   targets whose values are the lengths of the shortest path from the source
  *   to one of the targets.
  *
- *   If only the target is specified, return a Map keyed by
+ *   If only the `target` is specified, return a Map keyed by
  *   sources whose values are the lengths of the shortest path from one of the
  *   sources to the target.
  *
- *   If neither the source nor target are specified return a Map
+ *   If neither the `source` nor `target` are specified return a Map
  *   of Maps with path[source][target]=L, where L is the length of the shortest
  *   path from source to target.
  */
