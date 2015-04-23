@@ -1,5 +1,27 @@
 # Changlog
 
+## v0.3.1
+
+### New
+
+#### API/Algorithms
+
+Weighted and generic shortest path algorithms. The "generic" functions provide
+a single interface for weighted and unweighted algorithms.
+
+- allPairsDijkstraPath
+- allPairsDijkstraPathLength
+- dijkstraPath
+- dijkstraPathLength
+- singleSourceDijkstra
+- singleSourceDijkstraPath
+- singleSourceDijkstraPathLength
+- shortestPath
+- shortestPathLength
+- hasPath
+
+including async (gen\*) versions.
+
 ## v0.3.0
 
 ### New
