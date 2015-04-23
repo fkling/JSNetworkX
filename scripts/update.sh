@@ -1,4 +1,4 @@
 #!/bin/sh
 
-cp ../../jsnetworkx/jsnetworkx.js ../javascripts/
-./updateAPIPage.sh
+cp ../jsnetworkx/jsnetworkx.js javascripts/
+./scripts/updateAPIPage.sh
