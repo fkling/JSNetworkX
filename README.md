@@ -57,7 +57,7 @@ can be found in the auto-generated [API documentation][api].
 // a tree of height 4 with fan-out 2
 var G = jsnx.balancedTree(2, 4);
 
-// Computest the shortest path between node 2 and 6
+// Compute the shortest path between node 2 and 7
 var path = jsnx.bidirectionalShortestPath(G, 2, 7);
 // [ 2, 0, 1, 3, 7 ]
 
@@ -71,7 +71,7 @@ More examples can we found on the [website][].
 
 ### Asynchronous computation
 
-All the algorithms are implement in a synchronous fashion (for now at least).
+All the algorithms are implemented in a synchronous fashion (for now at least).
 However, many algorithms are also available as asynchronous version. Their
 names are `gen<SyncFunctionName>` (see example above) and they return a
 Promise.
@@ -87,7 +87,7 @@ jsnx.workerPath = '/path/to/jsnetworkx.js';
 In **Node**, a subprocess will be spawned (no setup is required).
 
 **Caveat:** In both cases the input data has to be serialized before it can be
-set to the worker or subprocess. However, not every value can be serialized, in
+sent to the worker or subprocess. However, not every value can be serialized, in
 which case JSNetworkX will use the synchronous version instead. If you
 encounter a situation where a value is not serialized, but it should be
 serializable, please file an [issue][].
@@ -141,12 +141,12 @@ development. The second version automatically rebuilds the file on change.
 
 Transforms all modules to ES5 and saves them inside the `node/` directory.
 
-   npm run build:node:dev
+    npm run build:node:dev
 
 Same as above but with inline source maps. These modules are also used to tun
 the unit tests.
 
-   npm run watch:node
+    npm run watch:node
 
 Incrementally transform modules when files change.
 
@@ -163,7 +163,7 @@ This will run all tests by default. To consider only those files whose path
 matches a specific string, pass the `-g` option:
 
     # Runs all digraph tests but no graph tests
-    npm test:fast -- -g digraph
+    npm run test:fast -- -g digraph
 
 The difference between `npm test` and `npm run test:fast` is that the former
 will always transplile all files from ES6 to ES5 first. This is slow and
