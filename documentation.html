@@ -33,8 +33,8 @@ css: [prettify]
       <h3 id="node_values">Node values: How different data types are handled</h3>
       <p>
         Node values are used internally as keys, e.g. 
-        <code>nodeValue -> nodeAttribute</code> or <code>nodeValue -> neighbors</code>.
-        There are also methods which return <code>nodeValue -> result</code> mappings,
+        <code>nodeValue -&gt; nodeAttribute</code> or <code>nodeValue -&gt; neighbors</code>.
+        There are also methods which return <code>nodeValue -&gt; result</code> mappings,
         such as <code>G.degree()</code>.
       </p>
       <p>
@@ -45,8 +45,8 @@ css: [prettify]
       <p>
         <strong>Numbers</strong> and <strong>strings</strong> work as expected:
         <pre class="prettyprint">
-var G = jsnx.Graph();
-G.add_nodes_from([1,2,3, "foo"]);
+var G = new jsnx.Graph();
+G.addNodesFrom([1,2,3, "foo"]);
 console.log(G.nodes());
 // [1, 2, 3, "foo"]
 </pre>
@@ -62,8 +62,8 @@ console.log(G.nodes());
         <p>Examples:
         <pre class="prettyprint">
 // Use arrays as tuples
-var G = jsnx.Graph();
-G.add_node([1,2], {data: 'foo'});
+var G = new jsnx.Graph();
+G.addNode([1,2], {data: 'foo'});
 console.log(G.node.get([1,2]).data); // because [1,2].toString() === "1, 2"
 // "foo"
 </pre>
@@ -79,8 +79,8 @@ console.log(G.node.get([1,2]).data); // because [1,2].toString() === "1, 2"
 var nodeA = {toString: function() { return 'nodeA'; }};
 var nodeB = {toString: function() { return 'nodeB'; }};
 
-var G = jsnx.Graph();
-G.add_nodes_from([nodeA, nodeB]);
+var G = new jsnx.Graph();
+G.addNodesFrom([nodeA, nodeB]);
 console.log(G.nodes());
 // [Object, Object]
 </pre>
@@ -154,6 +154,11 @@ jsnx.genFindCliques(G).then(function(cliques) {
   console.log(cliques);
 });
 </pre>
+  <p>
+    Because it is not decided yet how asynchronous <em>iterators</em>
+    should be consumed, JSNetworkX will return an <strong>array</strong> from an
+    asynchronous method, if its synchronous version returns an iterator.
+  </p>
 
   <h3 id="optional_args">Optional arguments</h3>
   <p>Some methods have one or more optional arguments. Optional arguments can be omitted, as long as the arguments are of different types and therefore distinguishable.
