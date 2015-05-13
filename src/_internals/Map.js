@@ -6,7 +6,7 @@
  */
 
 import clear from './clear';
-import isIterator from './isIterator';
+import isIterable from './isIterable';
 import isFunction from 'lodash/lang/isFunction';
 import isObject from 'lodash/lang/isObject';
 import isArrayLike from './isArrayLike';
@@ -29,7 +29,7 @@ export default class Map {
     this._keys = Object.create(null);
 
     if (optData != null) {
-      if (isIterator(optData)) {
+      if (isIterable(optData)) {
         for (let [key, value] of optData) {
           this.set(key, value);
         }

@@ -4,17 +4,6 @@ var chai = require('chai');
 chai.use(require('chai-as-promised'));
 chai.use(require('chai-members-deep'));
 
-/*
-assert.almostEqual = function(actual, expected, message) {
-  var diff = Math.abs(actual - expected);
-  // round to 3th place
-  diff = Math.round(diff * 1000) / 1000;
-  if (diff !== 0) {
-    assert.fail(actual, expected, message, 'almostEqual', assert.almostEqual);
-  }
-};
-*/
-
 chai.use(function(_chai) {
   var Assertion = _chai.Assertion;
 
@@ -46,15 +35,18 @@ chai.use(function(_chai) {
     new Assertion(actual, msg).to.be.oneOf(expected);
   };
 
-  _chai.assert.almostEqual = function(actual, expected, message) {
-    var diff = Math.abs(actual - expected);
-    // round to 3th place
-    diff = Math.round(diff * 1000) / 1000;
-    new Assertion(actual, message).assert(
-      diff === 0,
-      'expected #{this} to be close to ' + expected,
-      'expected #{this) not to be close to ' + expected,
-      expected
+  _chai.assert.almostEqual = function(actual, expected, places, message) {
+    if (typeof places === 'string') {
+      message = places;
+      places = null;
+    }
+    if (!places) {
+      places = 7;
+    }
+    new Assertion(actual, message).closeTo(
+      actual,
+      expected,
+      Math.pow(10, -places)
     );
   };
 });
