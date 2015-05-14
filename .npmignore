@@ -4,4 +4,3 @@
 __tests__
 .module-cache
 !jsnetworkx.js
-!/transforms/

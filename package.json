@@ -22,13 +22,12 @@
   },
   "main": "node/index.js",
   "dependencies": {
-    "babel-core": "^5",
     "babel-runtime": "^5",
     "lodash": "^3.3.1",
-    "through": "^2.3.6",
     "tiny-sprintf": "^0.3.0"
   },
   "devDependencies": {
+    "babel-core": "^5",
     "babel-eslint": "^3",
     "browserify": "^9.0.3",
     "chai": "^2.1.0",
@@ -42,17 +41,9 @@
     "mocha": "^2.0.1",
     "sinon": "^1.11.1",
     "source-map-support": "^0.2.8",
+    "through": "^2.3.6",
     "uglify-js": "^2.4.16",
     "watchify": "^2.2.1"
-  },
-  "browser": {
-    "./src/_internals/delegate.js": "./src/_internals/delegateToWorker.js"
-  },
-  "browserify": {
-    "transform": [
-      "./transforms/es7",
-      "./transforms/replace"
-    ]
   },
   "scripts": {
     "prepublish": "npm run build:node",
@@ -60,9 +51,9 @@
     "build:node": "rm -rf node/ && node scripts/build-node.js src/ node/",
     "build:node:dev": "rm -rf node/ && node scripts/build-node.js --dev src/ node/",
     "watch:node": "npm run build:node:dev -- -w",
-    "build:browser": "(export BUNDLE=jsnetworkx.js; rm -f $BUNDLE && browserify src/browser.js -s jsnx | uglifyjs -cmo $BUNDLE)",
-    "build:browser:dev": "(export BUNDLE=jsnetworkx-dev.js; rm -f $BUNDLE && NODE_ENV=dev browserify src/browser.js -ds jsnx > $BUNDLE)",
-    "watch:browser": "(export BUNDLE=jsnetworkx-dev.js; rm -f $BUNDLE && NODE_ENV=dev watchify src/browser.js -vds jsnx -o $BUNDLE)",
+    "build:browser": "(export BUNDLE=jsnetworkx.js; npm run build:node && rm -f $BUNDLE && browserify node/browser.js -s jsnx | uglifyjs -cmo $BUNDLE)",
+    "build:browser:dev": "(export BUNDLE=jsnetworkx-dev.js; npm run build:node:dev && rm -f $BUNDLE && NODE_ENV=dev browserify node/browser.js -ds jsnx > $BUNDLE)",
+    "watch:browser": "(export BUNDLE=jsnetworkx-dev.js; npm run build:node:dev && rm -f $BUNDLE && NODE_ENV=dev watchify node/browser.js -vds jsnx -o $BUNDLE)",
     "test": "npm run build:node:dev && mocha --ui exports -R progress -r './scripts/setup-testenv.js' `find node/ -name *-test.js`",
     "test:fast": "mocha --ui exports -R progress -r './scripts/setup-testenv.js' `find node/ -name *-test.js`",
     "watch:test": "npm test -- -b -w",
