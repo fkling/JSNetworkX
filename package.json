@@ -56,7 +56,7 @@
     "watch:node": "npm run build:node:dev -- -w",
     "build:browser": "(export BUNDLE=jsnetworkx.js; npm run build:node && rm -f $BUNDLE && browserify node/browser.js -s jsnx | uglifyjs -cmo $BUNDLE)",
     "build:browser:dev": "(export BUNDLE=jsnetworkx-dev.js; npm run build:node:dev && rm -f $BUNDLE && NODE_ENV=dev browserify node/browser.js -ds jsnx > $BUNDLE)",
-    "watch:browser": "(export BUNDLE=jsnetworkx-dev.js; rm -f $BUNDLE && NODE_ENV=dev watchify node/browser.js -vds jsnx -o $BUNDLE)",
+    "watch:browser": "(export BUNDLE=jsnetworkx-dev.js; rm -f $BUNDLE && NODE_ENV=dev watchify src/browser.js -vds jsnx -o $BUNDLE)",
     "test": "npm run build:node:dev && mocha --ui exports -R progress -r './scripts/setup-testenv.js' `find node/ -name *-test.js`",
     "test:fast": "mocha --ui exports -R progress -r './scripts/setup-testenv.js' `find node/ -name *-test.js`",
     "watch:test": "npm test -- -b -w",
