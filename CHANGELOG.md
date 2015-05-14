@@ -1,5 +1,14 @@
 # Changlog
 
+## v0.3.2
+
+### New
+
+#### API/Algorithms
+
+- eigenvectorCentrality (genEigenvectorCentrality)
+
+
 ## v0.3.1
 
 ### New
