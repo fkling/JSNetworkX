@@ -1,5 +1,5 @@
 'use strict';
-import * as jsnx from '../';
+import WorkerSettings from '../WorkerSettings';
 import isIterator from './isIterator';
 
 /**
@@ -18,7 +18,8 @@ export default function delegateSync(method, args) {
     try {
       // We have to do the same here as we do in the worker, which is
       // returning an array if we get back an iterator
-      var result = jsnx[method].apply(null, args);
+      var result =
+        WorkerSettings.methodLookupFunction(method).apply(null, args);
       if (isIterator(result)) {
         result = Array.from(result);
       }

@@ -2,15 +2,12 @@
 'use strict';
 
 import delegate from '../delegateSync';
-import * as jsnx from '../../';
+import WorkerSettings from '../../WorkerSettings';
 
 export var testDelegateSync = {
   beforeEach: function() {
-    this.spy = jsnx.testFunction = sinon.spy();
-  },
-
-  afterEach: function() {
-    delete jsnx.testFunction;
+    this.testFunction = sinon.spy();
+    WorkerSettings.methodLookupFunction = name => this[name];
   },
 
   'it returns a promise': function() {
@@ -21,13 +18,13 @@ export var testDelegateSync = {
   'it passes the arguments to the delegated function': function(done) {
     var promise = delegate('testFunction', ['foo', 'bar']);
     promise.then(() => {
-      assert(this.spy.calledWith('foo', 'bar'));
+      assert(this.testFunction.calledWith('foo', 'bar'));
       done();
     });
   },
 
   'it resolves to the return value of the delegated function': function() {
-    jsnx.testFunction = function() {
+    this.testFunction = function() {
       return 'foo';
     };
     var promise = delegate('testFunction', ['foo', 'bar']);
@@ -35,7 +32,7 @@ export var testDelegateSync = {
   },
 
   'it rejects if the delegated function throws an error': function() {
-    jsnx.testFunction = function() {
+    this.testFunction = function() {
       throw new Error('some error');
     };
     var promise = delegate('testFunction', ['foo', 'bar']);

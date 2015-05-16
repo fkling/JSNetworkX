@@ -2,15 +2,28 @@
 var path = require('path');
 var through = require('through');
 var babel = require('babel-core');
+var _ = require('lodash');
 
-function jstransform(src, options) {
+var sharedOptions = {
+  stage: 0,
+  plugins: [path.join(__dirname, 'async')],
+  optional: ['runtime'],
+};
+
+function jstransform(src, filepath, options) {
   // Then ES6 and inline source maps
-  var result = babel.transform(src, options);
+  var result = babel.transform(
+    src,
+    _.assign(
+      {filename: path.relative('./', filepath)},
+      options,
+      sharedOptions
+    )
+  );
   var code = result.code;
   return code;
 }
 
-var plugins = [path.join(__dirname, 'async')];
 
 module.exports = function(filepath) {
   var dev = process.env.NODE_ENV === 'dev';
@@ -22,12 +35,9 @@ module.exports = function(filepath) {
     /*jshint validthis:true*/
     var code = jstransform(
       data,
+      filepath,
       {
-        filename: path.relative('./', filepath),
-        stage: 0,
-        optional: ['runtime'],
         sourceMaps: dev ? 'inline' : false,
-        plugins: plugins
       }
     );
     this.queue(code);
@@ -38,13 +48,10 @@ module.exports = function(filepath) {
 module.exports.transform = function(filepath, source, options) {
   return jstransform(
     source,
+    filepath,
     {
-      stage: 0,
-      filename: filepath,
-      plugins: plugins,
-      optional: ['runtime'],
       sourceMaps: options.dev ? 'inline' : false,
-      auxiliaryComment: "istanbul ignore next"
+      auxiliaryComment: "istanbul ignore next",
     }
   );
 };

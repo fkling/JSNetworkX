@@ -1,7 +1,7 @@
 'use strict';
 
 import Worker from './Worker';
-import WorkerSettings from './WorkerSettings';
+import WorkerSettings from '../WorkerSettings';
 import delegateSync from './delegateSync';
 import {serializeAll, deserialize} from './message';
 
