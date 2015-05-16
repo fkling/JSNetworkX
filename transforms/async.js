@@ -74,7 +74,7 @@ function createAsyncCopy(node, scope) {
     // convert patters to single variables
     if (t.isObjectPattern(param) ||
         t.isArrayPattern(param)) {
-      return scope.generateUidBasedOnNode(param);
+      return scope.generateUidIdentifierBasedOnNode(param);
     }
     return t.identifier(param.name);
   });
