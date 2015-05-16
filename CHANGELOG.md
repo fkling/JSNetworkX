@@ -1,5 +1,47 @@
 # Changlog
 
+## v0.3.3
+
+### Changes
+
+It is now possible to require individual modules and still get the
+benefits of async code execution through workers.
+
+Example:
+
+```
+var completeGraph = require('jsnetworkx/node/generators/classic').completeGraph;
+var cluster = require('jsnetworkx/node/algorithms/cluster');
+var WorkerSettings = require('jsnetworkx/node/WorkerSettings');
+var initializeBrowserWorker = require('jsnetworkx/node/initializeBrowserWorker');
+
+global.genClustering = cluster.genClustering;
+global.completeGraph = completeGraph;
+WorkerSettings.methodLookupFunction = function(name) {
+  return cluster[name];
+};
+initializeBrowserWorker();
+```
+
+This is a custom module which only exposes `completeGraph` and `genClustering`.
+
+`WorkerSettings.methodLookupFunction`
+
+This function is used by the worker (and `delegateToSync`!) to resolve
+the method name the worker receives, to the actual function. E.g. the
+prebuilt version of JSNetworkX uses `name => jsnx[name]`.
+
+`initializeBrowserWorker`
+
+This function tests whether we are in a worker environment and if yes,
+sets up the event handlers and takes care of (de)serializing the data.
+This function should be called in the worker script.
+
+Given the example above, the custom bundle could be created with
+
+  JSNETWORKX_BUNDLE='bundle.js' browserify test.js > bundle.js
+
+
 ## v0.3.2
 
 ### New
