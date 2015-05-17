@@ -67,7 +67,7 @@ jsnx.genBidirectionalShortestPath(G, 2, 7).then(function(path) {
 });
 ```
 
-More examples can we found on the [website][].
+More examples can be found on the [website][].
 
 ### Asynchronous computation
 
