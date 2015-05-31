@@ -1,6 +1,6 @@
 /*global assert*/
 
-import Set from '../Set';
+import Set, {symmetricDifference, union} from '../Set';
 
 export var testSet = {
   testCreate: function() {
@@ -70,4 +70,60 @@ export var testSet = {
     }
   }
 
+};
+
+export var testSymmetricDifference = {
+  'empty set': function() {
+    let full = new Set([1,2,3]);
+    let empty = new Set();
+    let result = symmetricDifference(full, empty);
+    assert.deepEqual(result, full);
+    assert.notEqual(result, full);
+
+    result = symmetricDifference(empty, full);
+    assert.deepEqual(result, full);
+    assert.notEqual(result, full);
+  },
+
+  'sets with common elements': function() {
+    let a = new Set([1,2,3,4]);
+    let b = new Set([3,4,5,6]);
+    assert.deepEqual(symmetricDifference(a, b), new Set([1,2,5,6]));
+    assert.deepEqual(symmetricDifference(b, a), new Set([1,2,5,6]));
+  },
+
+  'sets without common elements': function() {
+    let a = new Set([1,2]);
+    let b = new Set([3,4]);
+    assert.deepEqual(symmetricDifference(a, b), new Set([1,2,3,4]));
+    assert.deepEqual(symmetricDifference(b, a), new Set([1,2,3,4]));
+  }
+};
+
+export var testUnion = {
+  'empty set': function() {
+    let full = new Set([1,2,3]);
+    let empty = new Set();
+    let result = union(full, empty);
+    assert.deepEqual(result, full);
+    assert.notEqual(result, full);
+
+    result = union(empty, full);
+    assert.deepEqual(result, full);
+    assert.notEqual(result, full);
+  },
+
+  'sets with common elements': function() {
+    let a = new Set([1,2,3,4]);
+    let b = new Set([3,4,5,6]);
+    assert.deepEqual(union(a, b), new Set([1,2,3,4,5,6]));
+    assert.deepEqual(union(b, a), new Set([1,2,3,4,5,6]));
+  },
+
+  'sets without common elements': function() {
+    let a = new Set([1,2]);
+    let b = new Set([3,4]);
+    assert.deepEqual(union(a, b), new Set([1,2,3,4]));
+    assert.deepEqual(union(b, a), new Set([1,2,3,4]));
+  }
 };

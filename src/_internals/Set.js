@@ -185,3 +185,24 @@ export default class Set {
     return this.values();
   }
 }
+
+export function symmetricDifference(a, b) {
+  let c = new Set(a);
+  for (let v of b) {
+    if (a.has(v)) {
+      c.delete(v);
+    } else {
+      c.add(v);
+    }
+  }
+
+  return c;
+}
+
+export function union(a, b) {
+  let c = new Set(a);
+  for (let v of b) {
+    c.add(v);
+  }
+  return c;
+}
