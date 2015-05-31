@@ -1,5 +1,20 @@
 # Changlog
 
+## master
+
+### New
+
+#### API/Algorithms
+
+Binary graph operators:
+
+- union
+- disjointUnion
+- intersection
+- difference
+- symmetricDifference
+- compose
+
 ## v0.3.3
 
 ### Changes
