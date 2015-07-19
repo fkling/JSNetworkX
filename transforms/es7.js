@@ -51,7 +51,7 @@ module.exports.transform = function(filepath, source, options) {
     filepath,
     {
       sourceMaps: options.dev ? 'inline' : false,
-      auxiliaryComment: "istanbul ignore next",
+      auxiliaryCommentBefore: "istanbul ignore next",
     }
   );
 };
