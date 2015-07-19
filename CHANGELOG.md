@@ -1,6 +1,6 @@
 # Changlog
 
-## master
+## v0.3.4
 
 ### New
 
@@ -8,12 +8,17 @@
 
 Binary graph operators:
 
-- union
-- disjointUnion
-- intersection
-- difference
-- symmetricDifference
-- compose
+- union / genUnion
+- disjointUnion / genDisjointUnion
+- intersection / genIntersection
+- difference / genDifference
+- symmetricDifference / genSymmetricDifference
+- compose / genCompose
+
+### Fixed
+
+- Issue with zoom on double click since d3 v3.5.5 (#51)
+
 
 ## v0.3.3
 
