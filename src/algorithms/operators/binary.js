@@ -103,8 +103,8 @@ export async function union(G, H, {rename=[null, null]}={}) {
  * graph. If a graph attribute is present in both `G` and `H` the value from `H`
  * is used.
  *
- * @param {G} graph
- * @param {H} graph
+ * @param {Graph} G
+ * @param {Graph} H
  * @return {Graph} A union graph with the same type as G.
  */
 export async function disjointUnion(G, H) {
