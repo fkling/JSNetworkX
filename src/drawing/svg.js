@@ -372,6 +372,9 @@ export function draw(G, config, optBind) {
     let zoomStart = zoom;
 
     canvas.call(d3.behavior.zoom().on('zoom', function() {
+      if (!d3.event.sourceEvent) {
+        return;
+      }
       var shiftKey = d3.event.sourceEvent.shiftKey,
       zoomed = (scaled && shiftKey) || !(scaled || shiftKey);
 
