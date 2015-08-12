@@ -164,6 +164,18 @@ export default class Set {
   }
 
   /**
+   * Adds new elements from other iterables.
+   *
+   * @param {...(Iterable)} others
+   */
+  update(...others) {
+    for (let other of others) {
+      for (let key of other) {
+        this.add(key);
+      }
+    }
+  }
+  /**
    * Removes and returns an element from the set.
    *
    * @return {?}
@@ -201,8 +213,6 @@ export function symmetricDifference(a, b) {
 
 export function union(a, b) {
   let c = new Set(a);
-  for (let v of b) {
-    c.add(v);
-  }
+  c.update( b ) ;
   return c;
 }
