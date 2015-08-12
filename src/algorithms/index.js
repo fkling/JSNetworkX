@@ -6,6 +6,7 @@ import * as cluster from './cluster';
 import * as dag from './dag';
 import * as graphical from './graphical';
 import * as isomorphism from './isomorphism';
+import * as matching from './matching';
 import * as operators from './operators';
 import * as shortestPaths from './shortestPaths';
 
@@ -16,6 +17,7 @@ export {
   dag,
   graphical,
   isomorphism,
+  matching,
   operators,
   shortestPaths
 };
@@ -26,5 +28,6 @@ export * from './cluster';
 export * from './dag';
 export * from './graphical';
 export * from './isomorphism';
+export * from './matching';
 export * from './operators';
 export * from './shortestPaths';
