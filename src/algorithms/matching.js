@@ -31,14 +31,13 @@ import {
  */
 export function maximalMatching(G) {
   const matching = new Set();
-  const edges = new Set();
+  const vertices = new Set();
   for (let [u, v] of G.edgesIter()) {
     // If the edge isn't covered, add it to the matching
     // then remove neighborhood of u and v from consideration.
-    if (!edges.has([u, v]) && !edges.has([v, u])) {
+    if (!vertices.has(u) && !vertices.has(v)) {
       matching.add([u, v]);
-      edges.update(G.edgesIter(u));
-      edges.update(G.edgesIter(v));
+      vertices.update([u, v]);
     }
   }
   return matching;
