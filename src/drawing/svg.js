@@ -189,7 +189,7 @@ export function draw(G, config, optBind) {
   config = deepmerge({}, DEFAULT_CONFIG, config);
 
   if (!d3) {
-    throw new Error('D3 requried for draw()');
+    throw new Error('D3 required for draw()');
   }
 
   if (config.element == null && LAST_ELEMENT == null) {
