@@ -11,7 +11,7 @@
 
 import * as convertMap from './contrib/convert';
 import prepCreateUsing from './contrib/prepCreateUsing';
-import _mapValues from 'lodash/object/mapValues';
+import _mapValues from 'lodash/mapValues';
 
 import {
   Map,

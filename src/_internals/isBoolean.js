@@ -1,3 +1,3 @@
 'use strict';
-import isBoolean from 'lodash/lang/isBoolean';
+import isBoolean from 'lodash/isBoolean';
 export default isBoolean;

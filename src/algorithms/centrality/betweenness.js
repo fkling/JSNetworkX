@@ -90,8 +90,9 @@ export async function betweennessCentrality(G, optArgDict={}) {
   normalized = normalized == null ? true : normalized;
   endpoints = endpoints == null ? false : endpoints;
 
+
   var v;
-  var betweenness = new Map((for (v of G) tuple2(v, 0)));
+  var betweenness = new Map(Object.values(G).map(v => tuple2(v, 0)));
 
   var nodes = G.nodes();
   if (k != null) {
@@ -168,7 +169,7 @@ export async function edgeBetweennessCentrality(G, optArgDict={}) {
   normalized = normalized == null ? true : normalized;
 
   var v;
-  var betweenness = new Map((for (v of G) tuple2(v, 0)));
+  var betweenness = new Map(Object.values(G).map(v => tuple2(v, 0)));
   for (var edge of G.edgesIter()) {
     betweenness.set(edge, 0);
   }
@@ -192,8 +193,8 @@ export async function edgeBetweennessCentrality(G, optArgDict={}) {
 
 function singleSourceShortestPathBasic(G, s) {
   var S = [];
-  var P = new Map((for (v of G) tuple2(v, [])));
-  var sigma = new Map((for (v of G) tuple2(v, 0)));
+  var P = new Map(Object.values(G).map(v => tuple2(v, [])));
+  var sigma = new Map(Object.values(G).map(v => tuple2(v, 0)));
   var D = new Map();
 
   sigma.set(s, 1);
@@ -220,11 +221,15 @@ function singleSourceShortestPathBasic(G, s) {
   return [S, P, sigma];
 }
 
+function createTupleForValues(object, secondValue) {
+  return Object.values(G).map(v => tuple2(v, secondValue))
+}
+
 function singleSourceDijkstraPathBasic(G, s, weight='weight') {
   // modified from Eppstein
   var S = [];
-  var P = new Map((for (v of G) tuple2(v, [])));
-  var sigma = new Map((for (v of G) tuple2(v, 0)));
+  var P = new Map(createTupleForValues(G, []));
+  var sigma = new Map(createTupleForValues(G, 0));
   var D = new Map();
 
   sigma.set(s, 1);
@@ -259,7 +264,7 @@ function singleSourceDijkstraPathBasic(G, s, weight='weight') {
 }
 
 function accumulateBasic(betweenness, S, P, sigma, s) {
-  var delta = new Map((for (s of S) tuple2(s, 0)));
+  var delta = new Map(createTupleForValues(S, 0));
 
   while (S.length > 0) {
     var w = S.pop();
@@ -279,7 +284,7 @@ function accumulateBasic(betweenness, S, P, sigma, s) {
 
 function accumulateEndpoints(betweenness, S, P, sigma, s) {
   betweenness.set(s, betweenness.get(s) + S.length - 1);
-  var delta = new Map((for (s of S) tuple2(s, 0)));
+  var delta = new Map(createTupleForValues(S, 0));
 
   while (S.length > 0) {
     var w = S.pop();
@@ -298,7 +303,7 @@ function accumulateEndpoints(betweenness, S, P, sigma, s) {
 }
 
 function accumulateEdges(betweenness, S, P, sigma, s) {
-  var delta = new Map((for (s of S) tuple2(s, 0)));
+  var delta = new Map(createTupleForValues(S, 0));
 
   while (S.length > 0) {
     var w = S.pop();

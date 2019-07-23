@@ -1,7 +1,7 @@
 'use strict';
 
-import isPlainObject from 'lodash/lang/isPlainObject';
-import mapValues from 'lodash/object/mapValues';
+import isPlainObject from 'lodash/isPlainObject';
+import mapValues from 'lodash/mapValues';
 
 import isArrayLike from './isArrayLike';
 import isIterable from './isIterable';

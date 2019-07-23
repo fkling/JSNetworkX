@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 /*jshint node:true*/
 var chai = require('chai');
 chai.use(require('chai-as-promised'));

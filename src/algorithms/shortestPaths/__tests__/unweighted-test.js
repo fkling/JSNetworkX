@@ -29,7 +29,7 @@ function validateGridPath(r, c, s, t, p) {
   t = [Math.floor((t - 1) / c), (t - 1) % c];
   assert.equal(p.length, Math.abs(t[0] - s[0]) + Math.abs(t[1] - s[1]) + 1);
   var u;
-  p = [for (u of p) [Math.floor((u - 1) / c), (u - 1) % c]];
+  p = Object.values(p).map(u => [Math.floor((u - 1) / c), (u - 1) % c]);
   for (let u of p) {
     assert.ok(0 <= u[0] && u[0] < r);
     assert.ok(0 <= u[1] && u[1] < c);

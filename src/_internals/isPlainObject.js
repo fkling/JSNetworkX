@@ -1,3 +1,3 @@
 'use strict';
-import isPlainObject from 'lodash/lang/isPlainObject';
+import isPlainObject from 'lodash/isPlainObject';
 export default isPlainObject;

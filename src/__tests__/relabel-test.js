@@ -120,7 +120,7 @@ export var testRelabel = {
     var mapping = {'0': 'aardvark'};
     assert.throws(
       () => relabel.relabelNodes(G, mapping, false),
-      JSNetworkXError
+      'Node 0 is not in the graph.'
     );
   }
 

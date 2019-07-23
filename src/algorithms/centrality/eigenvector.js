@@ -151,7 +151,7 @@ export async function eigenvectorCentrality(
   }
 
   throw new JSNetworkXError(
-    `eigenvectorCentrality(): power iteration failed to converge in ` +
+    'eigenvectorCentrality(): power iteration failed to converge in ' +
     `${maxIter} iterations.`
   );
 }

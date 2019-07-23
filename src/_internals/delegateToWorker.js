@@ -13,7 +13,7 @@ if (typeof Worker === 'function') {
 
     if (!serializable) {
       console.info(
-        `At least one argument can't be serialized and sent to the worker. ` +
+        'At least one argument can\'t be serialized and sent to the worker. ' +
         `We will run ${method} in the same thread instead.`
       );
       return delegateSync(method, args);
@@ -35,7 +35,7 @@ else {
   delegateImplementation = function(method, args) {
     console.info(
       `Workers are not supported in this environment, so "${method}" will ` +
-      `run in the same thread instead. This might block the environment.`
+      'run in the same thread instead. This might block the environment.'
     );
     return delegateSync(method, args);
   };

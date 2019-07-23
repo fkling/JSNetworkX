@@ -43,7 +43,7 @@ export default function delegate(method, args) {
   var {serializable, serializedValues} = serializeAll(args);
   if (!serializable) {
     console.info(
-      `At least one argument can't be serialized and sent to the worker. ` +
+      'At least one argument can\'t be serialized and sent to the worker. ' +
       `We will run ${method} in the same thread instead.`
     );
     return delegateSync(method, args);

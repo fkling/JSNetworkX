@@ -7,10 +7,10 @@
 
 import clear from './clear';
 import isIterable from './isIterable';
-import isFunction from 'lodash/lang/isFunction';
-import isObject from 'lodash/lang/isObject';
+import isFunction from 'lodash/isFunction';
+import isObject from 'lodash/isObject';
 import isArrayLike from './isArrayLike';
-import size from 'lodash/collection/size';
+import size from 'lodash/size';
 
 export default class Map {
   /**
