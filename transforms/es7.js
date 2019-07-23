@@ -30,10 +30,11 @@ module.exports = function(filepath) {
     var code = jstransform(
       data,
       filepath,
-      {
-        ...sharedOptions,
-        sourceMaps: dev ? 'inline' : false,
-      }
+      Object.assign(
+        {},
+        sharedOptions,
+        { sourceMaps: dev ? 'inline' : false }
+      )
     );
     this.queue(code);
     this.queue(null);
@@ -44,10 +45,13 @@ module.exports.transform = function(filepath, source, options) {
   return jstransform(
     source,
     filepath,
-    {
-      ...sharedOptions,
-      sourceMaps: options.dev ? 'inline' : false,
-      auxiliaryCommentBefore: 'istanbul ignore next',
-    }
+    Object.assign(
+      {},
+      sharedOptions,
+      {
+        sourceMaps: options.dev ? 'inline' : false,
+        auxiliaryCommentBefore: 'istanbul ignore next',
+      }
+    )
   );
 };

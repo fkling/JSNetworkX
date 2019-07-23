@@ -22,7 +22,6 @@
   },
   "main": "node/index.js",
   "dependencies": {
-    "@babel/runtime": "^7.5.5",
     "lodash": "^4.17.15",
     "through": "^2.3.8",
     "tiny-sprintf": "^0.3.0"
