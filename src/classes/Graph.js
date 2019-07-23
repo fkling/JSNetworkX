@@ -5,8 +5,8 @@ import Map from '../_internals/Map';
 import Set from '../_internals/Set';
 import JSNetworkXError from '../exceptions/JSNetworkXError';
 
-import isBoolean from 'lodash/lang/isBoolean';
-import isString from 'lodash/lang/isString';
+import isBoolean from 'lodash/isBoolean';
+import isString from 'lodash/isString';
 
 import * as convert from '../convert';
 import {

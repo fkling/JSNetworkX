@@ -7,3 +7,4 @@
 /node
 tags
 /runtime.js
+.nyc_output

@@ -1,25 +1,19 @@
 'use strict';
 var path = require('path');
 var through = require('through');
-var babel = require('babel-core');
-var _ = require('lodash');
+var babel = require('@babel/core');
 
 var sharedOptions = {
-  stage: 0,
-  plugins: [path.join(__dirname, 'async')],
-  optional: ['runtime'],
+  presets: ['@babel/preset-env'],
+  plugins: ['@babel/plugin-syntax-async-generators'],
 };
 
 function jstransform(src, filepath, options) {
-  // Then ES6 and inline source maps
   var result = babel.transform(
     src,
-    _.assign(
-      {filename: path.relative('./', filepath)},
-      options,
-      sharedOptions
-    )
+    options
   );
+
   var code = result.code;
   return code;
 }
@@ -36,9 +30,11 @@ module.exports = function(filepath) {
     var code = jstransform(
       data,
       filepath,
-      {
-        sourceMaps: dev ? 'inline' : false,
-      }
+      Object.assign(
+        {},
+        sharedOptions,
+        { sourceMaps: dev ? 'inline' : false }
+      )
     );
     this.queue(code);
     this.queue(null);
@@ -49,9 +45,13 @@ module.exports.transform = function(filepath, source, options) {
   return jstransform(
     source,
     filepath,
-    {
-      sourceMaps: options.dev ? 'inline' : false,
-      auxiliaryCommentBefore: "istanbul ignore next",
-    }
+    Object.assign(
+      {},
+      sharedOptions,
+      {
+        sourceMaps: options.dev ? 'inline' : false,
+        auxiliaryCommentBefore: 'istanbul ignore next',
+      }
+    )
   );
 };

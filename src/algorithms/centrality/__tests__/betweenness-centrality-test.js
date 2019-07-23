@@ -34,6 +34,12 @@ function weightedG() {
   return G;
 }
 
+function mapEdgesBy(ratio) {
+  return function mapper(edge) {
+    return [edge, ratio]
+  }
+}
+
 export var testBetweennessCentrality = {
   testk5: function() {
     var G = completeGraph(5);
@@ -286,7 +292,7 @@ export var testEdgeBetweennessCentrality = {
   testk5: function() {
     var G = completeGraph(5);
     var edge;
-    var bAnswer = new Map((for (edge of G.edges()) [edge, 1]));
+    var bAnswer = new Map(G.edges().map(mapEdgesBy(1)));
     var b = edgeBetweennessCentrality(G, {weight: null, normalized: false});
     assert.deepEqual(b, bAnswer);
   },
@@ -294,7 +300,7 @@ export var testEdgeBetweennessCentrality = {
   testNormalizedK5: function() {
     var G = completeGraph(5);
     var edge;
-    var bAnswer = new Map((for (edge of G.edges()) [edge, 1/10]));
+    var bAnswer = new Map(G.edges().map(mapEdgesBy(1/10)));
     var b = edgeBetweennessCentrality(G, {weight: null, normalized: true});
     assert.deepEqual(b, bAnswer);
   },
@@ -302,7 +308,7 @@ export var testEdgeBetweennessCentrality = {
   testC4: function() {
     var G = cycleGraph(4);
     var edge;
-    var bAnswer = new Map((for (edge of G.edges()) [edge, 2/6]));
+    var bAnswer = new Map(G.edges().map(mapEdgesBy(2/6)));
     var b = edgeBetweennessCentrality(G, {weight: null, normalized: true});
     assert.deepEqual(b, bAnswer);
   },
@@ -349,7 +355,7 @@ export var testWeightedEdgeBetweennessCentrality = {
   testK5: function() {
     var G = completeGraph(5);
     var edge;
-    var bAnswer = new Map((for (edge of G.edges()) [edge, 1]));
+    var bAnswer = new Map(G.edges().map(mapEdgesBy(1)));
     var b = edgeBetweennessCentrality(G, {weight: 'weight', normalized: false});
     assert.deepEqual(b, bAnswer);
   },
@@ -357,7 +363,7 @@ export var testWeightedEdgeBetweennessCentrality = {
   testC4: function() {
     var G = cycleGraph(4);
     var edge;
-    var bAnswer = new Map((for (edge of G.edges()) [edge, 2]));
+    var bAnswer = new Map(G.edges().map(mapEdgesBy(2)));
     var b = edgeBetweennessCentrality(G, {weight: 'weight', normalized: false});
     assert.deepEqual(b, bAnswer);
   },

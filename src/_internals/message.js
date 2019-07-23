@@ -26,10 +26,15 @@ function deserializeSet(value) {
   return new Set(value.data);
 }
 
+function serializeValues([key, value]) {
+  return [key, serialize(value)]
+}
+
 function serializeMap(value) {
+  const serializedValues = Object.fromEntries(Object.entries(value).map(serializeValues))
   return {
     [KEY]: 'Map',
-    data: [for ([k,v] of value) [k, serialize(v)]]//eslint-disable-line no-undef
+    data: serializedValues
   };
 }
 

@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 
 var path = require('path');
 var transform = require('../transforms/es7').transform;
