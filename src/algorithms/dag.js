@@ -15,7 +15,23 @@ import {
   gcd
 } from '../_internals';
 
-// TODO: descendants
+/**
+ * Returns all nodes reachable from `source` in `G`
+ *
+ * @param {Graph} G A NetworkX directed acyclic graph
+ * @param {Node} Source: node in `G`
+ * @return {Set} The descendants of `source` in `G`
+ */
+export async function descendants(G, source) {
+  if (!G.hasNode(source)) {
+    throw new JSNetworkXError(
+      `The node ${source} is not in the graph`
+    )
+  }
+  const descendantNodes = new Set(shortestPathLength(G, { source }).keys());
+  descendantNodes.delete(source); // cannot be own parent
+  return descendantNodes;
+}
 
 /**
  * Returns all nodes having a path to `source` in `G`
@@ -30,7 +46,7 @@ export async function ancestors(G, source) {
       `The node ${source} is not in the graph`
     )
   }
-  const ancestorNodes = new Set(shortestPathLength(G, { source }).keys());
+  const ancestorNodes = new Set(shortestPathLength(G, { target: source }).keys());
   ancestorNodes.delete(source); // cannot be own parent
   return ancestorNodes;
 }
