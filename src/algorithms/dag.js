@@ -4,6 +4,8 @@
 import JSNetworkXError from '../exceptions/JSNetworkXError';
 import JSNetworkXUnfeasible from '../exceptions/JSNetworkXUnfeasible';
 
+import { shortestPathLength } from './shortestPaths';
+
 import {
 /*jshint ignore:start*/
   Map,
@@ -14,7 +16,24 @@ import {
 } from '../_internals';
 
 // TODO: descendants
-// TODO: ancestors
+
+/**
+ * Returns all nodes having a path to `source` in `G`
+ *
+ * @param {Graph} G A NetworkX directed acyclic graph
+ * @param {Node} Source: node in `G`
+ * @return {Set} Set of all nodes that source is descended from
+ */
+export async function ancestors(G, source) {
+  if (!G.hasNode(source)) {
+    throw new JSNetworkXError(
+      `The node ${source} is not in the graph`
+    )
+  }
+  const ancestorNodes = new Set(shortestPathLength(G, { source }).keys());
+  ancestorNodes.delete(source); // cannot be own parent
+  return ancestorNodes;
+}
 
 /**
  * Return `true` if the graph G is a directed acyclic graph (DAG) or
