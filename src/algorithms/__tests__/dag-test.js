@@ -1,6 +1,7 @@
 /*globals assert, utils*/
 'use strict';
 
+import { Set } from '../../_internals/';
 import {Graph, DiGraph} from '../../classes';
 import JSNetworkXError from '../../exceptions/JSNetworkXError';
 import JSNetworkXUnfeasible from '../../exceptions/JSNetworkXUnfeasible';
@@ -162,5 +163,34 @@ export var TestDAG = {
     G.addCycle([0,1,2]);
     G.addEdge(3,3);
     assert(!dag.isAperiodic(G));
+  },
+
+  // dag.ancestors
+  // https://github.com/networkx/networkx/blob/master/networkx/algorithms/tests/test_dag.py#L281
+  testAncestors: function () {
+    var DG = new DiGraph();
+    DG.addEdgesFrom([[1, 2], [1, 3], [4, 2], [4, 3], [4, 5], [2, 6], [5, 6]]);
+    assert.deepEqual(dag.ancestors(DG, 6), new Set([1, 2, 4, 5]));
+    assert.deepEqual(dag.ancestors(DG, 3), new Set([1, 4]));
+    assert.deepEqual(dag.ancestors(DG, 1), new Set());
+  },
+  testAncestorsInvalidSource: function () {
+    var DG = new DiGraph();
+    DG.addEdgesFrom([[1, 2], [1, 3]]); // tested node is not in graph
+    assert.throws(() => dag.ancestors(DG, 0), JSNetworkXError);
+  },
+
+  // dag.descendants
+  testDescendants: function () {
+    var DG = new DiGraph();
+    DG.addEdgesFrom([[1, 2], [1, 3], [4, 2], [4, 3], [4, 5], [2, 6], [5, 6]]);
+    assert.deepEqual(dag.descendants(DG, 1), new Set([2, 3, 6]));
+    assert.deepEqual(dag.descendants(DG, 4), new Set([2, 3, 5, 6]));
+    assert.deepEqual(dag.descendants(DG, 3), new Set([]));
+  },
+  testDescendantsInvalidSource: function () {
+    var DG = new DiGraph();
+    DG.addEdgesFrom([[1, 2], [1, 3]]);
+    assert.throws(() => dag.descendants(DG, 0), JSNetworkXError);
   }
 };
